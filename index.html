@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- PATCHED: employee permissions + strict login/session + finance edit v2026-04-29 -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1463,8 +1464,297 @@
             .attendance-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
         }
 
+
+        .attendance-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .attendance-detail-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 14px;
+            border-left: 4px solid var(--info);
+        }
+        .attendance-detail-card strong {
+            display: block;
+            color: #7f8c8d;
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+        }
+        .attendance-detail-card span {
+            color: var(--secondary);
+            font-weight: 800;
+            font-size: 1rem;
+        }
+        .permission-help {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin: 8px 0 12px;
+            line-height: 1.45;
+        }
+
+
+        /* ==================== MOBILE MULTI-SCREEN UI FIX ==================== */
+        @media (max-width: 992px) {
+            body {
+                padding: 12px;
+                overflow-x: hidden;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            header {
+                padding: 16px;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .logo-section {
+                width: 100%;
+                min-width: 0;
+                justify-content: flex-start;
+            }
+
+            .logo-section i {
+                font-size: 2rem;
+                flex: 0 0 auto;
+            }
+
+            .logo-section h1 {
+                font-size: 1.35rem;
+                line-height: 1.15;
+                word-break: keep-all;
+            }
+
+            .logo-section p {
+                font-size: 0.78rem !important;
+                line-height: 1.25;
+            }
+
+            .user-section {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr auto;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .settings-btn {
+                width: 100%;
+                justify-content: center;
+                grid-column: 1 / -1;
+                padding: 11px 12px;
+                font-size: 0.9rem;
+            }
+
+            .user-badge {
+                min-width: 0;
+                width: 100%;
+                padding: 8px 10px;
+                border-radius: 14px;
+            }
+
+            .user-info {
+                min-width: 0;
+                overflow: hidden;
+            }
+
+            .user-info .name,
+            .user-info .role {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .logout-btn {
+                height: 44px;
+                padding: 0 14px;
+                justify-content: center;
+                align-items: center;
+                white-space: nowrap;
+                line-height: 1;
+                flex-shrink: 0;
+            }
+
+            .logout-btn i,
+            .settings-btn i,
+            .nav-tab i {
+                line-height: 1;
+            }
+
+            .nav-tabs {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+                padding: 8px;
+                overflow: visible;
+            }
+
+            .nav-tab {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+                padding: 11px 8px;
+                font-size: 0.86rem;
+                line-height: 1.2;
+                min-height: 44px;
+            }
+
+            .card-header {
+                padding: 16px;
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .card-header h2 {
+                font-size: 1.05rem;
+                line-height: 1.25;
+            }
+
+            .card-header > div {
+                width: 100%;
+            }
+
+            .card-header .btn,
+            .card-header .form-control {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filters,
+            .quick-finance-form {
+                padding: 16px;
+            }
+
+            .filters .form-group,
+            .filters .form-control,
+            .form-control {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .finance-summary,
+            .stats-bar {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .stat-card,
+            .finance-card {
+                padding: 14px;
+            }
+
+            .stat-info h3,
+            .finance-card .amount {
+                font-size: 1.25rem;
+            }
+
+            .stat-info p,
+            .finance-card h4 {
+                font-size: 0.78rem;
+            }
+
+            table {
+                min-width: 760px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 8px; }
+
+            header {
+                border-radius: 12px;
+                padding: 14px;
+            }
+
+            .logo-section { gap: 10px; }
+            .logo-section i { font-size: 1.7rem; }
+            .logo-section h1 { font-size: 1.15rem; }
+
+            .user-section {
+                grid-template-columns: 1fr;
+            }
+
+            .user-badge,
+            .logout-btn,
+            .settings-btn {
+                width: 100%;
+            }
+
+            .logout-btn {
+                gap: 7px;
+                font-size: 0.92rem;
+            }
+
+            .nav-tabs {
+                grid-template-columns: 1fr;
+                max-height: 58vh;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .stats-bar,
+            .finance-summary,
+            .payroll-summary,
+            .monthly-finance-grid,
+            .monthly-breakdown {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                max-height: 94vh;
+                border-radius: 12px;
+            }
+
+            .modal-body,
+            .modal-footer,
+            .modal-header {
+                padding: 16px;
+            }
+
+            .toast-container {
+                left: 10px;
+                right: 10px;
+                top: 10px;
+            }
+
+            .toast {
+                min-width: 0;
+                width: 100%;
+            }
+        }
+
         .hidden {
             display: none !important;
+        }
+
+        .permission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .permission-grid label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+            cursor: pointer;
+        }
+
+        .permission-grid input {
+            width: 18px;
+            height: 18px;
         }
     </style>
 </head>
@@ -1978,7 +2268,10 @@
                                 <input type="text" id="financeNote" class="form-control" placeholder="Example: Customer payment, fuel, wire expense">
                             </div>
                         </div>
-                        <button class="btn btn-primary" onclick="addFinanceEntry()"><i class="fas fa-plus"></i> Add Entry</button>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button class="btn btn-primary" id="financeSubmitBtn" onclick="addFinanceEntry()"><i class="fas fa-plus"></i> Add Entry</button>
+                            <button class="btn btn-secondary hidden" id="financeCancelEditBtn" onclick="cancelFinanceEdit()"><i class="fas fa-times"></i> Cancel Edit</button>
+                        </div>
                     </div>
 
                     <div class="daily-report-box">
@@ -2570,6 +2863,18 @@
                             <input type="text" id="empNotes" placeholder="Additional notes">
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label><i class="fas fa-user-lock"></i> Employee Portal Permissions</label>
+                            <div class="permission-grid">
+                                <label><input type="checkbox" id="permMytasks"> My Tasks / Complaints</label>
+                                <label><input type="checkbox" id="permAttendance"> Attendance</label>
+                                <label><input type="checkbox" id="permPayroll"> Payroll</label>
+                                <label><input type="checkbox" id="permResolved"> Resolved Complaints</label>
+                                <label><input type="checkbox" id="permProfile"> My Profile</label>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -2820,6 +3125,8 @@
         let dailyFinance = [];
         let db = null;
         let viewingId = null;
+        let financeEditId = null;
+        const DEFAULT_EMPLOYEE_PERMISSIONS = { mytasks: true, attendance: true, payroll: true, resolved: true, profile: true };
         
         const firebaseConfig = {
             apiKey: "AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E",
@@ -2912,6 +3219,17 @@
 
             db.collection('employees').onSnapshot(snapshot => {
                 employees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (currentUser?.type === 'employee') {
+                    const latestEmployee = employees.find(e => e.id === currentUser.id);
+                    if (!latestEmployee || latestEmployee.status !== 'active') {
+                        showToast('Your employee account is inactive or removed. Please contact admin.', 'warning');
+                        logout();
+                        return;
+                    }
+                    currentUser = { ...buildEmployeeSession(latestEmployee), loginAt: currentUser.loginAt || new Date().toISOString() };
+                    localStorage.setItem('firenet_user', JSON.stringify(currentUser));
+                    applyEmployeePermissions();
+                }
                 if (document.getElementById('adminApp').classList.contains('active')) refreshAdmin();
                 if (document.getElementById('employeeApp').classList.contains('active') && currentUser?.type === 'employee') refreshEmployee();
             }, error => console.error('Realtime employees error:', error));
@@ -2936,21 +3254,24 @@
         }
 
         function checkExistingSession() {
-            if (currentUser) {
-                console.log('Existing session found:', currentUser.type);
-                if (currentUser.type === 'admin') {
-                    showAdminApp();
-                } else if (currentUser.type === 'employee') {
-                    const emp = employees.find(e => e.id === currentUser.id);
-                    if (emp && emp.status === 'active') {
-                        showEmployeeApp();
-                    } else {
-                        logout();
-                        showToast('Your account is no longer active. Please contact admin.', 'error');
-                    }
-                }
-            } else {
+            if (!currentUser) {
                 document.getElementById('loginScreen').style.display = 'flex';
+                return;
+            }
+
+            console.log('Existing session found:', currentUser.type);
+            if (!validateCurrentSession()) {
+                currentUser = null;
+                localStorage.removeItem('firenet_user');
+                document.getElementById('loginScreen').style.display = 'flex';
+                showToast('Session expired. Please login again with password/PIN.', 'warning');
+                return;
+            }
+
+            if (currentUser.type === 'admin') {
+                showAdminApp();
+            } else if (currentUser.type === 'employee') {
+                showEmployeeApp();
             }
         }
 
@@ -2968,6 +3289,7 @@
                     status: 'active',
                     salary: 45000,
                     notes: 'Fiber optic specialist',
+                    permissions: { mytasks: true, attendance: true, payroll: false, resolved: true, profile: true },
                     createdAt: new Date().toISOString()
                 },
                 {
@@ -2981,6 +3303,7 @@
                     status: 'active',
                     salary: 35000,
                     notes: 'Customer relations',
+                    permissions: { mytasks: true, attendance: true, payroll: false, resolved: true, profile: true },
                     createdAt: new Date().toISOString()
                 },
                 {
@@ -2994,6 +3317,7 @@
                     status: 'active',
                     salary: 40000,
                     notes: 'Accounts and billing',
+                    permissions: { mytasks: false, attendance: true, payroll: true, resolved: false, profile: true },
                     createdAt: new Date().toISOString()
                 }
             ];
@@ -3002,6 +3326,51 @@
         }
 
         // ==================== AUTHENTICATION ====================
+        function createSessionToken(userType, id, secret) {
+            return btoa(unescape(encodeURIComponent(`${userType}|${id}|${secret || ''}`)));
+        }
+
+        function getEmployeePermissions(emp) {
+            return { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(emp?.permissions || {}) };
+        }
+
+        function buildEmployeeSession(employee) {
+            return {
+                type: 'employee',
+                id: employee.id,
+                name: employee.name,
+                phone: employee.phone,
+                role: employee.role,
+                department: employee.department,
+                email: employee.email,
+                createdAt: employee.createdAt,
+                permissions: getEmployeePermissions(employee),
+                sessionToken: createSessionToken('employee', employee.id, employee.pin),
+                loginAt: new Date().toISOString()
+            };
+        }
+
+        function validateCurrentSession() {
+            if (!currentUser) return false;
+
+            if (currentUser.type === 'admin') {
+                const expected = createSessionToken('admin', 'ADMIN', ADMIN_CREDENTIALS.password);
+                return currentUser.id === 'ADMIN' && currentUser.sessionToken === expected;
+            }
+
+            if (currentUser.type === 'employee') {
+                const emp = employees.find(e => e.id === currentUser.id);
+                if (!emp || emp.status !== 'active') return false;
+                const expected = createSessionToken('employee', emp.id, emp.pin);
+                if (currentUser.sessionToken !== expected) return false;
+                currentUser = { ...buildEmployeeSession(emp), loginAt: currentUser.loginAt || new Date().toISOString() };
+                localStorage.setItem('firenet_user', JSON.stringify(currentUser));
+                return true;
+            }
+
+            return false;
+        }
+
         function switchLoginTab(tab) {
             document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
@@ -3012,11 +3381,22 @@
 
         function handleAdminLogin(e) {
             e.preventDefault();
-            const username = document.getElementById('adminUsername').value;
+            const username = document.getElementById('adminUsername').value.trim();
             const password = document.getElementById('adminPassword').value;
+
+            if (!username || !password) {
+                showToast('Username and password are required!', 'error');
+                return;
+            }
             
             if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-                currentUser = { type: 'admin', name: 'Administrator', id: 'ADMIN' };
+                currentUser = {
+                    type: 'admin',
+                    name: 'Administrator',
+                    id: 'ADMIN',
+                    sessionToken: createSessionToken('admin', 'ADMIN', ADMIN_CREDENTIALS.password),
+                    loginAt: new Date().toISOString()
+                };
                 localStorage.setItem('firenet_user', JSON.stringify(currentUser));
                 showAdminApp();
                 showToast('Welcome back, Administrator!', 'success');
@@ -3030,6 +3410,11 @@
             const phone = document.getElementById('employeePhone').value.trim();
             const pin = document.getElementById('employeePin').value.trim();
             const normalizedPhone = phone.replace(/\D/g, '');
+
+            if (!normalizedPhone || !pin) {
+                showToast('Phone number and PIN are required!', 'error');
+                return;
+            }
             
             console.log('Employee login attempt:', phone, pin);
             console.log('Available employees:', employees);
@@ -3037,16 +3422,7 @@
             const employee = employees.find(e => (e.phone || '').replace(/\D/g, '') === normalizedPhone && e.pin === pin && e.status === 'active');
             
             if (employee) {
-                currentUser = { 
-                    type: 'employee', 
-                    id: employee.id, 
-                    name: employee.name,
-                    phone: employee.phone,
-                    role: employee.role,
-                    department: employee.department,
-                    email: employee.email,
-                    createdAt: employee.createdAt
-                };
+                currentUser = buildEmployeeSession(employee);
                 localStorage.setItem('firenet_user', JSON.stringify(currentUser));
                 showEmployeeApp();
                 showToast(`Welcome back, ${employee.name}!`, 'success');
@@ -3085,8 +3461,28 @@
             document.getElementById('empWelcomeName').textContent = currentUser.name;
             document.getElementById('empPortalRole').textContent = currentUser.role.toUpperCase();
             document.getElementById('empPortalAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
-            
+            applyEmployeePermissions();
             refreshEmployee();
+        }
+
+        function applyEmployeePermissions() {
+            if (!currentUser || currentUser.type !== 'employee') return;
+            const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser.permissions || {}) };
+            const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
+            const tabMap = { mytasks: 0, attendance: 1, payroll: 2, resolved: 3, profile: 4 };
+            const tabIdMap = { mytasks: 'empMyTasksTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
+
+            Object.entries(tabMap).forEach(([key, index]) => {
+                if (tabButtons[index]) tabButtons[index].classList.toggle('hidden', !permissions[key]);
+                const tabEl = document.getElementById(tabIdMap[key]);
+                if (tabEl) tabEl.classList.toggle('hidden', !permissions[key]);
+            });
+
+            const activeBtn = document.querySelector('#employeeApp .nav-tabs .nav-tab.active:not(.hidden)');
+            if (!activeBtn) {
+                const firstAllowed = Object.keys(tabMap).find(key => permissions[key]);
+                if (firstAllowed) switchEmployeeTab(firstAllowed);
+            }
         }
 
         // ==================== ADMIN FUNCTIONS ====================
@@ -3095,13 +3491,15 @@
             document.querySelectorAll('#adminApp .tab-content').forEach(t => t.classList.remove('active'));
             
             const tabButtons = document.querySelectorAll('#adminApp .nav-tabs .nav-tab');
-            const tabMap = { complaints: 0, employees: 1, payroll: 2, attendance: 3, backup: 4 };
+            const tabMap = { complaints: 0, employees: 1, payroll: 2, attendance: 3, finance: 4, backup: 5 };
             const btn = tabButtons[tabMap[tab]];
             if (btn) btn.classList.add('active');
-            document.getElementById('admin' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Tab').classList.add('active');
+            const tabEl = document.getElementById('admin' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Tab');
+            if (tabEl) tabEl.classList.add('active');
             
             if (tab === 'payroll') renderAdminPayroll();
             if (tab === 'attendance') renderAdminAttendance();
+            if (tab === 'finance') { renderDailyFinance(); renderMonthlyFinance(); }
         }
 
         function refreshAdmin() {
@@ -3114,6 +3512,10 @@
             updateAttEmployeeFilter();
             renderAdminPayroll();
             renderAdminAttendance();
+            if (document.getElementById('financeTableBody')) {
+                renderDailyFinance();
+                renderMonthlyFinance();
+            }
         }
 
         function updateAdminStats() {
@@ -3514,6 +3916,7 @@
                     <td>${a.notes || '-'}</td>
                     <td>
                         <div class="action-btns">
+                            <button class="btn btn-info btn-sm" onclick="viewAttendanceDetails('${a.id}')" title="Details"><i class="fas fa-eye"></i></button>
                             <button class="btn btn-primary btn-sm" onclick="openAttendanceModal('${a.id}')" title="Edit"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-danger btn-sm" onclick="deleteAttendance('${a.id}')" title="Delete"><i class="fas fa-trash"></i></button>
                         </div>
@@ -3975,13 +4378,57 @@
             showToast(`Attendance marked as ${status}!`, 'success');
         }
 
+        function calculateAttendanceDuration(checkIn, checkOut) {
+            if (!checkIn || !checkOut) return '-';
+            const [inH, inM] = checkIn.split(':').map(Number);
+            const [outH, outM] = checkOut.split(':').map(Number);
+            if ([inH, inM, outH, outM].some(Number.isNaN)) return '-';
+            let minutes = (outH * 60 + outM) - (inH * 60 + inM);
+            if (minutes < 0) minutes += 24 * 60;
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours}h ${mins}m`;
+        }
+
+        function viewAttendanceDetails(id) {
+            const att = attendance.find(a => a.id === id);
+            if (!att) {
+                showToast('Attendance record not found', 'error');
+                return;
+            }
+            const emp = employees.find(e => e.id === att.employeeId) || { name: att.employeeName || 'Unknown', role: '-', department: '-' };
+            const duration = calculateAttendanceDuration(att.checkIn, att.checkOut);
+            const content = document.getElementById('viewContent');
+            content.innerHTML = `
+                <div style="display: grid; gap: 18px;">
+                    <div style="text-align:center; padding: 22px; background: linear-gradient(135deg, var(--employee), #8e44ad); border-radius: 12px; color: white;">
+                        <h3 style="font-size:1.45rem; margin-bottom:6px;">${emp.name}</h3>
+                        <p style="opacity:.92;">${emp.role || emp.department || ''}</p>
+                        <div style="margin-top:12px;"><span class="badge badge-${att.status}">${(att.status || '').toUpperCase()}</span></div>
+                    </div>
+                    <div class="attendance-detail-grid">
+                        <div class="attendance-detail-card"><strong>Date</strong><span>${att.date || '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Check In</strong><span>${att.checkIn || '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Check Out</strong><span>${att.checkOut || '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Total Time</strong><span>${duration}</span></div>
+                        <div class="attendance-detail-card"><strong>Day Status</strong><span>${att.completed ? 'Completed' : 'Not Completed'}</span></div>
+                        <div class="attendance-detail-card"><strong>Last Updated</strong><span>${att.updatedAt ? new Date(att.updatedAt).toLocaleString('en-PK') : '-'}</span></div>
+                    </div>
+                    <div style="background:#f8f9fa; padding:15px; border-radius:10px; border-left:4px solid var(--secondary);">
+                        <strong>Notes:</strong><br>${att.notes || 'No notes'}
+                    </div>
+                </div>
+            `;
+            document.getElementById('viewModal').classList.add('active');
+        }
+
         function showDayDetails(dateStr) {
             const att = attendance.find(a => a.employeeId === currentUser.id && a.date === dateStr);
             if (!att) {
                 showToast('No attendance record for this day', 'info');
                 return;
             }
-            showToast(`${att.date}: ${att.status.toUpperCase()}${att.checkIn ? ' | In: ' + att.checkIn : ''}${att.checkOut ? ' | Out: ' + att.checkOut : ''}${att.notes ? ' | ' + att.notes : ''}`, 'info');
+            viewAttendanceDetails(att.id);
         }
 
         // ==================== EMPLOYEE PORTAL PAYROLL ====================
@@ -4106,7 +4553,7 @@
             await saveEmployees();
             
             // Update current user session
-            currentUser.pin = newPin;
+            currentUser = buildEmployeeSession(employees[idx]);
             localStorage.setItem('firenet_user', JSON.stringify(currentUser));
             
             closeEmployeePasswordModal();
@@ -4115,14 +4562,21 @@
 
         // ==================== EMPLOYEE PORTAL FUNCTIONS ====================
         function switchEmployeeTab(tab) {
+            const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser?.permissions || {}) };
+            if (!permissions[tab]) {
+                showToast('You do not have permission to open this module.', 'warning');
+                return;
+            }
             document.querySelectorAll('#employeeApp .nav-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('#employeeApp .tab-content').forEach(t => t.classList.remove('active'));
             
             const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
             const tabMap = { mytasks: 0, attendance: 1, payroll: 2, resolved: 3, profile: 4 };
+            const tabIdMap = { mytasks: 'empMyTasksTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
             const btn = tabButtons[tabMap[tab]];
             if (btn) btn.classList.add('active');
-            document.getElementById('emp' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Tab').classList.add('active');
+            const tabEl = document.getElementById(tabIdMap[tab]);
+            if (tabEl) tabEl.classList.add('active');
             
             if (tab === 'mytasks') refreshEmployeeTasks();
             if (tab === 'attendance') renderEmployeeAttendance();
@@ -4508,10 +4962,21 @@ Please update status promptly via CMS.`;
                     document.getElementById('empStatus').value = emp.status;
                     document.getElementById('empSalary').value = emp.salary || '';
                     document.getElementById('empNotes').value = emp.notes || '';
+                    const perms = getEmployeePermissions(emp);
+                    document.getElementById('permMytasks').checked = !!perms.mytasks;
+                    document.getElementById('permAttendance').checked = !!perms.attendance;
+                    document.getElementById('permPayroll').checked = !!perms.payroll;
+                    document.getElementById('permResolved').checked = !!perms.resolved;
+                    document.getElementById('permProfile').checked = !!perms.profile;
                 }
             } else {
                 title.textContent = 'Add Employee';
                 document.getElementById('employeeId').value = '';
+                document.getElementById('permMytasks').checked = true;
+                document.getElementById('permAttendance').checked = true;
+                document.getElementById('permPayroll').checked = false;
+                document.getElementById('permResolved').checked = true;
+                document.getElementById('permProfile').checked = true;
             }
             
             modal.classList.add('active');
@@ -4532,6 +4997,13 @@ Please update status promptly via CMS.`;
             const status = document.getElementById('empStatus').value;
             const salary = Number(document.getElementById('empSalary').value) || 0;
             const notes = document.getElementById('empNotes').value.trim();
+            const permissions = {
+                mytasks: document.getElementById('permMytasks').checked,
+                attendance: document.getElementById('permAttendance').checked,
+                payroll: document.getElementById('permPayroll').checked,
+                resolved: document.getElementById('permResolved').checked,
+                profile: document.getElementById('permProfile').checked
+            };
 
             if (!name || !phone || !pin || !role) {
                 showToast('Please fill all required fields!', 'error');
@@ -4545,7 +5017,7 @@ Please update status promptly via CMS.`;
 
             const empData = {
                 id: id || 'EMP-' + Date.now().toString(36).toUpperCase(),
-                name, phone, pin, role, department: dept, email, status, salary, notes,
+                name, phone, pin, role, department: dept, email, status, salary, notes, permissions,
                 createdAt: id ? (employees.find(e => e.id === id)?.createdAt || new Date().toISOString()) : new Date().toISOString()
             };
 
@@ -4559,6 +5031,11 @@ Please update status promptly via CMS.`;
             }
 
             await saveEmployees();
+            if (currentUser?.type === 'employee' && currentUser.id === empData.id) {
+                currentUser = buildEmployeeSession(empData);
+                localStorage.setItem('firenet_user', JSON.stringify(currentUser));
+                applyEmployeePermissions();
+            }
             closeEmployeeModal();
             refreshAdmin();
         }
@@ -5106,6 +5583,25 @@ Please take necessary action and update status in CMS.`;
                 return;
             }
 
+            if (financeEditId) {
+                const idx = dailyFinance.findIndex(item => item.id === financeEditId);
+                if (idx === -1) {
+                    showToast('Entry not found for editing', 'error');
+                    cancelFinanceEdit();
+                    return;
+                }
+                dailyFinance[idx] = {
+                    ...dailyFinance[idx],
+                    date, type, category, amount, note,
+                    updatedAt: new Date().toISOString()
+                };
+                await saveFinanceData();
+                cancelFinanceEdit(false);
+                renderDailyFinance();
+                showToast('Entry updated successfully', 'success');
+                return;
+            }
+
             dailyFinance.push({
                 id: 'FIN-' + Date.now().toString(36).toUpperCase(),
                 date,
@@ -5123,6 +5619,68 @@ Please take necessary action and update status in CMS.`;
             document.getElementById('financeNote').value = '';
             renderDailyFinance();
             showToast('Daily entry added successfully', 'success');
+        }
+
+        function viewFinanceEntry(id) {
+            const item = dailyFinance.find(entry => entry.id === id);
+            if (!item) {
+                showToast('Entry not found', 'error');
+                return;
+            }
+            const content = document.getElementById('viewContent');
+            content.innerHTML = `
+                <div style="display:grid; gap:18px;">
+                    <div style="text-align:center; padding:22px; background:${item.type === 'income' ? 'linear-gradient(135deg, var(--finance), #27ae60)' : 'linear-gradient(135deg, var(--danger), #c0392b)'}; border-radius:12px; color:white;">
+                        <h3 style="font-size:1.45rem; margin-bottom:6px;">${item.type === 'income' ? 'Income Entry' : 'Expense Entry'}</h3>
+                        <div style="font-size:2rem; font-weight:800;">${formatPKR(item.amount)}</div>
+                    </div>
+                    <div class="attendance-detail-grid">
+                        <div class="attendance-detail-card"><strong>Date</strong><span>${item.date || '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Time</strong><span>${item.time || '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Category</strong><span>${item.category || '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Type</strong><span>${item.type || '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Created</strong><span>${item.createdAt ? new Date(item.createdAt).toLocaleString('en-PK') : '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Updated</strong><span>${item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-PK') : '-'}</span></div>
+                    </div>
+                    <div style="background:#f8f9fa; padding:15px; border-radius:10px; border-left:4px solid var(--finance);">
+                        <strong>Description / Notes:</strong><br>${item.note || 'No description'}
+                    </div>
+                </div>
+            `;
+            document.getElementById('viewModal').classList.add('active');
+        }
+
+        function editFinanceEntry(id) {
+            const item = dailyFinance.find(entry => entry.id === id);
+            if (!item) {
+                showToast('Entry not found', 'error');
+                return;
+            }
+            financeEditId = id;
+            document.getElementById('financeType').value = item.type || 'income';
+            document.getElementById('financeCategory').value = item.category || 'Other';
+            document.getElementById('financeAmount').value = item.amount || '';
+            document.getElementById('financeNote').value = item.note || '';
+            const dateInput = document.getElementById('financeDateFilter');
+            if (dateInput && item.date) dateInput.value = item.date;
+
+            const btn = document.getElementById('financeSubmitBtn');
+            const cancelBtn = document.getElementById('financeCancelEditBtn');
+            if (btn) btn.innerHTML = '<i class="fas fa-save"></i> Update Entry';
+            if (cancelBtn) cancelBtn.classList.remove('hidden');
+            showToast('Edit mode enabled. Update the form and save.', 'info');
+        }
+
+        function cancelFinanceEdit(clearFields = true) {
+            financeEditId = null;
+            const btn = document.getElementById('financeSubmitBtn');
+            const cancelBtn = document.getElementById('financeCancelEditBtn');
+            if (btn) btn.innerHTML = '<i class="fas fa-plus"></i> Add Entry';
+            if (cancelBtn) cancelBtn.classList.add('hidden');
+            if (clearFields) {
+                document.getElementById('financeAmount').value = '';
+                document.getElementById('financeNote').value = '';
+            }
         }
 
         async function deleteFinanceEntry(id) {
@@ -5230,7 +5788,13 @@ Half Day: ${halfDay}
                     <td>${item.note || '-'}</td>
                     <td><strong>${formatPKR(item.amount)}</strong></td>
                     <td>
-                        <button class="btn btn-danger btn-sm" onclick="deleteFinanceEntry(${item.id})">
+                        <button class="btn btn-info btn-sm" onclick="viewFinanceEntry('${item.id}')" title="Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="editFinanceEntry('${item.id}')" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteFinanceEntry('${item.id}')" title="Delete">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
