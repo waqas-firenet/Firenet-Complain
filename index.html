@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- PATCHED: employee permissions + strict login/session + finance edit v2026-04-29 -->
+<!-- PATCHED: employee permissions + strict login/session + finance edit + employee accounts permission v2026-04-29 -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -2496,6 +2496,9 @@
                 <button class="nav-tab" onclick="switchEmployeeTab('payroll')">
                     <i class="fas fa-money-bill-wave"></i> Payroll
                 </button>
+                <button class="nav-tab" onclick="switchEmployeeTab('accounts')">
+                    <i class="fas fa-wallet"></i> Accounts
+                </button>
                 <button class="nav-tab" onclick="switchEmployeeTab('resolved')">
                     <i class="fas fa-check-circle"></i> Resolved
                 </button>
@@ -2619,6 +2622,30 @@
                         </div>
                     </div>
                     <div id="empPayrollList" style="padding: 20px;"></div>
+                </div>
+            </div>
+
+            <!-- Employee Accounts Tab -->
+            <div id="empAccountsTab" class="tab-content">
+                <div class="finance-summary">
+                    <div class="finance-card"><h4><i class="fas fa-arrow-down"></i> Today Income</h4><div class="amount" id="empFinanceTodayIncome">Rs. 0</div></div>
+                    <div class="finance-card expense"><h4><i class="fas fa-arrow-up"></i> Today Expenses</h4><div class="amount" id="empFinanceTodayExpense">Rs. 0</div></div>
+                    <div class="finance-card balance"><h4><i class="fas fa-scale-balanced"></i> Today Balance</h4><div class="amount" id="empFinanceTodayBalance">Rs. 0</div></div>
+                    <div class="finance-card"><h4><i class="fas fa-list"></i> Entries</h4><div class="amount" id="empFinanceTodayEntries">0</div></div>
+                </div>
+                <div class="main-card">
+                    <div class="card-header"><h2><i class="fas fa-wallet"></i> Accounts / Income & Expenses</h2><input type="date" class="form-control" id="empFinanceDateFilter" onchange="renderEmployeeFinance()" style="min-width:150px;"></div>
+                    <div class="quick-finance-form">
+                        <div class="form-row">
+                            <div class="form-group"><label>Type</label><select id="empFinanceType" class="form-control"><option value="income">Income</option><option value="expense">Expense</option></select></div>
+                            <div class="form-group"><label>Category</label><select id="empFinanceCategory" class="form-control"><option value="Monthly Fee">Monthly Fee</option><option value="Installation">Installation</option><option value="Device Sale">Device Sale</option><option value="Recharge / Payment">Recharge / Payment</option><option value="Fuel">Fuel</option><option value="Staff Payment">Staff Payment</option><option value="Repair / Maintenance">Repair / Maintenance</option><option value="Office Expense">Office Expense</option><option value="Other">Other</option></select></div>
+                            <div class="form-group"><label>Amount</label><input type="number" id="empFinanceAmount" class="form-control" placeholder="Enter amount"></div>
+                            <div class="form-group full-width"><label>Description / Notes</label><input type="text" id="empFinanceNote" class="form-control" placeholder="Example: Customer payment, fuel, wire expense"></div>
+                        </div>
+                        <button class="btn btn-primary" id="empFinanceSubmitBtn" onclick="addEmployeeFinanceEntry()"><i class="fas fa-plus"></i> Add Entry</button>
+                        <button class="btn btn-secondary hidden" id="empFinanceCancelEditBtn" onclick="cancelEmployeeFinanceEdit()"><i class="fas fa-times"></i> Cancel Edit</button>
+                    </div>
+                    <div style="overflow-x:auto;"><table><thead><tr><th>Time</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="empFinanceTableBody"></tbody></table></div>
                 </div>
             </div>
 
@@ -2870,6 +2897,7 @@
                                 <label><input type="checkbox" id="permMytasks"> My Tasks / Complaints</label>
                                 <label><input type="checkbox" id="permAttendance"> Attendance</label>
                                 <label><input type="checkbox" id="permPayroll"> Payroll</label>
+                                <label><input type="checkbox" id="permAccounts"> Accounts / Income & Expenses</label>
                                 <label><input type="checkbox" id="permResolved"> Resolved Complaints</label>
                                 <label><input type="checkbox" id="permProfile"> My Profile</label>
                             </div>
@@ -3126,7 +3154,7 @@
         let db = null;
         let viewingId = null;
         let financeEditId = null;
-        const DEFAULT_EMPLOYEE_PERMISSIONS = { mytasks: true, attendance: true, payroll: true, resolved: true, profile: true };
+        const DEFAULT_EMPLOYEE_PERMISSIONS = { mytasks: true, attendance: true, payroll: true, accounts: false, resolved: true, profile: true };
         
         const firebaseConfig = {
             apiKey: "AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E",
@@ -3289,7 +3317,7 @@
                     status: 'active',
                     salary: 45000,
                     notes: 'Fiber optic specialist',
-                    permissions: { mytasks: true, attendance: true, payroll: false, resolved: true, profile: true },
+                    permissions: { mytasks: true, attendance: true, payroll: false, accounts: false, resolved: true, profile: true },
                     createdAt: new Date().toISOString()
                 },
                 {
@@ -3303,7 +3331,7 @@
                     status: 'active',
                     salary: 35000,
                     notes: 'Customer relations',
-                    permissions: { mytasks: true, attendance: true, payroll: false, resolved: true, profile: true },
+                    permissions: { mytasks: true, attendance: true, payroll: false, accounts: false, resolved: true, profile: true },
                     createdAt: new Date().toISOString()
                 },
                 {
@@ -3317,7 +3345,7 @@
                     status: 'active',
                     salary: 40000,
                     notes: 'Accounts and billing',
-                    permissions: { mytasks: false, attendance: true, payroll: true, resolved: false, profile: true },
+                    permissions: { mytasks: false, attendance: true, payroll: true, accounts: true, resolved: false, profile: true },
                     createdAt: new Date().toISOString()
                 }
             ];
@@ -3469,8 +3497,8 @@
             if (!currentUser || currentUser.type !== 'employee') return;
             const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser.permissions || {}) };
             const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
-            const tabMap = { mytasks: 0, attendance: 1, payroll: 2, resolved: 3, profile: 4 };
-            const tabIdMap = { mytasks: 'empMyTasksTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
+            const tabMap = { mytasks: 0, attendance: 1, payroll: 2, accounts: 3, resolved: 4, profile: 5 };
+            const tabIdMap = { mytasks: 'empMyTasksTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
 
             Object.entries(tabMap).forEach(([key, index]) => {
                 if (tabButtons[index]) tabButtons[index].classList.toggle('hidden', !permissions[key]);
@@ -4571,8 +4599,8 @@
             document.querySelectorAll('#employeeApp .tab-content').forEach(t => t.classList.remove('active'));
             
             const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
-            const tabMap = { mytasks: 0, attendance: 1, payroll: 2, resolved: 3, profile: 4 };
-            const tabIdMap = { mytasks: 'empMyTasksTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
+            const tabMap = { mytasks: 0, attendance: 1, payroll: 2, accounts: 3, resolved: 4, profile: 5 };
+            const tabIdMap = { mytasks: 'empMyTasksTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
             const btn = tabButtons[tabMap[tab]];
             if (btn) btn.classList.add('active');
             const tabEl = document.getElementById(tabIdMap[tab]);
@@ -4581,6 +4609,7 @@
             if (tab === 'mytasks') refreshEmployeeTasks();
             if (tab === 'attendance') renderEmployeeAttendance();
             if (tab === 'payroll') renderEmployeePayroll();
+            if (tab === 'accounts') renderEmployeeFinance();
             if (tab === 'resolved') refreshEmployeeResolved();
             if (tab === 'profile') refreshEmployeeProfile();
         }
@@ -4966,6 +4995,7 @@ Please update status promptly via CMS.`;
                     document.getElementById('permMytasks').checked = !!perms.mytasks;
                     document.getElementById('permAttendance').checked = !!perms.attendance;
                     document.getElementById('permPayroll').checked = !!perms.payroll;
+                    document.getElementById('permAccounts').checked = !!perms.accounts;
                     document.getElementById('permResolved').checked = !!perms.resolved;
                     document.getElementById('permProfile').checked = !!perms.profile;
                 }
@@ -4975,6 +5005,7 @@ Please update status promptly via CMS.`;
                 document.getElementById('permMytasks').checked = true;
                 document.getElementById('permAttendance').checked = true;
                 document.getElementById('permPayroll').checked = false;
+                document.getElementById('permAccounts').checked = false;
                 document.getElementById('permResolved').checked = true;
                 document.getElementById('permProfile').checked = true;
             }
@@ -5001,6 +5032,7 @@ Please update status promptly via CMS.`;
                 mytasks: document.getElementById('permMytasks').checked,
                 attendance: document.getElementById('permAttendance').checked,
                 payroll: document.getElementById('permPayroll').checked,
+                accounts: document.getElementById('permAccounts').checked,
                 resolved: document.getElementById('permResolved').checked,
                 profile: document.getElementById('permProfile').checked
             };
@@ -5802,6 +5834,94 @@ Half Day: ${halfDay}
             `).join('');
         }
 
+        function getSelectedEmployeeFinanceDate() {
+            const dateInput = document.getElementById('empFinanceDateFilter');
+            if (!dateInput) return financeTodayISO();
+            if (!dateInput.value) dateInput.value = financeTodayISO();
+            return dateInput.value;
+        }
+        let employeeFinanceEditId = null;
+        async function addEmployeeFinanceEntry() {
+            const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser?.permissions || {}) };
+            if (!permissions.accounts) { showToast('You do not have permission for accounts.', 'warning'); return; }
+            const type = document.getElementById('empFinanceType').value;
+            const category = document.getElementById('empFinanceCategory').value;
+            const amount = Number(document.getElementById('empFinanceAmount').value || 0);
+            const note = document.getElementById('empFinanceNote').value.trim();
+            const date = getSelectedEmployeeFinanceDate();
+            if (!amount || amount <= 0) { showToast('Please enter a valid amount', 'error'); return; }
+            if (employeeFinanceEditId) {
+                const idx = dailyFinance.findIndex(item => item.id === employeeFinanceEditId);
+                if (idx === -1) { showToast('Entry not found for editing', 'error'); cancelEmployeeFinanceEdit(); return; }
+                dailyFinance[idx] = { ...dailyFinance[idx], date, type, category, amount, note, updatedBy: currentUser?.name || 'Employee', updatedById: currentUser?.id || '', updatedAt: new Date().toISOString() };
+                await saveFinanceData();
+                cancelEmployeeFinanceEdit(false);
+                renderEmployeeFinance();
+                if (document.getElementById('financeTableBody')) renderDailyFinance();
+                showToast('Account entry updated successfully', 'success');
+                return;
+            }
+            dailyFinance.push({ id: 'FIN-' + Date.now().toString(36).toUpperCase(), date, time: new Date().toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' }), type, category, amount, note, createdBy: currentUser?.name || 'Employee', createdById: currentUser?.id || '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+            await saveFinanceData();
+            document.getElementById('empFinanceAmount').value = '';
+            document.getElementById('empFinanceNote').value = '';
+            renderEmployeeFinance();
+            if (document.getElementById('financeTableBody')) renderDailyFinance();
+            showToast('Account entry added successfully', 'success');
+        }
+        function editEmployeeFinanceEntry(id) {
+            const item = dailyFinance.find(entry => entry.id === id);
+            if (!item) { showToast('Entry not found', 'error'); return; }
+            employeeFinanceEditId = id;
+            document.getElementById('empFinanceType').value = item.type || 'income';
+            document.getElementById('empFinanceCategory').value = item.category || 'Other';
+            document.getElementById('empFinanceAmount').value = item.amount || '';
+            document.getElementById('empFinanceNote').value = item.note || '';
+            const dateInput = document.getElementById('empFinanceDateFilter');
+            if (dateInput && item.date) dateInput.value = item.date;
+            const btn = document.getElementById('empFinanceSubmitBtn');
+            const cancelBtn = document.getElementById('empFinanceCancelEditBtn');
+            if (btn) btn.innerHTML = '<i class="fas fa-save"></i> Update Entry';
+            if (cancelBtn) cancelBtn.classList.remove('hidden');
+            showToast('Edit mode enabled. Update the form and save.', 'info');
+        }
+        function cancelEmployeeFinanceEdit(clearFields = true) {
+            employeeFinanceEditId = null;
+            const btn = document.getElementById('empFinanceSubmitBtn');
+            const cancelBtn = document.getElementById('empFinanceCancelEditBtn');
+            if (btn) btn.innerHTML = '<i class="fas fa-plus"></i> Add Entry';
+            if (cancelBtn) cancelBtn.classList.add('hidden');
+            if (clearFields) { document.getElementById('empFinanceAmount').value = ''; document.getElementById('empFinanceNote').value = ''; }
+        }
+        async function deleteEmployeeFinanceEntry(id) {
+            const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser?.permissions || {}) };
+            if (!permissions.accounts) { showToast('You do not have permission for accounts.', 'warning'); return; }
+            if (!confirm('Delete this income/expense entry?')) return;
+            dailyFinance = dailyFinance.filter(item => item.id !== id);
+            await saveFinanceData();
+            renderEmployeeFinance();
+            if (document.getElementById('financeTableBody')) renderDailyFinance();
+            showToast('Entry deleted', 'info');
+        }
+        function renderEmployeeFinance() {
+            const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser?.permissions || {}) };
+            if (!permissions.accounts) return;
+            const date = getSelectedEmployeeFinanceDate();
+            const { entries, income, expense, balance } = getFinanceSummary(date);
+            const incomeEl = document.getElementById('empFinanceTodayIncome');
+            const expenseEl = document.getElementById('empFinanceTodayExpense');
+            const balanceEl = document.getElementById('empFinanceTodayBalance');
+            const entriesEl = document.getElementById('empFinanceTodayEntries');
+            const tbody = document.getElementById('empFinanceTableBody');
+            if (incomeEl) incomeEl.textContent = formatPKR(income);
+            if (expenseEl) expenseEl.textContent = formatPKR(expense);
+            if (balanceEl) balanceEl.textContent = formatPKR(balance);
+            if (entriesEl) entriesEl.textContent = entries.length;
+            if (!tbody) return;
+            if (!entries.length) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state" style="padding:30px;"><i class="fas fa-wallet"></i><h3>No entries for this date</h3><p>Add income and expenses from this accounts tab.</p></div></td></tr>`; return; }
+            tbody.innerHTML = entries.slice().reverse().map(item => `<tr><td>${item.time || '-'}</td><td><span class="badge ${item.type === 'income' ? 'badge-resolved' : 'badge-escalated'}">${item.type === 'income' ? 'Income' : 'Expense'}</span></td><td>${item.category || '-'}</td><td>${item.note || '-'}</td><td><strong>${formatPKR(item.amount)}</strong></td><td><button class="btn btn-info btn-sm" onclick="viewFinanceEntry('${item.id}')" title="Details"><i class="fas fa-eye"></i></button><button class="btn btn-primary btn-sm" onclick="editEmployeeFinanceEntry('${item.id}')" title="Edit"><i class="fas fa-edit"></i></button><button class="btn btn-danger btn-sm" onclick="deleteEmployeeFinanceEntry('${item.id}')" title="Delete"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+        }
+
         function openDailyReportWhatsApp() {
             const date = getSelectedFinanceDate();
             const report = buildDailyReportText(date);
@@ -5822,6 +5942,8 @@ Half Day: ${halfDay}
         window.addEventListener('load', function() {
             const dateInput = document.getElementById('financeDateFilter');
             if (dateInput && !dateInput.value) dateInput.value = financeTodayISO();
+            const empFinanceDateInput = document.getElementById('empFinanceDateFilter');
+            if (empFinanceDateInput && !empFinanceDateInput.value) empFinanceDateInput.value = financeTodayISO();
 
             const phoneInput = document.getElementById('dailyReportPhone');
             if (phoneInput) phoneInput.value = localStorage.getItem('dailyReportPhone') || '';
