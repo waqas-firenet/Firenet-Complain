@@ -585,6 +585,7 @@
         .badge-resolved { background: #d4edda; color: #155724; }
         .badge-escalated { background: #f8d7da; color: #721c24; }
         .badge-closed { background: #e2e3e5; color: #383d41; }
+        .badge-missed { background: #f8d7da; color: #721c24; border: 1px solid #f5c2c7; }
         .badge-active { background: #d4edda; color: #155724; }
         .badge-inactive { background: #f8d7da; color: #721c24; }
         .badge-admin { background: #e74c3c; color: white; }
@@ -1081,6 +1082,67 @@
         .task-card.resolved {
             border-left-color: var(--success);
             opacity: 0.85;
+        }
+
+
+        /* Technical SLA Countdown + Performance */
+        .sla-box {
+            margin: 12px 0;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            border-left: 4px solid var(--info);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            align-items: center;
+        }
+        .sla-box.warning { border-left-color: var(--warning); background: #fff8e1; }
+        .sla-box.danger { border-left-color: var(--danger); background: #fff1f1; }
+        .sla-item strong {
+            display: block;
+            color: #7f8c8d;
+            font-size: 0.78rem;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+        .sla-item span {
+            font-weight: 800;
+            color: var(--secondary);
+            font-size: 0.98rem;
+        }
+        .sla-countdown {
+            font-size: 1.15rem !important;
+            color: var(--success) !important;
+        }
+        .sla-countdown.sla-warning { color: var(--warning) !important; }
+        .sla-countdown.sla-danger { color: var(--danger) !important; }
+        .sla-performance-card {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 0 0 18px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+        }
+        .sla-performance-card .perf-mini {
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.22);
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .sla-performance-card .perf-mini strong {
+            display:block;
+            font-size:.78rem;
+            opacity:.85;
+            margin-bottom:5px;
+        }
+        .sla-performance-card .perf-mini span {
+            font-size:1.25rem;
+            font-weight:900;
         }
 
         .task-header {
@@ -2017,6 +2079,29 @@
             gap: 8px;
             white-space: nowrap;
         }
+
+        .live-pill.banner-progress {
+            background: #fff7ed;
+            border-color: #fed7aa;
+            color: #9a3412;
+        }
+        .live-pill.banner-timer {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1d4ed8;
+        }
+        .live-pill.banner-danger {
+            background: #fff1f1;
+            border-color: #fecaca;
+            color: #991b1b;
+            animation: softPulse 1.4s infinite;
+        }
+        .live-pill.banner-success {
+            background: #f0fff4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+        @keyframes softPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
         .profile-dropdown { position: relative; }
         .profile-menu-btn {
             background: #f8f9fa;
@@ -2459,7 +2544,8 @@
                         <div class="form-row">
                             <div class="form-group"><label>Employee</label><select id="targetEmployeeSelect" class="form-control"></select></div>
                             <div class="form-group"><label>Department / Target Type</label><select id="targetDepartment" class="form-control" onchange="syncTargetDepartmentUI()"><option value="Accounts">Accounts - Percentage</option><option value="Technical">Technical - Ticket Based</option></select></div>
-                            <div class="form-group"><label>Target Value</label><input type="number" id="targetValue" class="form-control" placeholder="Accounts: 80%, Technical: 20 tickets"></div>
+                            <div class="form-group"><label>Target Percentage / Tickets</label><input type="number" step="0.01" id="targetValue" class="form-control" placeholder="Accounts: 0.2%, Technical: 20 tickets"></div>
+                            <div class="form-group" id="targetBaseAmountGroup"><label>Matching Amount / Base Amount (PKR)</label><input type="number" step="0.01" id="targetBaseAmount" class="form-control" placeholder="Example: 2000"></div>
                             <div class="form-group"><label>Target Month</label><input type="month" id="targetMonth" class="form-control"></div>
                             <div class="form-group full-width"><label>Target Note</label><input type="text" id="targetNote" class="form-control" placeholder="Example: Complete monthly collection target / Resolve assigned technical complaints"></div>
                         </div>
@@ -2963,6 +3049,10 @@
                     <div class="live-banner">
                         <div class="live-pill"><i class="fas fa-calendar-day"></i> <span id="empLiveDate">Today</span></div>
                         <div class="live-pill"><i class="fas fa-clock"></i> <span id="empLiveTime">--:--</span></div>
+                        <div class="live-pill banner-progress"><i class="fas fa-bullseye"></i> <span id="empBannerTargetProgress">Target: 0%</span></div>
+                        <div class="live-pill banner-success"><i class="fas fa-rupee-sign"></i> <span id="empBannerTargetCalculation">PKR: -</span></div>
+                        <div class="live-pill banner-timer" id="empBannerTimerPill"><i class="fas fa-stopwatch"></i> <span id="empBannerTimer">Timer: --</span></div>
+                        <div class="live-pill banner-progress"><i class="fas fa-chart-line"></i> <span id="empBannerPerformance">Performance: 0%</span></div>
                     </div>
                     <div class="profile-dropdown">
                         <button class="profile-menu-btn" onclick="toggleProfileDropdown('empProfileMenu')">
@@ -3035,6 +3125,10 @@
                     <div class="stat-card">
                         <div class="stat-icon resolved"><i class="fas fa-check-circle"></i></div>
                         <div class="stat-info"><h3 id="empResolvedCount">0</h3><p>Resolved</p></div>
+                    </div>
+                    <div class="stat-card" id="empSlaStatCard">
+                        <div class="stat-icon attendance"><i class="fas fa-stopwatch"></i></div>
+                        <div class="stat-info"><h3 id="empSlaScore">0%</h3><p>Time Performance</p></div>
                     </div>
                 </div>
 
@@ -3787,7 +3881,7 @@
             initDefaultComplaintDateFilter();
             initInvoiceProductTables();
             console.log('App ready with Firebase + Firestore');
-            forceFreshLogin();
+            restoreExistingSession();
         });
 
         async function initializeFirebase() {
@@ -3812,7 +3906,12 @@
 
         async function loadAllData() {
             try {
-                currentUser = null;
+                // Keep saved login session on refresh. Do NOT reset currentUser here.
+                // The previous version set currentUser = null during every reload,
+                // which caused the login screen to appear after refresh.
+                const savedSession = localStorage.getItem('firenet_user');
+                currentUser = savedSession ? JSON.parse(savedSession) : null;
+
                 complaints = await loadCollection('complaints');
                 employees = await loadCollection('employees');
                 attendance = await loadCollection('attendance');
@@ -3822,14 +3921,14 @@
                 console.log('Firebase data loaded:', { complaints: complaints.length, employees: employees.length, attendance: attendance.length, payroll: payroll,
                 dailyFinance: dailyFinance.length, finance: dailyFinance.length, user: currentUser });
             } catch (e) {
-                console.error('Error loading Firebase data:', e);
+                console.error('Error loading data:', e);
                 complaints = [];
                 employees = [];
                 attendance = [];
                 payroll = [];
                 dailyFinance = [];
-                currentUser = null;
-                showToast('Could not load Firebase data. Using empty state.', 'warning');
+                try { currentUser = JSON.parse(localStorage.getItem('firenet_user') || 'null'); } catch (_) { currentUser = null; }
+                showToast('Could not load Firebase data. Saved login session was kept if available.', 'warning');
             }
         }
 
@@ -3887,9 +3986,9 @@
             }, error => console.error('Realtime finance error:', error));
         }
 
-        function forceFreshLogin() {
+        function showLoginScreen(clearSavedSession = false) {
             currentUser = null;
-            localStorage.removeItem('firenet_user');
+            if (clearSavedSession) localStorage.removeItem('firenet_user');
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('adminApp').classList.remove('active');
             document.getElementById('employeeApp').classList.remove('active');
@@ -3897,10 +3996,50 @@
             document.getElementById('employeeLoginForm')?.reset();
         }
 
-        function checkExistingSession() {
-            // Auto-login is intentionally disabled. Saved field values or old sessions cannot open the app.
-            forceFreshLogin();
+        function forceFreshLogin() {
+            showLoginScreen(true);
         }
+
+        function restoreExistingSession() {
+            const savedUser = localStorage.getItem('firenet_user');
+            if (!savedUser) {
+                showLoginScreen(false);
+                return;
+            }
+
+            try {
+                currentUser = JSON.parse(savedUser);
+            } catch (e) {
+                showLoginScreen(true);
+                return;
+            }
+
+            if (!validateCurrentSession()) {
+                showLoginScreen(true);
+                return;
+            }
+
+            if (currentUser.type === 'admin') {
+                showAdminApp();
+            } else if (currentUser.type === 'employee') {
+                showEmployeeApp();
+            } else {
+                showLoginScreen(true);
+            }
+        }
+
+        function checkExistingSession() {
+            restoreExistingSession();
+        }
+
+        // Extra safety: after browser refresh, retry session restore once after Firebase snapshots finish.
+        window.addEventListener('load', function() {
+            setTimeout(function(){
+                const saved = localStorage.getItem('firenet_user');
+                const loginVisible = document.getElementById('loginScreen') && document.getElementById('loginScreen').style.display !== 'none';
+                if (saved && loginVisible) restoreExistingSession();
+            }, 800);
+        });
 
         // ==================== DEFAULT DATA ====================
         async function loadDefaultEmployees() {
@@ -3936,19 +4075,29 @@
         }
 
         function validateCurrentSession() {
-            if (!currentUser) return false;
+            // Persistent login fix:
+            // Keep user logged in after page refresh until they press Logout.
+            // Password/PIN changes still update the saved session elsewhere.
+            if (!currentUser || !currentUser.type) return false;
 
             if (currentUser.type === 'admin') {
-                const expected = createSessionToken('admin', 'ADMIN', ADMIN_CREDENTIALS.password);
-                return currentUser.id === 'ADMIN' && currentUser.sessionToken === expected;
+                currentUser = {
+                    ...currentUser,
+                    type: 'admin',
+                    name: currentUser.name || 'Administrator',
+                    id: 'ADMIN',
+                    sessionToken: currentUser.sessionToken || createSessionToken('admin', 'ADMIN', ADMIN_CREDENTIALS.password)
+                };
+                localStorage.setItem('firenet_user', JSON.stringify(currentUser));
+                return true;
             }
 
             if (currentUser.type === 'employee') {
                 const emp = employees.find(e => e.id === currentUser.id);
-                if (!emp || emp.status !== 'active') return false;
-                const expected = createSessionToken('employee', emp.id, emp.pin);
-                if (currentUser.sessionToken !== expected) return false;
-                currentUser = { ...buildEmployeeSession(emp), loginAt: currentUser.loginAt || new Date().toISOString() };
+                // If Firebase/list is temporarily unavailable, do not force logout on refresh.
+                if (!emp) return true;
+                if (emp.status === 'inactive') return false;
+                currentUser = { ...buildEmployeeSession(emp), loginAt: currentUser.loginAt || new Date().toISOString(), impersonatedByAdmin: currentUser.impersonatedByAdmin || false };
                 localStorage.setItem('firenet_user', JSON.stringify(currentUser));
                 return true;
             }
@@ -4028,6 +4177,28 @@
             document.getElementById('employeeLoginForm').reset();
             
             showToast('Logged out successfully!', 'info');
+        }
+
+        function adminLoginAsEmployee(employeeId) {
+            if (!currentUser || currentUser.type !== 'admin') {
+                showToast('Only admin can use Login as Employee.', 'error');
+                return;
+            }
+
+            const employee = employees.find(e => e.id === employeeId);
+            if (!employee) {
+                showToast('Employee not found.', 'error');
+                return;
+            }
+            if (employee.status !== 'active') {
+                showToast('This employee account is inactive.', 'warning');
+                return;
+            }
+
+            currentUser = { ...buildEmployeeSession(employee), impersonatedByAdmin: true };
+            localStorage.setItem('firenet_user', JSON.stringify(currentUser));
+            showEmployeeApp();
+            showToast('Logged in as ' + employee.name + ' from admin portal.', 'success');
         }
 
         // ==================== APP DISPLAY ====================
@@ -4367,7 +4538,7 @@
                     <div class="attendance-detail-card"><strong>Total Complaints</strong><span>${complaints.length}</span></div>
                     <div class="attendance-detail-card"><strong>Total Employees</strong><span>${employees.length}</span></div>
                     <div class="attendance-detail-card"><strong>Targets Assigned</strong><span>${employeeTargets.length}</span></div>
-                    <div class="attendance-detail-card"><strong>Open Complaints</strong><span>${complaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed').length}</span></div>
+                    <div class="attendance-detail-card"><strong>Open Complaints</strong><span>${complaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed').length}</span></div>
                 </div>`;
             } else {
                 const myComplaints = complaints.filter(c => c.handlerId === currentUser.id);
@@ -4402,7 +4573,9 @@
         function syncTargetDepartmentUI() {
             const dept = document.getElementById('targetDepartment')?.value;
             const val = document.getElementById('targetValue');
-            if (val) val.placeholder = dept === 'Accounts' ? 'Example: 80 for 80%' : 'Example: 20 tickets';
+            const baseGroup = document.getElementById('targetBaseAmountGroup');
+            if (val) val.placeholder = dept === 'Accounts' ? 'Example: 0.2 for 0.2%' : 'Example: 20 tickets';
+            if (baseGroup) baseGroup.style.display = dept === 'Accounts' ? 'block' : 'none';
         }
 
         function updateTargetSelectors() {
@@ -4413,8 +4586,58 @@
             syncTargetDepartmentUI();
         }
 
+        function getTargetMonthRange(monthValue) {
+            const fallback = new Date().toISOString().slice(0, 7);
+            const value = monthValue || fallback;
+            const [year, month] = value.split('-').map(Number);
+            const start = new Date(year, (month || 1) - 1, 1, 0, 0, 0, 0);
+            const end = new Date(year, month || 1, 0, 23, 59, 59, 999);
+            return { start, end };
+        }
+
+        function getMonthRemainingMs(monthValue) {
+            const { end } = getTargetMonthRange(monthValue);
+            return end.getTime() - Date.now();
+        }
+
+        function getAccountsAchievedAmount(t) {
+            if (!t || t.department !== 'Accounts') return 0;
+            const { start, end } = getTargetMonthRange(t.month);
+            const empId = t.employeeId;
+            return (dailyFinance || [])
+                .filter(item => {
+                    const d = new Date(item.date || item.createdAt || 0);
+                    return item.type === 'income' &&
+                        item.createdById === empId &&
+                        !isOnlineFinanceEntry(item) &&
+                        d >= start && d <= end;
+                })
+                .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+        }
+
+        function calculateAccountsCommissionPKR(t) {
+            if (!t || t.department !== 'Accounts') return 0;
+            return (getAccountsAchievedAmount(t) * Number(t.value || 0)) / 100;
+        }
+
+        function calculateAccountsTargetPKR(t) {
+            if (!t || t.department !== 'Accounts') return 0;
+            const baseAmount = Number(t.baseAmount || t.matchingAmount || 0);
+            const percent = Number(t.value || 0);
+            return (baseAmount * percent) / 100;
+        }
+
+        function formatAccountsTargetCalculation(t) {
+            if (!t || t.department !== 'Accounts') return '';
+            const baseAmount = Number(t.baseAmount || t.matchingAmount || 0);
+            const percent = Number(t.value || 0);
+            const calculated = calculateAccountsTargetPKR(t);
+            if (!baseAmount) return `${percent}% collection target`;
+            return `${formatPKR(baseAmount)} × ${percent}% = ${formatPKR(calculated)}`;
+        }
+
         function formatEmployeeTargetValue(t) {
-            return t.department === 'Accounts' ? `${t.value}% collection target` : `${t.value} tickets target`;
+            return t.department === 'Accounts' ? `${t.value}% target${Number(t.baseAmount || t.matchingAmount || 0) ? ' | ' + formatAccountsTargetCalculation(t) : ''}` : `${t.value} tickets target`;
         }
 
         function calculateTargetProgress(t) {
@@ -4423,7 +4646,9 @@
                 const completed = complaints.filter(c => c.handlerId === t.employeeId && (c.status === 'Resolved' || c.status === 'Closed')).length;
                 return Math.min(100, Math.round((completed / Math.max(Number(t.value) || 1, 1)) * 100));
             }
-            return Math.min(100, Math.max(0, Number(t.progress || 0)));
+            const targetAmount = Number(t.baseAmount || t.matchingAmount || 0);
+            const achievedAmount = getAccountsAchievedAmount(t);
+            return targetAmount ? Math.min(100, Math.round((achievedAmount / targetAmount) * 100)) : 0;
         }
 
         function assignEmployeeTarget() {
@@ -4431,12 +4656,15 @@
             const emp = employees.find(e => e.id === employeeId);
             const department = document.getElementById('targetDepartment')?.value || 'Accounts';
             const value = Number(document.getElementById('targetValue')?.value) || 0;
+            const baseAmount = Number(document.getElementById('targetBaseAmount')?.value) || 0;
             const month = document.getElementById('targetMonth')?.value || new Date().toISOString().slice(0,7);
             const note = document.getElementById('targetNote')?.value.trim() || '';
             if (!emp || value <= 0) { showToast('Please select employee and enter valid target value.', 'error'); return; }
-            employeeTargets.push({ id: 'TGT-' + Date.now().toString(36).toUpperCase(), employeeId, employeeName: emp.name, department, value, month, note, progress: 0, createdAt: new Date().toISOString() });
+            if (department === 'Accounts' && baseAmount <= 0) { showToast('Please enter matching/base amount in PKR for accounts target.', 'error'); return; }
+            employeeTargets.push({ id: 'TGT-' + Date.now().toString(36).toUpperCase(), employeeId, employeeName: emp.name, department, value, baseAmount, month, note, progress: 0, createdAt: new Date().toISOString() });
             saveEmployeeTargetsLocal();
             document.getElementById('targetValue').value = '';
+            const baseAmountInput = document.getElementById('targetBaseAmount'); if (baseAmountInput) baseAmountInput.value = '';
             document.getElementById('targetNote').value = '';
             renderAdminTargets();
             showToast('Target assigned successfully!', 'success');
@@ -4449,15 +4677,6 @@
             renderAdminTargets();
             renderEmployeeTargets();
             showToast('Target deleted.', 'info');
-        }
-
-        function updateMyAccountsTargetProgress(targetId) {
-            const value = Number(document.getElementById('empAccountProgress_' + targetId)?.value);
-            if (isNaN(value) || value < 0 || value > 100) { showToast('Enter progress between 0 and 100.', 'error'); return; }
-            employeeTargets = employeeTargets.map(t => t.id === targetId ? { ...t, progress: value, updatedAt: new Date().toISOString() } : t);
-            saveEmployeeTargetsLocal();
-            renderEmployeeTargets();
-            showToast('Target progress updated.', 'success');
         }
 
         function renderAdminTargets() {
@@ -4496,6 +4715,7 @@
             document.getElementById('empTargetTickets').textContent = resolvedTickets;
             document.getElementById('empTargetProgress').textContent = latest ? calculateTargetProgress(latest) + '%' : '0%';
             document.getElementById('empTargetType').textContent = latest ? latest.department : '-';
+            updateEmployeeDashboardBanner();
             if (!myTargets.length) {
                 list.innerHTML = `<div class="empty-state"><i class="fas fa-bullseye"></i><h3>No target assigned yet</h3><p>Admin can assign percentage target for accounts or ticket-based target for technical department.</p></div>`;
                 return;
@@ -4506,8 +4726,9 @@
                 return `<div class="target-card ${isAccounts ? 'accounts' : 'technical'}">
                     <div class="task-header"><div><div class="task-title"><i class="fas fa-bullseye"></i> ${formatEmployeeTargetValue(t)}</div><div class="task-meta"><span><i class="fas fa-calendar"></i> ${t.month || '-'}</span><span><i class="fas fa-building"></i> ${t.department}</span></div></div><span class="badge ${isAccounts ? 'badge-paid' : 'badge-in-progress'}">${progress}%</span></div>
                     <p style="color:#7f8c8d;margin:10px 0;">${t.note || 'No note added by admin.'}</p>
+                    ${isAccounts ? `<div class="notice" style="margin:12px 0;background:#f0fff4;border-left:4px solid var(--finance);"><strong>PKR Calculation:</strong> ${formatAccountsTargetCalculation(t)}<br><small>Example: 2000 ka 0.2% = Rs. 4</small></div>` : ''}
                     <div class="target-progress-box" style="width:100%;height:14px;"><div class="target-progress-fill" style="width:${progress}%"></div></div>
-                    ${isAccounts ? `<div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;"><input type="number" id="empAccountProgress_${t.id}" class="form-control" placeholder="Update percentage 0-100" min="0" max="100" value="${t.progress || 0}" style="max-width:240px;"><button class="btn btn-primary" onclick="updateMyAccountsTargetProgress('${t.id}')"><i class="fas fa-save"></i> Update Progress</button></div>` : `<div class="notice" style="margin-top:12px;">Ticket progress auto updates from your Resolved / Closed complaints. Resolved tickets: <strong>${resolvedTickets}</strong></div>`}
+                    ${isAccounts ? `<div class="notice" style="margin-top:12px;">Progress auto updates from your OFFLINE income entries only. Online payments are not included in target. Collected: <strong>${formatPKR(getAccountsAchievedAmount(t))}</strong> / Target Amount: <strong>${formatPKR(Number(t.baseAmount || t.matchingAmount || 0))}</strong>. Commission/Reward: <strong>${formatPKR(calculateAccountsCommissionPKR(t))}</strong></div>` : `<div class="notice" style="margin-top:12px;">Ticket progress auto updates from your Resolved / Closed complaints. Resolved tickets: <strong>${resolvedTickets}</strong></div>`}
                 </div>`;
             }).join('');
         }
@@ -4562,6 +4783,7 @@
                     <td><span style="font-weight: 700; color: var(--info);">${assignedCount}</span> active</td>
                     <td>
                         <div class="action-btns">
+                            <button class="btn btn-success btn-sm" onclick="adminLoginAsEmployee('${e.id}')" title="Login as Employee"><i class="fas fa-right-to-bracket"></i> Login</button>
                             <button class="btn btn-primary btn-sm" onclick="openEmployeeModal('${e.id}')" title="Edit"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-whatsapp btn-sm" onclick="whatsappEmployee('${e.id}')" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
                             <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${e.id}')" title="Delete"><i class="fas fa-trash"></i></button>
@@ -5100,9 +5322,11 @@
             const daysInMonth = new Date(year, month, 0).getDate();
             const attendanceScore = Math.min(100, Math.round(((present + (halfDays * 0.5) + (leave * 0.25)) / daysInMonth) * 100));
             const completionScore = records.length ? Math.round((completed / records.length) * 100) : 0;
+            const timelyResolved = complaints.filter(c => c.handlerId === employeeId && (c.status === 'Resolved' || c.status === 'Closed') && c.resolvedWithinSla !== false && new Date(c.updatedAt || c.createdAt).getMonth() + 1 === month && new Date(c.updatedAt || c.createdAt).getFullYear() === year).length;
             const workScore = Math.min(100, resolved * 10);
-            const score = Math.round((attendanceScore * 0.55) + (completionScore * 0.25) + (workScore * 0.20));
-            return { score, present, halfDays, leave, completed, resolved };
+            const timeScore = resolved ? Math.round((timelyResolved / resolved) * 100) : 0;
+            const score = Math.round((attendanceScore * 0.45) + (completionScore * 0.20) + (workScore * 0.20) + (timeScore * 0.15));
+            return { score, present, halfDays, leave, completed, resolved, timelyResolved };
         }
 
         function renderMonthlyProgressGraph(year = new Date().getFullYear()) {
@@ -5313,6 +5537,10 @@
             
             ADMIN_CREDENTIALS.password = newPassword;
             localStorage.setItem('firenet_admin_creds', JSON.stringify(ADMIN_CREDENTIALS));
+            if (currentUser && currentUser.type === 'admin') {
+                currentUser.sessionToken = createSessionToken('admin', 'ADMIN', ADMIN_CREDENTIALS.password);
+                localStorage.setItem('firenet_user', JSON.stringify(currentUser));
+            }
             
             closeAdminPasswordModal();
             showToast('Admin password changed successfully!', 'success');
@@ -5393,29 +5621,242 @@
             renderEmployeePayroll();
         }
 
+
+        function getTodayAttendanceForEmployee(employeeId) {
+            const today = new Date().toISOString().split('T')[0];
+            return attendance.find(a => a.employeeId === employeeId && a.date === today);
+        }
+
+        function combineDateAndTime(dateStr, timeStr) {
+            if (!dateStr || !timeStr) return null;
+            const [h, m] = String(timeStr).split(':').map(Number);
+            if (Number.isNaN(h) || Number.isNaN(m)) return null;
+            const d = new Date(dateStr + 'T00:00:00');
+            d.setHours(h, m, 0, 0);
+            return d;
+        }
+
+        function getTechnicalSlaMinutes(activeCount) {
+            const count = Math.max(1, Number(activeCount) || 1);
+            const todayAtt = currentUser ? getTodayAttendanceForEmployee(currentUser.id) : null;
+            const punchStart = todayAtt ? combineDateAndTime(todayAtt.date, todayAtt.checkIn) : null;
+            const shiftMinutes = 8 * 60;
+            const base = punchStart ? Math.floor(shiftMinutes / count) : 120;
+            return Math.max(30, base);
+        }
+
+        function getComplaintSlaInfo(complaint, index, activeCount) {
+            const todayAtt = currentUser ? getTodayAttendanceForEmployee(currentUser.id) : null;
+            const punchStart = todayAtt ? combineDateAndTime(todayAtt.date, todayAtt.checkIn) : null;
+            const created = new Date(complaint.createdAt || complaint.assignedAt || Date.now());
+            const start = punchStart && punchStart > created ? punchStart : created;
+            const perComplaintMinutes = getTechnicalSlaMinutes(activeCount);
+            const deadline = new Date(start.getTime() + perComplaintMinutes * 60 * 1000);
+            const remainingMs = deadline.getTime() - Date.now();
+            const totalMs = perComplaintMinutes * 60 * 1000;
+            const usedPercent = Math.max(0, Math.min(100, Math.round(((totalMs - remainingMs) / totalMs) * 100)));
+            return { start, deadline, remainingMs, perComplaintMinutes, usedPercent };
+        }
+
+        function formatRemaining(ms) {
+            const overdue = ms < 0;
+            const total = Math.abs(Math.floor(ms / 1000));
+            const h = Math.floor(total / 3600);
+            const m = Math.floor((total % 3600) / 60);
+            const s = total % 60;
+            const text = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            return overdue ? `Overdue ${text}` : text;
+        }
+
+
+        function getEmployeeBannerTargetInfo(employeeId = currentUser?.id) {
+            const myTargets = employeeTargets.filter(t => t.employeeId === employeeId);
+            const latest = myTargets[myTargets.length - 1];
+            if (!latest) return { latest: null, progress: 0, calc: 'PKR: -', targetText: 'Target: 0%' };
+            const progress = calculateTargetProgress(latest);
+            if (latest.department === 'Accounts') {
+                const baseAmount = Number(latest.baseAmount || latest.matchingAmount || 0);
+                const commissionPercent = Number(latest.value || 0);
+                const achievedAmount = getAccountsAchievedAmount(latest);
+                const commissionPKR = calculateAccountsCommissionPKR(latest);
+                const targetPKR = calculateAccountsTargetPKR(latest);
+                return {
+                    latest,
+                    progress,
+                    calc: baseAmount ? `Offline: ${formatPKR(achievedAmount)} / ${formatPKR(baseAmount)} | ${commissionPercent}% = ${formatPKR(commissionPKR)} of ${formatPKR(targetPKR)}` : 'PKR: -',
+                    targetText: `Target Progress: ${progress}%`
+                };
+            }
+            return {
+                latest,
+                progress,
+                calc: `Resolved: ${complaints.filter(c => c.handlerId === employeeId && (c.status === 'Resolved' || c.status === 'Closed')).length}/${latest.value || 0}`,
+                targetText: `Ticket Progress: ${progress}%`
+            };
+        }
+
+        function updateEmployeeDashboardBanner() {
+            if (!currentUser || currentUser.type !== 'employee') return;
+            const targetInfo = getEmployeeBannerTargetInfo(currentUser.id);
+            const targetEl = document.getElementById('empBannerTargetProgress');
+            const calcEl = document.getElementById('empBannerTargetCalculation');
+            const timerEl = document.getElementById('empBannerTimer');
+            const perfEl = document.getElementById('empBannerPerformance');
+            const timerPill = document.getElementById('empBannerTimerPill');
+            if (targetEl) targetEl.textContent = targetInfo.targetText;
+            if (calcEl) calcEl.textContent = targetInfo.calc;
+
+            const isTechnical = String(currentUser.department || currentUser.role || '').toLowerCase().includes('tech');
+            if (isTechnical) {
+                const activeComplaints = complaints.filter(c => c.handlerId === currentUser.id && c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed')
+                    .sort((a,b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+                if (activeComplaints.length) {
+                    const times = activeComplaints.map((c, index) => getComplaintSlaInfo(c, index, activeComplaints.length));
+                    const nearest = times.sort((a,b) => a.remainingMs - b.remainingMs)[0];
+                    if (timerEl) timerEl.textContent = `Next Timer: ${formatRemaining(nearest.remainingMs)}`;
+                    if (timerPill) {
+                        timerPill.classList.toggle('banner-danger', nearest.remainingMs < 0);
+                        timerPill.classList.toggle('banner-timer', nearest.remainingMs >= 0);
+                    }
+                } else {
+                    if (timerEl) timerEl.textContent = 'Timer: No active complaint';
+                    if (timerPill) {
+                        timerPill.classList.remove('banner-danger');
+                        timerPill.classList.add('banner-timer');
+                    }
+                }
+                const perf = calculateTechnicalTimePerformance(currentUser.id);
+                if (perfEl) perfEl.textContent = `Performance: ${perf.score}%`;
+            } else {
+                // Accounts staff: no monthly countdown in banner. Timer is only for active technical complaints.
+                if (timerEl) timerEl.textContent = 'Timer: Only active complaint';
+                if (timerPill) {
+                    timerPill.classList.remove('banner-danger');
+                    timerPill.classList.add('banner-timer');
+                }
+                if (perfEl) perfEl.textContent = `Performance: ${targetInfo.progress}%`;
+            }
+        }
+
+        function markComplaintMissed(complaint, reason = 'SLA expired') {
+            if (!complaint || complaint.status === 'Resolved' || complaint.status === 'Closed' || complaint.status === 'Missed') return false;
+            complaint.status = 'Missed';
+            complaint.missedAt = new Date().toISOString();
+            complaint.updatedAt = new Date().toISOString();
+            complaint.missReason = reason;
+            complaint.resolvedWithinSla = false;
+            complaint.history = complaint.history || [];
+            complaint.history.push({
+                time: new Date().toISOString(),
+                action: `Complaint marked Missed/Overdue automatically because SLA countdown expired`,
+                status: 'Missed',
+                updatedBy: currentUser?.id || 'system'
+            });
+            return true;
+        }
+
+        async function autoMarkExpiredTechnicalComplaints(employeeId = currentUser?.id) {
+            if (!employeeId) return 0;
+            const activeComplaints = complaints.filter(c => c.handlerId === employeeId && c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed')
+                .sort((a,b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+            let changed = 0;
+            activeComplaints.forEach((c, index) => {
+                const info = getComplaintSlaInfo(c, index, activeComplaints.length || 1);
+                if (info.remainingMs < 0 && markComplaintMissed(c)) changed++;
+            });
+            if (changed) {
+                await saveComplaints();
+                showToast(`${changed} complaint${changed > 1 ? 's' : ''} marked Missed/Overdue due to expired countdown.`, 'warning');
+            }
+            return changed;
+        }
+
+        function calculateTechnicalTimePerformance(employeeId = currentUser?.id) {
+            if (!employeeId) return { score: 0, active: 0, overdue: 0, resolvedToday: 0, onTime: 0 };
+            const today = new Date().toISOString().split('T')[0];
+            const myActive = complaints.filter(c => c.handlerId === employeeId && c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed');
+            const myResolvedToday = complaints.filter(c => c.handlerId === employeeId && (c.status === 'Resolved' || c.status === 'Closed') && String(c.resolvedAt || c.updatedAt || '').startsWith(today));
+            const myMissedToday = complaints.filter(c => c.handlerId === employeeId && c.status === 'Missed' && String(c.missedAt || c.updatedAt || '').startsWith(today));
+            const activeCount = myActive.length;
+            const overdue = myActive.filter((c, i) => getComplaintSlaInfo(c, i, activeCount).remainingMs < 0).length + myMissedToday.length;
+            const onTime = myResolvedToday.filter(c => c.resolvedWithinSla !== false).length;
+            const totalToday = myResolvedToday.length + activeCount + myMissedToday.length;
+            const resolveScore = totalToday ? Math.round((myResolvedToday.length / totalToday) * 60) : 0;
+            const onTimeScore = myResolvedToday.length ? Math.round((onTime / myResolvedToday.length) * 30) : 0;
+            const overduePenalty = overdue * 10;
+            const score = Math.max(0, Math.min(100, resolveScore + onTimeScore + 10 - overduePenalty));
+            return { score, active: activeCount, overdue, missedToday: myMissedToday.length, resolvedToday: myResolvedToday.length, onTime };
+        }
+
+        function renderLiveSlaCountdowns() {
+            document.querySelectorAll('[data-sla-complaint]').forEach(el => {
+                const id = el.getAttribute('data-sla-complaint');
+                const index = Number(el.getAttribute('data-sla-index') || 0);
+                const activeCount = Number(el.getAttribute('data-sla-active') || 1);
+                const c = complaints.find(x => x.id === id);
+                if (!c) return;
+                const info = getComplaintSlaInfo(c, index, activeCount);
+                el.textContent = formatRemaining(info.remainingMs);
+                el.classList.toggle('sla-danger', info.remainingMs < 0);
+                el.classList.toggle('sla-warning', info.remainingMs >= 0 && info.remainingMs < 30 * 60 * 1000);
+                const box = el.closest('.sla-box');
+                if (box) {
+                    box.classList.toggle('danger', info.remainingMs < 0);
+                    box.classList.toggle('warning', info.remainingMs >= 0 && info.remainingMs < 30 * 60 * 1000);
+                }
+            });
+            const scoreEl = document.getElementById('empSlaScore');
+            if (scoreEl && currentUser?.type === 'employee') {
+                scoreEl.textContent = calculateTechnicalTimePerformance().score + '%';
+            }
+            updateEmployeeDashboardBanner();
+        }
+
         function refreshEmployeeTasks() {
             const myComplaints = complaints.filter(c => c.handlerId === currentUser.id);
-            const activeComplaints = myComplaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed');
+            const activeComplaints = myComplaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed')
+                .sort((a,b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+            const perf = calculateTechnicalTimePerformance(currentUser.id);
+            const isTechnical = String(currentUser.department || currentUser.role || '').toLowerCase().includes('tech');
+            const slaMinutes = getTechnicalSlaMinutes(activeComplaints.length);
+            const todayAtt = getTodayAttendanceForEmployee(currentUser.id);
+            const punchText = todayAtt?.checkIn ? todayAtt.checkIn : 'Not punched today';
             
             document.getElementById('empTotalAssigned').textContent = myComplaints.length;
             document.getElementById('empPendingCount').textContent = activeComplaints.filter(c => c.status === 'Pending').length;
             document.getElementById('empInProgressCount').textContent = activeComplaints.filter(c => c.status === 'In Progress').length;
             document.getElementById('empResolvedCount').textContent = myComplaints.filter(c => c.status === 'Resolved').length;
             document.getElementById('empTaskCount').textContent = activeComplaints.length;
+            const scoreEl = document.getElementById('empSlaScore');
+            if (scoreEl) scoreEl.textContent = perf.score + '%';
+            updateEmployeeDashboardBanner();
 
             const container = document.getElementById('empTasksList');
+            const perfCard = isTechnical ? `
+                <div class="sla-performance-card">
+                    <div class="perf-mini"><strong>Punched Time</strong><span>${punchText}</span></div>
+                    <div class="perf-mini"><strong>Active Complaints</strong><span>${activeComplaints.length}</span></div>
+                    <div class="perf-mini"><strong>Allowed Time / Complaint</strong><span>${slaMinutes} min</span></div>
+                    <div class="perf-mini"><strong>Overdue</strong><span>${perf.overdue}</span></div>
+                    <div class="perf-mini"><strong>Today Resolved</strong><span>${perf.resolvedToday}</span></div>
+                    <div class="perf-mini"><strong>Performance</strong><span>${perf.score}%</span></div>
+                </div>` : '';
             
             if (activeComplaints.length === 0) {
-                container.innerHTML = `
+                container.innerHTML = perfCard + `
                     <div class="empty-state" style="background: white; border-radius: 15px; padding: 60px;">
                         <i class="fas fa-clipboard-check"></i>
                         <h3>All Caught Up!</h3>
                         <p>You have no active tasks. Great job!</p>
                     </div>`;
+                renderLiveSlaCountdowns();
                 return;
             }
 
-            container.innerHTML = activeComplaints.map(c => `
+            container.innerHTML = perfCard + activeComplaints.map((c, index) => {
+                const sla = getComplaintSlaInfo(c, index, activeComplaints.length);
+                const dangerClass = sla.remainingMs < 0 ? 'danger' : (sla.remainingMs < 30 * 60 * 1000 ? 'warning' : '');
+                return `
                 <div class="task-card">
                     <div class="task-header">
                         <div>
@@ -5431,6 +5872,14 @@
                             <i class="fab fa-whatsapp"></i>
                         </button>
                     </div>
+
+                    ${isTechnical ? `
+                    <div class="sla-box ${dangerClass}">
+                        <div class="sla-item"><strong>Countdown</strong><span class="sla-countdown" data-sla-complaint="${c.id}" data-sla-index="${index}" data-sla-active="${activeComplaints.length}">${formatRemaining(sla.remainingMs)}</span></div>
+                        <div class="sla-item"><strong>Time Per Complaint</strong><span>${sla.perComplaintMinutes} min</span></div>
+                        <div class="sla-item"><strong>Deadline</strong><span>${sla.deadline.toLocaleTimeString('en-PK', {hour:'2-digit', minute:'2-digit'})}</span></div>
+                        <div class="sla-item"><strong>Used Time</strong><span>${sla.usedPercent}%</span></div>
+                    </div>` : ''}
                     
                     <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                         <div style="font-weight: 600; color: var(--secondary); margin-bottom: 8px;">
@@ -5456,8 +5905,9 @@
                         <button class="btn btn-info btn-sm" onclick="viewComplaint('${c.id}')"><i class="fas fa-eye"></i> Details</button>
                         <button class="btn btn-whatsapp btn-sm" onclick="sendClientUpdate('${c.id}')"><i class="fab fa-whatsapp"></i> Client</button>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
+            renderLiveSlaCountdowns();
         }
 
         function refreshEmployeeResolved() {
@@ -5507,8 +5957,18 @@
             if (!complaint) return;
             
             const oldStatus = complaint.status;
+            const activeComplaints = complaints.filter(c => c.handlerId === currentUser.id && c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed')
+                .sort((a,b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+            const complaintIndex = Math.max(0, activeComplaints.findIndex(c => c.id === complaintId));
+            const slaInfo = getComplaintSlaInfo(complaint, complaintIndex, activeComplaints.length || 1);
             complaint.status = newStatus;
             complaint.updatedAt = new Date().toISOString();
+            if (newStatus === 'Resolved' || newStatus === 'Closed') {
+                complaint.resolvedAt = new Date().toISOString();
+                complaint.slaDeadlineAt = slaInfo.deadline.toISOString();
+                complaint.resolvedWithinSla = new Date(complaint.resolvedAt).getTime() <= slaInfo.deadline.getTime();
+                complaint.resolveMinutes = Math.max(0, Math.round((new Date(complaint.resolvedAt).getTime() - new Date(complaint.assignedAt || complaint.createdAt).getTime()) / 60000));
+            }
             complaint.history.push({
                 time: new Date().toISOString(),
                 action: `Status updated by ${currentUser.name} from ${oldStatus} to ${newStatus}`,
@@ -5709,6 +6169,7 @@ Please update status promptly via CMS.`;
                 preferredDate: prefDate,
                 preferredTime: prefTime,
                 createdAt: id ? (complaints.find(c => c.id === id)?.createdAt || now.toISOString()) : now.toISOString(),
+                assignedAt: id ? (complaints.find(c => c.id === id)?.assignedAt || complaints.find(c => c.id === id)?.createdAt || now.toISOString()) : now.toISOString(),
                 updatedAt: now.toISOString(),
                 history: id ? complaints.find(c => c.id === id)?.history || [] : [],
                 source: complaintOpenedByEmployee ? 'Employee Portal' : (id ? (complaints.find(c => c.id === id)?.source || 'Admin') : 'Admin'),
@@ -7371,6 +7832,16 @@ ${dailyRows}
             window.open(url, '_blank');
         }
 
+
+        setInterval(() => {
+            try {
+                if (document.getElementById('employeeApp')?.classList.contains('active') && currentUser?.type === 'employee') {
+                    renderLiveSlaCountdowns();
+                    autoMarkExpiredTechnicalComplaints();
+                    updateEmployeeDashboardBanner();
+                }
+            } catch (e) {}
+        }, 1000);
     </script>
 </body>
 </html>
