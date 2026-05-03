@@ -1496,6 +1496,244 @@
         }
 
 
+        /* Invoice / Work Slip Product Rows */
+        .invoice-products-wrap {
+            grid-column: 1 / -1;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .invoice-products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .invoice-products-header h4 {
+            color: var(--secondary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .invoice-product-table {
+            min-width: 650px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .invoice-product-table th,
+        .invoice-product-table td {
+            padding: 10px;
+            vertical-align: middle;
+        }
+        .invoice-product-table input {
+            width: 100%;
+            min-width: 0;
+            padding: 9px 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+        }
+        .invoice-totals-box {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-left: 4px solid var(--primary);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .invoice-total-item strong {
+            display: block;
+            color: #7f8c8d;
+            font-size: 0.82rem;
+            margin-bottom: 4px;
+        }
+        .invoice-total-item span {
+            color: var(--secondary);
+            font-weight: 800;
+            font-size: 1.05rem;
+        }
+
+
+        /* Invoice Mobile Friendly UI */
+        .invoice-table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .invoice-actions-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 640px) {
+            #adminInvoiceTab .main-card,
+            #empInvoiceTab .main-card {
+                border-radius: 14px;
+                overflow: hidden;
+            }
+
+            #adminInvoiceTab .quick-finance-form,
+            #empInvoiceTab .quick-finance-form {
+                padding: 14px;
+            }
+
+            #adminInvoiceTab .form-row,
+            #empInvoiceTab .form-row {
+                gap: 14px;
+            }
+
+            #adminInvoiceTab .card-header,
+            #empInvoiceTab .card-header {
+                gap: 12px;
+            }
+
+            #adminInvoiceTab .card-header .btn,
+            #empInvoiceTab .card-header .btn,
+            #adminInvoiceTab .quick-finance-form > .btn,
+            #empInvoiceTab .quick-finance-form > .btn {
+                width: 100%;
+                justify-content: center;
+                min-height: 46px;
+            }
+
+            .invoice-products-wrap {
+                padding: 12px;
+                border-radius: 14px;
+                background: #ffffff;
+                box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            }
+
+            .invoice-products-header {
+                align-items: stretch;
+            }
+
+            .invoice-products-header h4 {
+                width: 100%;
+                font-size: 1rem;
+                line-height: 1.25;
+            }
+
+            .invoice-products-header .btn {
+                width: 100%;
+                justify-content: center;
+                min-height: 44px;
+            }
+
+            .invoice-table-scroll {
+                overflow: visible;
+            }
+
+            .invoice-product-table {
+                min-width: 0;
+                width: 100%;
+                background: transparent;
+                border-spacing: 0 12px;
+                border-collapse: separate;
+            }
+
+            .invoice-product-table thead {
+                display: none;
+            }
+
+            .invoice-product-table,
+            .invoice-product-table tbody,
+            .invoice-product-table tr,
+            .invoice-product-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .invoice-product-table tr {
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                border-radius: 14px;
+                padding: 12px;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            }
+
+            .invoice-product-table td {
+                border: 0;
+                padding: 7px 0;
+            }
+
+            .invoice-product-table td::before {
+                content: attr(data-label);
+                display: block;
+                color: #7f8c8d;
+                font-size: 0.78rem;
+                font-weight: 800;
+                margin-bottom: 5px;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+            }
+
+            .invoice-product-table input {
+                min-height: 44px;
+                font-size: 1rem;
+                background: #fff;
+            }
+
+            .invoice-product-table .btn-danger {
+                width: 100%;
+                justify-content: center;
+                min-height: 42px;
+            }
+
+            .invoice-item-total {
+                display: block;
+                background: #fff;
+                border: 1px dashed #dfe6e9;
+                border-radius: 10px;
+                padding: 12px;
+                color: var(--primary);
+                font-size: 1.05rem;
+            }
+
+            .invoice-totals-box {
+                grid-template-columns: 1fr;
+                padding: 12px;
+                gap: 10px;
+                border-left: 0;
+                border-top: 4px solid var(--primary);
+            }
+
+            .invoice-total-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                background: #f8f9fa;
+                border-radius: 10px;
+                padding: 12px;
+            }
+
+            .invoice-total-item strong {
+                margin-bottom: 0;
+            }
+
+            .invoice-total-item span {
+                font-size: 1.1rem;
+                text-align: right;
+            }
+
+            #simpleInvoicePreview,
+            #empSimpleInvoicePreview {
+                font-size: 0.88rem;
+                line-height: 1.55;
+                overflow-x: auto;
+                max-width: 100%;
+            }
+        }
+
+
         /* ==================== MOBILE MULTI-SCREEN UI FIX ==================== */
         @media (max-width: 992px) {
             body {
@@ -1778,14 +2016,14 @@
                 </div>
 
                 <!-- Admin Login -->
-                <form class="login-form active" id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                <form class="login-form active" id="adminLoginForm" onsubmit="handleAdminLogin(event)" autocomplete="off">
                     <div class="form-group">
                         <label><i class="fas fa-user"></i> Username</label>
-                        <input type="text" id="adminUsername" placeholder="Enter admin username" required>
+                        <input type="text" id="adminUsername" placeholder="Enter admin username" required autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-lock"></i> Password</label>
-                        <input type="password" id="adminPassword" placeholder="Enter password" required>
+                        <input type="password" id="adminPassword" placeholder="Enter password" required autocomplete="new-password">
                     </div>
                     <button type="submit" class="login-btn">
                         <i class="fas fa-sign-in-alt"></i> Login as Admin
@@ -1793,14 +2031,14 @@
                 </form>
 
                 <!-- Employee Login -->
-                <form class="login-form" id="employeeLoginForm" onsubmit="handleEmployeeLogin(event)">
+                <form class="login-form" id="employeeLoginForm" onsubmit="handleEmployeeLogin(event)" autocomplete="off">
                     <div class="form-group">
                         <label><i class="fas fa-phone"></i> Registered Phone Number</label>
-                        <input type="tel" id="employeePhone" placeholder="03XX-XXXXXXX" required>
+                        <input type="tel" id="employeePhone" placeholder="03XX-XXXXXXX" required autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-key"></i> PIN Code</label>
-                        <input type="password" id="employeePin" placeholder="Enter your 4-digit PIN" maxlength="4" required>
+                        <input type="password" id="employeePin" placeholder="Enter your 4-digit PIN" maxlength="4" required autocomplete="new-password">
                     </div>
                     <button type="submit" class="login-btn">
                         <i class="fas fa-sign-in-alt"></i> Login as Employee
@@ -1808,10 +2046,9 @@
                 </form>
 
                 <div class="login-footer">
-                    <p><strong>Default Admin:</strong> username "admin" / password "admin123"</p>
-                    <p style="margin-top: 5px;"><strong>Employees:</strong> Use registered phone + PIN</p>
+                    <p><strong>Secure Login:</strong> Enter your authorized username/password or registered employee phone/PIN.</p>
                     <p style="margin-top: 10px; color: var(--primary);">
-                        <i class="fas fa-info-circle"></i> Data is saved permanently in your browser
+                        <i class="fas fa-info-circle"></i> Login now requires pressing the Login button every time.
                     </p>
                 </div>
             </div>
@@ -1858,6 +2095,9 @@
                 </button>
                 <button class="nav-tab" onclick="switchAdminTab('attendance')">
                     <i class="fas fa-calendar-check"></i> Attendance
+                </button>
+                <button class="nav-tab" onclick="switchAdminTab('invoice')">
+                    <i class="fas fa-file-invoice"></i> Invoice
                 </button>
                 <button class="nav-tab" onclick="switchAdminTab('finance')">
                     <i class="fas fa-wallet"></i> Daily Income & Expenses
@@ -1925,6 +2165,13 @@
                         </div>
                     </div>
                     <div class="filters">
+                        <div class="form-group">
+                            <label>Complaint Date</label>
+                            <input type="date" class="form-control" id="adminComplaintDateFilter" onchange="renderAdminComplaints()">
+                        </div>
+                        <div class="form-group" style="align-self:end;">
+                            <button type="button" class="btn btn-secondary" onclick="showAllComplaints()"><i class="fas fa-layer-group"></i> Show All</button>
+                        </div>
                         <div class="form-group search-box">
                             <label>Search</label>
                             <i class="fas fa-search"></i>
@@ -2204,6 +2451,47 @@
                 </div>
             </div>
 
+            <!-- Admin Invoice Tab -->
+            <div id="adminInvoiceTab" class="tab-content">
+                <div class="main-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-file-invoice"></i> Simple Invoice / Work Slip</h2>
+                        <button class="btn btn-success" onclick="sendSimpleInvoiceWhatsApp('admin')"><i class="fab fa-whatsapp"></i> Send Invoice</button>
+                    </div>
+                    <div class="quick-finance-form">
+                        <div class="form-row">
+                            <div class="form-group"><label>Customer Name</label><input type="text" id="invoiceCustomerName" class="form-control" placeholder="Customer name"></div>
+                            <div class="form-group"><label>Customer WhatsApp</label><input type="tel" id="invoiceCustomerPhone" class="form-control" placeholder="923001234567"></div>
+                            <div class="form-group"><label>Work Type</label><select id="invoiceWorkType" class="form-control"><option value="New Connection">New Connection</option><option value="Wire Change">Wire Change</option><option value="Device Change">Device Change</option><option value="Package Change">Package Change</option><option value="Repair / Maintenance">Repair / Maintenance</option><option value="Other Work">Other Work</option></select></div>
+                            <div class="form-group"><label>Discount</label><input type="number" id="invoiceDiscount" class="form-control" value="0" min="0" oninput="calculateInvoiceTotals('admin')" placeholder="Discount amount"></div>
+                            <div class="invoice-products-wrap">
+                                <div class="invoice-products-header">
+                                    <h4><i class="fas fa-boxes-stacked"></i> Products / Work Items</h4>
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceProductRow('admin')"><i class="fas fa-plus"></i> Add Product</button>
+                                </div>
+                                <div class="invoice-table-scroll">
+                                    <table class="invoice-product-table">
+                                        <thead><tr><th>Product / Service</th><th>Qty</th><th>Rate</th><th>Total</th><th>Action</th></tr></thead>
+                                        <tbody id="invoiceProductBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="form-group full-width"><label>Details / Notes</label><input type="text" id="invoiceDetails" class="form-control" placeholder="Example: wire length, router model, installation note"></div>
+                            <input type="hidden" id="invoiceAmount" value="0">
+                            <div class="invoice-totals-box">
+                                <div class="invoice-total-item"><strong>Subtotal</strong><span id="invoiceSubtotalText">Rs. 0</span></div>
+                                <div class="invoice-total-item"><strong>Discount</strong><span id="invoiceDiscountText">Rs. 0</span></div>
+                                <div class="invoice-total-item"><strong>Final Total</strong><span id="invoiceTotalText">Rs. 0</span></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-info" onclick="previewSimpleInvoice('admin')"><i class="fas fa-eye"></i> Preview Invoice</button>
+                        <div class="report-preview" id="simpleInvoicePreview" style="margin-top:15px;"></div>
+                    </div>
+                </div>
+
+
+            </div>
+
             <!-- Admin Daily Income & Expenses Tab -->
             <div id="adminFinanceTab" class="tab-content">
                 <div class="finance-summary">
@@ -2218,6 +2506,14 @@
                     <div class="finance-card balance">
                         <h4><i class="fas fa-scale-balanced"></i> Today Balance</h4>
                         <div class="amount" id="financeTodayBalance">Rs. 0</div>
+                    </div>
+                    <div class="finance-card balance">
+                        <h4><i class="fas fa-mobile-screen-button"></i> Online Payments</h4>
+                        <div class="amount" id="financeTodayOnline">Rs. 0</div>
+                    </div>
+                    <div class="finance-card">
+                        <h4><i class="fas fa-money-bill-wave"></i> Cash Payments</h4>
+                        <div class="amount" id="financeTodayCash">Rs. 0</div>
                     </div>
                     <div class="finance-card">
                         <h4><i class="fas fa-list"></i> Total Entries</h4>
@@ -2260,6 +2556,25 @@
                                 </select>
                             </div>
                             <div class="form-group">
+                                <label>Monthly Fee Sub Category</label>
+                                <select id="financeSubCategory" class="form-control">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Online">Online</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Receiver Name</label>
+                                <input type="text" id="financeReceiverName" class="form-control" placeholder="Who received this payment?">
+                            </div>
+                            <div class="form-group">
+                                <label>Online Account / Bank</label>
+                                <input type="text" id="financeOnlineAccount" class="form-control" placeholder="JazzCash / Easypaisa / Bank account">
+                            </div>
+                            <div class="form-group">
+                                <label>Client WhatsApp Number</label>
+                                <input type="tel" id="financeClientPhone" class="form-control" placeholder="923001234567 for slip">
+                            </div>
+                            <div class="form-group">
                                 <label>Amount</label>
                                 <input type="number" id="financeAmount" class="form-control" placeholder="Enter amount">
                             </div>
@@ -2290,6 +2605,8 @@
                                     <th>Time</th>
                                     <th>Type</th>
                                     <th>Category</th>
+                                    <th>Sub Category</th>
+                                    <th>Receiver</th>
                                     <th>Description</th>
                                     <th>Amount</th>
                                     <th>Action</th>
@@ -2434,9 +2751,9 @@
                             </button>
                         </div>
                         <div class="backup-card">
-                            <i class="fas fa-undo"></i>
-                            <h4>Reset to Defaults</h4>
-                            <p>Load sample employees and clear complaints</p>
+                            <i class="fas fa-broom"></i>
+                            <h4>Clean Empty Database</h4>
+                            <p>Clear complaints, attendance, payroll and finance. No demo employees will be added.</p>
                             <button class="btn btn-secondary" onclick="resetToDefaults()">
                                 <i class="fas fa-redo"></i> Reset
                             </button>
@@ -2490,6 +2807,9 @@
                 <button class="nav-tab active" onclick="switchEmployeeTab('mytasks')">
                     <i class="fas fa-tasks"></i> My Tasks
                 </button>
+                <button class="nav-tab" onclick="switchEmployeeTab('invoice')">
+                    <i class="fas fa-file-invoice"></i> Invoice
+                </button>
                 <button class="nav-tab" onclick="switchEmployeeTab('attendance')">
                     <i class="fas fa-calendar-check"></i> Attendance
                 </button>
@@ -2528,7 +2848,53 @@
                     </div>
                 </div>
 
-                <div id="empTasksList"></div>
+                <div class="main-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-clipboard-list"></i> My Active Complaints</h2>
+                        <button class="btn btn-primary" onclick="openEmployeeComplaintModal()"><i class="fas fa-plus"></i> Add Complaint</button>
+                    </div>
+                    <div id="empTasksList" style="padding: 20px;"></div>
+                </div>
+            </div>
+
+
+            <!-- Employee Invoice Tab -->
+            <div id="empInvoiceTab" class="tab-content">
+                <div class="main-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-file-invoice"></i> Simple Invoice / Work Slip</h2>
+                        <button class="btn btn-success" onclick="sendSimpleInvoiceWhatsApp('emp')"><i class="fab fa-whatsapp"></i> Send Invoice</button>
+                    </div>
+                    <div class="quick-finance-form">
+                        <div class="form-row">
+                            <div class="form-group"><label>Customer Name</label><input type="text" id="empInvoiceCustomerName" class="form-control" placeholder="Customer name"></div>
+                            <div class="form-group"><label>Customer WhatsApp</label><input type="tel" id="empInvoiceCustomerPhone" class="form-control" placeholder="923001234567"></div>
+                            <div class="form-group"><label>Work Type</label><select id="empInvoiceWorkType" class="form-control"><option value="New Connection">New Connection</option><option value="Wire Change">Wire Change</option><option value="Device Change">Device Change</option><option value="Package Change">Package Change</option><option value="Repair / Maintenance">Repair / Maintenance</option><option value="Other Work">Other Work</option></select></div>
+                            <div class="form-group"><label>Discount</label><input type="number" id="empInvoiceDiscount" class="form-control" value="0" min="0" oninput="calculateInvoiceTotals('emp')" placeholder="Discount amount"></div>
+                            <div class="invoice-products-wrap">
+                                <div class="invoice-products-header">
+                                    <h4><i class="fas fa-boxes-stacked"></i> Products / Work Items</h4>
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="addInvoiceProductRow('emp')"><i class="fas fa-plus"></i> Add Product</button>
+                                </div>
+                                <div class="invoice-table-scroll">
+                                    <table class="invoice-product-table">
+                                        <thead><tr><th>Product / Service</th><th>Qty</th><th>Rate</th><th>Total</th><th>Action</th></tr></thead>
+                                        <tbody id="empInvoiceProductBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="form-group full-width"><label>Details / Notes</label><input type="text" id="empInvoiceDetails" class="form-control" placeholder="Example: wire length, router model, installation note"></div>
+                            <input type="hidden" id="empInvoiceAmount" value="0">
+                            <div class="invoice-totals-box">
+                                <div class="invoice-total-item"><strong>Subtotal</strong><span id="empInvoiceSubtotalText">Rs. 0</span></div>
+                                <div class="invoice-total-item"><strong>Discount</strong><span id="empInvoiceDiscountText">Rs. 0</span></div>
+                                <div class="invoice-total-item"><strong>Final Total</strong><span id="empInvoiceTotalText">Rs. 0</span></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-info" onclick="previewSimpleInvoice('emp')"><i class="fas fa-eye"></i> Preview Invoice</button>
+                        <div class="report-preview" id="empSimpleInvoicePreview" style="margin-top:15px;"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Employee Attendance Tab -->
@@ -2631,6 +2997,8 @@
                     <div class="finance-card"><h4><i class="fas fa-arrow-down"></i> Today Income</h4><div class="amount" id="empFinanceTodayIncome">Rs. 0</div></div>
                     <div class="finance-card expense"><h4><i class="fas fa-arrow-up"></i> Today Expenses</h4><div class="amount" id="empFinanceTodayExpense">Rs. 0</div></div>
                     <div class="finance-card balance"><h4><i class="fas fa-scale-balanced"></i> Today Balance</h4><div class="amount" id="empFinanceTodayBalance">Rs. 0</div></div>
+                    <div class="finance-card balance"><h4><i class="fas fa-mobile-screen-button"></i> Online Payments</h4><div class="amount" id="empFinanceTodayOnline">Rs. 0</div></div>
+                    <div class="finance-card"><h4><i class="fas fa-money-bill-wave"></i> Cash Payments</h4><div class="amount" id="empFinanceTodayCash">Rs. 0</div></div>
                     <div class="finance-card"><h4><i class="fas fa-list"></i> Entries</h4><div class="amount" id="empFinanceTodayEntries">0</div></div>
                 </div>
                 <div class="main-card">
@@ -2639,13 +3007,17 @@
                         <div class="form-row">
                             <div class="form-group"><label>Type</label><select id="empFinanceType" class="form-control"><option value="income">Income</option><option value="expense">Expense</option></select></div>
                             <div class="form-group"><label>Category</label><select id="empFinanceCategory" class="form-control"><option value="Monthly Fee">Monthly Fee</option><option value="Installation">Installation</option><option value="Device Sale">Device Sale</option><option value="Recharge / Payment">Recharge / Payment</option><option value="Fuel">Fuel</option><option value="Staff Payment">Staff Payment</option><option value="Repair / Maintenance">Repair / Maintenance</option><option value="Office Expense">Office Expense</option><option value="Other">Other</option></select></div>
+                            <div class="form-group"><label>Monthly Fee Sub Category</label><select id="empFinanceSubCategory" class="form-control"><option value="Cash">Cash</option><option value="Online">Online</option></select></div>
+                            <div class="form-group"><label>Receiver Name</label><input type="text" id="empFinanceReceiverName" class="form-control" placeholder="Who received this payment?"></div>
+                            <div class="form-group"><label>Online Account / Bank</label><input type="text" id="empFinanceOnlineAccount" class="form-control" placeholder="JazzCash / Easypaisa / Bank account"></div>
+                            <div class="form-group"><label>Client WhatsApp Number</label><input type="tel" id="empFinanceClientPhone" class="form-control" placeholder="923001234567 for slip"></div>
                             <div class="form-group"><label>Amount</label><input type="number" id="empFinanceAmount" class="form-control" placeholder="Enter amount"></div>
                             <div class="form-group full-width"><label>Description / Notes</label><input type="text" id="empFinanceNote" class="form-control" placeholder="Example: Customer payment, fuel, wire expense"></div>
                         </div>
                         <button class="btn btn-primary" id="empFinanceSubmitBtn" onclick="addEmployeeFinanceEntry()"><i class="fas fa-plus"></i> Add Entry</button>
                         <button class="btn btn-secondary hidden" id="empFinanceCancelEditBtn" onclick="cancelEmployeeFinanceEdit()"><i class="fas fa-times"></i> Cancel Edit</button>
                     </div>
-                    <div style="overflow-x:auto;"><table><thead><tr><th>Time</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="empFinanceTableBody"></tbody></table></div>
+                    <div style="overflow-x:auto;"><table><thead><tr><th>Time</th><th>Type</th><th>Category</th><th>Sub Category</th><th>Receiver</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="empFinanceTableBody"></tbody></table></div>
                 </div>
             </div>
 
@@ -2895,6 +3267,7 @@
                             <label><i class="fas fa-user-lock"></i> Employee Portal Permissions</label>
                             <div class="permission-grid">
                                 <label><input type="checkbox" id="permMytasks"> My Tasks / Complaints</label>
+                                <label><input type="checkbox" id="permInvoice"> Invoice</label>
                                 <label><input type="checkbox" id="permAttendance"> Attendance</label>
                                 <label><input type="checkbox" id="permPayroll"> Payroll</label>
                                 <label><input type="checkbox" id="permAccounts"> Accounts / Income & Expenses</label>
@@ -3154,7 +3527,8 @@
         let db = null;
         let viewingId = null;
         let financeEditId = null;
-        const DEFAULT_EMPLOYEE_PERMISSIONS = { mytasks: true, attendance: true, payroll: true, accounts: false, resolved: true, profile: true };
+        let complaintOpenedByEmployee = false;
+        const DEFAULT_EMPLOYEE_PERMISSIONS = { mytasks: true, invoice: true, attendance: true, payroll: true, accounts: false, resolved: true, profile: true };
         
         const firebaseConfig = {
             apiKey: "AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E",
@@ -3182,15 +3556,14 @@
             await initializeFirebase();
             await loadAllData();
             
-            if (employees.length === 0) {
-                console.log('No employees found in Firebase, loading defaults...');
-                await loadDefaultEmployees();
-            }
+            // No demo/default employees are auto-created. Add real employees from the Admin panel.
             
             enableRealtimeSync();
             populateYearSelects();
+            initDefaultComplaintDateFilter();
+            initInvoiceProductTables();
             console.log('App ready with Firebase + Firestore');
-            checkExistingSession();
+            forceFreshLogin();
         });
 
         async function initializeFirebase() {
@@ -3215,7 +3588,7 @@
 
         async function loadAllData() {
             try {
-                currentUser = JSON.parse(localStorage.getItem('firenet_user') || 'null');
+                currentUser = null;
                 complaints = await loadCollection('complaints');
                 employees = await loadCollection('employees');
                 attendance = await loadCollection('attendance');
@@ -3231,7 +3604,7 @@
                 attendance = [];
                 payroll = [];
                 dailyFinance = [];
-                currentUser = JSON.parse(localStorage.getItem('firenet_user') || 'null');
+                currentUser = null;
                 showToast('Could not load Firebase data. Using empty state.', 'warning');
             }
         }
@@ -3277,80 +3650,32 @@
             db.collection('finance').onSnapshot(snapshot => {
                 dailyFinance = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 if (document.getElementById('financeTableBody')) renderDailyFinance();
+                if (document.getElementById('empFinanceTableBody') && currentUser?.type === 'employee') renderEmployeeFinance();
                 if (document.getElementById('monthlyFinanceTableBody')) renderMonthlyFinance();
             }, error => console.error('Realtime finance error:', error));
         }
 
+        function forceFreshLogin() {
+            currentUser = null;
+            localStorage.removeItem('firenet_user');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('adminApp').classList.remove('active');
+            document.getElementById('employeeApp').classList.remove('active');
+            document.getElementById('adminLoginForm')?.reset();
+            document.getElementById('employeeLoginForm')?.reset();
+        }
+
         function checkExistingSession() {
-            if (!currentUser) {
-                document.getElementById('loginScreen').style.display = 'flex';
-                return;
-            }
-
-            console.log('Existing session found:', currentUser.type);
-            if (!validateCurrentSession()) {
-                currentUser = null;
-                localStorage.removeItem('firenet_user');
-                document.getElementById('loginScreen').style.display = 'flex';
-                showToast('Session expired. Please login again with password/PIN.', 'warning');
-                return;
-            }
-
-            if (currentUser.type === 'admin') {
-                showAdminApp();
-            } else if (currentUser.type === 'employee') {
-                showEmployeeApp();
-            }
+            // Auto-login is intentionally disabled. Saved field values or old sessions cannot open the app.
+            forceFreshLogin();
         }
 
         // ==================== DEFAULT DATA ====================
         async function loadDefaultEmployees() {
-            employees = [
-                {
-                    id: 'EMP-001',
-                    name: 'Ali Raza',
-                    phone: '0301-9876543',
-                    pin: '1234',
-                    role: 'Senior Technician',
-                    department: 'Technical',
-                    email: 'ali.raza@fire.net.pk',
-                    status: 'active',
-                    salary: 45000,
-                    notes: 'Fiber optic specialist',
-                    permissions: { mytasks: true, attendance: true, payroll: false, accounts: false, resolved: true, profile: true },
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: 'EMP-002',
-                    name: 'Usman Tariq',
-                    phone: '0333-1122334',
-                    pin: '1234',
-                    role: 'Support Agent',
-                    department: 'Support',
-                    email: 'usman.tariq@fire.net.pk',
-                    status: 'active',
-                    salary: 35000,
-                    notes: 'Customer relations',
-                    permissions: { mytasks: true, attendance: true, payroll: false, accounts: false, resolved: true, profile: true },
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: 'EMP-003',
-                    name: 'Sara Ahmed',
-                    phone: '0322-4455667',
-                    pin: '1234',
-                    role: 'Billing Officer',
-                    department: 'Billing',
-                    email: 'sara.ahmed@fire.net.pk',
-                    status: 'active',
-                    salary: 40000,
-                    notes: 'Accounts and billing',
-                    permissions: { mytasks: false, attendance: true, payroll: true, accounts: true, resolved: false, profile: true },
-                    createdAt: new Date().toISOString()
-                }
-            ];
+            // Demo/sample employees removed. Keep database empty until admin adds real employees.
+            employees = [];
             await saveEmployees();
-            console.log('Default employees loaded into Firebase');
+            console.log('Demo employees are disabled; no default records were created.');
         }
 
         // ==================== AUTHENTICATION ====================
@@ -3477,6 +3802,7 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('adminApp').classList.add('active');
             document.getElementById('employeeApp').classList.remove('active');
+            initDefaultComplaintDateFilter();
             refreshAdmin();
         }
 
@@ -3497,8 +3823,8 @@
             if (!currentUser || currentUser.type !== 'employee') return;
             const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser.permissions || {}) };
             const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
-            const tabMap = { mytasks: 0, attendance: 1, payroll: 2, accounts: 3, resolved: 4, profile: 5 };
-            const tabIdMap = { mytasks: 'empMyTasksTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
+            const tabMap = { mytasks: 0, invoice: 1, attendance: 2, payroll: 3, accounts: 4, resolved: 5, profile: 6 };
+            const tabIdMap = { mytasks: 'empMyTasksTab', invoice: 'empInvoiceTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
 
             Object.entries(tabMap).forEach(([key, index]) => {
                 if (tabButtons[index]) tabButtons[index].classList.toggle('hidden', !permissions[key]);
@@ -3519,7 +3845,7 @@
             document.querySelectorAll('#adminApp .tab-content').forEach(t => t.classList.remove('active'));
             
             const tabButtons = document.querySelectorAll('#adminApp .nav-tabs .nav-tab');
-            const tabMap = { complaints: 0, employees: 1, payroll: 2, attendance: 3, finance: 4, backup: 5 };
+            const tabMap = { complaints: 0, employees: 1, payroll: 2, attendance: 3, invoice: 4, finance: 5, backup: 6 };
             const btn = tabButtons[tabMap[tab]];
             if (btn) btn.classList.add('active');
             const tabEl = document.getElementById('admin' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Tab');
@@ -3527,6 +3853,7 @@
             
             if (tab === 'payroll') renderAdminPayroll();
             if (tab === 'attendance') renderAdminAttendance();
+            if (tab === 'invoice') calculateInvoiceTotals('admin');
             if (tab === 'finance') { renderDailyFinance(); renderMonthlyFinance(); }
         }
 
@@ -3675,12 +4002,26 @@
             }).join('');
         }
 
+        function initDefaultComplaintDateFilter() {
+            const el = document.getElementById('adminComplaintDateFilter');
+            if (el && !el.value) el.value = new Date().toISOString().split('T')[0];
+        }
+
+        function showAllComplaints() {
+            const el = document.getElementById('adminComplaintDateFilter');
+            if (el) el.value = '';
+            renderAdminComplaints();
+            showToast('Showing all complaints. Select a date again to return to daily view.', 'info');
+        }
+
         function renderAdminComplaints() {
             const tbody = document.getElementById('adminComplaintsTableBody');
             const search = document.getElementById('adminSearchInput').value.toLowerCase();
             const statusFilter = document.getElementById('adminStatusFilter').value;
             const typeFilter = document.getElementById('adminTypeFilter').value;
             const handlerFilter = document.getElementById('adminHandlerFilter').value;
+            const dateFilterEl = document.getElementById('adminComplaintDateFilter');
+            const dateFilter = dateFilterEl ? dateFilterEl.value : '';
 
             let filtered = complaints.filter(c => {
                 const matchSearch = !search || 
@@ -3692,9 +4033,11 @@
                 const matchStatus = !statusFilter || c.status === statusFilter;
                 const matchType = !typeFilter || c.type === typeFilter;
                 const matchHandler = !handlerFilter || c.handlerId === handlerFilter;
+                const createdDate = (c.createdAt || '').split('T')[0];
+                const matchDate = !dateFilter || createdDate === dateFilter;
 
-                return matchSearch && matchStatus && matchType && matchHandler;
-            });
+                return matchSearch && matchStatus && matchType && matchHandler && matchDate;
+            }).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
             if (filtered.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No Complaints Found</h3></div></td></tr>`;
@@ -3759,7 +4102,7 @@
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fas fa-users"></i><h3>No Employees Found</h3></div></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fas fa-users"></i><h3>No Employees Found</h3></div></td></tr>`;
                 return;
             }
 
@@ -4599,14 +4942,15 @@
             document.querySelectorAll('#employeeApp .tab-content').forEach(t => t.classList.remove('active'));
             
             const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
-            const tabMap = { mytasks: 0, attendance: 1, payroll: 2, accounts: 3, resolved: 4, profile: 5 };
-            const tabIdMap = { mytasks: 'empMyTasksTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
+            const tabMap = { mytasks: 0, invoice: 1, attendance: 2, payroll: 3, accounts: 4, resolved: 5, profile: 6 };
+            const tabIdMap = { mytasks: 'empMyTasksTab', invoice: 'empInvoiceTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
             const btn = tabButtons[tabMap[tab]];
             if (btn) btn.classList.add('active');
             const tabEl = document.getElementById(tabIdMap[tab]);
             if (tabEl) tabEl.classList.add('active');
             
             if (tab === 'mytasks') refreshEmployeeTasks();
+            if (tab === 'invoice') calculateInvoiceTotals('emp');
             if (tab === 'attendance') renderEmployeeAttendance();
             if (tab === 'payroll') renderEmployeePayroll();
             if (tab === 'accounts') renderEmployeeFinance();
@@ -4833,6 +5177,7 @@ Please update status promptly via CMS.`;
         });
 
         function openComplaintModal(editId = null) {
+            complaintOpenedByEmployee = currentUser?.type === 'employee' && !editId;
             const modal = document.getElementById('complaintModal');
             const form = document.getElementById('complaintForm');
             const title = document.getElementById('complaintModalTitle');
@@ -4861,15 +5206,38 @@ Please update status promptly via CMS.`;
                     updateWhatsAppPreview();
                 }
             } else {
-                title.textContent = 'New Complaint';
+                title.textContent = complaintOpenedByEmployee ? 'Add Customer Complaint' : 'New Complaint';
                 document.getElementById('complaintId').value = '';
+            }
+
+            if (complaintOpenedByEmployee) {
+                document.getElementById('eSelect').value = currentUser.id;
+                document.getElementById('eContact').value = currentUser.phone || '';
+                document.getElementById('cStatus').value = 'Pending';
+                document.getElementById('eSelect').disabled = true;
+                document.getElementById('cStatus').disabled = true;
+                document.getElementById('notifyEmployee').checked = false;
+            } else {
+                document.getElementById('eSelect').disabled = false;
+                document.getElementById('cStatus').disabled = false;
             }
             
             modal.classList.add('active');
         }
 
+        function openEmployeeComplaintModal() {
+            if (!currentUser || currentUser.type !== 'employee') {
+                showToast('Please login as employee first.', 'error');
+                return;
+            }
+            openComplaintModal();
+        }
+
         function closeComplaintModal() {
             document.getElementById('complaintModal').classList.remove('active');
+            document.getElementById('eSelect').disabled = false;
+            document.getElementById('cStatus').disabled = false;
+            complaintOpenedByEmployee = false;
         }
 
         async function saveComplaint() {
@@ -4915,7 +5283,9 @@ Please update status promptly via CMS.`;
                 preferredTime: prefTime,
                 createdAt: id ? (complaints.find(c => c.id === id)?.createdAt || now.toISOString()) : now.toISOString(),
                 updatedAt: now.toISOString(),
-                history: id ? complaints.find(c => c.id === id)?.history || [] : []
+                history: id ? complaints.find(c => c.id === id)?.history || [] : [],
+                source: complaintOpenedByEmployee ? 'Employee Portal' : (id ? (complaints.find(c => c.id === id)?.source || 'Admin') : 'Admin'),
+                createdBy: complaintOpenedByEmployee ? currentUser.name : (id ? (complaints.find(c => c.id === id)?.createdBy || 'Administrator') : 'Administrator')
             };
 
             if (!id) {
@@ -4966,7 +5336,8 @@ Please update status promptly via CMS.`;
             if (notifyEmployee) sendWhatsAppToHandler(complaintData, id ? 'updated' : 'assigned');
 
             closeComplaintModal();
-            refreshAdmin();
+            if (document.getElementById('adminApp').classList.contains('active')) refreshAdmin();
+            if (document.getElementById('employeeApp').classList.contains('active') && currentUser?.type === 'employee') refreshEmployee();
         }
 
         // ==================== EMPLOYEE CRUD ====================
@@ -4993,6 +5364,7 @@ Please update status promptly via CMS.`;
                     document.getElementById('empNotes').value = emp.notes || '';
                     const perms = getEmployeePermissions(emp);
                     document.getElementById('permMytasks').checked = !!perms.mytasks;
+                    document.getElementById('permInvoice').checked = !!perms.invoice;
                     document.getElementById('permAttendance').checked = !!perms.attendance;
                     document.getElementById('permPayroll').checked = !!perms.payroll;
                     document.getElementById('permAccounts').checked = !!perms.accounts;
@@ -5003,6 +5375,7 @@ Please update status promptly via CMS.`;
                 title.textContent = 'Add Employee';
                 document.getElementById('employeeId').value = '';
                 document.getElementById('permMytasks').checked = true;
+                document.getElementById('permInvoice').checked = true;
                 document.getElementById('permAttendance').checked = true;
                 document.getElementById('permPayroll').checked = false;
                 document.getElementById('permAccounts').checked = false;
@@ -5030,6 +5403,7 @@ Please update status promptly via CMS.`;
             const notes = document.getElementById('empNotes').value.trim();
             const permissions = {
                 mytasks: document.getElementById('permMytasks').checked,
+                invoice: document.getElementById('permInvoice').checked,
                 attendance: document.getElementById('permAttendance').checked,
                 payroll: document.getElementById('permPayroll').checked,
                 accounts: document.getElementById('permAccounts').checked,
@@ -5416,28 +5790,32 @@ Please take necessary action and update status in CMS.`;
             employees = [];
             attendance = [];
             payroll = [];
+            dailyFinance = [];
             await saveComplaints();
             await saveEmployees();
             await saveAttendanceData();
             await savePayrollData();
+            await saveFinanceData();
             
-            await loadDefaultEmployees();
             refreshAdmin();
-            showToast('All Firebase data cleared and defaults reloaded!', 'warning');
+            showToast('All data cleared. No demo data was reloaded.', 'warning');
         }
 
         async function resetToDefaults() {
-            if (!confirm('Reset to default employees and clear all complaints?')) return;
+            if (!confirm('Clean database and remove all demo/sample records?')) return;
             
             complaints = [];
+            employees = [];
             attendance = [];
             payroll = [];
+            dailyFinance = [];
             await saveComplaints();
+            await saveEmployees();
             await saveAttendanceData();
             await savePayrollData();
-            await loadDefaultEmployees();
+            await saveFinanceData();
             refreshAdmin();
-            showToast('Reset to defaults complete!', 'success');
+            showToast('Database cleaned. Add real employees from Employee Management.', 'success');
         }
 
         // ==================== UTILITIES ====================
@@ -5603,9 +5981,117 @@ Please take necessary action and update status in CMS.`;
             return dateInput.value;
         }
 
+        function getFinanceSubCategoryValue(prefix = 'finance') {
+            const categoryEl = document.getElementById(prefix === 'emp' ? 'empFinanceCategory' : 'financeCategory');
+            const subEl = document.getElementById(prefix === 'emp' ? 'empFinanceSubCategory' : 'financeSubCategory');
+            const category = categoryEl ? categoryEl.value : '';
+            const typeEl = document.getElementById(prefix === 'emp' ? 'empFinanceType' : 'financeType');
+            // Monthly Fee and other income/payment entries can be tagged as Cash or Online for clear summary.
+            if ((typeEl?.value || 'income') === 'income') return subEl ? subEl.value : 'Cash';
+            return '';
+        }
+
+        function formatFinanceCategory(item) {
+            if (!item) return '-';
+            const sub = item.subCategory ? ` (${item.subCategory})` : '';
+            return `${item.category || '-'}${sub}`;
+        }
+
+        function formatFinanceReceiver(item) {
+            return item?.receiverName || item?.createdBy || '-';
+        }
+
+        function formatFinanceAccount(item) {
+            return item?.onlineAccount || item?.accountName || item?.paymentAccount || '';
+        }
+
+        function normalizePhoneForWhatsApp(phone) {
+            let cleaned = String(phone || '').replace(/\D/g, '');
+            if (!cleaned) return '';
+            if (cleaned.startsWith('0')) cleaned = '92' + cleaned.slice(1);
+            return cleaned;
+        }
+
+        function isOnlineFinanceEntry(item) {
+            const sub = String(item?.subCategory || '').trim().toLowerCase();
+            const category = String(item?.category || '').trim().toLowerCase();
+            return sub === 'online' || category.includes('online');
+        }
+
+        function getOnlinePaymentTotal(entries) {
+            return entries
+                .filter(item => item.type === 'income' && isOnlineFinanceEntry(item))
+                .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+        }
+
+        function getCashPaymentTotal(entries) {
+            return entries
+                .filter(item => item.type === 'income' && !isOnlineFinanceEntry(item))
+                .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+        }
+
+        function renderFinanceRow(item, employeeMode = false) {
+            const onlineAccount = formatFinanceAccount(item);
+            const subCell = isOnlineFinanceEntry(item)
+                ? `<span class="badge badge-in-progress"><i class="fas fa-mobile-screen-button"></i> Online</span>${onlineAccount ? `<div style="font-size:0.78rem;color:#566573;margin-top:4px;">Account: ${onlineAccount}</div>` : ''}`
+                : `<span class="badge badge-paid"><i class="fas fa-money-bill-wave"></i> Cash</span>`;
+            const receiverText = `${formatFinanceReceiver(item)}${item.clientPhone ? `<div style="font-size:0.78rem;color:#7f8c8d;margin-top:4px;">Client: ${item.clientPhone}</div>` : ''}`;
+            const editAction = employeeMode ? `editEmployeeFinanceEntry('${item.id}')` : `editFinanceEntry('${item.id}')`;
+            const deleteAction = employeeMode ? `deleteEmployeeFinanceEntry('${item.id}')` : `deleteFinanceEntry('${item.id}')`;
+            return `
+                <tr>
+                    <td>${item.time || '-'}</td>
+                    <td><span class="badge ${item.type === 'income' ? 'badge-resolved' : 'badge-escalated'}">${item.type === 'income' ? 'Income' : 'Expense'}</span></td>
+                    <td>${item.category || '-'}</td>
+                    <td>${subCell}</td>
+                    <td>${receiverText}</td>
+                    <td>${item.note || '-'}</td>
+                    <td><strong>${formatPKR(item.amount)}</strong></td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="viewFinanceEntry('${item.id}')" title="Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-success btn-sm" onclick="sendFinanceEntrySlip('${item.id}')" title="Send slip on WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="${editAction}" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="${deleteAction}" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+        }
+
+        function renderGroupedFinanceRows(entries, employeeMode = false) {
+            const reversed = entries.slice().reverse();
+            const onlineEntries = reversed.filter(isOnlineFinanceEntry);
+            const otherEntries = reversed.filter(item => !isOnlineFinanceEntry(item));
+            let html = '';
+
+            if (onlineEntries.length) {
+                const total = onlineEntries.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+                html += `<tr style="background:#eef7ff;"><td colspan="8" style="font-weight:800;color:var(--info);"><i class="fas fa-mobile-screen-button"></i> Online Payments — ${onlineEntries.length} entries / ${formatPKR(total)}</td></tr>`;
+                html += onlineEntries.map(item => renderFinanceRow(item, employeeMode)).join('');
+            }
+
+            if (otherEntries.length) {
+                const total = otherEntries.filter(item => item.type === 'income').reduce((sum, item) => sum + Number(item.amount || 0), 0);
+                html += `<tr style="background:#f8f9fa;"><td colspan="8" style="font-weight:800;color:var(--secondary);"><i class="fas fa-money-bill-wave"></i> Cash Payments / Other Entries — ${otherEntries.length} entries / Income ${formatPKR(total)}</td></tr>`;
+                html += otherEntries.map(item => renderFinanceRow(item, employeeMode)).join('');
+            }
+
+            return html;
+        }
+
         async function addFinanceEntry() {
             const type = document.getElementById('financeType').value;
             const category = document.getElementById('financeCategory').value;
+            const subCategory = getFinanceSubCategoryValue('finance');
+            const receiverName = document.getElementById('financeReceiverName')?.value.trim() || '';
+            const onlineAccount = document.getElementById('financeOnlineAccount')?.value.trim() || '';
+            const clientPhone = document.getElementById('financeClientPhone')?.value.trim() || '';
             const amount = Number(document.getElementById('financeAmount').value || 0);
             const note = document.getElementById('financeNote').value.trim();
             const date = getSelectedFinanceDate();
@@ -5624,7 +6110,7 @@ Please take necessary action and update status in CMS.`;
                 }
                 dailyFinance[idx] = {
                     ...dailyFinance[idx],
-                    date, type, category, amount, note,
+                    date, type, category, subCategory, receiverName, onlineAccount, clientPhone, amount, note,
                     updatedAt: new Date().toISOString()
                 };
                 await saveFinanceData();
@@ -5640,6 +6126,10 @@ Please take necessary action and update status in CMS.`;
                 time: new Date().toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' }),
                 type,
                 category,
+                subCategory,
+                receiverName,
+                onlineAccount,
+                clientPhone,
                 amount,
                 note,
                 createdAt: new Date().toISOString(),
@@ -5649,6 +6139,12 @@ Please take necessary action and update status in CMS.`;
             await saveFinanceData();
             document.getElementById('financeAmount').value = '';
             document.getElementById('financeNote').value = '';
+            const receiverInput = document.getElementById('financeReceiverName');
+            if (receiverInput) receiverInput.value = '';
+            const accountInput = document.getElementById('financeOnlineAccount');
+            if (accountInput) accountInput.value = '';
+            const clientPhoneInput = document.getElementById('financeClientPhone');
+            if (clientPhoneInput) clientPhoneInput.value = '';
             renderDailyFinance();
             showToast('Daily entry added successfully', 'success');
         }
@@ -5657,6 +6153,10 @@ Please take necessary action and update status in CMS.`;
             const item = dailyFinance.find(entry => entry.id === id);
             if (!item) {
                 showToast('Entry not found', 'error');
+                return;
+            }
+            if (currentUser?.type === 'employee' && !isCurrentEmployeeFinanceEntry(item)) {
+                showToast('You can only view account entries created from your own account.', 'warning');
                 return;
             }
             const content = document.getElementById('viewContent');
@@ -5670,6 +6170,10 @@ Please take necessary action and update status in CMS.`;
                         <div class="attendance-detail-card"><strong>Date</strong><span>${item.date || '-'}</span></div>
                         <div class="attendance-detail-card"><strong>Time</strong><span>${item.time || '-'}</span></div>
                         <div class="attendance-detail-card"><strong>Category</strong><span>${item.category || '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Sub Category</strong><span>${item.subCategory || '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Receiver Name</strong><span>${formatFinanceReceiver(item)}</span></div>
+                        <div class="attendance-detail-card"><strong>Online Account</strong><span>${formatFinanceAccount(item) || '-'}</span></div>
+                        <div class="attendance-detail-card"><strong>Client Phone</strong><span>${item.clientPhone || '-'}</span></div>
                         <div class="attendance-detail-card"><strong>Type</strong><span>${item.type || '-'}</span></div>
                         <div class="attendance-detail-card"><strong>Created</strong><span>${item.createdAt ? new Date(item.createdAt).toLocaleString('en-PK') : '-'}</span></div>
                         <div class="attendance-detail-card"><strong>Updated</strong><span>${item.updatedAt ? new Date(item.updatedAt).toLocaleString('en-PK') : '-'}</span></div>
@@ -5691,6 +6195,14 @@ Please take necessary action and update status in CMS.`;
             financeEditId = id;
             document.getElementById('financeType').value = item.type || 'income';
             document.getElementById('financeCategory').value = item.category || 'Other';
+            const subInput = document.getElementById('financeSubCategory');
+            if (subInput) subInput.value = item.subCategory || 'Cash';
+            const receiverInput = document.getElementById('financeReceiverName');
+            if (receiverInput) receiverInput.value = item.receiverName || '';
+            const accountInput = document.getElementById('financeOnlineAccount');
+            if (accountInput) accountInput.value = item.onlineAccount || '';
+            const clientPhoneInput = document.getElementById('financeClientPhone');
+            if (clientPhoneInput) clientPhoneInput.value = item.clientPhone || '';
             document.getElementById('financeAmount').value = item.amount || '';
             document.getElementById('financeNote').value = item.note || '';
             const dateInput = document.getElementById('financeDateFilter');
@@ -5712,6 +6224,12 @@ Please take necessary action and update status in CMS.`;
             if (clearFields) {
                 document.getElementById('financeAmount').value = '';
                 document.getElementById('financeNote').value = '';
+                const receiverInput = document.getElementById('financeReceiverName');
+                if (receiverInput) receiverInput.value = '';
+                const accountInput = document.getElementById('financeOnlineAccount');
+                if (accountInput) accountInput.value = '';
+                const clientPhoneInput = document.getElementById('financeClientPhone');
+                if (clientPhoneInput) clientPhoneInput.value = '';
             }
         }
 
@@ -5723,11 +6241,35 @@ Please take necessary action and update status in CMS.`;
             showToast('Entry deleted', 'info');
         }
 
-        function getFinanceSummary(date) {
-            const entries = dailyFinance.filter(item => item.date === date);
+        function calculateFinanceSummary(entries) {
             const income = entries.filter(item => item.type === 'income').reduce((sum, item) => sum + Number(item.amount || 0), 0);
             const expense = entries.filter(item => item.type === 'expense').reduce((sum, item) => sum + Number(item.amount || 0), 0);
             return { entries, income, expense, balance: income - expense };
+        }
+
+        function getFinanceSummary(date) {
+            const entries = dailyFinance.filter(item => item.date === date);
+            return calculateFinanceSummary(entries);
+        }
+
+        function isCurrentEmployeeFinanceEntry(item) {
+            if (currentUser?.type !== 'employee') return true;
+            const userId = String(currentUser?.id || '');
+            const userName = String(currentUser?.name || '').trim().toLowerCase();
+            const userPhone = String(currentUser?.phone || '').replace(/\D/g, '');
+            const itemCreatorId = String(item?.createdById || '');
+            const itemCreatorName = String(item?.createdBy || '').trim().toLowerCase();
+            const itemCreatorPhone = String(item?.createdByPhone || '').replace(/\D/g, '');
+
+            // New employee entries are matched by createdById. Name/phone fallback keeps older employee-created entries visible to the same employee.
+            return (userId && itemCreatorId === userId) ||
+                   (userPhone && itemCreatorPhone && itemCreatorPhone === userPhone) ||
+                   (!itemCreatorId && userName && itemCreatorName && itemCreatorName === userName);
+        }
+
+        function getEmployeeFinanceSummary(date) {
+            const entries = dailyFinance.filter(item => item.date === date && isCurrentEmployeeFinanceEntry(item));
+            return calculateFinanceSummary(entries);
         }
 
         function buildDailyReportText(date) {
@@ -5741,11 +6283,11 @@ Please take necessary action and update status in CMS.`;
             const halfDay = todayAttendance.filter(a => a.status === 'half-day').length;
 
             const incomeLines = entries.filter(e => e.type === 'income')
-                .map((e, i) => `${i + 1}. ${e.category}: ${formatPKR(e.amount)}${e.note ? ' - ' + e.note : ''}`)
+                .map((e, i) => `${i + 1}. ${formatFinanceCategory(e)}: ${formatPKR(e.amount)}${e.receiverName ? ' | Receiver: ' + e.receiverName : ''}${formatFinanceAccount(e) ? ' | Account: ' + formatFinanceAccount(e) : ''}${e.note ? ' - ' + e.note : ''}`)
                 .join('\n') || 'No income entries';
 
             const expenseLines = entries.filter(e => e.type === 'expense')
-                .map((e, i) => `${i + 1}. ${e.category}: ${formatPKR(e.amount)}${e.note ? ' - ' + e.note : ''}`)
+                .map((e, i) => `${i + 1}. ${formatFinanceCategory(e)}: ${formatPKR(e.amount)}${e.receiverName ? ' | Receiver: ' + e.receiverName : ''}${formatFinanceAccount(e) ? ' | Account: ' + formatFinanceAccount(e) : ''}${e.note ? ' - ' + e.note : ''}`)
                 .join('\n') || 'No expense entries';
 
             const receiverName = document.getElementById('dailyReportReceiverName')?.value.trim() || 'Sir/Madam';
@@ -5761,6 +6303,8 @@ ${incomeLines}
 ${expenseLines}
 
 📊 SUMMARY
+Cash Payments: ${formatPKR(getCashPaymentTotal(entries))}
+Online Payments: ${formatPKR(getOnlinePaymentTotal(entries))}
 Total Income: ${formatPKR(income)}
 Total Expenses: ${formatPKR(expense)}
 Net Balance: ${formatPKR(balance)}
@@ -5785,6 +6329,8 @@ Half Day: ${halfDay}
             const incomeEl = document.getElementById('financeTodayIncome');
             const expenseEl = document.getElementById('financeTodayExpense');
             const balanceEl = document.getElementById('financeTodayBalance');
+            const onlineEl = document.getElementById('financeTodayOnline');
+            const cashEl = document.getElementById('financeTodayCash');
             const entriesEl = document.getElementById('financeTodayEntries');
             const tbody = document.getElementById('financeTableBody');
             const preview = document.getElementById('dailyReportPreview');
@@ -5792,6 +6338,8 @@ Half Day: ${halfDay}
             if (incomeEl) incomeEl.textContent = formatPKR(income);
             if (expenseEl) expenseEl.textContent = formatPKR(expense);
             if (balanceEl) balanceEl.textContent = formatPKR(balance);
+            if (onlineEl) onlineEl.textContent = formatPKR(getOnlinePaymentTotal(entries));
+            if (cashEl) cashEl.textContent = formatPKR(getCashPaymentTotal(entries));
             if (entriesEl) entriesEl.textContent = entries.length;
             if (preview) preview.textContent = buildDailyReportText(date);
             if (document.getElementById('monthlyFinanceTableBody')) renderMonthlyFinance();
@@ -5801,7 +6349,7 @@ Half Day: ${halfDay}
             if (!entries.length) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6">
+                        <td colspan="8">
                             <div class="empty-state" style="padding:30px;">
                                 <i class="fas fa-wallet"></i>
                                 <h3>No entries for this date</h3>
@@ -5812,26 +6360,7 @@ Half Day: ${halfDay}
                 return;
             }
 
-            tbody.innerHTML = entries.slice().reverse().map(item => `
-                <tr>
-                    <td>${item.time || '-'}</td>
-                    <td><span class="badge ${item.type === 'income' ? 'badge-resolved' : 'badge-escalated'}">${item.type === 'income' ? 'Income' : 'Expense'}</span></td>
-                    <td>${item.category}</td>
-                    <td>${item.note || '-'}</td>
-                    <td><strong>${formatPKR(item.amount)}</strong></td>
-                    <td>
-                        <button class="btn btn-info btn-sm" onclick="viewFinanceEntry('${item.id}')" title="Details">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-primary btn-sm" onclick="editFinanceEntry('${item.id}')" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteFinanceEntry('${item.id}')" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = renderGroupedFinanceRows(entries, false);
         }
 
         function getSelectedEmployeeFinanceDate() {
@@ -5846,6 +6375,10 @@ Half Day: ${halfDay}
             if (!permissions.accounts) { showToast('You do not have permission for accounts.', 'warning'); return; }
             const type = document.getElementById('empFinanceType').value;
             const category = document.getElementById('empFinanceCategory').value;
+            const subCategory = getFinanceSubCategoryValue('emp');
+            const receiverName = document.getElementById('empFinanceReceiverName')?.value.trim() || currentUser?.name || 'Employee';
+            const onlineAccount = document.getElementById('empFinanceOnlineAccount')?.value.trim() || '';
+            const clientPhone = document.getElementById('empFinanceClientPhone')?.value.trim() || '';
             const amount = Number(document.getElementById('empFinanceAmount').value || 0);
             const note = document.getElementById('empFinanceNote').value.trim();
             const date = getSelectedEmployeeFinanceDate();
@@ -5853,7 +6386,8 @@ Half Day: ${halfDay}
             if (employeeFinanceEditId) {
                 const idx = dailyFinance.findIndex(item => item.id === employeeFinanceEditId);
                 if (idx === -1) { showToast('Entry not found for editing', 'error'); cancelEmployeeFinanceEdit(); return; }
-                dailyFinance[idx] = { ...dailyFinance[idx], date, type, category, amount, note, updatedBy: currentUser?.name || 'Employee', updatedById: currentUser?.id || '', updatedAt: new Date().toISOString() };
+                if (!isCurrentEmployeeFinanceEntry(dailyFinance[idx])) { showToast('You can only update entries created from your own account.', 'warning'); cancelEmployeeFinanceEdit(); return; }
+                dailyFinance[idx] = { ...dailyFinance[idx], date, type, category, subCategory, receiverName, onlineAccount, clientPhone, amount, note, updatedBy: currentUser?.name || 'Employee', updatedById: currentUser?.id || '', updatedAt: new Date().toISOString() };
                 await saveFinanceData();
                 cancelEmployeeFinanceEdit(false);
                 renderEmployeeFinance();
@@ -5861,10 +6395,16 @@ Half Day: ${halfDay}
                 showToast('Account entry updated successfully', 'success');
                 return;
             }
-            dailyFinance.push({ id: 'FIN-' + Date.now().toString(36).toUpperCase(), date, time: new Date().toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' }), type, category, amount, note, createdBy: currentUser?.name || 'Employee', createdById: currentUser?.id || '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+            dailyFinance.push({ id: 'FIN-' + Date.now().toString(36).toUpperCase(), date, time: new Date().toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' }), type, category, subCategory, receiverName, onlineAccount, clientPhone, amount, note, createdBy: currentUser?.name || 'Employee', createdById: currentUser?.id || '', createdByPhone: currentUser?.phone || '', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
             await saveFinanceData();
             document.getElementById('empFinanceAmount').value = '';
             document.getElementById('empFinanceNote').value = '';
+            const receiverInput = document.getElementById('empFinanceReceiverName');
+            if (receiverInput) receiverInput.value = '';
+            const accountInput = document.getElementById('empFinanceOnlineAccount');
+            if (accountInput) accountInput.value = '';
+            const clientPhoneInput = document.getElementById('empFinanceClientPhone');
+            if (clientPhoneInput) clientPhoneInput.value = '';
             renderEmployeeFinance();
             if (document.getElementById('financeTableBody')) renderDailyFinance();
             showToast('Account entry added successfully', 'success');
@@ -5872,9 +6412,18 @@ Half Day: ${halfDay}
         function editEmployeeFinanceEntry(id) {
             const item = dailyFinance.find(entry => entry.id === id);
             if (!item) { showToast('Entry not found', 'error'); return; }
+            if (!isCurrentEmployeeFinanceEntry(item)) { showToast('You can only edit entries created from your own account.', 'warning'); return; }
             employeeFinanceEditId = id;
             document.getElementById('empFinanceType').value = item.type || 'income';
             document.getElementById('empFinanceCategory').value = item.category || 'Other';
+            const subInput = document.getElementById('empFinanceSubCategory');
+            if (subInput) subInput.value = item.subCategory || 'Cash';
+            const receiverInput = document.getElementById('empFinanceReceiverName');
+            if (receiverInput) receiverInput.value = item.receiverName || currentUser?.name || '';
+            const accountInput = document.getElementById('empFinanceOnlineAccount');
+            if (accountInput) accountInput.value = item.onlineAccount || '';
+            const clientPhoneInput = document.getElementById('empFinanceClientPhone');
+            if (clientPhoneInput) clientPhoneInput.value = item.clientPhone || '';
             document.getElementById('empFinanceAmount').value = item.amount || '';
             document.getElementById('empFinanceNote').value = item.note || '';
             const dateInput = document.getElementById('empFinanceDateFilter');
@@ -5891,11 +6440,14 @@ Half Day: ${halfDay}
             const cancelBtn = document.getElementById('empFinanceCancelEditBtn');
             if (btn) btn.innerHTML = '<i class="fas fa-plus"></i> Add Entry';
             if (cancelBtn) cancelBtn.classList.add('hidden');
-            if (clearFields) { document.getElementById('empFinanceAmount').value = ''; document.getElementById('empFinanceNote').value = ''; }
+            if (clearFields) { document.getElementById('empFinanceAmount').value = ''; document.getElementById('empFinanceNote').value = ''; const receiverInput = document.getElementById('empFinanceReceiverName'); if (receiverInput) receiverInput.value = ''; const accountInput = document.getElementById('empFinanceOnlineAccount'); if (accountInput) accountInput.value = ''; const clientPhoneInput = document.getElementById('empFinanceClientPhone'); if (clientPhoneInput) clientPhoneInput.value = ''; }
         }
         async function deleteEmployeeFinanceEntry(id) {
             const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser?.permissions || {}) };
             if (!permissions.accounts) { showToast('You do not have permission for accounts.', 'warning'); return; }
+            const item = dailyFinance.find(entry => entry.id === id);
+            if (!item) { showToast('Entry not found', 'error'); return; }
+            if (!isCurrentEmployeeFinanceEntry(item)) { showToast('You can only delete entries created from your own account.', 'warning'); return; }
             if (!confirm('Delete this income/expense entry?')) return;
             dailyFinance = dailyFinance.filter(item => item.id !== id);
             await saveFinanceData();
@@ -5907,19 +6459,160 @@ Half Day: ${halfDay}
             const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser?.permissions || {}) };
             if (!permissions.accounts) return;
             const date = getSelectedEmployeeFinanceDate();
-            const { entries, income, expense, balance } = getFinanceSummary(date);
+            const { entries, income, expense, balance } = getEmployeeFinanceSummary(date);
             const incomeEl = document.getElementById('empFinanceTodayIncome');
             const expenseEl = document.getElementById('empFinanceTodayExpense');
             const balanceEl = document.getElementById('empFinanceTodayBalance');
+            const onlineEl = document.getElementById('empFinanceTodayOnline');
+            const cashEl = document.getElementById('empFinanceTodayCash');
             const entriesEl = document.getElementById('empFinanceTodayEntries');
             const tbody = document.getElementById('empFinanceTableBody');
             if (incomeEl) incomeEl.textContent = formatPKR(income);
             if (expenseEl) expenseEl.textContent = formatPKR(expense);
             if (balanceEl) balanceEl.textContent = formatPKR(balance);
+            if (onlineEl) onlineEl.textContent = formatPKR(getOnlinePaymentTotal(entries));
+            if (cashEl) cashEl.textContent = formatPKR(getCashPaymentTotal(entries));
             if (entriesEl) entriesEl.textContent = entries.length;
             if (!tbody) return;
-            if (!entries.length) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state" style="padding:30px;"><i class="fas fa-wallet"></i><h3>No entries for this date</h3><p>Add income and expenses from this accounts tab.</p></div></td></tr>`; return; }
-            tbody.innerHTML = entries.slice().reverse().map(item => `<tr><td>${item.time || '-'}</td><td><span class="badge ${item.type === 'income' ? 'badge-resolved' : 'badge-escalated'}">${item.type === 'income' ? 'Income' : 'Expense'}</span></td><td>${item.category || '-'}</td><td>${item.note || '-'}</td><td><strong>${formatPKR(item.amount)}</strong></td><td><button class="btn btn-info btn-sm" onclick="viewFinanceEntry('${item.id}')" title="Details"><i class="fas fa-eye"></i></button><button class="btn btn-primary btn-sm" onclick="editEmployeeFinanceEntry('${item.id}')" title="Edit"><i class="fas fa-edit"></i></button><button class="btn btn-danger btn-sm" onclick="deleteEmployeeFinanceEntry('${item.id}')" title="Delete"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+            if (!entries.length) { tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state" style="padding:30px;"><i class="fas fa-wallet"></i><h3>No entries for this date</h3><p>Only account entries created from your own login are shown here.</p></div></td></tr>`; return; }
+            tbody.innerHTML = renderGroupedFinanceRows(entries, true);
+        }
+
+        function buildFinanceEntrySlipText(item) {
+            const accountLine = formatFinanceAccount(item) ? `\n🏦 Online Account: ${formatFinanceAccount(item)}` : '';
+            const receiverLine = formatFinanceReceiver(item) ? `\n👤 Receiver: ${formatFinanceReceiver(item)}` : '';
+            return `🔥 Fire.net.pk Payment Slip
+🧾 Slip ID: ${item.id || '-'}
+📅 Date: ${item.date || '-'} ${item.time || ''}
+📌 Type: ${item.type === 'income' ? 'Payment Received' : 'Expense Entry'}
+📂 Category: ${formatFinanceCategory(item)}${accountLine}${receiverLine}
+💰 Amount: ${formatPKR(item.amount)}
+📝 Details: ${item.note || '-'}
+
+✅ Thank you. This is your payment/work slip from Fire.net.pk.`;
+        }
+
+        function sendFinanceEntrySlip(id) {
+            const item = dailyFinance.find(entry => entry.id === id);
+            if (!item) { showToast('Entry not found', 'error'); return; }
+            if (currentUser?.type === 'employee' && !isCurrentEmployeeFinanceEntry(item)) { showToast('You can only send slips for your own entries.', 'warning'); return; }
+            const phone = normalizePhoneForWhatsApp(item.clientPhone || prompt('Enter client WhatsApp number for slip:'));
+            if (!phone) { showToast('Client WhatsApp number is required for slip.', 'warning'); return; }
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(buildFinanceEntrySlipText(item))}`, '_blank');
+        }
+
+        function getInvoiceField(prefix, id) {
+            const actualId = prefix === 'emp' ? 'emp' + id.charAt(0).toUpperCase() + id.slice(1) : id;
+            return document.getElementById(actualId);
+        }
+
+        function initInvoiceProductTables() {
+            if (document.getElementById('invoiceProductBody') && !document.getElementById('invoiceProductBody').children.length) addInvoiceProductRow('admin');
+            if (document.getElementById('empInvoiceProductBody') && !document.getElementById('empInvoiceProductBody').children.length) addInvoiceProductRow('emp');
+        }
+
+        function addInvoiceProductRow(prefix = 'admin', name = '', qty = 1, rate = 0) {
+            const body = getInvoiceField(prefix, 'invoiceProductBody');
+            if (!body) return;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td data-label="Product / Service"><input type="text" class="invoice-item-name" value="${String(name).replace(/"/g, '&quot;')}" placeholder="Product / service name" oninput="calculateInvoiceTotals('${prefix}')"></td>
+                <td data-label="Qty"><input type="number" class="invoice-item-qty" value="${qty}" min="0" step="1" oninput="calculateInvoiceTotals('${prefix}')"></td>
+                <td data-label="Rate"><input type="number" class="invoice-item-rate" value="${rate}" min="0" step="1" oninput="calculateInvoiceTotals('${prefix}')"></td>
+                <td data-label="Total"><strong class="invoice-item-total">Rs. 0</strong></td>
+                <td data-label="Action"><button type="button" class="btn btn-sm btn-danger" onclick="removeInvoiceProductRow(this, '${prefix}')"><i class="fas fa-trash"></i></button></td>
+            `;
+            body.appendChild(tr);
+            calculateInvoiceTotals(prefix);
+        }
+
+        function removeInvoiceProductRow(button, prefix = 'admin') {
+            const body = getInvoiceField(prefix, 'invoiceProductBody');
+            if (!body) return;
+            if (body.children.length <= 1) {
+                const row = button.closest('tr');
+                row.querySelector('.invoice-item-name').value = '';
+                row.querySelector('.invoice-item-qty').value = 1;
+                row.querySelector('.invoice-item-rate').value = 0;
+            } else {
+                button.closest('tr').remove();
+            }
+            calculateInvoiceTotals(prefix);
+        }
+
+        function collectInvoiceProducts(prefix = 'admin') {
+            const body = getInvoiceField(prefix, 'invoiceProductBody');
+            const rows = body ? Array.from(body.querySelectorAll('tr')) : [];
+            return rows.map(row => {
+                const name = row.querySelector('.invoice-item-name')?.value.trim() || '';
+                const qty = Number(row.querySelector('.invoice-item-qty')?.value || 0);
+                const rate = Number(row.querySelector('.invoice-item-rate')?.value || 0);
+                const total = qty * rate;
+                const totalEl = row.querySelector('.invoice-item-total');
+                if (totalEl) totalEl.textContent = formatPKR(total);
+                return { name, qty, rate, total };
+            }).filter(item => item.name || item.total > 0);
+        }
+
+        function calculateInvoiceTotals(prefix = 'admin') {
+            const items = collectInvoiceProducts(prefix);
+            const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+            const discount = Math.max(0, Number(getInvoiceField(prefix, 'invoiceDiscount')?.value || 0));
+            const finalTotal = Math.max(0, subtotal - discount);
+            const amountInput = getInvoiceField(prefix, 'invoiceAmount');
+            if (amountInput) amountInput.value = finalTotal;
+            const subtotalEl = getInvoiceField(prefix, 'invoiceSubtotalText');
+            const discountEl = getInvoiceField(prefix, 'invoiceDiscountText');
+            const totalEl = getInvoiceField(prefix, 'invoiceTotalText');
+            if (subtotalEl) subtotalEl.textContent = formatPKR(subtotal);
+            if (discountEl) discountEl.textContent = formatPKR(discount);
+            if (totalEl) totalEl.textContent = formatPKR(finalTotal);
+            return { items, subtotal, discount, finalTotal };
+        }
+
+        function buildSimpleInvoiceText(prefix = 'admin') {
+            const customerName = getInvoiceField(prefix, 'invoiceCustomerName')?.value.trim() || 'Customer';
+            const phone = getInvoiceField(prefix, 'invoiceCustomerPhone')?.value.trim() || '';
+            const workType = getInvoiceField(prefix, 'invoiceWorkType')?.value || 'Other Work';
+            const details = getInvoiceField(prefix, 'invoiceDetails')?.value.trim() || '-';
+            const { items, subtotal, discount, finalTotal } = calculateInvoiceTotals(prefix);
+            const invoiceNo = 'INV-' + Date.now().toString(36).toUpperCase();
+            const itemLines = items.length
+                ? items.map((item, index) => `${index + 1}. ${item.name || 'Item'} — Qty: ${item.qty || 0} × ${formatPKR(item.rate || 0)} = ${formatPKR(item.total || 0)}`).join('\n')
+                : 'No product added';
+            const createdBy = prefix === 'emp' && currentUser?.name ? `\n👨‍🔧 Created By: ${currentUser.name}` : '';
+            return `🔥 Fire.net.pk Invoice / Work Slip
+🧾 Invoice No: ${invoiceNo}
+📅 Date: ${financeTodayISO()}${createdBy}
+👤 Customer: ${customerName}${phone ? `\n📱 Phone: ${phone}` : ''}
+
+🛠️ Work Type: ${workType}
+📦 Products / Work Items:
+${itemLines}
+
+🧮 Subtotal: ${formatPKR(subtotal)}
+🏷️ Discount: ${formatPKR(discount)}
+💰 Final Total: ${formatPKR(finalTotal)}
+📝 Details: ${details}
+
+✅ Please keep this slip for your record.
+Thank you for choosing Fire.net.pk.`;
+        }
+
+        function previewSimpleInvoice(prefix = 'admin') {
+            const previewId = prefix === 'emp' ? 'empSimpleInvoicePreview' : 'simpleInvoicePreview';
+            const preview = document.getElementById(previewId);
+            if (preview) preview.textContent = buildSimpleInvoiceText(prefix);
+        }
+
+        function sendSimpleInvoiceWhatsApp(prefix = 'admin') {
+            const { finalTotal } = calculateInvoiceTotals(prefix);
+            const phone = normalizePhoneForWhatsApp(getInvoiceField(prefix, 'invoiceCustomerPhone')?.value || '');
+            if (!finalTotal || finalTotal <= 0) { showToast('Please add product/item amount for invoice.', 'error'); return; }
+            if (!phone) { showToast('Please enter customer WhatsApp number.', 'error'); return; }
+            const text = buildSimpleInvoiceText(prefix);
+            previewSimpleInvoice(prefix);
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         function openDailyReportWhatsApp() {
@@ -6003,7 +6696,8 @@ Half Day: ${halfDay}
         function groupByCategory(entries, type) {
             const grouped = {};
             entries.filter(e => e.type === type).forEach(e => {
-                grouped[e.category] = (grouped[e.category] || 0) + Number(e.amount || 0);
+                const key = e.category === 'Monthly Fee' && e.subCategory ? `${e.category} (${e.subCategory})` : e.category;
+                grouped[key] = (grouped[key] || 0) + Number(e.amount || 0);
             });
             return Object.entries(grouped).sort((a, b) => b[1] - a[1]);
         }
