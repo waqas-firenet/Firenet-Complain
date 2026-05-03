@@ -1994,6 +1994,159 @@
             width: 18px;
             height: 18px;
         }
+
+
+        /* Live banner + profile dropdown + target module */
+        .live-banner {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+        .live-pill {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            color: var(--secondary);
+            padding: 9px 14px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.88rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .profile-dropdown { position: relative; }
+        .profile-menu-btn {
+            background: #f8f9fa;
+            color: var(--secondary);
+            border: 1px solid #e9ecef;
+            padding: 10px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+        }
+        .profile-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 52px;
+            min-width: 245px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 18px 45px rgba(0,0,0,.22);
+            padding: 8px;
+            z-index: 999;
+            border: 1px solid #e9ecef;
+        }
+        .profile-dropdown-menu.active { display: block; }
+        .profile-dropdown-menu button {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: left;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            color: var(--secondary);
+            cursor: pointer;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .profile-dropdown-menu button:hover { background: #f8f9fa; }
+        .target-progress-box {
+            width: 170px;
+            height: 10px;
+            border-radius: 999px;
+            background: #e9ecef;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .target-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+        }
+        .target-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--employee);
+            margin-bottom: 14px;
+        }
+        .target-card.accounts { border-left-color: var(--finance); }
+        .target-card.technical { border-left-color: var(--info); }
+
+        @media (max-width: 992px) {
+            .live-banner { width: 100%; justify-content: stretch; }
+            .live-pill { flex: 1; justify-content: center; }
+            .profile-dropdown { width: 100%; }
+            .profile-menu-btn { width: 100%; justify-content: center; }
+            .profile-dropdown-menu { left: 0; right: 0; width: 100%; }
+        }
+
+        /* New Complaint Employee Notification */
+        .complaint-alert-popup {
+            position: fixed;
+            top: 22px;
+            right: 22px;
+            width: min(390px, calc(100vw - 28px));
+            background: #ffffff;
+            color: var(--secondary);
+            border-radius: 18px;
+            box-shadow: 0 22px 70px rgba(0,0,0,0.28);
+            border-left: 6px solid var(--primary);
+            z-index: 3000;
+            overflow: hidden;
+            animation: complaintAlertIn .32s ease;
+        }
+        .complaint-alert-head {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            font-weight: 800;
+        }
+        .complaint-alert-body {
+            padding: 16px;
+            line-height: 1.55;
+            font-size: .92rem;
+        }
+        .complaint-alert-body strong { color: var(--primary); }
+        .complaint-alert-actions {
+            display: flex;
+            gap: 10px;
+            padding: 0 16px 16px;
+            flex-wrap: wrap;
+        }
+        .complaint-alert-close {
+            background: rgba(255,255,255,.18);
+            color: #fff;
+            border: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+        @keyframes complaintAlertIn {
+            from { opacity: 0; transform: translateX(35px) translateY(-10px); }
+            to { opacity: 1; transform: translateX(0) translateY(0); }
+        }
+        @media (max-width: 520px) {
+            .complaint-alert-popup { top: 10px; right: 10px; left: 10px; width: auto; }
+        }
+
     </style>
 </head>
 <body>
@@ -2067,19 +2220,22 @@
                     </div>
                 </div>
                 <div class="user-section">
-                    <button class="settings-btn" onclick="openAdminPasswordModal()">
-                        <i class="fas fa-key"></i> Change Password
-                    </button>
-                    <div class="user-badge">
-                        <div class="user-avatar" style="background: var(--danger);">A</div>
-                        <div class="user-info">
-                            <div class="name">Administrator</div>
-                            <div class="role"><span class="badge badge-admin">ADMIN</span></div>
+                    <div class="live-banner">
+                        <div class="live-pill"><i class="fas fa-calendar-day"></i> <span id="adminLiveDate">Today</span></div>
+                        <div class="live-pill"><i class="fas fa-clock"></i> <span id="adminLiveTime">--:--</span></div>
+                    </div>
+                    <div class="profile-dropdown">
+                        <button class="profile-menu-btn" onclick="toggleProfileDropdown('adminProfileMenu')">
+                            <div class="user-avatar" style="background: var(--danger); width: 30px; height: 30px;">A</div>
+                            Administrator <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="profile-dropdown-menu" id="adminProfileMenu">
+                            <button onclick="openUserSummaryModal('admin')"><i class="fas fa-chart-pie"></i> Sum Up</button>
+                            <button onclick="showAdminProfileView()"><i class="fas fa-id-card"></i> Profile View</button>
+                            <button onclick="openAdminPasswordModal()"><i class="fas fa-key"></i> Change Password</button>
+                            <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
                         </div>
                     </div>
-                    <button class="logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
                 </div>
             </header>
 
@@ -2089,6 +2245,9 @@
                 </button>
                 <button class="nav-tab" onclick="switchAdminTab('employees')">
                     <i class="fas fa-users"></i> Employees
+                </button>
+                <button class="nav-tab" onclick="switchAdminTab('targets')">
+                    <i class="fas fa-bullseye"></i> Targets
                 </button>
                 <button class="nav-tab" onclick="switchAdminTab('payroll')">
                     <i class="fas fa-money-bill-wave"></i> Payroll
@@ -2282,6 +2441,31 @@
                             <tbody id="adminEmployeesTableBody"></tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+
+
+            <!-- Admin Targets Tab -->
+            <div id="adminTargetsTab" class="tab-content">
+                <div class="stats-bar">
+                    <div class="stat-card"><div class="stat-icon employees"><i class="fas fa-bullseye"></i></div><div class="stat-info"><h3 id="targetTotalCount">0</h3><p>Total Targets</p></div></div>
+                    <div class="stat-card"><div class="stat-icon payroll"><i class="fas fa-percent"></i></div><div class="stat-info"><h3 id="targetAccountsCount">0</h3><p>Accounts Targets</p></div></div>
+                    <div class="stat-card"><div class="stat-icon in-progress"><i class="fas fa-ticket-alt"></i></div><div class="stat-info"><h3 id="targetTechnicalCount">0</h3><p>Technical Targets</p></div></div>
+                    <div class="stat-card"><div class="stat-icon resolved"><i class="fas fa-chart-line"></i></div><div class="stat-info"><h3 id="targetAvgProgress">0%</h3><p>Average Progress</p></div></div>
+                </div>
+                <div class="main-card">
+                    <div class="card-header"><h2><i class="fas fa-bullseye"></i> Assign Employee Target</h2><div style="font-size:0.9rem;opacity:.9;">Accounts = percentage target, Technical = ticket target</div></div>
+                    <div class="quick-finance-form">
+                        <div class="form-row">
+                            <div class="form-group"><label>Employee</label><select id="targetEmployeeSelect" class="form-control"></select></div>
+                            <div class="form-group"><label>Department / Target Type</label><select id="targetDepartment" class="form-control" onchange="syncTargetDepartmentUI()"><option value="Accounts">Accounts - Percentage</option><option value="Technical">Technical - Ticket Based</option></select></div>
+                            <div class="form-group"><label>Target Value</label><input type="number" id="targetValue" class="form-control" placeholder="Accounts: 80%, Technical: 20 tickets"></div>
+                            <div class="form-group"><label>Target Month</label><input type="month" id="targetMonth" class="form-control"></div>
+                            <div class="form-group full-width"><label>Target Note</label><input type="text" id="targetNote" class="form-control" placeholder="Example: Complete monthly collection target / Resolve assigned technical complaints"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="assignEmployeeTarget()"><i class="fas fa-save"></i> Assign Target</button>
+                    </div>
+                    <div style="overflow-x:auto;"><table><thead><tr><th>Employee</th><th>Department</th><th>Target</th><th>Progress</th><th>Month</th><th>Note</th><th>Action</th></tr></thead><tbody id="adminTargetsTableBody"></tbody></table></div>
                 </div>
             </div>
 
@@ -2776,19 +2960,22 @@
                     </div>
                 </div>
                 <div class="user-section">
-                    <button class="settings-btn" onclick="openEmployeePasswordModal()">
-                        <i class="fas fa-key"></i> Change Password
-                    </button>
-                    <div class="user-badge">
-                        <div class="user-avatar" id="empPortalAvatar">E</div>
-                        <div class="user-info">
-                            <div class="name" id="empPortalName">Employee</div>
-                            <div class="role"><span class="badge badge-employee" id="empPortalRole">STAFF</span></div>
+                    <div class="live-banner">
+                        <div class="live-pill"><i class="fas fa-calendar-day"></i> <span id="empLiveDate">Today</span></div>
+                        <div class="live-pill"><i class="fas fa-clock"></i> <span id="empLiveTime">--:--</span></div>
+                    </div>
+                    <div class="profile-dropdown">
+                        <button class="profile-menu-btn" onclick="toggleProfileDropdown('empProfileMenu')">
+                            <div class="user-avatar" id="empPortalAvatar" style="width: 30px; height: 30px;">E</div>
+                            <span id="empPortalName">Employee</span> <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="profile-dropdown-menu" id="empProfileMenu">
+                            <button onclick="openUserSummaryModal('employee')"><i class="fas fa-chart-pie"></i> Sum Up</button>
+                            <button onclick="switchEmployeeTab('profile')"><i class="fas fa-id-card"></i> Profile View</button>
+                            <button onclick="openEmployeePasswordModal()"><i class="fas fa-key"></i> Change Password</button>
+                            <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
                         </div>
                     </div>
-                    <button class="logout-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
                 </div>
             </header>
 
@@ -2806,6 +2993,9 @@
             <div class="nav-tabs">
                 <button class="nav-tab active" onclick="switchEmployeeTab('mytasks')">
                     <i class="fas fa-tasks"></i> My Tasks
+                </button>
+                <button class="nav-tab" onclick="switchEmployeeTab('targets')">
+                    <i class="fas fa-bullseye"></i> My Targets
                 </button>
                 <button class="nav-tab" onclick="switchEmployeeTab('invoice')">
                     <i class="fas fa-file-invoice"></i> Invoice
@@ -2857,6 +3047,21 @@
                 </div>
             </div>
 
+
+
+            <!-- Employee Targets Tab -->
+            <div id="empTargetsTab" class="tab-content">
+                <div class="stats-bar">
+                    <div class="stat-card"><div class="stat-icon employees"><i class="fas fa-bullseye"></i></div><div class="stat-info"><h3 id="empTargetTotal">0</h3><p>Assigned Targets</p></div></div>
+                    <div class="stat-card"><div class="stat-icon resolved"><i class="fas fa-chart-line"></i></div><div class="stat-info"><h3 id="empTargetProgress">0%</h3><p>Latest Progress</p></div></div>
+                    <div class="stat-card"><div class="stat-icon in-progress"><i class="fas fa-ticket-alt"></i></div><div class="stat-info"><h3 id="empTargetTickets">0</h3><p>Resolved Tickets</p></div></div>
+                    <div class="stat-card"><div class="stat-icon payroll"><i class="fas fa-percent"></i></div><div class="stat-info"><h3 id="empTargetType">-</h3><p>Target Type</p></div></div>
+                </div>
+                <div class="main-card">
+                    <div class="card-header"><h2><i class="fas fa-bullseye"></i> My Assigned Targets</h2><div style="font-size:.9rem;opacity:.9;">Set by admin</div></div>
+                    <div style="padding:20px;" id="empTargetsList"></div>
+                </div>
+            </div>
 
             <!-- Employee Invoice Tab -->
             <div id="empInvoiceTab" class="tab-content">
@@ -3267,6 +3472,7 @@
                             <label><i class="fas fa-user-lock"></i> Employee Portal Permissions</label>
                             <div class="permission-grid">
                                 <label><input type="checkbox" id="permMytasks"> My Tasks / Complaints</label>
+                                <label><input type="checkbox" id="permTargets"> Targets</label>
                                 <label><input type="checkbox" id="permInvoice"> Invoice</label>
                                 <label><input type="checkbox" id="permAttendance"> Attendance</label>
                                 <label><input type="checkbox" id="permPayroll"> Payroll</label>
@@ -3510,6 +3716,21 @@
         </div>
     </div>
 
+
+    <!-- Profile Summary Modal -->
+    <div class="modal-overlay" id="userSummaryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-chart-pie"></i> Profile Sum Up</h2>
+                <button class="close-btn" onclick="closeUserSummaryModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="userSummaryContent"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeUserSummaryModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -3520,15 +3741,18 @@
         // ==================== DATA & STATE ====================
         let complaints = [];
         let employees = [];
+        let employeeComplaintAudioUnlocked = false;
+        let lastEmployeeComplaintPopupId = null;
         let attendance = [];
         let payroll = [];
         let currentUser = null;
         let dailyFinance = [];
+        let employeeTargets = JSON.parse(localStorage.getItem('firenet_employee_targets') || '[]');
         let db = null;
         let viewingId = null;
         let financeEditId = null;
         let complaintOpenedByEmployee = false;
-        const DEFAULT_EMPLOYEE_PERMISSIONS = { mytasks: true, invoice: true, attendance: true, payroll: true, accounts: false, resolved: true, profile: true };
+        const DEFAULT_EMPLOYEE_PERMISSIONS = { mytasks: true, targets: true, invoice: true, attendance: true, payroll: true, accounts: false, resolved: true, profile: true };
         
         const firebaseConfig = {
             apiKey: "AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E",
@@ -3613,9 +3837,17 @@
             if (!db) return;
 
             db.collection('complaints').onSnapshot(snapshot => {
-                complaints = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const previousComplaints = complaints || [];
+                const latestComplaints = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const employeeAppActive = document.getElementById('employeeApp').classList.contains('active') && currentUser?.type === 'employee';
+
+                if (employeeAppActive) {
+                    detectNewAssignedComplaint(previousComplaints, latestComplaints);
+                }
+
+                complaints = latestComplaints;
                 if (document.getElementById('adminApp').classList.contains('active')) refreshAdmin();
-                if (document.getElementById('employeeApp').classList.contains('active') && currentUser?.type === 'employee') refreshEmployee();
+                if (employeeAppActive) refreshEmployee();
             }, error => console.error('Realtime complaints error:', error));
 
             db.collection('employees').onSnapshot(snapshot => {
@@ -3785,6 +4017,7 @@
         }
 
         function logout() {
+            closeAllProfileMenus();
             currentUser = null;
             localStorage.removeItem('firenet_user');
             document.getElementById('loginScreen').style.display = 'flex';
@@ -3813,9 +4046,10 @@
             
             document.getElementById('empPortalName').textContent = currentUser.name;
             document.getElementById('empWelcomeName').textContent = currentUser.name;
-            document.getElementById('empPortalRole').textContent = currentUser.role.toUpperCase();
+            const empRoleEl = document.getElementById('empPortalRole'); if (empRoleEl) empRoleEl.textContent = currentUser.role.toUpperCase();
             document.getElementById('empPortalAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
             applyEmployeePermissions();
+            unlockEmployeeComplaintSound();
             refreshEmployee();
         }
 
@@ -3823,8 +4057,8 @@
             if (!currentUser || currentUser.type !== 'employee') return;
             const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser.permissions || {}) };
             const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
-            const tabMap = { mytasks: 0, invoice: 1, attendance: 2, payroll: 3, accounts: 4, resolved: 5, profile: 6 };
-            const tabIdMap = { mytasks: 'empMyTasksTab', invoice: 'empInvoiceTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
+            const tabMap = { mytasks: 0, targets: 1, invoice: 2, attendance: 3, payroll: 4, accounts: 5, resolved: 6, profile: 7 };
+            const tabIdMap = { mytasks: 'empMyTasksTab', targets: 'empTargetsTab', invoice: 'empInvoiceTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
 
             Object.entries(tabMap).forEach(([key, index]) => {
                 if (tabButtons[index]) tabButtons[index].classList.toggle('hidden', !permissions[key]);
@@ -3845,12 +4079,13 @@
             document.querySelectorAll('#adminApp .tab-content').forEach(t => t.classList.remove('active'));
             
             const tabButtons = document.querySelectorAll('#adminApp .nav-tabs .nav-tab');
-            const tabMap = { complaints: 0, employees: 1, payroll: 2, attendance: 3, invoice: 4, finance: 5, backup: 6 };
+            const tabMap = { complaints: 0, employees: 1, targets: 2, payroll: 3, attendance: 4, invoice: 5, finance: 6, backup: 7 };
             const btn = tabButtons[tabMap[tab]];
             if (btn) btn.classList.add('active');
             const tabEl = document.getElementById('admin' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Tab');
             if (tabEl) tabEl.classList.add('active');
             
+            if (tab === 'targets') renderAdminTargets();
             if (tab === 'payroll') renderAdminPayroll();
             if (tab === 'attendance') renderAdminAttendance();
             if (tab === 'invoice') calculateInvoiceTotals('admin');
@@ -3860,6 +4095,7 @@
         function refreshAdmin() {
             renderAdminComplaints();
             renderAdminEmployees();
+            renderAdminTargets();
             updateAdminStats();
             updateHandlerDropdown();
             updateHandlerFilter();
@@ -4085,6 +4321,195 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+
+        // ==================== LIVE DATE/TIME + PROFILE DROPDOWN + TARGETS ====================
+        function updateLiveBannerDateTime() {
+            const now = new Date();
+            const dateText = now.toLocaleDateString('en-PK', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+            const timeText = now.toLocaleTimeString('en-PK');
+            ['adminLiveDate','empLiveDate'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = dateText; });
+            ['adminLiveTime','empLiveTime'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = timeText; });
+        }
+        setInterval(updateLiveBannerDateTime, 1000);
+        updateLiveBannerDateTime();
+
+        function toggleProfileDropdown(menuId) {
+            document.querySelectorAll('.profile-dropdown-menu').forEach(m => { if (m.id !== menuId) m.classList.remove('active'); });
+            const menu = document.getElementById(menuId);
+            if (menu) menu.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.profile-dropdown')) {
+                document.querySelectorAll('.profile-dropdown-menu').forEach(m => m.classList.remove('active'));
+            }
+        });
+
+        function closeAllProfileMenus() {
+            document.querySelectorAll('.profile-dropdown-menu').forEach(m => m.classList.remove('active'));
+        }
+
+        function showAdminProfileView() {
+            closeAllProfileMenus();
+            openUserSummaryModal('admin');
+        }
+
+        function openUserSummaryModal(type) {
+            closeAllProfileMenus();
+            const box = document.getElementById('userSummaryContent');
+            if (!box) return;
+            if (type === 'admin') {
+                box.innerHTML = `<div class="attendance-detail-grid">
+                    <div class="attendance-detail-card"><strong>User</strong><span>Administrator</span></div>
+                    <div class="attendance-detail-card"><strong>Role</strong><span>Admin</span></div>
+                    <div class="attendance-detail-card"><strong>Total Complaints</strong><span>${complaints.length}</span></div>
+                    <div class="attendance-detail-card"><strong>Total Employees</strong><span>${employees.length}</span></div>
+                    <div class="attendance-detail-card"><strong>Targets Assigned</strong><span>${employeeTargets.length}</span></div>
+                    <div class="attendance-detail-card"><strong>Open Complaints</strong><span>${complaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed').length}</span></div>
+                </div>`;
+            } else {
+                const myComplaints = complaints.filter(c => c.handlerId === currentUser.id);
+                const myTargets = employeeTargets.filter(t => t.employeeId === currentUser.id);
+                const latest = myTargets[myTargets.length - 1];
+                box.innerHTML = `<div class="attendance-detail-grid">
+                    <div class="attendance-detail-card"><strong>Name</strong><span>${currentUser.name}</span></div>
+                    <div class="attendance-detail-card"><strong>Role</strong><span>${currentUser.role}</span></div>
+                    <div class="attendance-detail-card"><strong>Department</strong><span>${currentUser.department || '-'}</span></div>
+                    <div class="attendance-detail-card"><strong>Phone</strong><span>${currentUser.phone || '-'}</span></div>
+                    <div class="attendance-detail-card"><strong>Assigned Complaints</strong><span>${myComplaints.length}</span></div>
+                    <div class="attendance-detail-card"><strong>Resolved</strong><span>${myComplaints.filter(c => c.status === 'Resolved' || c.status === 'Closed').length}</span></div>
+                    <div class="attendance-detail-card"><strong>Targets</strong><span>${myTargets.length}</span></div>
+                    <div class="attendance-detail-card"><strong>Latest Target</strong><span>${latest ? formatEmployeeTargetValue(latest) : 'None'}</span></div>
+                </div>`;
+            }
+            document.getElementById('userSummaryModal').classList.add('active');
+        }
+
+        function closeUserSummaryModal() {
+            document.getElementById('userSummaryModal')?.classList.remove('active');
+        }
+
+        function saveEmployeeTargetsLocal() {
+            localStorage.setItem('firenet_employee_targets', JSON.stringify(employeeTargets));
+        }
+
+        function getTargetEmployeeOptions() {
+            return employees.filter(e => e.status === 'active').map(e => `<option value="${e.id}">${e.name} - ${e.department || e.role}</option>`).join('');
+        }
+
+        function syncTargetDepartmentUI() {
+            const dept = document.getElementById('targetDepartment')?.value;
+            const val = document.getElementById('targetValue');
+            if (val) val.placeholder = dept === 'Accounts' ? 'Example: 80 for 80%' : 'Example: 20 tickets';
+        }
+
+        function updateTargetSelectors() {
+            const select = document.getElementById('targetEmployeeSelect');
+            if (select) select.innerHTML = getTargetEmployeeOptions();
+            const month = document.getElementById('targetMonth');
+            if (month && !month.value) month.value = new Date().toISOString().slice(0,7);
+            syncTargetDepartmentUI();
+        }
+
+        function formatEmployeeTargetValue(t) {
+            return t.department === 'Accounts' ? `${t.value}% collection target` : `${t.value} tickets target`;
+        }
+
+        function calculateTargetProgress(t) {
+            if (!t) return 0;
+            if (t.department === 'Technical') {
+                const completed = complaints.filter(c => c.handlerId === t.employeeId && (c.status === 'Resolved' || c.status === 'Closed')).length;
+                return Math.min(100, Math.round((completed / Math.max(Number(t.value) || 1, 1)) * 100));
+            }
+            return Math.min(100, Math.max(0, Number(t.progress || 0)));
+        }
+
+        function assignEmployeeTarget() {
+            const employeeId = document.getElementById('targetEmployeeSelect')?.value;
+            const emp = employees.find(e => e.id === employeeId);
+            const department = document.getElementById('targetDepartment')?.value || 'Accounts';
+            const value = Number(document.getElementById('targetValue')?.value) || 0;
+            const month = document.getElementById('targetMonth')?.value || new Date().toISOString().slice(0,7);
+            const note = document.getElementById('targetNote')?.value.trim() || '';
+            if (!emp || value <= 0) { showToast('Please select employee and enter valid target value.', 'error'); return; }
+            employeeTargets.push({ id: 'TGT-' + Date.now().toString(36).toUpperCase(), employeeId, employeeName: emp.name, department, value, month, note, progress: 0, createdAt: new Date().toISOString() });
+            saveEmployeeTargetsLocal();
+            document.getElementById('targetValue').value = '';
+            document.getElementById('targetNote').value = '';
+            renderAdminTargets();
+            showToast('Target assigned successfully!', 'success');
+        }
+
+        function deleteEmployeeTarget(id) {
+            if (!confirm('Delete this target?')) return;
+            employeeTargets = employeeTargets.filter(t => t.id !== id);
+            saveEmployeeTargetsLocal();
+            renderAdminTargets();
+            renderEmployeeTargets();
+            showToast('Target deleted.', 'info');
+        }
+
+        function updateMyAccountsTargetProgress(targetId) {
+            const value = Number(document.getElementById('empAccountProgress_' + targetId)?.value);
+            if (isNaN(value) || value < 0 || value > 100) { showToast('Enter progress between 0 and 100.', 'error'); return; }
+            employeeTargets = employeeTargets.map(t => t.id === targetId ? { ...t, progress: value, updatedAt: new Date().toISOString() } : t);
+            saveEmployeeTargetsLocal();
+            renderEmployeeTargets();
+            showToast('Target progress updated.', 'success');
+        }
+
+        function renderAdminTargets() {
+            updateTargetSelectors();
+            const tbody = document.getElementById('adminTargetsTableBody');
+            if (!tbody) return;
+            const total = employeeTargets.length;
+            const accounts = employeeTargets.filter(t => t.department === 'Accounts').length;
+            const technical = employeeTargets.filter(t => t.department === 'Technical').length;
+            const avg = total ? Math.round(employeeTargets.reduce((sum,t)=>sum+calculateTargetProgress(t),0)/total) : 0;
+            document.getElementById('targetTotalCount').textContent = total;
+            document.getElementById('targetAccountsCount').textContent = accounts;
+            document.getElementById('targetTechnicalCount').textContent = technical;
+            document.getElementById('targetAvgProgress').textContent = avg + '%';
+            tbody.innerHTML = employeeTargets.map(t => {
+                const progress = calculateTargetProgress(t);
+                return `<tr>
+                    <td>${t.employeeName || (employees.find(e=>e.id===t.employeeId)?.name || 'Employee')}</td>
+                    <td><span class="badge ${t.department === 'Accounts' ? 'badge-paid' : 'badge-in-progress'}">${t.department}</span></td>
+                    <td>${formatEmployeeTargetValue(t)}</td>
+                    <td><strong>${progress}%</strong><div class="target-progress-box"><div class="target-progress-fill" style="width:${progress}%"></div></div></td>
+                    <td>${t.month || '-'}</td>
+                    <td>${t.note || '-'}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteEmployeeTarget('${t.id}')"><i class="fas fa-trash"></i> Delete</button></td>
+                </tr>`;
+            }).join('') || `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-bullseye"></i><h3>No targets assigned yet</h3></div></td></tr>`;
+        }
+
+        function renderEmployeeTargets() {
+            const myTargets = employeeTargets.filter(t => t.employeeId === currentUser?.id);
+            const list = document.getElementById('empTargetsList');
+            if (!list) return;
+            const latest = myTargets[myTargets.length - 1];
+            const resolvedTickets = complaints.filter(c => c.handlerId === currentUser?.id && (c.status === 'Resolved' || c.status === 'Closed')).length;
+            document.getElementById('empTargetTotal').textContent = myTargets.length;
+            document.getElementById('empTargetTickets').textContent = resolvedTickets;
+            document.getElementById('empTargetProgress').textContent = latest ? calculateTargetProgress(latest) + '%' : '0%';
+            document.getElementById('empTargetType').textContent = latest ? latest.department : '-';
+            if (!myTargets.length) {
+                list.innerHTML = `<div class="empty-state"><i class="fas fa-bullseye"></i><h3>No target assigned yet</h3><p>Admin can assign percentage target for accounts or ticket-based target for technical department.</p></div>`;
+                return;
+            }
+            list.innerHTML = myTargets.slice().reverse().map(t => {
+                const progress = calculateTargetProgress(t);
+                const isAccounts = t.department === 'Accounts';
+                return `<div class="target-card ${isAccounts ? 'accounts' : 'technical'}">
+                    <div class="task-header"><div><div class="task-title"><i class="fas fa-bullseye"></i> ${formatEmployeeTargetValue(t)}</div><div class="task-meta"><span><i class="fas fa-calendar"></i> ${t.month || '-'}</span><span><i class="fas fa-building"></i> ${t.department}</span></div></div><span class="badge ${isAccounts ? 'badge-paid' : 'badge-in-progress'}">${progress}%</span></div>
+                    <p style="color:#7f8c8d;margin:10px 0;">${t.note || 'No note added by admin.'}</p>
+                    <div class="target-progress-box" style="width:100%;height:14px;"><div class="target-progress-fill" style="width:${progress}%"></div></div>
+                    ${isAccounts ? `<div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;"><input type="number" id="empAccountProgress_${t.id}" class="form-control" placeholder="Update percentage 0-100" min="0" max="100" value="${t.progress || 0}" style="max-width:240px;"><button class="btn btn-primary" onclick="updateMyAccountsTargetProgress('${t.id}')"><i class="fas fa-save"></i> Update Progress</button></div>` : `<div class="notice" style="margin-top:12px;">Ticket progress auto updates from your Resolved / Closed complaints. Resolved tickets: <strong>${resolvedTickets}</strong></div>`}
+                </div>`;
+            }).join('');
         }
 
         function renderAdminEmployees() {
@@ -4942,14 +5367,15 @@
             document.querySelectorAll('#employeeApp .tab-content').forEach(t => t.classList.remove('active'));
             
             const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
-            const tabMap = { mytasks: 0, invoice: 1, attendance: 2, payroll: 3, accounts: 4, resolved: 5, profile: 6 };
-            const tabIdMap = { mytasks: 'empMyTasksTab', invoice: 'empInvoiceTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
+            const tabMap = { mytasks: 0, targets: 1, invoice: 2, attendance: 3, payroll: 4, accounts: 5, resolved: 6, profile: 7 };
+            const tabIdMap = { mytasks: 'empMyTasksTab', targets: 'empTargetsTab', invoice: 'empInvoiceTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
             const btn = tabButtons[tabMap[tab]];
             if (btn) btn.classList.add('active');
             const tabEl = document.getElementById(tabIdMap[tab]);
             if (tabEl) tabEl.classList.add('active');
             
             if (tab === 'mytasks') refreshEmployeeTasks();
+            if (tab === 'targets') renderEmployeeTargets();
             if (tab === 'invoice') calculateInvoiceTotals('emp');
             if (tab === 'attendance') renderEmployeeAttendance();
             if (tab === 'payroll') renderEmployeePayroll();
@@ -4960,6 +5386,7 @@
 
         function refreshEmployee() {
             refreshEmployeeTasks();
+            renderEmployeeTargets();
             refreshEmployeeResolved();
             refreshEmployeeProfile();
             renderEmployeeAttendance();
@@ -5364,6 +5791,7 @@ Please update status promptly via CMS.`;
                     document.getElementById('empNotes').value = emp.notes || '';
                     const perms = getEmployeePermissions(emp);
                     document.getElementById('permMytasks').checked = !!perms.mytasks;
+                    document.getElementById('permTargets').checked = perms.targets !== false;
                     document.getElementById('permInvoice').checked = !!perms.invoice;
                     document.getElementById('permAttendance').checked = !!perms.attendance;
                     document.getElementById('permPayroll').checked = !!perms.payroll;
@@ -5375,6 +5803,7 @@ Please update status promptly via CMS.`;
                 title.textContent = 'Add Employee';
                 document.getElementById('employeeId').value = '';
                 document.getElementById('permMytasks').checked = true;
+                document.getElementById('permTargets').checked = true;
                 document.getElementById('permInvoice').checked = true;
                 document.getElementById('permAttendance').checked = true;
                 document.getElementById('permPayroll').checked = false;
@@ -5403,6 +5832,7 @@ Please update status promptly via CMS.`;
             const notes = document.getElementById('empNotes').value.trim();
             const permissions = {
                 mytasks: document.getElementById('permMytasks').checked,
+                targets: document.getElementById('permTargets').checked,
                 invoice: document.getElementById('permInvoice').checked,
                 attendance: document.getElementById('permAttendance').checked,
                 payroll: document.getElementById('permPayroll').checked,
@@ -5912,6 +6342,96 @@ Please take necessary action and update status in CMS.`;
                 console.error('Error saving finance:', e);
                 showToast('Could not save finance to Firebase: ' + (e.message || 'unknown error'), 'error');
             }
+        }
+
+
+        // ==================== EMPLOYEE NEW COMPLAINT SOUND + POPUP ====================
+        function unlockEmployeeComplaintSound() {
+            // Browser allows sound after user interaction/login. This prepares audio context quietly.
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                if (!window.employeeComplaintAudioCtx) {
+                    window.employeeComplaintAudioCtx = new AudioCtx();
+                }
+                if (window.employeeComplaintAudioCtx.state === 'suspended') {
+                    window.employeeComplaintAudioCtx.resume().catch(() => {});
+                }
+                employeeComplaintAudioUnlocked = true;
+            } catch (e) {
+                employeeComplaintAudioUnlocked = false;
+            }
+        }
+
+        function playNewComplaintSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = window.employeeComplaintAudioCtx || new AudioCtx();
+                window.employeeComplaintAudioCtx = ctx;
+                if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+
+                const now = ctx.currentTime;
+                const notes = [880, 1175, 1480];
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.13);
+                    gain.gain.setValueAtTime(0.0001, now + i * 0.13);
+                    gain.gain.exponentialRampToValueAtTime(0.22, now + i * 0.13 + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.13 + 0.12);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + i * 0.13);
+                    osc.stop(now + i * 0.13 + 0.14);
+                });
+            } catch (e) {
+                console.warn('Complaint sound blocked or unavailable:', e);
+            }
+        }
+
+        function detectNewAssignedComplaint(previousList, latestList) {
+            if (!currentUser || currentUser.type !== 'employee') return;
+            const previousIds = new Set((previousList || []).map(c => c.id));
+            const newAssigned = (latestList || [])
+                .filter(c => c.handlerId === currentUser.id && !previousIds.has(c.id))
+                .sort((a, b) => new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0));
+
+            if (!newAssigned.length) return;
+            const complaint = newAssigned[0];
+            if (lastEmployeeComplaintPopupId === complaint.id) return;
+            lastEmployeeComplaintPopupId = complaint.id;
+            playNewComplaintSound();
+            showNewComplaintPopup(complaint);
+            showToast('New complaint assigned to you!', 'info');
+        }
+
+        function showNewComplaintPopup(complaint) {
+            document.querySelectorAll('.complaint-alert-popup').forEach(el => el.remove());
+            const popup = document.createElement('div');
+            popup.className = 'complaint-alert-popup';
+            popup.innerHTML = `
+                <div class="complaint-alert-head">
+                    <span><i class="fas fa-bell"></i> New Complaint Assigned</span>
+                    <button class="complaint-alert-close" onclick="this.closest('.complaint-alert-popup').remove()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="complaint-alert-body">
+                    <div><strong>${complaint.type || 'Complaint'}</strong> - ${complaint.id || ''}</div>
+                    <div><i class="fas fa-user"></i> ${complaint.complainantName || 'Customer'}</div>
+                    <div><i class="fas fa-phone"></i> ${complaint.phone || 'No phone'}</div>
+                    ${complaint.address ? `<div><i class="fas fa-map-marker-alt"></i> ${complaint.address}</div>` : ''}
+                    ${complaint.details ? `<div style="margin-top:8px;color:#566573;">${complaint.details}</div>` : ''}
+                </div>
+                <div class="complaint-alert-actions">
+                    <button class="btn btn-primary btn-sm" onclick="switchEmployeeTab('mytasks'); this.closest('.complaint-alert-popup').remove();"><i class="fas fa-tasks"></i> Open My Tasks</button>
+                    <button class="btn btn-info btn-sm" onclick="viewComplaint('${complaint.id}'); this.closest('.complaint-alert-popup').remove();"><i class="fas fa-eye"></i> View</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+            setTimeout(() => {
+                if (popup && popup.parentNode) popup.remove();
+            }, 12000);
         }
 
         function showToast(message, type = 'success') {
