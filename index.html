@@ -96,7 +96,238 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
 .notify-empty{padding:22px;text-align:center;color:#64748b;font-weight:900}
 @media(max-width:560px){.notify-panel{left:0;right:auto;width:100%;max-width:calc(100vw - 20px)}}
 
+
+/* Premium Decorative Dashboard */
+.dash-hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#111827 0%,#243447 45%,#e74c3c 100%);
+  color:#fff;border-radius:24px;padding:22px;margin-bottom:14px;
+  box-shadow:0 18px 45px rgba(15,23,42,.22);
+}
+.dash-hero:before{
+  content:"";position:absolute;right:-80px;top:-80px;width:230px;height:230px;
+  background:rgba(255,255,255,.12);border-radius:50%;
+}
+.dash-hero:after{
+  content:"";position:absolute;left:35%;bottom:-90px;width:260px;height:260px;
+  background:rgba(255,255,255,.07);border-radius:50%;
+}
+.dash-hero-content{position:relative;z-index:1;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}
+.dash-title h1{font-size:26px;margin-bottom:6px}
+.dash-title p{color:#e5e7eb;font-weight:800;line-height:1.5}
+.dash-chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:9px 13px;font-weight:900;backdrop-filter:blur(8px)}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.kpi-card{
+  position:relative;overflow:hidden;background:#fff;border-radius:22px;padding:16px;
+  border:1px solid rgba(255,255,255,.85);box-shadow:0 14px 35px rgba(15,23,42,.08);
+  transition:.2s;min-height:118px;
+}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 18px 45px rgba(15,23,42,.12)}
+.kpi-card:after{content:"";position:absolute;right:-35px;top:-35px;width:95px;height:95px;border-radius:50%;background:var(--kpi-soft,#fee2e2)}
+.kpi-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;position:relative;z-index:1}
+.kpi-icon{width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;background:var(--kpi,#e74c3c);box-shadow:0 10px 20px rgba(0,0,0,.13)}
+.kpi-card span{font-size:12px;color:#64748b;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+.kpi-card b{display:block;font-size:23px;margin-top:8px;color:#111827}
+.kpi-card small{display:block;color:#64748b;font-weight:800;margin-top:4px}
+.kpi-red{--kpi:#e74c3c;--kpi-soft:#fee2e2}
+.kpi-blue{--kpi:#2563eb;--kpi-soft:#dbeafe}
+.kpi-green{--kpi:#16a34a;--kpi-soft:#dcfce7}
+.kpi-amber{--kpi:#d97706;--kpi-soft:#fef3c7}
+.kpi-purple{--kpi:#7c3aed;--kpi-soft:#ede9fe}
+.kpi-slate{--kpi:#243447;--kpi-soft:#e2e8f0}
+.dash-section-title{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 10px;
+}
+.dash-section-title h2{font-size:18px;color:#243447}
+.dash-section-title .line{height:2px;background:linear-gradient(90deg,#e74c3c,transparent);flex:1}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.quick-card{
+  background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.9);border-radius:20px;
+  padding:15px;box-shadow:0 12px 28px rgba(15,23,42,.07);cursor:pointer;transition:.2s;
+}
+.quick-card:hover{transform:translateY(-2px);background:#fff}
+.quick-card .q-icon{font-size:28px;margin-bottom:8px}
+.quick-card b{display:block;color:#111827}
+.quick-card small{color:#64748b;font-weight:800}
+.dashboard-panel{
+  background:#fff;border-radius:22px;border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 14px 35px rgba(15,23,42,.07);padding:16px;margin-bottom:14px;
+}
+.dashboard-panel .head{margin-bottom:10px}
+.decor-progress{
+  height:18px;background:#e5e7eb;border-radius:999px;overflow:hidden;border:3px solid #fff;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
+}
+.decor-progress .bar{background:linear-gradient(90deg,#16a34a,#84cc16,#22c55e)}
+.mini-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.mini-status{padding:12px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:16px}
+.mini-status small{display:block;color:#64748b;font-weight:900}
+.mini-status b{font-size:18px}
+@media(max-width:980px){.kpi-grid,.quick-grid{grid-template-columns:repeat(2,1fr)}.mini-status-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.dash-hero{padding:18px}.dash-title h1{font-size:22px}.kpi-grid,.quick-grid{grid-template-columns:1fr}.kpi-card{min-height:auto}.dash-hero-content{align-items:flex-start}.dash-chip{width:100%;text-align:center}}
+
+
+/* FORCE Premium Dashboard v2 */
+.force-news-bar{
+  margin:0 0 14px 0;
+  border-radius:18px;
+  overflow:hidden;
+  background:linear-gradient(90deg,#0f172a,#1e293b,#e74c3c);
+  color:#fff;
+  box-shadow:0 12px 28px rgba(15,23,42,.18);
+}
+.force-news-track{
+  display:flex;
+  width:max-content;
+  white-space:nowrap;
+  animation:forceTicker 26s linear infinite;
+  font-weight:900;
+  padding:13px 0;
+}
+.force-news-track span{padding-right:90px}
+@keyframes forceTicker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.force-dashboard-hero{
+  position:relative;
+  overflow:hidden;
+  border-radius:28px;
+  padding:26px;
+  margin-bottom:16px;
+  color:#fff;
+  background:
+    radial-gradient(circle at 85% 10%,rgba(255,255,255,.22),transparent 25%),
+    linear-gradient(135deg,#0f172a 0%,#1e293b 45%,#e74c3c 100%);
+  box-shadow:0 22px 55px rgba(15,23,42,.25);
+}
+.force-dashboard-hero h1{font-size:30px;margin:0 0 8px}
+.force-dashboard-hero p{font-weight:800;color:#e5e7eb;line-height:1.5}
+.force-hero-row{position:relative;z-index:1;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}
+.force-hero-pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:10px 14px;font-weight:900}
+
+.force-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.force-kpi{
+  border-radius:24px;
+  padding:18px;
+  min-height:130px;
+  background:#fff;
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 16px 38px rgba(15,23,42,.10);
+  position:relative;
+  overflow:hidden;
+}
+.force-kpi::after{content:"";position:absolute;right:-45px;top:-45px;width:120px;height:120px;border-radius:50%;background:var(--soft,#fee2e2)}
+.force-kpi .icon{
+  width:52px;height:52px;border-radius:18px;background:var(--clr,#e74c3c);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-size:25px;
+  box-shadow:0 10px 22px rgba(0,0,0,.16);
+  position:relative;z-index:1;
+}
+.force-kpi .label{position:relative;z-index:1;margin-top:12px;color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.force-kpi .value{position:relative;z-index:1;font-size:25px;font-weight:900;color:#0f172a;margin-top:5px}
+.force-kpi .sub{position:relative;z-index:1;color:#64748b;font-weight:800;font-size:12px;margin-top:4px}
+.force-red{--clr:#e74c3c;--soft:#fee2e2}
+.force-blue{--clr:#2563eb;--soft:#dbeafe}
+.force-green{--clr:#16a34a;--soft:#dcfce7}
+.force-purple{--clr:#7c3aed;--soft:#ede9fe}
+.force-orange{--clr:#d97706;--soft:#fef3c7}
+.force-slate{--clr:#243447;--soft:#e2e8f0}
+
+.force-section-title{display:flex;align-items:center;gap:12px;margin:18px 0 12px}
+.force-section-title h2{font-size:20px;color:#243447;margin:0}
+.force-section-title .line{height:3px;border-radius:999px;background:linear-gradient(90deg,#e74c3c,transparent);flex:1}
+
+.force-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.force-quick-card{
+  background:linear-gradient(180deg,#fff,#f8fafc);
+  border:1px solid #e5e7eb;
+  border-radius:24px;
+  padding:18px;
+  box-shadow:0 14px 30px rgba(15,23,42,.08);
+  cursor:pointer;
+  transition:.18s;
+}
+.force-quick-card:hover{transform:translateY(-3px);box-shadow:0 20px 42px rgba(15,23,42,.13)}
+.force-quick-card .q{font-size:30px;margin-bottom:10px}
+.force-quick-card b{display:block;color:#111827;font-size:16px}
+.force-quick-card small{display:block;color:#64748b;font-weight:800;margin-top:4px}
+
+.force-panel{
+  background:#fff;border-radius:24px;padding:18px;margin-bottom:16px;
+  border:1px solid #eef2f7;box-shadow:0 16px 38px rgba(15,23,42,.08)
+}
+.force-progress{height:20px;background:#e5e7eb;border-radius:999px;overflow:hidden;border:3px solid #fff;box-shadow:inset 0 1px 3px rgba(0,0,0,.12)}
+.force-progress .bar{height:100%;background:linear-gradient(90deg,#16a34a,#84cc16,#22c55e)}
+@media(max-width:980px){.force-kpis,.force-quick{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.force-kpis,.force-quick{grid-template-columns:1fr}.force-dashboard-hero h1{font-size:23px}.force-dashboard-hero{padding:20px}.force-hero-pill{width:100%;text-align:center}}
+
+
+/* Stable Dashboard + News Ticker */
+.stable-news-bar{
+  margin:0 0 14px 0;border-radius:18px;overflow:hidden;
+  background:linear-gradient(90deg,#0f172a,#1e293b,#e74c3c);color:#fff;
+  box-shadow:0 12px 28px rgba(15,23,42,.18)
+}
+.stable-news-track{display:flex;width:max-content;white-space:nowrap;animation:stableTicker 24s linear infinite;font-weight:900;padding:12px 0}
+.stable-news-track span{padding-right:90px}
+@keyframes stableTicker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.stable-hero{border-radius:24px;padding:22px;margin-bottom:14px;color:#fff;background:linear-gradient(135deg,#0f172a,#243447 55%,#e74c3c);box-shadow:0 18px 45px rgba(15,23,42,.22)}
+.stable-hero-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.stable-hero h1{font-size:28px;margin:0 0 6px}
+.stable-hero p{font-weight:800;color:#e5e7eb;line-height:1.5}
+.stable-pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:10px 14px;font-weight:900}
+.stable-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stable-kpi{background:#fff;border-radius:20px;padding:16px;box-shadow:0 14px 32px rgba(15,23,42,.09);border-left:6px solid var(--k,#e74c3c)}
+.stable-kpi .icon{font-size:26px;margin-bottom:8px}
+.stable-kpi span{font-size:12px;color:#64748b;font-weight:900;text-transform:uppercase}
+.stable-kpi b{display:block;font-size:23px;color:#111827;margin-top:5px}
+.stable-kpi small{color:#64748b;font-weight:800}
+.stable-red{--k:#e74c3c}.stable-blue{--k:#2563eb}.stable-green{--k:#16a34a}.stable-purple{--k:#7c3aed}
+.stable-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stable-quick-card{background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:15px;box-shadow:0 12px 26px rgba(15,23,42,.07);cursor:pointer}
+.stable-quick-card:hover{transform:translateY(-2px)}
+.stable-quick-card .q{font-size:28px;margin-bottom:8px}.stable-quick-card b{display:block}.stable-quick-card small{color:#64748b;font-weight:800}
+.stable-section{display:flex;align-items:center;gap:10px;margin:16px 0 10px}.stable-section h2{font-size:19px;color:#243447}.stable-section .line{height:3px;background:linear-gradient(90deg,#e74c3c,transparent);flex:1}
+.stable-panel{background:#fff;border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 14px 32px rgba(15,23,42,.07)}
+.stable-progress{height:18px;background:#e5e7eb;border-radius:999px;overflow:hidden}.stable-progress .bar{height:100%;background:linear-gradient(90deg,#16a34a,#84cc16)}
+@media(max-width:900px){.stable-kpi-grid,.stable-quick{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.stable-kpi-grid,.stable-quick{grid-template-columns:1fr}.stable-hero h1{font-size:23px}.stable-pill{width:100%;text-align:center}}
+
+
+/* Stable Dashboard Final */
+.stable-news-bar{margin:0 0 14px 0;border-radius:18px;overflow:hidden;background:linear-gradient(90deg,#0f172a,#1e293b,#e74c3c);color:#fff;box-shadow:0 12px 28px rgba(15,23,42,.18)}
+.stable-news-track{display:flex;width:max-content;white-space:nowrap;animation:stableTicker 24s linear infinite;font-weight:900;padding:12px 0}
+.stable-news-track span{padding-right:90px}
+@keyframes stableTicker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.stable-hero{border-radius:24px;padding:22px;margin-bottom:14px;color:#fff;background:linear-gradient(135deg,#0f172a,#243447 55%,#e74c3c);box-shadow:0 18px 45px rgba(15,23,42,.22)}
+.stable-hero-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.stable-hero h1{font-size:28px;margin:0 0 6px}.stable-hero p{font-weight:800;color:#e5e7eb;line-height:1.5}
+.stable-pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:10px 14px;font-weight:900}
+.stable-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stable-kpi{background:#fff;border-radius:20px;padding:16px;box-shadow:0 14px 32px rgba(15,23,42,.09);border-left:6px solid var(--k,#e74c3c)}
+.stable-kpi .icon{font-size:26px;margin-bottom:8px}.stable-kpi span{font-size:12px;color:#64748b;font-weight:900;text-transform:uppercase}
+.stable-kpi b{display:block;font-size:23px;color:#111827;margin-top:5px}.stable-kpi small{color:#64748b;font-weight:800}
+.stable-red{--k:#e74c3c}.stable-blue{--k:#2563eb}.stable-green{--k:#16a34a}.stable-purple{--k:#7c3aed}
+.stable-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stable-quick-card{background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:15px;box-shadow:0 12px 26px rgba(15,23,42,.07);cursor:pointer}
+.stable-quick-card:hover{transform:translateY(-2px)}.stable-quick-card .q{font-size:28px;margin-bottom:8px}.stable-quick-card b{display:block}.stable-quick-card small{color:#64748b;font-weight:800}
+.stable-section{display:flex;align-items:center;gap:10px;margin:16px 0 10px}.stable-section h2{font-size:19px;color:#243447}.stable-section .line{height:3px;background:linear-gradient(90deg,#e74c3c,transparent);flex:1}
+.stable-panel{background:#fff;border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 14px 32px rgba(15,23,42,.07)}
+.stable-progress{height:18px;background:#e5e7eb;border-radius:999px;overflow:hidden}.stable-progress .bar{height:100%;background:linear-gradient(90deg,#16a34a,#84cc16)}
+@media(max-width:900px){.stable-kpi-grid,.stable-quick{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.stable-kpi-grid,.stable-quick{grid-template-columns:1fr}.stable-hero h1{font-size:23px}.stable-pill{width:100%;text-align:center}}
+
+
+/* Employee Target Banner Safe */
+.target-banner{background:linear-gradient(135deg,#fff7ed,#ecfdf5);border:1px solid #fed7aa;border-left:6px solid #16a34a;border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 10px 25px rgba(15,23,42,.06)}
+.target-banner h2{font-size:18px;color:#243447;margin-bottom:8px}
+.target-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px}
+.target-mini div{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:10px}
+.target-mini small{display:block;color:#64748b;font-weight:900}
+.target-mini b{font-size:18px}
+@media(max-width:850px){.target-mini{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.target-mini{grid-template-columns:1fr}}
+
 </style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div id="loginScreen" class="login">
@@ -110,6 +341,7 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
       <p style="font-size:12px;color:#64748b;margin-top:12px;line-height:1.5">
         <b>Admin Login:</b> Use admin username and password provided by system owner.<br>
         <b>Employee Login:</b> Use employee username/mobile number and PIN provided by admin.<br>
+        <b>Client Login:</b> Use client mobile/PPPoE username and C.Code provided by office.<br>
         <b>Mobile format:</b> 03001234561
       </p>
     </div>
@@ -131,6 +363,8 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
         <div id="pm" class="menu"><button onclick="openPwd()">Change Password</button><button onclick="logout()">Logout</button></div>
       </div>
     </div>
+    <div id="globalNewsTicker"></div>
+
     <button class="side-toggle" onclick="toggleSideMenu()">☰ Menu</button>
     <div class="main-layout">
       <aside id="sidePanel" class="sidebar-card">
@@ -158,7 +392,7 @@ const firebaseConfig={apiKey:'AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E',authDomai
 let S,U,TAB='dashboard',draft=[],db=null,fbReady=false,fbLoading=false,unsubs=[];
 let financeDate=today(), financeAll=true, financeEmp='all', complaintDate=today(), complaintAll=false;
 
-function def(){return{admin:{u:'admin',p:'admin123',recovery:'1122'},employees:[{id:'e1',name:'Ali',phone:'ali',mobile:'03001234561',pin:'1234',role:'Collection',active:true,per:{complaints:1,attendance:1,invoice:1,finance:1,targets:1,advance:1}},{id:'e2',name:'Usman',phone:'usman',mobile:'03001234562',pin:'1234',role:'Technician',active:true,per:{complaints:1,attendance:1,invoice:1,finance:0,targets:1,advance:1}}],complaints:[],finance:[],invoices:[],targets:[],attendance:[],advances:[],news:{text:'Welcome to Fire.net.pk employee portal. Complete your tasks on time.',active:true},notificationSettings:{sound:true,toast:true,bell:true},notifications:[],
+function def(){return{admin:{u:'admin',p:'admin123',recovery:'1122'},employees:[{id:'e1',name:'Ali',phone:'ali',mobile:'03001234561',pin:'1234',role:'Collection',active:true,per:{complaints:1,attendance:1,invoice:1,finance:1,targets:1,advance:1}},{id:'e2',name:'Usman',phone:'usman',mobile:'03001234562',pin:'1234',role:'Technician',active:true,per:{complaints:1,attendance:1,invoice:1,finance:0,targets:1,advance:1}}],complaints:[],finance:[],invoices:[],targets:[],attendance:[],clients:[],advances:[],news:{text:'Welcome to Fire.net.pk employee portal. Complete your tasks on time.',active:true},notificationSettings:{sound:true,toast:true,bell:true},notifications:[],
 items:[
  {id:'it1',name:'ONU Router',category:'Device',purchase:4000,sale:5000,stock:10,notes:'Default device'},
  {id:'it2',name:'Fiber Wire Per Meter',category:'Wire',purchase:25,sale:40,stock:1000,notes:'Default wire'}
@@ -174,6 +408,7 @@ function sanitizeState(){
  S.admin=S.admin||D.admin;S.admin.recovery=S.admin.recovery||D.admin.recovery;
  S.employees=Array.isArray(S.employees)?S.employees:D.employees;
  S.complaints=Array.isArray(S.complaints)?S.complaints:[];
+ S.clients=Array.isArray(S.clients)?S.clients:[];
  S.finance=Array.isArray(S.finance)?S.finance:[];
  S.invoices=Array.isArray(S.invoices)?S.invoices:[];
  S.targets=Array.isArray(S.targets)?S.targets:[];
@@ -196,7 +431,7 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function key(){return U.role==='admin'?'admin':U.id}
 function can(x){return U.role==='admin'||U.per?.[x]}
 function toast(m,t='info'){let d=document.createElement('div');d.className='toast '+t;d.textContent=m;document.getElementById('tw').appendChild(d);setTimeout(()=>d.remove(),3200)}
-function beep(){try{let C=AudioContext||webkitAudioContext,c=new C,o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.04;o.start();setTimeout(()=>{o.stop();c.close()},150)}catch(e){}}
+function beep(){try{let C=AudioContext||webkitAudioContext,c=new C,o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.04;o.start();setTimeout(()=>{o.stop();c.close()},120)}catch(e){}}
 function clock(){document.getElementById('dt').textContent=new Date().toLocaleString()}setInterval(clock,1000);
 function pkMobile(v){v=String(v||'').replace(/\D/g,'');if(v.startsWith('92')&&v.length===12)return '0'+v.slice(2);if(v.startsWith('0')&&v.length===11)return v;return v}
 function waNumber(v){v=String(v||'').replace(/\D/g,'');if(v.startsWith('0')&&v.length===11)return '92'+v.slice(1);if(v.startsWith('92')&&v.length===12)return v;return v}
@@ -216,9 +451,9 @@ async function loadFirebase(){
  try{
    const settings=await db.collection('settings').doc('main').get();
    if(settings.exists){if(settings.data().admin)S.admin=settings.data().admin;if(settings.data().news)S.news=settings.data().news;if(settings.data().notificationSettings)S.notificationSettings=settings.data().notificationSettings;}
-   const [employees,complaints,finance,invoices,targets,attendance,items,packages,advances,notifications]=await Promise.all(['employees','complaints','finance','invoices','targets','attendance','items','packages','advances','notifications'].map(loadCol));
+   const [employees,complaints,clients,finance,invoices,targets,attendance,items,packages,advances,notifications]=await Promise.all(['employees','complaints','clients','finance','invoices','targets','attendance','items','packages','advances','notifications'].map(loadCol));
    if(employees.length)S.employees=employees;
-   S.complaints=complaints;S.finance=finance;S.invoices=invoices;S.targets=targets;S.attendance=attendance;if(items.length)S.items=items;if(packages.length)S.packages=packages;if(advances.length)S.advances=advances;if(notifications.length)S.notifications=notifications;
+   S.complaints=complaints;S.clients=clients;S.finance=finance;S.invoices=invoices;S.targets=targets;S.attendance=attendance;if(items.length)S.items=items;if(packages.length)S.packages=packages;if(advances.length)S.advances=advances;if(notifications.length)S.notifications=notifications;
    saveLocal(); setSync('Firebase: loaded',true);
    if(!employees.length) for(const e of S.employees) await fbSet('employees',e);if(!items.length) for(const e of S.items||[]) await fbSet('items',e);if(!packages.length) for(const e of S.packages||[]) await fbSet('packages',e);if(!advances.length) for(const e of S.advances||[]) await fbSet('advances',e);
  }catch(e){console.error(e);setSync('Firebase load failed',false);toast('Firebase load failed: '+(e.message||e),'error')}
@@ -226,7 +461,7 @@ async function loadFirebase(){
 }
 function startRealtime(){
  if(!db)return; unsubs.forEach(u=>u&&u()); unsubs=[];
- ['employees','complaints','finance','invoices','targets','attendance','items','packages','advances','notifications'].forEach(col=>{
+ ['employees','complaints','clients','finance','invoices','targets','attendance','items','packages','advances','notifications'].forEach(col=>{
    unsubs.push(db.collection(col).onSnapshot(snap=>{
      if(fbLoading)return;
      S[col]=snap.docs.map(d=>({id:d.id,...d.data()})); saveLocal();
@@ -240,7 +475,10 @@ async function fbSettings(){if(!fbReady)return;try{await db.collection('settings
 function saveAndSync(col,obj){saveLocal();if(col&&obj)fbSet(col,obj)}
 function delAndSync(col,idv){saveLocal();if(col&&idv)fbDel(col,idv)}
 
-function loginUser(){let u=lu.value.trim(),p=lp.value.trim();if(!u||!p)return toast('Enter username and password','error');if(u.toLowerCase()===S.admin.u&&p===S.admin.p){U={role:'admin',id:'admin',name:'Administrator'};S.session=U;saveLocal();return openApp()}let e=S.employees.find(x=>x.active&&(String(x.phone).toLowerCase()===u.toLowerCase()||String(x.name).toLowerCase()===u.toLowerCase()||String(x.mobile||'')===u)&&x.pin===p);if(e){U={role:'employee',...e};S.session=U;saveLocal();return openApp()}toast('Invalid login','error')}
+function loginUser(){let u=lu.value.trim(),p=lp.value.trim();if(!u||!p)return toast('Enter username and password','error');if(u.toLowerCase()===S.admin.u&&p===S.admin.p){U={role:'admin',id:'admin',name:'Administrator'};S.session=U;saveLocal();return openApp()}let e=S.employees.find(x=>x.active&&(String(x.phone).toLowerCase()===u.toLowerCase()||String(x.name).toLowerCase()===u.toLowerCase()||String(x.mobile||'')===pkMobile(u)||String(x.mobile||'')===u)&&x.pin===p);if(e){U={role:'employee',...e};S.session=U;saveLocal();return openApp()}
+let c=(S.clients||[]).find(x=>x.active!==false&&(String(x.mobile||'')===pkMobile(u)||String(x.username||'').toLowerCase()===u.toLowerCase()||String(x.pppoe||'').toLowerCase()===u.toLowerCase())&&String(x.pin||'1234')===p);
+if(c){U={role:'client',id:c.id,name:c.name,clientId:c.id,mobile:c.mobile};S.session=U;saveLocal();return openApp()}
+toast('Invalid login','error')}
 
 function forgotPassword(){
  const user=(prompt('Enter username/mobile for password reset')||'').trim();
@@ -303,7 +541,7 @@ function addNotification(title,message,to='all',alertNow=false){
  S.notifications.push(rec);saveAndSync('notifications',rec);
  if(alertNow){
    if(S.notificationSettings?.toast!==false)toast(title+': '+message,'warning');
-   if(S.notificationSettings?.sound!==false)beep();
+   
  }
  updateNotificationBell();
 }
@@ -313,26 +551,29 @@ function notifyEmployeeNews(){
  });
 }
 
-function openApp(){sanitizeState();if(!U||!U.role){S.session=null;saveLocal();return location.reload()}document.getElementById('loginScreen').classList.add('hidden');document.getElementById('app').style.display='block';pn.textContent=U.name||'User';pr.textContent=U.role==='admin'?'Admin':(U.role||'Employee');av.textContent=(U.name||'U')[0].toUpperCase();clock();navRender();tab('dashboard');updateNotificationBell();notify()}
+function openApp(){sanitizeState();if(!U||!U.role){S.session=null;saveLocal();return location.reload()}document.getElementById('loginScreen').classList.add('hidden');document.getElementById('app').style.display='block';pn.textContent=U.name||'User';pr.textContent=U.role==='admin'?'Admin':(U.role||'Employee');av.textContent=(U.name||'U')[0].toUpperCase();clock();renderGlobalNewsTicker();navRender();tab('dashboard');updateNotificationBell();notify()}
 function logout(){S.session=null;saveLocal();location.reload()}function toggleMenu(){pm.classList.toggle('active')}function openPwd(){pwdModal.classList.add('active');pm.classList.remove('active')}function closePwd(){pwdModal.classList.remove('active')}
 function savePwd(){let v=newPwd.value.trim();if(v.length<3)return toast('Minimum 3 characters','error');if(U.role==='admin'){S.admin.p=v;fbSettings()}else{let e=S.employees.find(x=>x.id===U.id);if(e){e.pin=v;fbSet('employees',e)}U.pin=v;S.session=U}saveLocal();newPwd.value='';closePwd();toast('Password changed','success')}
-function items(){let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['backup','Backup','💾']];return U.role==='admin'?a:a.filter(x=>x[0]==='dashboard'||can(x[0]))}
+function items(){
+ let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['clients','Clients','🌐'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['backup','Backup','💾']];
+ if(U.role==='client')return [['dashboard','My Portal','🏠'],['complaints','Support','🛠️']];
+ return U.role==='admin'?a:a.filter(x=>x[0]==='dashboard'||can(x[0]));
+}
 function navRender(){nav.innerHTML=items().map(x=>`<button id="n-${x[0]}" onclick="tab('${x[0]}')">${x[2]} ${x[1]}</button>`).join('')}
 function toggleSideMenu(){document.getElementById('sidePanel')?.classList.toggle('open')}
 function tab(x){if(!items().some(i=>i[0]===x))x='dashboard';TAB=x;document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-'+x);if(n)n.classList.add('active');document.getElementById('sidePanel')?.classList.remove('open');renderCurrent()}
 function renderCurrent(){
  try{
   sanitizeState();
-  ({dashboard:dash,complaints,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:(typeof newsPage==='function'?newsPage:dash),backup}[TAB]||dash)();setTimeout(()=>{setupTableEnhancer();enhanceAllTables();},50);
+  const map={dashboard:dash,complaints,clients:clientsPage,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:(typeof newsPage==='function'?newsPage:dash),backup};
+  (map[TAB]||dash)();
+  setTimeout(()=>{if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker();if(typeof setupTableEnhancer==='function')setupTableEnhancer();if(typeof enhanceAllTables==='function')enhanceAllTables();},50);
  }catch(err){
   console.error(err);
   const c=document.getElementById('content');
-  if(c)c.innerHTML=`<div class="card"><div class="head"><h2>Dashboard Error Fixed Mode</h2></div><p style="color:#dc2626;font-weight:800">${esc(err.message||err)}</p><button class="btn btn-e" onclick="localStorage.removeItem(KEY);location.reload()">Reset Local Data</button></div>`;
+  if(c)c.innerHTML=`<div class="card"><div class="head"><h2>App Error</h2></div><p style="color:#dc2626;font-weight:800">${esc(err.message||err)}</p><button class="btn btn-e" onclick="localStorage.removeItem(KEY);location.reload()">Reset Local Data</button></div>`;
  }
 }
-function empOpts(sel=''){return S.employees.filter(e=>e.active).map(e=>`<option value="${e.id}" ${sel===e.id?'selected':''}>${esc(e.name)} - ${esc(e.role)}</option>`).join('')}
-function empName(i){return S.employees.find(e=>e.id===i)?.name||'Admin'}
-function empPhone(i){let e=S.employees.find(x=>x.id===i);return e?.mobile||e?.phone||''}
 function myFin(){let r=U.role==='admin'?S.finance:S.finance.filter(e=>e.by===U.id);if(U.role==='admin'&&financeEmp!=='all')r=r.filter(e=>e.by===financeEmp);return r}
 function myInv(){return U.role==='admin'?S.invoices:S.invoices.filter(e=>e.by===U.id||e.refEmp===U.id)}
 function myComp(){return U.role==='admin'?S.complaints:S.complaints.filter(c=>c.assigned===U.id||c.by===U.id)}
@@ -341,40 +582,136 @@ function calc(arr=myFin()){let cash=0,online=0,exp=0,inc=0,cashExp=0,onlineExp=0
 function invoiceSummary(){let rows=myInv(),sales=0,received=0,due=0;rows.forEach(v=>{sales+=+v.total||0;received+=+v.received||0;due+=+v.due||0});return{sales,received,due,count:rows.filter(v=>(+v.due||0)>0).length}}
 function targetSummary(){closeOldDailyTargets();let rows=(U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id)).filter(t=>t.date===today()&&!t.closed&&!t.inactive),given=0,ach=0,reward=0;rows.forEach(t=>{given+=+t.target||0;ach+=+t.achieved||0;reward+=rewardEarned(t)});return{given,ach,reward,rem:Math.max(0,given-ach),pct:given?Math.min(100,Math.round(ach/given*100)):0}}
 function rewardEarned(t){let pct=(+t.achieved||0)/(+t.target||1)*100;if(pct<100)return 0;return t.rewardType==='percentage'?Math.round((+t.achieved||0)*(+t.rewardValue||0)/100):(+t.rewardValue||0)}
-function stats(){let f=calc(myFin().filter(e=>e.date===today())),allF=calc(),pend=myComp().filter(c=>c.status!=='Resolved').length,comp=myComp(),over=comp.filter(c=>c.status!=='Resolved'&&c.eta&&new Date(c.eta)<new Date()).length,inv=invoiceSummary(),tar=targetSummary();return`<div class="grid"><div class="stat"><span>Total Complaints</span><b>${comp.length}</b><small>Pending ${pend} / Overdue ${over}</small></div><div class="stat"><span>Invoice Paid / Due</span><b>${money(inv.received)}</b><small>Due ${money(inv.due)} (${inv.count})</small></div><div class="stat"><span>Today Income / Expense</span><b>${money(f.inc)}</b><small>Expense ${money(f.exp)} / Net ${money(f.bal)}</small></div><div class="stat"><span>Target Given / Achieved</span><b>${tar.pct}%</b><small>${money(tar.ach)} of ${money(tar.given)}</small></div></div>`}
-function newsTicker(){
- if(!S.news||!S.news.active||!S.news.text)return '';
- const n=`📢 ${esc(S.news.text)}`;
- return `<div class="news-ticker"><div class="ticker-inner"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
-}
-function employeeTargetBanner(){
- if(!U||U.role!=='employee')return '';
- closeOldDailyTargets();
- const rows=S.targets.filter(t=>t.emp===U.id&&t.date===today()&&!t.closed&&!t.inactive);
- const collection=rows.filter(t=>(t.targetType||'collection')==='collection');
- const sales=rows.filter(t=>(t.targetType||'collection')==='sales');
- const given=rows.reduce((s,t)=>s+(+t.target||0),0);
- const achieved=rows.reduce((s,t)=>s+(+t.achieved||0),0);
- const reward=rows.reduce((s,t)=>s+rewardEarned(t),0);
- const remaining=Math.max(0,given-achieved);
- const pct=given?Math.min(100,Math.round(achieved/given*100)):0;
- const colGiven=collection.reduce((s,t)=>s+(+t.target||0),0), colAch=collection.reduce((s,t)=>s+(+t.achieved||0),0);
- const saleGiven=sales.reduce((s,t)=>s+(+t.target||0),0), saleAch=sales.reduce((s,t)=>s+(+t.achieved||0),0);
- return `<div class="target-banner">
-  <h2>🎯 Today Target & Reward</h2>
-  <div class="prog"><div class="bar" style="width:${pct}%"></div></div>
-  <b>${pct}% Completed Today</b>
-  <div class="target-mini">
-   <div><small>Recovery Target</small><b>${money(colGiven)}</b><small>Collected: ${money(colAch)}</small></div>
-   <div><small>New Connection Target</small><b>${saleGiven} Conn.</b><small>Done: ${saleAch} Conn.</small></div>
-   <div><small>Total Remaining</small><b>${money(remaining)}</b></div>
-   <div><small>Reward Earned</small><b>${money(reward)}</b></div>
-   <div><small>Active Today</small><b>${rows.length}</b></div>
-  </div>
-  <p style="color:#64748b;font-weight:800;margin-top:8px">Daily reward closes at day end. New day needs a new target from admin.</p>
+function stats(){
+ let f=calc(myFin().filter(e=>e.date===today())),allF=calc(),pend=myComp().filter(c=>c.status!=='Resolved').length,comp=myComp(),over=comp.filter(c=>c.status!=='Resolved'&&c.eta&&new Date(c.eta)<new Date()).length,inv=invoiceSummary(),tar=targetSummary();
+ return `<div class="kpi-grid">
+  <div class="kpi-card kpi-red"><div class="kpi-top"><div><span>Total Complaints</span><b>${comp.length}</b><small>Pending ${pend} / Overdue ${over}</small></div><div class="kpi-icon">🛠️</div></div></div>
+  <div class="kpi-card kpi-blue"><div class="kpi-top"><div><span>Invoice Paid</span><b>${money(inv.received)}</b><small>Due ${money(inv.due)} (${inv.count})</small></div><div class="kpi-icon">🧾</div></div></div>
+  <div class="kpi-card kpi-green"><div class="kpi-top"><div><span>Today Income</span><b>${money(f.inc)}</b><small>Expense ${money(f.exp)} / Net ${money(f.bal)}</small></div><div class="kpi-icon">💰</div></div></div>
+  <div class="kpi-card kpi-purple"><div class="kpi-top"><div><span>Target Progress</span><b>${tar.pct}%</b><small>${money(tar.ach)} of ${money(tar.given)}</small></div><div class="kpi-icon">🎯</div></div></div>
  </div>`;
 }
-function dash(){let inv=invoiceSummary(),tar=targetSummary(),f=calc(myFin().filter(e=>e.date===today()));content.innerHTML=newsTicker()+employeeTargetBanner()+stats()+`<div class="summary"><div class="sum">Total Sales<b>${money(inv.sales)}</b></div><div class="sum">Due Amount<b>${money(inv.due)}</b></div><div class="sum">Today Cash<b>${money(f.cash)}</b></div><div class="sum">Today Online<b>${money(f.online)}</b></div><div class="sum">Target Given<b>${money(tar.given)}</b></div><div class="sum">Target Achieved<b>${money(tar.ach)}</b></div><div class="sum">Reward Earned<b>${money(tar.reward)}</b></div><div class="sum">Remaining<b>${money(tar.rem)}</b></div></div><div class="card"><div class="head"><h2>Progress</h2></div><div class="prog"><div class="bar" style="width:${tar.pct}%"></div></div><b>${tar.pct}%</b></div>${recentTables()}`}
+
+function newsTickerHtml(){
+ const msg=(S.news&&S.news.active&&S.news.text)?S.news.text:'Welcome to Fire.net.pk portal.';
+ const n=`📢 ${esc(msg)}`;
+ return `<div class="force-news-bar"><div class="force-news-track"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
+}
+function renderGlobalNewsTicker(){
+ const el=document.getElementById('globalNewsTicker');
+ if(el)el.innerHTML=newsTickerHtml();
+}
+
+
+function stableNewsTickerHtml(){
+ const msg=(S.news&&S.news.active&&S.news.text)?S.news.text:'Welcome to Fire.net.pk portal.';
+ const n=`📢 ${esc(msg)}`;
+ return `<div class="stable-news-bar"><div class="stable-news-track"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
+}
+function renderGlobalNewsTicker(){
+ const el=document.getElementById('globalNewsTicker');
+ if(el)el.innerHTML=stableNewsTickerHtml();
+}
+
+
+function employeeTargetBanner(){
+ try{
+   if(!U || U.role!=='employee')return '';
+   if(typeof closeOldDailyTargets==='function')closeOldDailyTargets();
+   const rows=(S.targets||[]).filter(t=>t.emp===U.id&&t.date===today()&&!t.closed&&!t.inactive);
+   const collection=rows.filter(t=>(t.targetType||'collection')==='collection');
+   const sales=rows.filter(t=>(t.targetType||'collection')==='sales');
+
+   const colGiven=collection.reduce((s,t)=>s+(+t.target||0),0);
+   const colAch=collection.reduce((s,t)=>s+(+t.achieved||0),0);
+   const saleGiven=sales.reduce((s,t)=>s+(+t.target||0),0);
+   const saleAch=sales.reduce((s,t)=>s+(+t.achieved||0),0);
+   const reward=rows.reduce((s,t)=>s+(typeof rewardEarned==='function'?rewardEarned(t):0),0);
+
+   const totalGiven=colGiven+saleGiven;
+   const totalAch=colAch+saleAch;
+   const pct=totalGiven?Math.min(100,Math.round(totalAch/totalGiven*100)):0;
+
+   return `<div class="target-banner">
+    <h2>🎯 Today Target & Reward</h2>
+    <div class="prog"><div class="bar" style="width:${pct}%"></div></div>
+    <b>${pct}% Completed Today</b>
+    <div class="target-mini">
+      <div><small>Recovery Target</small><b>${money(colGiven)}</b><small>Collected: ${money(colAch)}</small></div>
+      <div><small>New Connection Target</small><b>${saleGiven} Conn.</b><small>Done: ${saleAch} Conn.</small></div>
+      <div><small>Reward Earned</small><b>${money(reward)}</b></div>
+      <div><small>Active Targets</small><b>${rows.length}</b></div>
+      <div><small>Date</small><b>${today()}</b></div>
+    </div>
+   </div>`;
+ }catch(e){
+   console.error('employeeTargetBanner failed',e);
+   return '';
+ }
+}
+
+function dash(){
+ if(U?.role==='client')return clientDashboard();
+ try{
+   sanitizeState();
+   if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker();
+   const inv=invoiceSummary();
+   const tar=targetSummary();
+   const f=calc(myFin().filter(e=>e.date===today()));
+   const comp=myComp();
+   const pending=comp.filter(c=>c.status!=='Resolved').length;
+   content.innerHTML=employeeTargetBanner()+`
+   <div class="stable-hero">
+    <div class="stable-hero-row">
+     <div>
+      <h1>🔥 Fire.net.pk Dashboard</h1>
+      <p>${U?.role==='admin'?'Admin Control Center':'Employee Portal'} — complaints, invoices, finance, targets and notifications.</p>
+     </div>
+     <div class="stable-pill">👤 ${esc(U?.name||'User')} • 📅 ${new Date().toLocaleDateString()}</div>
+    </div>
+   </div>
+
+   <div class="stable-kpi-grid">
+    <div class="stable-kpi stable-red"><div class="icon">🛠️</div><span>Complaints</span><b>${comp.length}</b><small>Pending ${pending}</small></div>
+    <div class="stable-kpi stable-blue"><div class="icon">🧾</div><span>Invoice Paid</span><b>${money(inv.received)}</b><small>Due ${money(inv.due)} (${inv.count})</small></div>
+    <div class="stable-kpi stable-green"><div class="icon">💰</div><span>Today Income</span><b>${money(f.inc)}</b><small>Expense ${money(f.exp)} / Net ${money(f.bal)}</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">🎯</div><span>Target Progress</span><b>${tar.pct}%</b><small>${money(tar.ach)} of ${money(tar.given)}</small></div>
+   </div>
+
+   <div class="stable-section"><h2>Quick Actions</h2><div class="line"></div></div>
+   <div class="stable-quick">
+    <div class="stable-quick-card" onclick="tab('complaints')"><div class="q">🛠️</div><b>Complaints</b><small>Add and assign tasks</small></div>
+    <div class="stable-quick-card" onclick="tab('invoice')"><div class="q">🧾</div><b>Create Invoice</b><small>New connection and due</small></div>
+    <div class="stable-quick-card" onclick="tab('finance')"><div class="q">💰</div><b>Finance</b><small>Recovery and expenses</small></div>
+    <div class="stable-quick-card" onclick="tab('targets')"><div class="q">🎯</div><b>Targets</b><small>Sales and collection</small></div>
+   </div>
+
+   <div class="stable-section"><h2>Today Overview</h2><div class="line"></div></div>
+   <div class="summary">
+    <div class="sum">Total Sales<b>${money(inv.sales)}</b></div>
+    <div class="sum">Due Amount<b>${money(inv.due)}</b></div>
+    <div class="sum">Today Cash<b>${money(f.cash)}</b></div>
+    <div class="sum">Today Online<b>${money(f.online)}</b></div>
+    <div class="sum">Target Given<b>${money(tar.given)}</b></div>
+    <div class="sum">Target Achieved<b>${money(tar.ach)}</b></div>
+    <div class="sum">Reward Earned<b>${money(tar.reward)}</b></div>
+    <div class="sum">Remaining<b>${money(tar.rem)}</b></div>
+   </div>
+
+   <div class="stable-panel">
+    <div class="head"><h2>🎯 Target Progress</h2><span class="badge ${tar.pct>=100?'done':'pending'}">${tar.pct}%</span></div>
+    <div class="stable-progress"><div class="bar" style="width:${tar.pct}%"></div></div>
+   </div>
+
+   <div class="stable-section"><h2>Recent Activity</h2><div class="line"></div></div>
+   ${recentTables()}`;
+ }catch(err){
+   console.error('Dashboard render failed',err);
+   content.innerHTML=`<div class="card"><div class="head"><h2>Dashboard Error</h2></div>
+   <p style="color:#dc2626;font-weight:900">${esc(err.message||err)}</p>
+   <button class="btn btn-e" onclick="localStorage.removeItem(KEY);location.reload()">Reset Local Data</button></div>`;
+ }
+}
 function simpleTable(title,head,rows,empty='No data'){return`<div class="card"><div class="head"><h2>${title}</h2></div>${rows.length?`<div class="tbl"><table><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`:`<div class="empty">${empty}</div>`}</div>`}
 function recentTables(){let due=myInv().filter(v=>(+v.due||0)>0).slice(-5).reverse().map(v=>`<tr><td>${esc(v.cust)}</td><td>${esc(v.work)}</td><td>${money(v.due)}</td><td>${v.date}</td></tr>`);let fin=myFin().filter(e=>e.date===today()).slice(-5).reverse().map(e=>`<tr><td>${typeTag(e)} ${modeTag(e)}</td><td>${esc(paidBy(e))}</td><td>${esc(e.cat)}</td><td>${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td></tr>`);return simpleTable('Recent Due Invoices',['Customer','Work','Due','Date'],due)+simpleTable('Today Recent Income/Expense',['Type','Paid By','Category','Amount'],fin)}
 
@@ -384,7 +721,7 @@ function complaints(){let dateControls=`<div class="actions"><input type="date" 
 function defaultEta(){let d=new Date();d.setHours(d.getHours()+2);return d.toISOString().slice(0,16)}
 function fmtDT(v){if(!v)return'-';let d=new Date(v);return isNaN(d)?String(v).replace('T',' '):d.toLocaleString()}
 function etaBadge(c){if(c.status==='Resolved')return'<span class="badge done">Resolved</span>';if(!c.eta)return'<span class="badge pending">No ETA</span>';return new Date(c.eta)<new Date()?'<span class="badge expense">Overdue</span>':'<span class="badge online">On Time</span>'}
-function addComp(){let phone=pkMobile(cPhone.value);if(!cName.value.trim()||!validPk(phone))return toast('Customer name and valid phone 03001234561 required','error');let assigned=U.role==='employee'?U.id:cAssign.value;let rec={id:id('c'),name:cName.value.trim(),phone,type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),eta:cEta.value,resolvedAt:'',by:key()};S.complaints.push(rec);saveAndSync('complaints',rec);addNotification('New Complaint Assigned',`${rec.type} - ${rec.name} | Expected: ${fmtDT(rec.eta)}`,rec.assigned,true);toast('Complaint added','success');beep();if(cSendEmp.checked)sendComplaintEmployeeWA(rec.id);complaints()}
+function addComp(){let phone=pkMobile(cPhone.value);if(!cName.value.trim()||!validPk(phone))return toast('Customer name and valid phone 03001234561 required','error');let assigned=U.role==='employee'?U.id:cAssign.value;let rec={id:id('c'),name:cName.value.trim(),phone,type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),eta:cEta.value,resolvedAt:'',by:key()};S.complaints.push(rec);saveAndSync('complaints',rec);addNotification('New Complaint Assigned',`${rec.type} - ${rec.name} | Expected: ${fmtDT(rec.eta)}`,rec.assigned,true);toast('Complaint added','success');if(cSendEmp.checked)sendComplaintEmployeeWA(rec.id);complaints()}
 function compTable(){let r=myComp().slice().reverse();if(!complaintAll)r=r.filter(c=>c.date===complaintDate);if(!r.length)return'<div class="empty">No complaints</div>';return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Created</th><th>Expected Resolve</th><th>Resolved</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span><br>${etaBadge(c)}</td><td>${esc(c.time||c.date)}</td><td>${esc(fmtDT(c.eta))}</td><td>${esc(c.resolvedAt||'-')}</td><td><div class="actions">${U.role==='admin'?`<button class="btn btn-i btn-sm" onclick="editComplaint('${c.id}')">Edit</button><button class="btn btn-e btn-sm" onclick="deleteComplaint('${c.id}')">Delete</button>`:''}<button class="btn btn-s btn-sm" onclick="sendComplaintWA('${c.id}')">Customer WA</button><button class="btn btn-w btn-sm" onclick="sendComplaintEmployeeWA('${c.id}')">Employee WA</button>${c.status!=='Resolved'?`<button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`}
 function complaintMsg(c,forEmp=false){
  if(forEmp){
@@ -435,6 +772,173 @@ function sendComplaintEmployeeWA(i){let c=S.complaints.find(x=>x.id===i);if(!c)r
 function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';c.resolvedAt=now();saveAndSync('complaints',c);toast('Complaint resolved','success');complaints()}}
 function editComplaint(i){let c=S.complaints.find(x=>x.id===i);if(!c)return;c.name=prompt('Customer',c.name)||c.name;c.phone=pkMobile(prompt('Phone',c.phone)||c.phone);c.type=prompt('Type',c.type)||c.type;c.det=prompt('Details',c.det)||c.det;c.status=prompt('Status',c.status)||c.status;saveAndSync('complaints',c);complaints()}
 function deleteComplaint(i){if(!confirm('Delete complaint?'))return;S.complaints=S.complaints.filter(x=>x.id!==i);delAndSync('complaints',i);complaints()}
+
+
+
+function empOpts(sel=''){
+ try{
+   return (S.employees||[]).filter(e=>e.active!==false).map(e=>`<option value="${e.id}" ${sel===e.id?'selected':''}>${esc(e.name||'Employee')} - ${esc(e.role||'')}</option>`).join('');
+ }catch(e){return '';}
+}
+function empName(i){
+ try{
+   if(!i)return '-';
+   if(i==='admin')return 'Admin';
+   const e=(S.employees||[]).find(x=>x.id===i);
+   return e?e.name:'-';
+ }catch(e){return '-';}
+}
+function empPhone(i){
+ try{
+   const e=(S.employees||[]).find(x=>x.id===i);
+   return e?(e.mobile||e.phone||''):'';
+ }catch(e){return '';}
+}
+
+function clientById(idv){return (S.clients||[]).find(c=>c.id===idv)}
+function currentClient(){return U?.role==='client'?clientById(U.clientId):null}
+function clientInvoices(cid){let c=clientById(cid);return (S.invoices||[]).filter(v=>v.clientId===cid || (c&&(v.phone===c.mobile || v.cust===c.name)))}
+function clientFinance(cid){let c=clientById(cid);return (S.finance||[]).filter(v=>v.clientId===cid || (c&&(v.phone===c.mobile || paidBy(v)===c.name || v.customer===c.name)))}
+function clientComplaints(cid){let c=clientById(cid);return (S.complaints||[]).filter(v=>v.clientId===cid || (c&&(v.phone===c.mobile || v.name===c.name)))}
+function clientDue(cid){
+ let inv=clientInvoices(cid);
+ let invoiceDue=inv.reduce((s,v)=>s+(+v.due||0),0);
+ let c=clientById(cid);
+ let manualDue=+(c?.due||0);
+ return invoiceDue+manualDue;
+}
+function clientTickerHtml(){
+ const msg=(S.clientNews&&S.clientNews.active&&S.clientNews.text)?S.clientNews.text:(S.news&&S.news.active&&S.news.text?S.news.text:'Welcome to Fire.net.pk client portal.');
+ const n=`📢 ${esc(msg)}`;
+ return `<div class="stable-news-bar"><div class="stable-news-track"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
+}
+function clientDashboard(){
+ const c=currentClient();
+ if(!c){content.innerHTML='<div class="card"><h2>Client not found</h2></div>';return}
+ const inv=clientInvoices(c.id), fin=clientFinance(c.id), comps=clientComplaints(c.id);
+ const paid=inv.reduce((s,v)=>s+(+v.received||0),0);
+ const due=clientDue(c.id);
+ const lastPay=fin.filter(x=>typeOf(x)==='income').slice(-1)[0];
+ content.innerHTML=clientTickerHtml()+`
+ <div class="stable-hero"><div class="stable-hero-row"><div><h1>🌐 Client Portal</h1><p>Welcome ${esc(c.name)} — package, bill, payments and support status.</p></div><div class="stable-pill">${esc(c.pppoe||c.username||c.mobile)}</div></div></div>
+ <div class="stable-kpi-grid">
+  <div class="stable-kpi stable-blue"><div class="icon">📶</div><span>Package</span><b>${esc(c.package||'-')}</b><small>Monthly ${money(c.monthlyFee||0)}</small></div>
+  <div class="stable-kpi stable-red"><div class="icon">💳</div><span>Due Amount</span><b>${money(due)}</b><small>Status: ${due>0?'Unpaid/Due':'Paid'}</small></div>
+  <div class="stable-kpi stable-green"><div class="icon">✅</div><span>Total Paid</span><b>${money(paid)}</b><small>Last: ${lastPay?lastPay.date:'-'}</small></div>
+  <div class="stable-kpi stable-purple"><div class="icon">🛠️</div><span>Complaints</span><b>${comps.length}</b><small>Pending ${comps.filter(x=>x.status!=='Resolved').length}</small></div>
+ </div>
+ <div class="stable-section"><h2>Quick Actions</h2><div class="line"></div></div>
+ <div class="stable-quick">
+  <div class="stable-quick-card" onclick="clientComplaintForm()"><div class="q">🛠️</div><b>New Complaint</b><small>Create support request</small></div>
+  <div class="stable-quick-card" onclick="clientWhatsAppSupport()"><div class="q">🟢</div><b>WhatsApp Support</b><small>Contact Fire.net.pk</small></div>
+  <div class="stable-quick-card" onclick="clientPaymentInfo()"><div class="q">💳</div><b>Payment Info</b><small>View due and package</small></div>
+  <div class="stable-quick-card" onclick="tab('dashboard')"><div class="q">🔄</div><b>Refresh</b><small>Reload my portal</small></div>
+ </div>
+ ${accountRows('My Invoices',['Date','Work','Total','Received','Due'],inv.slice().reverse().map(v=>`<tr><td>${v.date}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td>${money(v.received)}</td><td>${money(v.due)}</td></tr>`))}
+ ${accountRows('My Complaints',['Date','Type','Status','Expected Resolve'],comps.slice().reverse().map(x=>`<tr><td>${x.date}</td><td>${esc(x.type)}</td><td>${esc(x.status)}</td><td>${esc(fmtDT(x.eta))}</td></tr>`))}
+ `;
+}
+function clientComplaintForm(){
+ const c=currentClient();if(!c)return;
+ content.innerHTML=clientTickerHtml()+`<div class="card"><div class="head"><h2>Create Complaint</h2><button class="btn btn-l btn-sm" onclick="clientDashboard()">Back</button></div>
+ <div class="row"><div class="fg"><label>Complaint Type</label><select id="clType"><option>Internet Down</option><option>Slow Speed</option><option>Payment Issue</option><option>Package Change</option><option>Other</option></select></div><div class="fg"><label>Details</label><input id="clDet" placeholder="Write issue details"></div><div class="fg"><label>&nbsp;</label><button class="btn btn-p" onclick="saveClientComplaint()">Submit Complaint</button></div></div></div>`;
+}
+function saveClientComplaint(){
+ const c=currentClient();if(!c)return;
+ let rec={id:id('c'),clientId:c.id,name:c.name,phone:c.mobile,type:clType.value,assigned:'',det:clDet.value.trim(),status:'Pending',date:today(),time:now(),eta:'',resolvedAt:'',by:'client'};
+ S.complaints.push(rec);saveAndSync('complaints',rec);toast('Complaint submitted','success');clientDashboard();
+}
+function clientWhatsAppSupport(){
+ const c=currentClient();if(!c)return;
+ const msg=`*Fire.net.pk Client Support*%0AName: ${encodeURIComponent(c.name)}%0AMobile: ${encodeURIComponent(c.mobile)}%0APPPoE: ${encodeURIComponent(c.pppoe||'-')}%0AI need support.`;
+ window.open('https://wa.me/'+waNumber(S.ownerWhatsApp||'03001234561')+'?text='+msg,'_blank');
+}
+function clientPaymentInfo(){
+ const c=currentClient();if(!c)return;
+ alert(`Package: ${c.package||'-'}\nMonthly Fee: ${money(c.monthlyFee||0)}\nDue Amount: ${money(clientDue(c.id))}\nPPPoE: ${c.pppoe||'-'}`);
+}
+function clientsPage(){
+ if(U.role!=='admin')return dash();
+ content.innerHTML=`<div class="card"><div class="head"><h2>Add Client</h2></div>
+ <div class="row"><div class="fg"><label>Client Name</label><input id="clientName"></div><div class="fg"><label>Mobile</label><input id="clientMobile" placeholder="03001234561"></div><div class="fg"><label>C.Code / Login Access</label><input id="clientPin" placeholder="C.Code"></div></div>
+ <div class="row"><div class="fg"><label>PPPoE Username / ID-IP</label><input id="clientPppoe"></div><div class="fg"><label>Package</label><input id="clientPackage" placeholder="Package"></div><div class="fg"><label>Bill / M.Bill</label><input id="clientFee" type="number" value="0"></div></div>
+ <div class="row"><div class="fg"><label>Manual Due</label><input id="clientDue" type="number" value="0"></div><div class="fg"><label>Area / Zone</label><input id="clientAddress"></div><div class="fg"><label>Assigned Employee</label><select id="clientEmp"><option value="">None</option>${empOpts()}</select></div></div>
+ <div class="actions"><button class="btn btn-p" onclick="addClient()">Add Client</button><button class="btn btn-i" onclick="clientImportFile.click()">Import CSV/Excel</button></div><input class="hidden" type="file" id="clientImportFile" accept=".csv,.xlsx,.xls" onchange="importClientsFile(event)"></div>
+ <div class="card"><div class="head"><h2>Clients</h2></div>${clientsTable()}</div>`;
+}
+function addClient(){
+ let mobile=pkMobile(clientMobile.value);
+ if(!clientName.value.trim()||!validPk(mobile))return toast('Client name and valid mobile required','error');
+ if((S.clients||[]).some(c=>c.mobile===mobile))return toast('Client already exists','error');
+ let rec={id:id('cl'),name:clientName.value.trim(),mobile,pin:clientPin.value.trim(),ccode:clientPin.value.trim(),pppoe:clientPppoe.value.trim(),package:clientPackage.value.trim(),monthlyFee:+clientFee.value||0,bill:+clientFee.value||0,due:+clientDue.value||0,dueDate:document.getElementById('clientDueDate')?.value||'',address:clientAddress.value.trim(),area:clientAddress.value.trim(),subArea:document.getElementById('clientSubArea')?.value||'',nid:document.getElementById('clientNid')?.value||'',assigned:clientEmp.value,active:true,date:today()};
+ S.clients.push(rec);saveAndSync('clients',rec);toast('Client added','success');clientsPage();
+}
+function clientsTable(){
+ let r=S.clients||[];if(!r.length)return'<div class="empty">No clients</div>';
+ return `<div class="tbl"><table><thead><tr><th>Name</th><th>Mobile/Login</th><th>PPPoE</th><th>Package</th><th>Monthly</th><th>Due</th><th>Employee</th><th>Status</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td><b>${esc(c.name)}</b><br><small>${esc(c.address||'')}</small></td><td>${esc(c.mobile)}<br>PIN: ${esc(c.pin||'1234')}</td><td>${esc(c.pppoe||'-')}</td><td>${esc(c.package||'-')}</td><td>${money(c.monthlyFee||0)}</td><td>${money(clientDue(c.id))}</td><td>${esc(empName(c.assigned)||'-')}</td><td>${c.active===false?'Inactive':'Active'}</td><td><div class="actions"><button class="btn btn-i btn-sm" onclick="editClient('${c.id}')">Edit</button><button class="btn btn-s btn-sm" onclick="sendClientBill('${c.id}')">WhatsApp Bill</button><button class="btn btn-w btn-sm" onclick="toggleClient('${c.id}')">${c.active===false?'Active':'Inactive'}</button><button class="btn btn-e btn-sm" onclick="deleteClient('${c.id}')">Delete</button></div></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+function normalizeClientRow(row){
+ const g=(...keys)=>{for(const k of keys){if(row[k]!==undefined&&row[k]!==null&&String(row[k]).trim()!=='')return String(row[k]).trim()}return ''};
+ const name=g('name','Client Name','client name','Name');
+ const mobile=pkMobile(g('mobile','Mobile','Phone','phone'));
+ const ccode=g('ccode','C.Code','C Code','Client Code','passcode','Password','password');
+ const pppoe=g('pppoe','PPPoE','PPPoE Username','ID/IP','ID IP','id/ip');
+ const pkg=g('package','Package');
+ const bill=Number(g('bill','M.Bill','M Bill','Monthly Fee','monthlyFee'))||0;
+ const dueDate=g('dueDate','Due Date','Ex.Date','Ex Date');
+ const area=g('area','Zone','Area');
+ const subArea=g('subArea','Sub Zone','SubZone','sub area');
+ const nid=g('nid','NID');
+ const password=g('Password','password');
+ const protocol=g('Protocol','protocol');
+ return {name,mobile,pin:ccode,ccode,pppoe,package:pkg,monthlyFee:bill,bill,due:0,dueDate,area,address:area,subArea,nid,password,protocol,active:true,date:today()};
+}
+async function importClientsFile(ev){
+ const file=ev.target.files[0];if(!file)return;
+ const buf=await file.arrayBuffer();
+ let rows=[];
+ if(file.name.toLowerCase().endsWith('.csv')){
+   const txt=new TextDecoder().decode(buf);
+   const lines=txt.split(/\r?\n/).filter(Boolean);
+   const heads=lines.shift().split(',').map(h=>h.trim());
+   rows=lines.map(line=>{const vals=line.split(',');let o={};heads.forEach((h,i)=>o[h]=vals[i]||'');return o});
+ }else{
+   if(typeof XLSX==='undefined')return toast('Excel library not loaded. Use CSV or internet connection.','error');
+   const wb=XLSX.read(buf,{type:'array'});
+   const ws=wb.Sheets[wb.SheetNames[0]];
+   rows=XLSX.utils.sheet_to_json(ws,{defval:''});
+ }
+ let added=0,skipped=0;
+ S.clients=S.clients||[];
+ for(const row of rows){
+   const c=normalizeClientRow(row);
+   if(!c.name||!c.mobile||!c.ccode||!c.pppoe){skipped++;continue}
+   if(S.clients.some(x=>x.mobile===c.mobile||String(x.pppoe||'').toLowerCase()===c.pppoe.toLowerCase()||String(x.ccode||x.pin||'')===c.ccode)){skipped++;continue}
+   c.id=id('cl');S.clients.push(c);fbSet('clients',c);added++;
+ }
+ saveLocal();toast(`Clients imported: ${added}, skipped: ${skipped}`,'success');clientsPage();
+}
+
+function editClient(i){
+ let c=clientById(i);if(!c)return;
+ c.name=prompt('Client Name',c.name)||c.name;
+ c.mobile=pkMobile(prompt('Mobile',c.mobile)||c.mobile);
+ c.pin=prompt('PIN',c.pin||'1234')||c.pin||'1234';
+ c.pppoe=prompt('PPPoE Username',c.pppoe||'')||c.pppoe||'';
+ c.package=prompt('Package',c.package||'')||c.package||'';
+ c.monthlyFee=+(prompt('Monthly Fee',c.monthlyFee||0)??c.monthlyFee)||0;
+ c.due=+(prompt('Manual Due Amount',c.due||0)??c.due)||0;
+ c.address=prompt('Address / Area',c.address||'')||c.address||'';
+ saveAndSync('clients',c);clientsPage();
+}
+function toggleClient(i){let c=clientById(i);if(c){c.active=c.active===false;saveAndSync('clients',c);clientsPage()}}
+function deleteClient(i){if(!confirm('Delete client?'))return;S.clients=(S.clients||[]).filter(c=>c.id!==i);delAndSync('clients',i);clientsPage()}
+function sendClientBill(i){
+ let c=clientById(i);if(!c)return;
+ let msg=`🌐 *FIRE.NET.PK - CLIENT BILL*%0A━━━━━━━━━━━━━━━━━━━━%0AName: ${encodeURIComponent(c.name)}%0AMobile: ${encodeURIComponent(c.mobile)}%0APPPoE: ${encodeURIComponent(c.pppoe||'-')}%0APackage: ${encodeURIComponent(c.package||'-')}%0AMonthly Fee: ${encodeURIComponent(money(c.monthlyFee||0))}%0ADue Amount: ${encodeURIComponent(money(clientDue(c.id)))}%0A━━━━━━━━━━━━━━━━━━━━%0APlease pay your bill on time.`;
+ window.open('https://wa.me/'+waNumber(c.mobile)+'?text='+msg,'_blank');
+}
 
 function employees(){if(U.role!=='admin')return dash();content.innerHTML=`<div class="card"><div class="head"><h2>Add Employee</h2></div><div class="row"><div class="fg"><label>Name</label><input id="eName"></div><div class="fg"><label>Login</label><input id="ePhone"></div><div class="fg"><label>Mobile</label><input id="eMobile" placeholder="03001234561"></div></div><div class="row two"><div class="fg"><label>PIN</label><input id="ePin" value="1234"></div><div class="fg"><label>Role</label><input id="eRole" placeholder="Collection"></div></div><div class="actions">${['complaints','attendance','invoice','finance','advance','targets'].map(p=>`<label><input type="checkbox" class="perm" value="${p}" checked> ${p}</label>`).join('')}</div><br><button class="btn btn-p" onclick="addEmp()">Add Employee</button></div><div class="card"><div class="head"><h2>Employees</h2></div>${empTable()}</div>`}
 function addEmp(){let per={};document.querySelectorAll('.perm').forEach(x=>per[x.value]=x.checked);let mobile=pkMobile(eMobile.value);if(!eName.value.trim()||!ePhone.value.trim())return toast('Name and login required','error');if(mobile&&!validPk(mobile))return toast('Mobile number format use karein: 03001234561','error');if(S.employees.some(e=>e.phone.toLowerCase()===ePhone.value.trim().toLowerCase()))return toast('Employee already exists','error');let rec={id:id('e'),name:eName.value.trim(),phone:ePhone.value.trim(),mobile,pin:ePin.value.trim()||'1234',role:eRole.value.trim()||'Employee',active:true,per};S.employees.push(rec);saveAndSync('employees',rec);employees()}
@@ -606,7 +1110,7 @@ let e={id:id('fin'),type:ft.value,mode:fm.value,cat:fc.value,amount,
 customer:paidCustomer,paidBy:paidCustomer,payer:paidCustomer,
 receiver:fr.value.trim()||U.name,online:fm.value==='online'?fo.value.trim():'',
 phone,notes:fn.value.trim(),date:today(),time:now(),by:key(),byName:U.name};
-S.finance.push(e);if(e.type==='income')applyTarget(e.by,e.amount);saveAndSync('finance',e);toast('Entry saved','success');beep();finance()}
+S.finance.push(e);if(e.type==='income')applyTarget(e.by,e.amount);saveAndSync('finance',e);toast('Entry saved','success');finance()}
 function employeeWiseSummary(){let data={};filteredFinance().forEach(e=>{let k=e.by||'admin',n=k==='admin'?'Admin':empName(k);data[k]=data[k]||{name:n,inc:0,exp:0,cash:0,online:0};let a=+e.amount||0;if(typeOf(e)==='expense')data[k].exp+=a;else data[k].inc+=a;if(modeOf(e)==='online')data[k].online+=a;else data[k].cash+=a});let rows=Object.values(data);return rows.length?`<div class="tbl"><table><thead><tr><th>Employee</th><th>Income</th><th>Expense</th><th>Cash</th><th>Online</th><th>Balance / Amount With</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${money(r.inc)}</td><td>${money(r.exp)}</td><td>${money(r.cash)}</td><td>${money(r.online)}</td><td><b>${money(r.inc-r.exp)}</b></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No employee-wise data</div>'}
 function finTable(){let r=filteredFinance().slice().reverse();if(!r.length)return'<div class="empty">No finance entries</div>';let sec=(title,arr)=>`<h3 style="margin:14px 0">${title}</h3>${arr.length?`<div class="tbl"><table><thead><tr><th>Time</th><th>Date</th><th>Employee</th><th>Type</th><th>Payment</th><th>Paid By / Customer</th><th>Category</th><th>Receiver</th><th>Account</th><th>Amount</th><th>Action</th></tr></thead><tbody>${arr.map(e=>`<tr class="${typeOf(e)==='expense'?'expense-row':'income-row'}"><td>${esc(e.time||'')}</td><td>${esc(e.date||'')}</td><td>${esc(e.by==='admin'?'Admin':empName(e.by))}</td><td>${typeTag(e)}</td><td>${modeTag(e)}</td><td><b>${esc(paidBy(e))}</b></td><td>${esc(e.cat)}</td><td>${esc(e.receiver)}</td><td>${esc(e.online||'-')}</td><td class="${typeOf(e)==='expense'?'money-minus':'money-plus'}">${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td><td><div class="actions"><button class="btn btn-s btn-sm" onclick="sendSlip('${e.id}')">Slip</button>${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delFin('${e.id}')">Delete</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">None</div>'}`;return sec('Income Entries',r.filter(e=>typeOf(e)==='income'))+sec('Expense Entries',r.filter(e=>typeOf(e)==='expense'))}
 function slipMsg(e){
@@ -669,65 +1173,19 @@ Prepared by: ${U?U.name:'System'}
 *Fire.net.pk Accounts*`;
 }
 function dailyReport(){let p=prompt('WhatsApp number 03001234561');if(!p)return;p=pkMobile(p);if(!validPk(p))return toast('Mobile number format use karein: 03001234561','error');window.open('https://wa.me/'+waNumber(p)+'?text='+encodeURIComponent(financeReportText()),'_blank')}
-function printFinanceReport(){let r=filteredFinance(),f=calc(r),title=financeAll?'All Dates':financeDate;let html=`<!doctype html><html><head><title>Finance Report</title><style>body{font-family:Arial;padding:25px;color:#111}h1{color:#e74c3c;margin:0}.top{border-bottom:3px solid #243447;padding-bottom:12px;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.box{border:1px solid #ddd;padding:10px;border-radius:8px}table{width:100%;border-collapse:collapse;margin-top:14px}th,td{border:1px solid #ddd;padding:7px;font-size:12px}th{background:#243447;color:white}.sign{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:45px}.sig{border-top:1px solid #333;text-align:center;padding-top:8px}
-/* Side menu layout */
-.main-layout{display:grid;grid-template-columns:245px 1fr;gap:12px;align-items:start}
-.side-toggle{display:none;background:var(--p);color:#fff;border-radius:12px;padding:10px 13px;font-weight:900}
-.sidebar-card{background:#fff;border-radius:18px;box-shadow:0 10px 25px rgba(15,23,42,.07);padding:10px;position:sticky;top:12px}
-.sidebar-title{font-weight:900;color:var(--d);padding:10px 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
-.nav.side{display:flex;flex-direction:column;gap:6px;background:transparent;padding:0;margin:0;box-shadow:none;border-radius:0;overflow:visible}
-.nav.side button{width:100%;text-align:left;justify-content:flex-start;border-radius:12px}
-.content-area{min-width:0}
-@media(max-width:850px){
- .side-toggle{display:inline-flex;margin-bottom:10px}
- .main-layout{display:block}
- .sidebar-card{display:none;position:fixed;left:10px;right:10px;top:10px;z-index:40;max-height:90vh;overflow:auto}
- .sidebar-card.open{display:block}
- .nav.side{display:flex!important;grid-template-columns:none}
- .nav.side button{font-size:14px;padding:12px}
- .content-area{width:100%}
+function printFinanceReport(){
+ let r=filteredFinance(),f=calc(r),title=financeAll?'All Dates':financeDate;
+ let empLabel=financeEmp==='all'?'All':financeEmp==='admin'?'Admin':empName(financeEmp);
+ let rows=r.map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.by==='admin'?'Admin':empName(e.by))}</td><td>${esc(typeOf(e))}</td><td>${esc(modeOf(e))}</td><td>${esc(paidBy(e))}</td><td>${esc(e.cat)}</td><td>${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td></tr>`).join('');
+ let html='<!doctype html><html><head><title>Finance Report</title>'+
+ '<style>body{font-family:Arial;padding:25px;color:#111}h1{color:#e74c3c;margin:0}.top{border-bottom:3px solid #243447;padding-bottom:12px;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.box{border:1px solid #ddd;padding:10px;border-radius:8px}table{width:100%;border-collapse:collapse;margin-top:14px}th,td{border:1px solid #ddd;padding:7px;font-size:12px}th{background:#243447;color:white}.sign{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:45px}.sig{border-top:1px solid #333;text-align:center;padding-top:8px}</style>'+
+ '</head><body><div class="top"><h1>Fire.net.pk Finance Report</h1><p>Report Period: '+esc(title)+'<br>Employee: '+esc(empLabel)+'<br>Generated: '+esc(now())+'</p></div>'+
+ '<div class="grid"><div class="box">Income<br><b>'+money(f.inc)+'</b></div><div class="box">Expense<br><b>'+money(f.exp)+'</b></div><div class="box">Cash<br><b>'+money(f.cash)+'</b></div><div class="box">Online<br><b>'+money(f.online)+'</b></div><div class="box">Cash Expense<br><b>'+money(f.cashExp)+'</b></div><div class="box">Online Expense<br><b>'+money(f.onlineExp)+'</b></div><div class="box">Net Balance<br><b>'+money(f.bal)+'</b></div><div class="box">Entries<br><b>'+r.length+'</b></div></div>'+
+ '<h2>Employee-wise Summary</h2>'+employeeWiseSummary().replaceAll('class="tbl"','').replaceAll('class="empty"','')+
+ '<h2>Entries</h2><table><thead><tr><th>Date</th><th>Employee</th><th>Type</th><th>Mode</th><th>Paid By</th><th>Category</th><th>Amount</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+ '<div class="sign"><div class="sig">Prepared By</div><div class="sig">Checked By</div><div class="sig">Approved By</div></div></body></html>';
+ let w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
 }
-
-
-.news-ticker{background:linear-gradient(135deg,#111827,#243447);color:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 10px 25px rgba(15,23,42,.12)}
-.news-ticker .ticker-inner{white-space:nowrap;display:flex;width:max-content;padding:12px 0;font-weight:900;animation:tickerMove 22s linear infinite}
-.news-ticker span{display:inline-block;padding-right:80px}
-@keyframes tickerMove{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.target-banner{background:linear-gradient(135deg,#fff7ed,#ecfdf5);border:1px solid #fed7aa;border-left:6px solid var(--s);border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 10px 25px rgba(15,23,42,.06)}
-.target-banner h2{font-size:18px;color:var(--d);margin-bottom:8px}
-.target-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px}
-.target-mini div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
-.target-mini small{display:block;color:#64748b;font-weight:900}
-.target-mini b{font-size:18px}
-.news-admin-preview{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:12px;font-weight:800;color:#475569}
-@media(max-width:850px){.target-mini{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:560px){.target-mini{grid-template-columns:1fr}.news-ticker .ticker-inner{animation-duration:14s}}
-
-
-.table-controls{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 12px;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px}
-.table-controls .left,.table-controls .right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.table-controls input{max-width:260px;padding:9px 11px}
-.table-controls select{max-width:120px;padding:9px 11px}
-.table-info{font-size:12px;color:#64748b;font-weight:900}
-@media(max-width:560px){.table-controls,.table-controls .left,.table-controls .right{align-items:stretch;width:100%}.table-controls input,.table-controls select{max-width:none;width:100%}}
-
-
-.notify-wrap{position:relative}
-.notify-btn{position:relative;background:#f8fafc;border:1px solid var(--line);border-radius:999px;padding:9px 12px;font-weight:900;color:#111827}
-.notify-count{position:absolute;top:-6px;right:-6px;background:#dc2626;color:#fff;border-radius:999px;font-size:11px;min-width:19px;height:19px;display:flex;align-items:center;justify-content:center;font-weight:900;border:2px solid #fff}
-.notify-panel{display:none;position:absolute;right:0;top:46px;width:340px;max-height:430px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 50px rgba(15,23,42,.20);z-index:60}
-.notify-panel.open{display:block}
-.notify-head{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--line);font-weight:900}
-.notify-item{padding:12px;border-bottom:1px solid #eef2f7}
-.notify-item.unread{background:#eff6ff}
-.notify-item b{display:block;color:#1f2937;margin-bottom:4px}
-.notify-item small{color:#64748b;font-weight:800}
-.notify-empty{padding:22px;text-align:center;color:#64748b;font-weight:900}
-@media(max-width:560px){.notify-panel{left:0;right:auto;width:100%;max-width:calc(100vw - 20px)}}
-
-</style></head><body><div class="top"><h1>Fire.net.pk Finance Report</h1><p>Report Period: ${title}<br>Employee: ${financeEmp==='all'?'All':financeEmp==='admin'?'Admin':empName(financeEmp)}<br>Generated: ${now()}</p></div><div class="grid"><div class="box">Income<br><b>${money(f.inc)}</b></div><div class="box">Expense<br><b>${money(f.exp)}</b></div><div class="box">Cash<br><b>${money(f.cash)}</b></div><div class="box">Online<br><b>${money(f.online)}</b></div><div class="box">Cash Expense<br><b>${money(f.cashExp)}</b></div><div class="box">Online Expense<br><b>${money(f.onlineExp)}</b></div><div class="box">Net Balance<br><b>${money(f.bal)}</b></div><div class="box">Entries<br><b>${r.length}</b></div></div><h2>Employee-wise Summary</h2>${employeeWiseSummary().replaceAll('class="tbl"','').replaceAll('class="empty"','')}<h2>Entries</h2><table><thead><tr><th>Date</th><th>Employee</th><th>Type</th><th>Mode</th><th>Paid By</th><th>Category</th><th>Amount</th></tr></thead><tbody>${r.map(e=>`<tr><td>${e.date}</td><td>${e.by==='admin'?'Admin':empName(e.by)}</td><td>${typeOf(e)}</td><td>${modeOf(e)}</td><td>${esc(paidBy(e))}</td><td>${esc(e.cat)}</td><td>${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td></tr>`).join('')}</tbody></table><div class="sign"><div class="sig">Prepared By</div><div class="sig">Checked By</div><div class="sig">Approved By</div></div></body></html>`;let w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500)}
-
-
 
 function employeeAccountSummary(empId){
  const fRows=S.finance.filter(e=>e.by===empId);
@@ -851,8 +1309,9 @@ function advanceSummaryTable(){
 function advanceEntriesTable(){
  let r=U.role==='admin'?(S.advances||[]):(S.advances||[]).filter(x=>x.emp===U.id);
  if(!r.length)return '<div class="empty">No advance entries</div>';
- return `<div class="tbl"><table><thead><tr><th>Date</th><th>Employee</th><th>Type</th><th>Amount</th><th>Reason</th><th>By</th><th>Action</th></tr></thead><tbody>${r.slice().reverse().map(x=>`<tr><td>${x.date}</td><td>${empName(x.emp)}</td><td>${esc(x.type)}</td><td>${money(x.amount)}</td><td>${esc(x.reason||'-')}</td><td>${esc(x.byName)}</td><td>${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delAdvance('${x.id}')">Delete</button>`:''}</td></tr>`).join('')}</tbody></table></div>`;
+ return `<div class="tbl"><table><thead><tr><th>Date</th><th>Employee</th><th>Type</th><th>Amount</th><th>Reason</th><th>By</th><th>Action</th></tr></thead><tbody>${r.slice().reverse().map(x=>`<tr><td>${x.date}</td><td>${empName(x.emp)}</td><td>${esc(x.type)}</td><td>${money(x.amount)}</td><td>${esc(x.reason||'-')}</td><td>${esc(x.byName)}</td><td>${U.role==='admin'?`<div class="actions"><button class="btn btn-i btn-sm" onclick="editAdvance('${x.id}')">Edit</button><button class="btn btn-e btn-sm" onclick="delAdvance('${x.id}')">Delete</button></div>`:'-'}</td></tr>`).join('')}</tbody></table></div>`;
 }
+
 function delAdvance(i){if(!confirm('Delete advance entry?'))return;S.advances=(S.advances||[]).filter(x=>x.id!==i);delAndSync('advances',i);advancePage()}
 function advanceSlipMsg(empId){
  let e=S.employees.find(x=>x.id===empId),a=advanceCalc(empId);
@@ -1021,6 +1480,18 @@ function targetStatusBadge(t){
  if(s==='Inactive')return '<span class="badge pending">Inactive</span>';
  return '<span class="badge online">Active</span>';
 }
+
+function activateTarget(i){
+ const t=S.targets.find(x=>x.id===i);if(!t)return;
+ t.inactive=false;
+ // If target date is today, make it active again. If old, update to today so it can be active.
+ if(t.date<today())t.date=today();
+ t.closed=false;
+ t.closedAt='';
+ saveAndSync('targets',t);
+ toast('Target activated','success');
+ targets();
+}
 function inactiveTarget(i){
  const t=S.targets.find(x=>x.id===i);if(!t)return;
  t.inactive=true;t.closed=true;t.closedAt=now();
@@ -1065,7 +1536,7 @@ function applyTarget(emp,amount,targetType='collection'){
    t.achieved=(+t.achieved)+addValue;
    if(t.achieved>=t.target){
      t.closed=true;t.closedAt=now();
-     toast((targetType==='sales'?'New connection sales':'Recovery collection')+' target completed! Reward unlocked','success');beep();
+     toast((targetType==='sales'?'New connection sales':'Recovery collection')+' target completed! Reward unlocked','success');
    }
    saveAndSync('targets',t);
  }
@@ -1074,110 +1545,11 @@ function applyTarget(emp,amount,targetType='collection'){
 function targetValueDisplay(t,v){
  return (t.targetType||'collection')==='sales' ? `${Number(v)||0} Conn.` : money(v);
 }
-function targetTable(){closeOldDailyTargets();let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Employee</th><th>Date</th><th>Type</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Status</th><th>Reward Rule</th><th>Reward Earned</th><th>Action</th></tr></thead><tbody>${r.slice().reverse().map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${empName(t.emp)}</td><td>${t.date}</td><td>${(t.targetType||'collection').toUpperCase()}</td><td>${targetValueDisplay(t,t.target)}</td><td>${targetValueDisplay(t,t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td>${targetStatusBadge(t)}</td><td>${t.rewardType==='percentage'?(+t.rewardValue||0)+'%':money(t.rewardValue)} - ${esc(t.reward)}</td><td>${money(rewardEarned(t))}</td><td>${U.role==='admin'?`<div class="actions"><button class="btn btn-w btn-sm" onclick="inactiveTarget('${t.id}')">Inactive</button><button class="btn btn-e btn-sm" onclick="deleteTarget('${t.id}')">Delete</button></div>`:'-'}</td></tr>`}).join('')}</tbody></table></div>`}
-
-function newsPage(){
- if(U.role!=='admin')return dash();
- content.innerHTML=`<div class="card">
-  <div class="head"><h2>Employee Dashboard News / Scrolling Announcement</h2></div>
-  <div class="fg">
-    <label>News Text</label>
-    <textarea id="newsText" placeholder="Type announcement for employees">${esc(S.news?.text||'')}</textarea>
-  </div>
-  <label style="font-weight:900">
-    <input type="checkbox" id="newsActive" ${S.news?.active?'checked':''}> Active / Show on employee dashboard
-  </label><br>
-  <label style="font-weight:900">
-    <input type="checkbox" id="newsNotify" checked> Send notification alert to employees
-  </label>
-  <br><br>
-  <div class="actions">
-    <button class="btn btn-p" onclick="saveNews()">Save News</button>
-    <button class="btn btn-l" onclick="previewNews()">Preview</button>
-  </div>
- </div>
-
- <div class="card">
-  <div class="head"><h2>Manual Notification</h2></div>
-  <div class="row">
-   <div class="fg"><label>Send To</label><select id="manualNotifyTo" onchange="toggleManualNotifyEmployee()"><option value="all">All Users</option><option value="employee_all">All Employees</option><option value="admin">Admin Only</option><option value="specific">Specific Employee</option></select></div>
-   <div class="fg" id="manualNotifyEmpBox"><label>Select Employee</label><select id="manualNotifyEmp">${empOpts()}</select></div>
-   <div class="fg"><label>Alert Type</label><select id="manualNotifyAlert"><option value="yes">Bell + Toast/Sound</option><option value="bell">Bell Only</option></select></div>
-  </div>
-  <div class="row two">
-   <div class="fg"><label>Notification Title</label><input id="manualNotifyTitle" placeholder="Example: Important Update"></div>
-   <div class="fg"><label>Notification Message</label><input id="manualNotifyMsg" placeholder="Message for employee/admin"></div>
-  </div>
-  <button class="btn btn-p" onclick="sendManualNotification()">Send Notification</button>
- </div>
-
- <div class="card">
-  <div class="head"><h2>Notification Settings</h2></div>
-  <label style="font-weight:900"><input type="checkbox" id="setBell" ${S.notificationSettings?.bell!==false?'checked':''}> Show bell unread count</label><br>
-  <label style="font-weight:900"><input type="checkbox" id="setToast" ${S.notificationSettings?.toast!==false?'checked':''}> Show popup/toast alert</label><br>
-  <label style="font-weight:900"><input type="checkbox" id="setSound" ${S.notificationSettings?.sound!==false?'checked':''}> Play notification sound</label><br><br>
-  <button class="btn btn-p" onclick="saveNotificationSettings()">Save Notification Settings</button>
- </div>
-
- <div class="card">
-   <div class="head"><h2>Preview</h2></div>
-   <div class="news-admin-preview">${S.news?.active?'Active':'Inactive'}: ${esc(S.news?.text||'No news')}</div>
- </div>`;
- toggleManualNotifyEmployee();
-}
-
-function toggleManualNotifyEmployee(){
- const box=document.getElementById('manualNotifyEmpBox');
- if(box)box.style.display=document.getElementById('manualNotifyTo')?.value==='specific'?'block':'none';
-}
-function sendManualNotification(){
- const title=(document.getElementById('manualNotifyTitle')?.value||'Notification').trim();
- const msg=(document.getElementById('manualNotifyMsg')?.value||'').trim();
- if(!msg)return toast('Notification message required','error');
- const to=document.getElementById('manualNotifyTo').value;
- const alertNow=document.getElementById('manualNotifyAlert').value==='yes';
- if(to==='all')addNotification(title,msg,'all',alertNow);
- else if(to==='admin')addNotification(title,msg,'admin',alertNow);
- else if(to==='employee_all'){
-   (S.employees||[]).filter(e=>e.active).forEach(e=>addNotification(title,msg,e.id,false));
-   if(alertNow){ if(S.notificationSettings?.toast!==false)toast('Notification sent to all employees','warning'); if(S.notificationSettings?.sound!==false)beep(); }
- }
- else if(to==='specific'){
-   const emp=document.getElementById('manualNotifyEmp').value;
-   addNotification(title,msg,emp,alertNow);
- }
- toast('Manual notification sent','success');
- newsPage();
-}
-function saveNotificationSettings(){
- S.notificationSettings={
-   bell:document.getElementById('setBell').checked,
-   toast:document.getElementById('setToast').checked,
-   sound:document.getElementById('setSound').checked
- };
- saveLocal();fbSettings();updateNotificationBell();toast('Notification settings saved','success');newsPage();
-}
-
-function saveNews(){
- S.news={text:document.getElementById('newsText').value.trim(),active:document.getElementById('newsActive').checked};
- saveLocal();
- fbSettings();
- if(document.getElementById('newsNotify')?.checked && S.news.text){
-   notifyEmployeeNews();
-   toast('News updated and employee notifications sent','success');
- }else{
-   toast('News updated for employee dashboard','success');
- }
- newsPage();
-}
-function previewNews(){
- S.news={text:document.getElementById('newsText').value.trim(),active:document.getElementById('newsActive').checked};
- newsPage();
-}
+function targetTable(){closeOldDailyTargets();let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Employee</th><th>Date</th><th>Type</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Status</th><th>Reward Rule</th><th>Reward Earned</th><th>Action</th></tr></thead><tbody>${r.slice().reverse().map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));let action='-';if(U.role==='admin'){action=t.inactive?`<div class="actions"><button class="btn btn-s btn-sm" onclick="activateTarget('${t.id}')">Active</button><button class="btn btn-e btn-sm" onclick="deleteTarget('${t.id}')">Delete</button></div>`:`<div class="actions"><button class="btn btn-w btn-sm" onclick="inactiveTarget('${t.id}')">Inactive</button><button class="btn btn-e btn-sm" onclick="deleteTarget('${t.id}')">Delete</button></div>`;}return`<tr><td>${empName(t.emp)}</td><td>${t.date}</td><td>${(t.targetType||'collection').toUpperCase()}</td><td>${targetValueDisplay(t,t.target)}</td><td>${targetValueDisplay(t,t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td>${targetStatusBadge(t)}</td><td>${t.rewardType==='percentage'?(+t.rewardValue||0)+'%':money(t.rewardValue)} - ${esc(t.reward)}</td><td>${money(rewardEarned(t))}</td><td>${action}</td></tr>`}).join('')}</tbody></table></div>`}
 
 function backup(){content.innerHTML=`<div class="card"><div class="head"><h2>Backup & Restore</h2></div><div class="actions"><button class="btn btn-s" onclick="syncAll()">Sync All to Firebase</button><button class="btn btn-i" onclick="loadFirebase()">Fetch Firebase</button><button class="btn btn-s" onclick="downloadBackup()">Download Backup</button><button class="btn btn-i" onclick="restoreFile.click()">Restore Backup</button><button class="btn btn-e" onclick="clearAll()">Clear All</button></div><input class="hidden" type="file" id="restoreFile" accept=".json" onchange="restoreBackup(event)"></div>
  <div class="card"><div class="head"><h2>Admin Security</h2></div><div class="row two"><div class="fg"><label>Admin Recovery Code</label><input id="recoveryCodeInput" value="${esc(S.admin.recovery||'1122')}"></div><div class="fg"><label>&nbsp;</label><button class="btn btn-p" onclick="saveRecoveryCode()">Save Recovery Code</button></div></div><p style="color:#64748b;font-weight:800">Use this code only for admin forgot-password reset.</p></div>`}
-async function syncAll(){for(const e of S.employees)await fbSet('employees',e);for(const e of S.complaints)await fbSet('complaints',e);for(const e of S.finance)await fbSet('finance',e);for(const e of S.invoices)await fbSet('invoices',e);for(const e of S.targets)await fbSet('targets',e);for(const e of S.attendance)await fbSet('attendance',e);for(const e of (S.items||[]))await fbSet('items',e);for(const e of (S.packages||[]))await fbSet('packages',e);for(const e of (S.advances||[]))await fbSet('advances',e);for(const e of (S.notifications||[]))await fbSet('notifications',e);await fbSettings();toast('Sync complete','success')}
+async function syncAll(){for(const e of S.employees)await fbSet('employees',e);for(const e of S.complaints)await fbSet('complaints',e);for(const e of (S.clients||[]))await fbSet('clients',e);for(const e of S.finance)await fbSet('finance',e);for(const e of S.invoices)await fbSet('invoices',e);for(const e of S.targets)await fbSet('targets',e);for(const e of S.attendance)await fbSet('attendance',e);for(const e of (S.items||[]))await fbSet('items',e);for(const e of (S.packages||[]))await fbSet('packages',e);for(const e of (S.advances||[]))await fbSet('advances',e);for(const e of (S.notifications||[]))await fbSet('notifications',e);await fbSettings();toast('Sync complete','success')}
 
 function saveRecoveryCode(){
  const v=(document.getElementById('recoveryCodeInput')?.value||'').trim();
