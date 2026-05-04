@@ -137,11 +137,24 @@ packages:[
  {id:'pk2',name:'30 Mbps',monthly:2500,installation:3500,details:'Standard package'}
 ],
 session:null}}
-function load(){S=JSON.parse(localStorage.getItem(KEY)||'null')||def();
+function sanitizeState(){
  const D=def();
- S.items=S.items||D.items;S.packages=S.packages||D.packages;
- S.employees=S.employees||D.employees;S.complaints=S.complaints||[];S.finance=S.finance||[];S.invoices=S.invoices||[];S.targets=S.targets||[];S.attendance=S.attendance||[];S.advances=S.advances||[];S.news=S.news||D.news;
- saveLocal()}
+ S=S||D;
+ S.admin=S.admin||D.admin;
+ S.employees=Array.isArray(S.employees)?S.employees:D.employees;
+ S.complaints=Array.isArray(S.complaints)?S.complaints:[];
+ S.finance=Array.isArray(S.finance)?S.finance:[];
+ S.invoices=Array.isArray(S.invoices)?S.invoices:[];
+ S.targets=Array.isArray(S.targets)?S.targets:[];
+ S.attendance=Array.isArray(S.attendance)?S.attendance:[];
+ S.advances=Array.isArray(S.advances)?S.advances:[];
+ S.items=Array.isArray(S.items)?S.items:D.items;
+ S.packages=Array.isArray(S.packages)?S.packages:D.packages;
+ S.news=S.news||D.news;
+ S.employees.forEach(e=>{e.per=e.per||{complaints:1,attendance:1,invoice:1,finance:1,advance:1,targets:1};e.active=e.active!==false;});
+ S.targets.forEach(t=>{t.targetType=t.targetType||'collection';t.date=t.date||today();t.closed=!!t.closed;t.inactive=!!t.inactive;});
+}
+function load(){try{S=JSON.parse(localStorage.getItem(KEY)||'null')||def()}catch(e){S=def()}sanitizeState();saveLocal()}
 function saveLocal(){localStorage.setItem(KEY,JSON.stringify(S))}
 function setSync(t,ok){const el=document.getElementById('syncStatus');if(el){el.textContent=t;el.style.color=ok?'#166534':t.includes('failed')||t.includes('error')?'#dc2626':'#475569'}}
 function id(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -197,14 +210,23 @@ function saveAndSync(col,obj){saveLocal();if(col&&obj)fbSet(col,obj)}
 function delAndSync(col,idv){saveLocal();if(col&&idv)fbDel(col,idv)}
 
 function loginUser(){let u=lu.value.trim(),p=lp.value.trim();if(!u||!p)return toast('Enter username and password','error');if(u.toLowerCase()===S.admin.u&&p===S.admin.p){U={role:'admin',id:'admin',name:'Administrator'};S.session=U;saveLocal();return openApp()}let e=S.employees.find(x=>x.active&&(String(x.phone).toLowerCase()===u.toLowerCase()||String(x.name).toLowerCase()===u.toLowerCase()||String(x.mobile||'')===u)&&x.pin===p);if(e){U={role:'employee',...e};S.session=U;saveLocal();return openApp()}toast('Invalid login','error')}
-function openApp(){document.getElementById('loginScreen').classList.add('hidden');document.getElementById('app').style.display='block';pn.textContent=U.name;pr.textContent=U.role==='admin'?'Admin':U.role;av.textContent=U.name[0].toUpperCase();clock();navRender();tab('dashboard');notify()}
+function openApp(){sanitizeState();if(!U||!U.role){S.session=null;saveLocal();return location.reload()}document.getElementById('loginScreen').classList.add('hidden');document.getElementById('app').style.display='block';pn.textContent=U.name||'User';pr.textContent=U.role==='admin'?'Admin':(U.role||'Employee');av.textContent=(U.name||'U')[0].toUpperCase();clock();navRender();tab('dashboard');notify()}
 function logout(){S.session=null;saveLocal();location.reload()}function toggleMenu(){pm.classList.toggle('active')}function openPwd(){pwdModal.classList.add('active');pm.classList.remove('active')}function closePwd(){pwdModal.classList.remove('active')}
 function savePwd(){let v=newPwd.value.trim();if(v.length<3)return toast('Minimum 3 characters','error');if(U.role==='admin'){S.admin.p=v;fbSettings()}else{let e=S.employees.find(x=>x.id===U.id);if(e){e.pin=v;fbSet('employees',e)}U.pin=v;S.session=U}saveLocal();newPwd.value='';closePwd();toast('Password changed','success')}
 function items(){let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['backup','Backup','💾']];return U.role==='admin'?a:a.filter(x=>x[0]==='dashboard'||can(x[0]))}
 function navRender(){nav.innerHTML=items().map(x=>`<button id="n-${x[0]}" onclick="tab('${x[0]}')">${x[2]} ${x[1]}</button>`).join('')}
 function toggleSideMenu(){document.getElementById('sidePanel')?.classList.toggle('open')}
 function tab(x){if(!items().some(i=>i[0]===x))x='dashboard';TAB=x;document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-'+x);if(n)n.classList.add('active');document.getElementById('sidePanel')?.classList.remove('open');renderCurrent()}
-function renderCurrent(){({dashboard:dash,complaints,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:newsPage,backup}[TAB]||dash)()}
+function renderCurrent(){
+ try{
+  sanitizeState();
+  ({dashboard:dash,complaints,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:(typeof newsPage==='function'?newsPage:dash),backup}[TAB]||dash)();
+ }catch(err){
+  console.error(err);
+  const c=document.getElementById('content');
+  if(c)c.innerHTML=`<div class="card"><div class="head"><h2>Dashboard Error Fixed Mode</h2></div><p style="color:#dc2626;font-weight:800">${esc(err.message||err)}</p><button class="btn btn-e" onclick="localStorage.removeItem(KEY);location.reload()">Reset Local Data</button></div>`;
+ }
+}
 function empOpts(sel=''){return S.employees.filter(e=>e.active).map(e=>`<option value="${e.id}" ${sel===e.id?'selected':''}>${esc(e.name)} - ${esc(e.role)}</option>`).join('')}
 function empName(i){return S.employees.find(e=>e.id===i)?.name||'Admin'}
 function empPhone(i){let e=S.employees.find(x=>x.id===i);return e?.mobile||e?.phone||''}
@@ -214,7 +236,7 @@ function myComp(){return U.role==='admin'?S.complaints:S.complaints.filter(c=>c.
 function typeOf(e){return (e.type||'income').toLowerCase()==='expense'?'expense':'income'}function modeOf(e){return (e.mode||'cash').toLowerCase()==='online'?'online':'cash'}function paidBy(e){return e.customer||e.paidBy||e.payer||e.clientName||e.customerName||e.name||'-'}
 function calc(arr=myFin()){let cash=0,online=0,exp=0,inc=0,cashExp=0,onlineExp=0;arr.forEach(e=>{let a=+e.amount||0;if(typeOf(e)==='expense'){exp+=a;if(modeOf(e)==='online')onlineExp+=a;else cashExp+=a}else{inc+=a;if(modeOf(e)==='online')online+=a;else cash+=a}});return{cash,online,exp,inc,cashExp,onlineExp,bal:inc-exp}}
 function invoiceSummary(){let rows=myInv(),sales=0,received=0,due=0;rows.forEach(v=>{sales+=+v.total||0;received+=+v.received||0;due+=+v.due||0});return{sales,received,due,count:rows.filter(v=>(+v.due||0)>0).length}}
-function targetSummary(){closeOldDailyTargets();let rows=(U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id)).filter(t=>t.date===today()&&!t.closed),given=0,ach=0,reward=0;rows.forEach(t=>{given+=+t.target||0;ach+=+t.achieved||0;reward+=rewardEarned(t)});return{given,ach,reward,rem:Math.max(0,given-ach),pct:given?Math.min(100,Math.round(ach/given*100)):0}}
+function targetSummary(){closeOldDailyTargets();let rows=(U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id)).filter(t=>t.date===today()&&!t.closed&&!t.inactive),given=0,ach=0,reward=0;rows.forEach(t=>{given+=+t.target||0;ach+=+t.achieved||0;reward+=rewardEarned(t)});return{given,ach,reward,rem:Math.max(0,given-ach),pct:given?Math.min(100,Math.round(ach/given*100)):0}}
 function rewardEarned(t){let pct=(+t.achieved||0)/(+t.target||1)*100;if(pct<100)return 0;return t.rewardType==='percentage'?Math.round((+t.achieved||0)*(+t.rewardValue||0)/100):(+t.rewardValue||0)}
 function stats(){let f=calc(myFin().filter(e=>e.date===today())),allF=calc(),pend=myComp().filter(c=>c.status!=='Resolved').length,comp=myComp(),over=comp.filter(c=>c.status!=='Resolved'&&c.eta&&new Date(c.eta)<new Date()).length,inv=invoiceSummary(),tar=targetSummary();return`<div class="grid"><div class="stat"><span>Total Complaints</span><b>${comp.length}</b><small>Pending ${pend} / Overdue ${over}</small></div><div class="stat"><span>Invoice Paid / Due</span><b>${money(inv.received)}</b><small>Due ${money(inv.due)} (${inv.count})</small></div><div class="stat"><span>Today Income / Expense</span><b>${money(f.inc)}</b><small>Expense ${money(f.exp)} / Net ${money(f.bal)}</small></div><div class="stat"><span>Target Given / Achieved</span><b>${tar.pct}%</b><small>${money(tar.ach)} of ${money(tar.given)}</small></div></div>`}
 function newsTicker(){
@@ -225,7 +247,7 @@ function newsTicker(){
 function employeeTargetBanner(){
  if(!U||U.role!=='employee')return '';
  closeOldDailyTargets();
- const rows=S.targets.filter(t=>t.emp===U.id&&t.date===today()&&!t.closed);
+ const rows=S.targets.filter(t=>t.emp===U.id&&t.date===today()&&!t.closed&&!t.inactive);
  const collection=rows.filter(t=>(t.targetType||'collection')==='collection');
  const sales=rows.filter(t=>(t.targetType||'collection')==='sales');
  const given=rows.reduce((s,t)=>s+(+t.target||0),0);
@@ -240,8 +262,8 @@ function employeeTargetBanner(){
   <div class="prog"><div class="bar" style="width:${pct}%"></div></div>
   <b>${pct}% Completed Today</b>
   <div class="target-mini">
-   <div><small>Collection Target</small><b>${money(colGiven)}</b><small>Achieved: ${money(colAch)}</small></div>
-   <div><small>Sales Target</small><b>${money(saleGiven)}</b><small>Achieved: ${money(saleAch)}</small></div>
+   <div><small>Recovery Target</small><b>${money(colGiven)}</b><small>Collected: ${money(colAch)}</small></div>
+   <div><small>New Connection Target</small><b>${saleGiven} Conn.</b><small>Done: ${saleAch} Conn.</small></div>
    <div><small>Total Remaining</small><b>${money(remaining)}</b></div>
    <div><small>Reward Earned</small><b>${money(reward)}</b></div>
    <div><small>Active Today</small><b>${rows.length}</b></div>
@@ -593,12 +615,15 @@ function employeeAccountSummary(empId){
  const targetGiven=tRows.reduce((s,t)=>s+(+t.target||0),0);
  const targetAch=tRows.reduce((s,t)=>s+(+t.achieved||0),0);
  const reward=tRows.reduce((s,t)=>s+rewardEarned(t),0);
+ const achievedTargets=tRows.filter(t=>targetStatus(t)==='Achieved').length;
+ const missedTargets=tRows.filter(t=>targetStatus(t)==='Missed').length;
+ const inactiveTargets=tRows.filter(t=>targetStatus(t)==='Inactive').length;
  const invRows=S.invoices.filter(v=>v.by===empId||v.refEmp===empId);
  const invSales=invRows.reduce((s,v)=>s+(+v.total||0),0);
  const invDue=invRows.reduce((s,v)=>s+(+v.due||0),0);
  const comps=S.complaints.filter(c=>c.assigned===empId||c.by===empId);
  const pending=comps.filter(c=>c.status!=='Resolved').length;
- return {income,expense,cash,online,balance:income-expense,adv,targetGiven,targetAch,reward,invSales,invDue,comps,pending,fRows,invRows,tRows};
+ return {income,expense,cash,online,balance:income-expense,adv,targetGiven,targetAch,reward,achievedTargets,missedTargets,inactiveTargets,invSales,invDue,comps,pending,fRows,invRows,tRows};
 }
 function accountRows(title,head,rows){
  return `<div class="card"><div class="head"><h2>${title}</h2></div>${rows.length?`<div class="tbl"><table><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`:'<div class="empty">No data</div>'}</div>`;
@@ -610,11 +635,11 @@ function employeeAccountDetails(empId){
  <p style="color:#64748b;font-weight:800">Login: ${esc(e.phone)} | Mobile: ${esc(e.mobile||'-')} | Role: ${esc(e.role)}</p></div>
  <div class="summary">
   <div class="sum">Income<b>${money(a.income)}</b></div><div class="sum">Expense<b>${money(a.expense)}</b></div><div class="sum">Balance With Employee<b>${money(a.balance)}</b></div><div class="sum">Advance Balance<b>${money(a.adv.balance)}</b></div>
-  <div class="sum">Target Given<b>${money(a.targetGiven)}</b></div><div class="sum">Target Achieved<b>${money(a.targetAch)}</b></div><div class="sum">Reward Earned<b>${money(a.reward)}</b></div><div class="sum">Invoice Due<b>${money(a.invDue)}</b></div>
+  <div class="sum">Target Given<b>${money(a.targetGiven)}</b></div><div class="sum">Target Achieved<b>${money(a.targetAch)}</b></div><div class="sum">Reward Earned<b>${money(a.reward)}</b></div><div class="sum">Invoice Due<b>${money(a.invDue)}</b></div><div class="sum">Achieved Targets<b>${a.achievedTargets}</b></div><div class="sum">Missed Targets<b>${a.missedTargets}</b></div><div class="sum">Inactive Targets<b>${a.inactiveTargets}</b></div><div class="sum">Pending Tasks<b>${a.pending}</b></div>
  </div>
  ${accountRows('Income / Expense Entries',['Date','Type','Mode','Paid By','Category','Amount'],a.fRows.slice().reverse().map(x=>`<tr class="${typeOf(x)==='expense'?'expense-row':'income-row'}"><td>${x.date}</td><td>${typeTag(x)}</td><td>${modeTag(x)}</td><td>${esc(paidBy(x))}</td><td>${esc(x.cat)}</td><td>${typeOf(x)==='expense'?'- ':'+ '}${money(x.amount)}</td></tr>`))}
  ${accountRows('Advance Account',['Date','Type','Amount','Reason','Balance Effect'],S.advances.filter(x=>x.emp===empId).slice().reverse().map(x=>`<tr><td>${x.date}</td><td>${esc(x.type)}</td><td>${money(x.amount)}</td><td>${esc(x.reason||'-')}</td><td>${x.type==='given'?'+':x.type==='return'||x.type==='adjustment'?'-':''}${money(x.amount)}</td></tr>`))}
- ${accountRows('Targets / Rewards',['Date','Target','Achieved','Progress','Reward Earned'],a.tRows.map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${t.date}</td><td>${money(t.target)}</td><td>${money(t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div>${p}%</td><td>${money(rewardEarned(t))}</td></tr>`}))}
+ ${accountRows('Targets / Rewards',['Date','Type','Target','Achieved','Progress','Status','Reward Earned'],a.tRows.map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${t.date}</td><td>${(t.targetType||'collection').toUpperCase()}</td><td>${targetValueDisplay(t,t.target)}</td><td>${targetValueDisplay(t,t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div>${p}%</td><td>${targetStatusBadge(t)}</td><td>${money(rewardEarned(t))}</td></tr>`}))}
  ${accountRows('Invoices',['Date','Customer','Work','Total','Received','Due'],a.invRows.slice().reverse().map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td>${money(v.received)}</td><td>${money(v.due)}</td></tr>`))}
  ${accountRows('Complaints / Tasks',['Date','Customer','Type','Status','Expected Resolve'],a.comps.slice().reverse().map(c=>`<tr><td>${c.date}</td><td>${esc(c.name)}</td><td>${esc(c.type)}</td><td>${esc(c.status)}</td><td>${esc(fmtDT(c.eta))}</td></tr>`))}
  `;
@@ -642,9 +667,12 @@ Returned: ${money(a.adv.returned)}
 Advance Balance: ${money(a.adv.balance)}
 
 🎯 *TARGET / REWARD*
-Target Given: ${money(a.targetGiven)}
+Target Given: ${money(a.targetGiven)} / sales targets shown in connection count table
 Target Achieved: ${money(a.targetAch)}
 Reward Earned: ${money(a.reward)}
+Achieved Targets: ${a.achievedTargets}
+Missed Targets: ${a.missedTargets}
+Inactive Targets: ${a.inactiveTargets}
 
 🧾 *INVOICES*
 Invoice Sales: ${money(a.invSales)}
@@ -850,33 +878,120 @@ function closeOldDailyTargets(){
  });
  if(changed)saveLocal();
 }
-function targets(){content.innerHTML=`${U.role==='admin'?`<div class="card"><div class="head"><h2>Assign Target</h2></div><div class="row"><div class="fg"><label>Employee</label><select id="te">${empOpts()}</select></div><div class="fg"><label>Target Type</label><select id="tt"><option value="collection">Daily Collection Target</option><option value="sales">Daily Sales Target</option></select></div><div class="fg"><label>Target Amount</label><input id="ta" type="number" value="20000"></div></div><div class="row"><div class="fg"><label>Target Date</label><input id="td" type="date" value="${today()}"></div><div class="fg"><label>Reward Type</label><select id="rt"><option value="fixed">Fixed Amount</option><option value="percentage">Percentage</option></select></div><div class="fg"><label>Reward Value</label><input id="rv" type="number" value="1000"></div></div><div class="fg"><label>Reward Label</label><input id="tr" value="Daily Target Reward"></div><p style="color:#64748b;font-weight:800;margin-bottom:10px">Daily targets close at day-end. Next day admin must assign a new target if needed.</p><button class="btn btn-p" onclick="assignTarget()">Assign Target</button></div>`:''}<div class="card"><div class="head"><h2>Target Progress</h2></div>${targetTable()}</div>`}
-function assignTarget(){let target=+ta.value||0;if(target<=0)return toast('Target required','error');let rec={id:id('t'),emp:te.value,targetType:tt.value,target,achieved:0,rewardType:rt.value,rewardValue:+rv.value||0,reward:tr.value.trim()||'Reward',date:td.value||today(),closed:false,closedAt:''};S.targets.push(rec);saveAndSync('targets',rec);targets()}
-function applyTarget(emp,amount,targetType='collection'){closeOldDailyTargets();let t=S.targets.find(x=>x.emp===emp&&(x.targetType||'collection')===targetType&&x.date===today()&&!x.closed&&(+x.achieved)<(+x.target));if(t){t.achieved=(+t.achieved)+(+amount);if(t.achieved>=t.target){t.closed=true;t.closedAt=now();toast((targetType==='sales'?'Sales':'Collection')+' target completed! Reward unlocked','success');beep()}saveAndSync('targets',t)}}
-function targetTable(){closeOldDailyTargets();let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Employee</th><th>Date</th><th>Type</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Status</th><th>Reward Rule</th><th>Reward Earned</th></tr></thead><tbody>${r.slice().reverse().map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${empName(t.emp)}</td><td>${t.date}</td><td>${(t.targetType||'collection').toUpperCase()}</td><td>${money(t.target)}</td><td>${money(t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td><span class="badge ${t.closed?'done':'pending'}">${t.closed?'Closed':'Active'}</span></td><td>${t.rewardType==='percentage'?(+t.rewardValue||0)+'%':money(t.rewardValue)} - ${esc(t.reward)}</td><td>${money(rewardEarned(t))}</td></tr>`}).join('')}</tbody></table></div>`}
 
+function targetStatus(t){
+ const pct=(+t.achieved||0)/(+t.target||1)*100;
+ if(t.inactive)return 'Inactive';
+ if(t.closed && pct>=100)return 'Achieved';
+ if(t.closed && pct<100)return 'Missed';
+ if(t.date<today() && pct>=100)return 'Achieved';
+ if(t.date<today() && pct<100)return 'Missed';
+ if(pct>=100)return 'Achieved';
+ return 'Active';
+}
+function targetStatusBadge(t){
+ const s=targetStatus(t);
+ if(s==='Achieved')return '<span class="badge done">Achieved</span>';
+ if(s==='Missed')return '<span class="badge expense">Missed</span>';
+ if(s==='Inactive')return '<span class="badge pending">Inactive</span>';
+ return '<span class="badge online">Active</span>';
+}
+function inactiveTarget(i){
+ const t=S.targets.find(x=>x.id===i);if(!t)return;
+ t.inactive=true;t.closed=true;t.closedAt=now();
+ saveAndSync('targets',t);toast('Target marked inactive','success');targets();
+}
+function deleteTarget(i){
+ if(!confirm('Delete this target?'))return;
+ S.targets=S.targets.filter(x=>x.id!==i);delAndSync('targets',i);targets();
+}
+function targets(){content.innerHTML=`${U.role==='admin'?`<div class="card"><div class="head"><h2>Assign Target</h2></div><div class="row"><div class="fg"><label>Employee</label><select id="te"><option value="all">All Active Employees</option>${empOpts()}</select></div><div class="fg"><label>Target Type</label><select id="tt" onchange="updateTargetValueLabel()"><option value="collection">Daily Recovery / Bill Collection Target (Amount)</option><option value="sales">Daily New Connection Sales Target (Count)</option></select></div><div class="fg"><label id="targetValueLabel">Target Value</label><input id="ta" type="number" value="20000" placeholder="Recovery amount or connection count"></div></div><div class="row"><div class="fg"><label>Target Date</label><input id="td" type="date" value="${today()}"></div><div class="fg"><label>Reward Type</label><select id="rt"><option value="fixed">Fixed Amount</option><option value="percentage">Percentage</option></select></div><div class="fg"><label>Reward Value</label><input id="rv" type="number" value="1000"></div></div><div class="fg"><label>Reward Label</label><input id="tr" value="Daily Target Reward"></div><p style="color:#64748b;font-weight:800;margin-bottom:10px">Daily targets close at day-end. Collection target is recovery/bill amount. Sales target is number of new connections.</p><button class="btn btn-p" onclick="assignTarget()">Assign Target</button></div>`:''}<div class="card"><div class="head"><h2>Target Progress</h2></div>${targetTable()}</div>`}
+
+function updateTargetValueLabel(){
+ const lbl=document.getElementById('targetValueLabel');
+ const inp=document.getElementById('ta');
+ if(!lbl||!inp||!document.getElementById('tt'))return;
+ if(tt.value==='sales'){
+   lbl.textContent='Sales Target (Number of New Connections)';
+   inp.value=inp.value&&+inp.value<100?inp.value:5;
+   inp.placeholder='Example: 5 connections';
+ }else{
+   lbl.textContent='Recovery / Collection Target Amount';
+   inp.value=inp.value&&+inp.value>100?inp.value:20000;
+   inp.placeholder='Example: 20000';
+ }
+}
+function assignTarget(){
+ let target=+ta.value||0;if(target<=0)return toast('Target required','error');
+ let empList=te.value==='all'?S.employees.filter(e=>e.active).map(e=>e.id):[te.value];
+ let count=0;
+ empList.forEach(empId=>{
+   let rec={id:id('t'),emp:empId,targetType:tt.value,target,achieved:0,rewardType:rt.value,rewardValue:+rv.value||0,reward:tr.value.trim()||'Reward',date:td.value||today(),closed:false,closedAt:''};
+   S.targets.push(rec);fbSet('targets',rec);count++;
+ });
+ saveLocal();toast(`${count} ${tt.value==='sales'?'sales':'collection'} target(s) assigned`,'success');targets();
+}
+function applyTarget(emp,amount,targetType='collection'){
+ closeOldDailyTargets();
+ let t=S.targets.find(x=>x.emp===emp&&(x.targetType||'collection')===targetType&&x.date===today()&&!x.closed&&!x.inactive&&(+x.achieved)<(+x.target));
+ if(t){
+   // Collection/recovery target is rupees amount. Sales target is connection count.
+   let addValue = targetType==='sales' ? 1 : (+amount||0);
+   t.achieved=(+t.achieved)+addValue;
+   if(t.achieved>=t.target){
+     t.closed=true;t.closedAt=now();
+     toast((targetType==='sales'?'New connection sales':'Recovery collection')+' target completed! Reward unlocked','success');beep();
+   }
+   saveAndSync('targets',t);
+ }
+}
+
+function targetValueDisplay(t,v){
+ return (t.targetType||'collection')==='sales' ? `${Number(v)||0} Conn.` : money(v);
+}
+function targetTable(){closeOldDailyTargets();let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Employee</th><th>Date</th><th>Type</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Status</th><th>Reward Rule</th><th>Reward Earned</th><th>Action</th></tr></thead><tbody>${r.slice().reverse().map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${empName(t.emp)}</td><td>${t.date}</td><td>${(t.targetType||'collection').toUpperCase()}</td><td>${targetValueDisplay(t,t.target)}</td><td>${targetValueDisplay(t,t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td>${targetStatusBadge(t)}</td><td>${t.rewardType==='percentage'?(+t.rewardValue||0)+'%':money(t.rewardValue)} - ${esc(t.reward)}</td><td>${money(rewardEarned(t))}</td><td>${U.role==='admin'?`<div class="actions"><button class="btn btn-w btn-sm" onclick="inactiveTarget('${t.id}')">Inactive</button><button class="btn btn-e btn-sm" onclick="deleteTarget('${t.id}')">Delete</button></div>`:'-'}</td></tr>`}).join('')}</tbody></table></div>`}
 
 function newsPage(){
  if(U.role!=='admin')return dash();
- content.innerHTML=`<div class="card"><div class="head"><h2>Employee Dashboard News / Scrolling Announcement</h2></div>
-  <div class="fg"><label>News Text</label><textarea id="newsText" placeholder="Type announcement for employees">${esc(S.news?.text||'')}</textarea></div>
-  <label style="font-weight:900"><input type="checkbox" id="newsActive" ${S.news?.active?'checked':''}> Active / Show on employee dashboard</label>
+ content.innerHTML=`<div class="card">
+  <div class="head"><h2>Employee Dashboard News / Scrolling Announcement</h2></div>
+  <div class="fg">
+    <label>News Text</label>
+    <textarea id="newsText" placeholder="Type announcement for employees">${esc(S.news?.text||'')}</textarea>
+  </div>
+  <label style="font-weight:900">
+    <input type="checkbox" id="newsActive" ${S.news?.active?'checked':''}> Active / Show on employee dashboard
+  </label>
   <br><br>
-  <div class="actions"><button class="btn btn-p" onclick="saveNews()">Save News</button><button class="btn btn-l" onclick="previewNews()">Preview</button></div>
+  <div class="actions">
+    <button class="btn btn-p" onclick="saveNews()">Save News</button>
+    <button class="btn btn-l" onclick="previewNews()">Preview</button>
+  </div>
  </div>
- <div class="card"><div class="head"><h2>Preview</h2></div><div class="news-admin-preview">${S.news?.active?'Active':'Inactive'}: ${esc(S.news?.text||'No news')}</div></div>`;
+ <div class="card">
+   <div class="head"><h2>Preview</h2></div>
+   <div class="news-admin-preview">${S.news?.active?'Active':'Inactive'}: ${esc(S.news?.text||'No news')}</div>
+ </div>`;
 }
 function saveNews(){
  S.news={text:document.getElementById('newsText').value.trim(),active:document.getElementById('newsActive').checked};
- saveLocal();fbSettings();toast('News updated for employee dashboard','success');newsPage();
+ saveLocal();
+ fbSettings();
+ toast('News updated for employee dashboard','success');
+ newsPage();
 }
-function previewNews(){S.news={text:document.getElementById('newsText').value.trim(),active:document.getElementById('newsActive').checked};newsPage();}
+function previewNews(){
+ S.news={text:document.getElementById('newsText').value.trim(),active:document.getElementById('newsActive').checked};
+ newsPage();
+}
+
 function backup(){content.innerHTML=`<div class="card"><div class="head"><h2>Backup & Restore</h2></div><div class="actions"><button class="btn btn-s" onclick="syncAll()">Sync All to Firebase</button><button class="btn btn-i" onclick="loadFirebase()">Fetch Firebase</button><button class="btn btn-s" onclick="downloadBackup()">Download Backup</button><button class="btn btn-i" onclick="restoreFile.click()">Restore Backup</button><button class="btn btn-e" onclick="clearAll()">Clear All</button></div><input class="hidden" type="file" id="restoreFile" accept=".json" onchange="restoreBackup(event)"></div>`}
 async function syncAll(){for(const e of S.employees)await fbSet('employees',e);for(const e of S.complaints)await fbSet('complaints',e);for(const e of S.finance)await fbSet('finance',e);for(const e of S.invoices)await fbSet('invoices',e);for(const e of S.targets)await fbSet('targets',e);for(const e of S.attendance)await fbSet('attendance',e);for(const e of (S.items||[]))await fbSet('items',e);for(const e of (S.packages||[]))await fbSet('packages',e);for(const e of (S.advances||[]))await fbSet('advances',e);await fbSettings();toast('Sync complete','success')}
 function downloadBackup(){let blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='firenet-backup-'+today()+'.json';a.click()}
 function restoreBackup(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{S=JSON.parse(r.result);saveLocal();toast('Restored','success');setTimeout(()=>location.reload(),700)}catch(x){toast('Invalid backup','error')}};r.readAsText(f)}
 function clearAll(){if(confirm('Clear all data?')){localStorage.removeItem(KEY);location.reload()}}
 function notify(){let p=myComp().filter(c=>c.status!=='Resolved').length;if(U.role==='employee'&&p){toast(`You have ${p} pending task(s)`,'warning');beep()}}
+window.onerror=function(msg,src,line,col,err){console.error('App error',msg,err);let c=document.getElementById('content');if(c&&document.getElementById('app').style.display==='block'){c.innerHTML=`<div class="card"><div class="head"><h2>App Error</h2></div><p style="color:#dc2626;font-weight:800">${esc(msg)}</p><button class="btn btn-e" onclick="localStorage.removeItem(KEY);location.reload()">Reset Local Data</button></div>`;}return false;};
 load();window.addEventListener('load',()=>{clock();initFirebase();if(S.session){U=S.session;openApp()}});
 </script>
 </body>
