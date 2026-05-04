@@ -40,6 +40,40 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
 @media print{body{background:#fff}.login,.header,.nav,.actions,.btn,.toast-wrap,.modal-bg{display:none!important}.app{display:block!important;padding:0}.card{box-shadow:none;border:0}.print-only{display:block}.no-print{display:none!important}table{min-width:0;font-size:11px}th,td{font-size:11px;padding:6px}}
 @media(max-width:850px){.grid,.summary{grid-template-columns:repeat(2,1fr)}.row,.row.two{grid-template-columns:1fr}}
 @media(max-width:560px){.app{padding:8px}.header>*{width:100%}.profile-btn{width:100%}.nav{display:grid;grid-template-columns:1fr 1fr}.grid,.summary{grid-template-columns:1fr}.item-line{grid-template-columns:1fr}.actions .btn{width:100%}table{min-width:720px}}
+
+/* Side menu layout */
+.main-layout{display:grid;grid-template-columns:245px 1fr;gap:12px;align-items:start}
+.side-toggle{display:none;background:var(--p);color:#fff;border-radius:12px;padding:10px 13px;font-weight:900}
+.sidebar-card{background:#fff;border-radius:18px;box-shadow:0 10px 25px rgba(15,23,42,.07);padding:10px;position:sticky;top:12px}
+.sidebar-title{font-weight:900;color:var(--d);padding:10px 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.nav.side{display:flex;flex-direction:column;gap:6px;background:transparent;padding:0;margin:0;box-shadow:none;border-radius:0;overflow:visible}
+.nav.side button{width:100%;text-align:left;justify-content:flex-start;border-radius:12px}
+.content-area{min-width:0}
+@media(max-width:850px){
+ .side-toggle{display:inline-flex;margin-bottom:10px}
+ .main-layout{display:block}
+ .sidebar-card{display:none;position:fixed;left:10px;right:10px;top:10px;z-index:40;max-height:90vh;overflow:auto}
+ .sidebar-card.open{display:block}
+ .nav.side{display:flex!important;grid-template-columns:none}
+ .nav.side button{font-size:14px;padding:12px}
+ .content-area{width:100%}
+}
+
+
+.news-ticker{background:linear-gradient(135deg,#111827,#243447);color:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 10px 25px rgba(15,23,42,.12)}
+.news-ticker .ticker-inner{white-space:nowrap;display:flex;width:max-content;padding:12px 0;font-weight:900;animation:tickerMove 22s linear infinite}
+.news-ticker span{display:inline-block;padding-right:80px}
+@keyframes tickerMove{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.target-banner{background:linear-gradient(135deg,#fff7ed,#ecfdf5);border:1px solid #fed7aa;border-left:6px solid var(--s);border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 10px 25px rgba(15,23,42,.06)}
+.target-banner h2{font-size:18px;color:var(--d);margin-bottom:8px}
+.target-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px}
+.target-mini div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+.target-mini small{display:block;color:#64748b;font-weight:900}
+.target-mini b{font-size:18px}
+.news-admin-preview{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:12px;font-weight:800;color:#475569}
+@media(max-width:850px){.target-mini{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.target-mini{grid-template-columns:1fr}.news-ticker .ticker-inner{animation-duration:14s}}
+
 </style>
 </head>
 <body>
@@ -66,8 +100,16 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
         <div id="pm" class="menu"><button onclick="openPwd()">Change Password</button><button onclick="logout()">Logout</button></div>
       </div>
     </div>
-    <div id="nav" class="nav"></div>
-    <div id="content"></div>
+    <button class="side-toggle" onclick="toggleSideMenu()">☰ Menu</button>
+    <div class="main-layout">
+      <aside id="sidePanel" class="sidebar-card">
+        <div class="sidebar-title">Main Menu</div>
+        <div id="nav" class="nav side"></div>
+      </aside>
+      <main class="content-area">
+        <div id="content"></div>
+      </main>
+    </div>
   </div>
 </div>
 
@@ -85,7 +127,7 @@ const firebaseConfig={apiKey:'AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E',authDomai
 let S,U,TAB='dashboard',draft=[],db=null,fbReady=false,fbLoading=false,unsubs=[];
 let financeDate=today(), financeAll=true, financeEmp='all', complaintDate=today(), complaintAll=false;
 
-function def(){return{admin:{u:'admin',p:'admin123'},employees:[{id:'e1',name:'Ali',phone:'ali',mobile:'03001234561',pin:'1234',role:'Collection',active:true,per:{complaints:1,attendance:1,invoice:1,finance:1,targets:1,advance:1}},{id:'e2',name:'Usman',phone:'usman',mobile:'03001234562',pin:'1234',role:'Technician',active:true,per:{complaints:1,attendance:1,invoice:1,finance:0,targets:1,advance:1}}],complaints:[],finance:[],invoices:[],targets:[],attendance:[],advances:[],
+function def(){return{admin:{u:'admin',p:'admin123'},employees:[{id:'e1',name:'Ali',phone:'ali',mobile:'03001234561',pin:'1234',role:'Collection',active:true,per:{complaints:1,attendance:1,invoice:1,finance:1,targets:1,advance:1}},{id:'e2',name:'Usman',phone:'usman',mobile:'03001234562',pin:'1234',role:'Technician',active:true,per:{complaints:1,attendance:1,invoice:1,finance:0,targets:1,advance:1}}],complaints:[],finance:[],invoices:[],targets:[],attendance:[],advances:[],news:{text:'Welcome to Fire.net.pk employee portal. Complete your tasks on time.',active:true},
 items:[
  {id:'it1',name:'ONU Router',category:'Device',purchase:4000,sale:5000,stock:10,notes:'Default device'},
  {id:'it2',name:'Fiber Wire Per Meter',category:'Wire',purchase:25,sale:40,stock:1000,notes:'Default wire'}
@@ -98,7 +140,7 @@ session:null}}
 function load(){S=JSON.parse(localStorage.getItem(KEY)||'null')||def();
  const D=def();
  S.items=S.items||D.items;S.packages=S.packages||D.packages;
- S.employees=S.employees||D.employees;S.complaints=S.complaints||[];S.finance=S.finance||[];S.invoices=S.invoices||[];S.targets=S.targets||[];S.attendance=S.attendance||[];S.advances=S.advances||[];
+ S.employees=S.employees||D.employees;S.complaints=S.complaints||[];S.finance=S.finance||[];S.invoices=S.invoices||[];S.targets=S.targets||[];S.attendance=S.attendance||[];S.advances=S.advances||[];S.news=S.news||D.news;
  saveLocal()}
 function saveLocal(){localStorage.setItem(KEY,JSON.stringify(S))}
 function setSync(t,ok){const el=document.getElementById('syncStatus');if(el){el.textContent=t;el.style.color=ok?'#166534':t.includes('failed')||t.includes('error')?'#dc2626':'#475569'}}
@@ -129,7 +171,7 @@ async function loadFirebase(){
  if(!db)return; fbLoading=true; setSync('Firebase: loading');
  try{
    const settings=await db.collection('settings').doc('main').get();
-   if(settings.exists&&settings.data().admin)S.admin=settings.data().admin;
+   if(settings.exists){if(settings.data().admin)S.admin=settings.data().admin;if(settings.data().news)S.news=settings.data().news;}
    const [employees,complaints,finance,invoices,targets,attendance,items,packages,advances]=await Promise.all(['employees','complaints','finance','invoices','targets','attendance','items','packages','advances'].map(loadCol));
    if(employees.length)S.employees=employees;
    S.complaints=complaints;S.finance=finance;S.invoices=invoices;S.targets=targets;S.attendance=attendance;if(items.length)S.items=items;if(packages.length)S.packages=packages;if(advances.length)S.advances=advances;
@@ -150,7 +192,7 @@ function startRealtime(){
 }
 async function fbSet(col,obj){if(!fbReady||fbLoading||!obj?.id)return;try{await db.collection(col).doc(obj.id).set(JSON.parse(JSON.stringify(obj)),{merge:true});setSync('Firebase: synced',true)}catch(e){console.error(e);toast('Firebase write failed','error');setSync('Firebase write failed',false)}}
 async function fbDel(col,i){if(!fbReady||!i)return;try{await db.collection(col).doc(i).delete();setSync('Firebase: deleted',true)}catch(e){toast('Firebase delete failed','error')}}
-async function fbSettings(){if(!fbReady)return;try{await db.collection('settings').doc('main').set({admin:S.admin},{merge:true})}catch(e){}}
+async function fbSettings(){if(!fbReady)return;try{await db.collection('settings').doc('main').set({admin:S.admin,news:S.news},{merge:true})}catch(e){}}
 function saveAndSync(col,obj){saveLocal();if(col&&obj)fbSet(col,obj)}
 function delAndSync(col,idv){saveLocal();if(col&&idv)fbDel(col,idv)}
 
@@ -158,10 +200,11 @@ function loginUser(){let u=lu.value.trim(),p=lp.value.trim();if(!u||!p)return to
 function openApp(){document.getElementById('loginScreen').classList.add('hidden');document.getElementById('app').style.display='block';pn.textContent=U.name;pr.textContent=U.role==='admin'?'Admin':U.role;av.textContent=U.name[0].toUpperCase();clock();navRender();tab('dashboard');notify()}
 function logout(){S.session=null;saveLocal();location.reload()}function toggleMenu(){pm.classList.toggle('active')}function openPwd(){pwdModal.classList.add('active');pm.classList.remove('active')}function closePwd(){pwdModal.classList.remove('active')}
 function savePwd(){let v=newPwd.value.trim();if(v.length<3)return toast('Minimum 3 characters','error');if(U.role==='admin'){S.admin.p=v;fbSettings()}else{let e=S.employees.find(x=>x.id===U.id);if(e){e.pin=v;fbSet('employees',e)}U.pin=v;S.session=U}saveLocal();newPwd.value='';closePwd();toast('Password changed','success')}
-function items(){let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['backup','Backup','💾']];return U.role==='admin'?a:a.filter(x=>x[0]==='dashboard'||can(x[0]))}
+function items(){let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['backup','Backup','💾']];return U.role==='admin'?a:a.filter(x=>x[0]==='dashboard'||can(x[0]))}
 function navRender(){nav.innerHTML=items().map(x=>`<button id="n-${x[0]}" onclick="tab('${x[0]}')">${x[2]} ${x[1]}</button>`).join('')}
-function tab(x){if(!items().some(i=>i[0]===x))x='dashboard';TAB=x;document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-'+x);if(n)n.classList.add('active');renderCurrent()}
-function renderCurrent(){({dashboard:dash,complaints,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,backup}[TAB]||dash)()}
+function toggleSideMenu(){document.getElementById('sidePanel')?.classList.toggle('open')}
+function tab(x){if(!items().some(i=>i[0]===x))x='dashboard';TAB=x;document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-'+x);if(n)n.classList.add('active');document.getElementById('sidePanel')?.classList.remove('open');renderCurrent()}
+function renderCurrent(){({dashboard:dash,complaints,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:newsPage,backup}[TAB]||dash)()}
 function empOpts(sel=''){return S.employees.filter(e=>e.active).map(e=>`<option value="${e.id}" ${sel===e.id?'selected':''}>${esc(e.name)} - ${esc(e.role)}</option>`).join('')}
 function empName(i){return S.employees.find(e=>e.id===i)?.name||'Admin'}
 function empPhone(i){let e=S.employees.find(x=>x.id===i);return e?.mobile||e?.phone||''}
@@ -171,10 +214,42 @@ function myComp(){return U.role==='admin'?S.complaints:S.complaints.filter(c=>c.
 function typeOf(e){return (e.type||'income').toLowerCase()==='expense'?'expense':'income'}function modeOf(e){return (e.mode||'cash').toLowerCase()==='online'?'online':'cash'}function paidBy(e){return e.customer||e.paidBy||e.payer||e.clientName||e.customerName||e.name||'-'}
 function calc(arr=myFin()){let cash=0,online=0,exp=0,inc=0,cashExp=0,onlineExp=0;arr.forEach(e=>{let a=+e.amount||0;if(typeOf(e)==='expense'){exp+=a;if(modeOf(e)==='online')onlineExp+=a;else cashExp+=a}else{inc+=a;if(modeOf(e)==='online')online+=a;else cash+=a}});return{cash,online,exp,inc,cashExp,onlineExp,bal:inc-exp}}
 function invoiceSummary(){let rows=myInv(),sales=0,received=0,due=0;rows.forEach(v=>{sales+=+v.total||0;received+=+v.received||0;due+=+v.due||0});return{sales,received,due,count:rows.filter(v=>(+v.due||0)>0).length}}
-function targetSummary(){let rows=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id),given=0,ach=0,reward=0;rows.forEach(t=>{given+=+t.target||0;ach+=+t.achieved||0;reward+=rewardEarned(t)});return{given,ach,reward,rem:Math.max(0,given-ach),pct:given?Math.min(100,Math.round(ach/given*100)):0}}
+function targetSummary(){closeOldDailyTargets();let rows=(U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id)).filter(t=>t.date===today()&&!t.closed),given=0,ach=0,reward=0;rows.forEach(t=>{given+=+t.target||0;ach+=+t.achieved||0;reward+=rewardEarned(t)});return{given,ach,reward,rem:Math.max(0,given-ach),pct:given?Math.min(100,Math.round(ach/given*100)):0}}
 function rewardEarned(t){let pct=(+t.achieved||0)/(+t.target||1)*100;if(pct<100)return 0;return t.rewardType==='percentage'?Math.round((+t.achieved||0)*(+t.rewardValue||0)/100):(+t.rewardValue||0)}
 function stats(){let f=calc(myFin().filter(e=>e.date===today())),allF=calc(),pend=myComp().filter(c=>c.status!=='Resolved').length,comp=myComp(),over=comp.filter(c=>c.status!=='Resolved'&&c.eta&&new Date(c.eta)<new Date()).length,inv=invoiceSummary(),tar=targetSummary();return`<div class="grid"><div class="stat"><span>Total Complaints</span><b>${comp.length}</b><small>Pending ${pend} / Overdue ${over}</small></div><div class="stat"><span>Invoice Paid / Due</span><b>${money(inv.received)}</b><small>Due ${money(inv.due)} (${inv.count})</small></div><div class="stat"><span>Today Income / Expense</span><b>${money(f.inc)}</b><small>Expense ${money(f.exp)} / Net ${money(f.bal)}</small></div><div class="stat"><span>Target Given / Achieved</span><b>${tar.pct}%</b><small>${money(tar.ach)} of ${money(tar.given)}</small></div></div>`}
-function dash(){let inv=invoiceSummary(),tar=targetSummary(),f=calc(myFin().filter(e=>e.date===today()));content.innerHTML=stats()+`<div class="summary"><div class="sum">Total Sales<b>${money(inv.sales)}</b></div><div class="sum">Due Amount<b>${money(inv.due)}</b></div><div class="sum">Today Cash<b>${money(f.cash)}</b></div><div class="sum">Today Online<b>${money(f.online)}</b></div><div class="sum">Target Given<b>${money(tar.given)}</b></div><div class="sum">Target Achieved<b>${money(tar.ach)}</b></div><div class="sum">Reward Earned<b>${money(tar.reward)}</b></div><div class="sum">Remaining<b>${money(tar.rem)}</b></div></div><div class="card"><div class="head"><h2>Progress</h2></div><div class="prog"><div class="bar" style="width:${tar.pct}%"></div></div><b>${tar.pct}%</b></div>${recentTables()}`}
+function newsTicker(){
+ if(!S.news||!S.news.active||!S.news.text)return '';
+ const n=`📢 ${esc(S.news.text)}`;
+ return `<div class="news-ticker"><div class="ticker-inner"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
+}
+function employeeTargetBanner(){
+ if(!U||U.role!=='employee')return '';
+ closeOldDailyTargets();
+ const rows=S.targets.filter(t=>t.emp===U.id&&t.date===today()&&!t.closed);
+ const collection=rows.filter(t=>(t.targetType||'collection')==='collection');
+ const sales=rows.filter(t=>(t.targetType||'collection')==='sales');
+ const given=rows.reduce((s,t)=>s+(+t.target||0),0);
+ const achieved=rows.reduce((s,t)=>s+(+t.achieved||0),0);
+ const reward=rows.reduce((s,t)=>s+rewardEarned(t),0);
+ const remaining=Math.max(0,given-achieved);
+ const pct=given?Math.min(100,Math.round(achieved/given*100)):0;
+ const colGiven=collection.reduce((s,t)=>s+(+t.target||0),0), colAch=collection.reduce((s,t)=>s+(+t.achieved||0),0);
+ const saleGiven=sales.reduce((s,t)=>s+(+t.target||0),0), saleAch=sales.reduce((s,t)=>s+(+t.achieved||0),0);
+ return `<div class="target-banner">
+  <h2>🎯 Today Target & Reward</h2>
+  <div class="prog"><div class="bar" style="width:${pct}%"></div></div>
+  <b>${pct}% Completed Today</b>
+  <div class="target-mini">
+   <div><small>Collection Target</small><b>${money(colGiven)}</b><small>Achieved: ${money(colAch)}</small></div>
+   <div><small>Sales Target</small><b>${money(saleGiven)}</b><small>Achieved: ${money(saleAch)}</small></div>
+   <div><small>Total Remaining</small><b>${money(remaining)}</b></div>
+   <div><small>Reward Earned</small><b>${money(reward)}</b></div>
+   <div><small>Active Today</small><b>${rows.length}</b></div>
+  </div>
+  <p style="color:#64748b;font-weight:800;margin-top:8px">Daily reward closes at day end. New day needs a new target from admin.</p>
+ </div>`;
+}
+function dash(){let inv=invoiceSummary(),tar=targetSummary(),f=calc(myFin().filter(e=>e.date===today()));content.innerHTML=newsTicker()+employeeTargetBanner()+stats()+`<div class="summary"><div class="sum">Total Sales<b>${money(inv.sales)}</b></div><div class="sum">Due Amount<b>${money(inv.due)}</b></div><div class="sum">Today Cash<b>${money(f.cash)}</b></div><div class="sum">Today Online<b>${money(f.online)}</b></div><div class="sum">Target Given<b>${money(tar.given)}</b></div><div class="sum">Target Achieved<b>${money(tar.ach)}</b></div><div class="sum">Reward Earned<b>${money(tar.reward)}</b></div><div class="sum">Remaining<b>${money(tar.rem)}</b></div></div><div class="card"><div class="head"><h2>Progress</h2></div><div class="prog"><div class="bar" style="width:${tar.pct}%"></div></div><b>${tar.pct}%</b></div>${recentTables()}`}
 function simpleTable(title,head,rows,empty='No data'){return`<div class="card"><div class="head"><h2>${title}</h2></div>${rows.length?`<div class="tbl"><table><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`:`<div class="empty">${empty}</div>`}</div>`}
 function recentTables(){let due=myInv().filter(v=>(+v.due||0)>0).slice(-5).reverse().map(v=>`<tr><td>${esc(v.cust)}</td><td>${esc(v.work)}</td><td>${money(v.due)}</td><td>${v.date}</td></tr>`);let fin=myFin().filter(e=>e.date===today()).slice(-5).reverse().map(e=>`<tr><td>${typeTag(e)} ${modeTag(e)}</td><td>${esc(paidBy(e))}</td><td>${esc(e.cat)}</td><td>${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td></tr>`);return simpleTable('Recent Due Invoices',['Customer','Work','Due','Date'],due)+simpleTable('Today Recent Income/Expense',['Type','Paid By','Category','Amount'],fin)}
 
@@ -257,21 +332,67 @@ function packageOptions(){
  return opts;
 }
 function invoice(){content.innerHTML=`<div class="summary">${invoiceSummaryCards()}</div>
-<div class="card"><div class="head"><h2>Create Invoice</h2><button class="btn btn-l btn-sm" onclick="draft=[];invoice()">Clear</button></div>
-<div class="row"><div class="fg"><label>Customer</label><input id="invCust"></div><div class="fg"><label>WhatsApp</label><input id="invPhone" placeholder="03001234561"></div><div class="fg"><label>Work Type</label><select id="invWork" onchange="toggleRewardBox();togglePackageBox()"><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Repair</option><option>Other Work</option></select></div></div>
-<div id="packageBox" class="row two"><div class="fg"><label>Select Package</label><select id="pkgSelect" onchange="selectPackageForInvoice()">${packageOptions()}</select></div><div class="fg"><label>Package Note</label><input id="pkgNote" placeholder="Package will be added as invoice line"></div></div>
-<div id="rewardBox" class="row two"><div class="fg"><label>Reward Source</label><select id="rewardSource"><option>New Connection</option><option>Invoice</option></select></div><div class="fg"><label>Reference / Reward Employee</label><select id="refEmp">${empOpts(U.role==='employee'?U.id:'')}</select></div></div>
-<div class="item-line"><div class="fg"><label>Select Item from Inventory</label><select id="itSelect" onchange="selectInventoryItem()">${itemOptions()}</select></div><div class="fg"><label>Qty</label><input id="itQty" type="number" value="1"></div><div class="fg"><label>Rate</label><input id="itRate" type="number" value="0"></div><button class="btn btn-i" onclick="addItem()">Add</button></div>
-<div class="row two"><div class="fg"><label>Custom Item / Service Name</label><input id="itName" placeholder="Only if custom item"></div><div class="fg"><label>Purchase Cost / Unit</label><input id="itCost" type="number" value="0"></div></div>
-<div id="itemsArea"></div>
-<div class="row"><div class="fg"><label>Discount</label><input id="disc" type="number" value="0" oninput="drawItems()"></div><div class="fg"><label>Amount Received</label><input id="received" type="number" value="0" oninput="drawItems()"></div><div class="fg"><label>Notes</label><input id="invNotes"></div></div>
-<div class="actions"><button class="btn btn-p" onclick="saveInv()">Save Invoice</button><button class="btn btn-s" onclick="sendDraftInv()">Send WhatsApp</button></div></div>
+<div class="card">
+ <div class="head">
+  <h2>Create Invoice</h2>
+  <button class="btn btn-l btn-sm" onclick="draft=[];invoice()">Clear</button>
+ </div>
+
+ <h3 style="margin:6px 0 12px;color:#243447">Customer & Work Details</h3>
+ <div class="row">
+  <div class="fg"><label>Customer Name</label><input id="invCust" placeholder="Customer full name"></div>
+  <div class="fg"><label>Customer WhatsApp</label><input id="invPhone" placeholder="03001234561"></div>
+  <div class="fg"><label>Work Type</label><select id="invWork" onchange="toggleRewardBox();togglePackageBox()"><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Repair</option><option>Other Work</option></select></div>
+ </div>
+
+ <div id="rewardBox" class="card" style="box-shadow:none;background:#f8fafc;margin:8px 0 12px;padding:12px;border:1px dashed #cbd5e1">
+  <div class="head" style="margin-bottom:8px"><h2 style="font-size:16px">Sales Reward Employee</h2></div>
+  <div class="row two">
+   <div class="fg"><label>Reference / Sales Reward Employee</label><select id="refEmp">${empOpts(U.role==='employee'?U.id:'')}</select></div>
+   <div class="fg"><label>Reward Note</label><input value="Sales reward applies only on New Connection" disabled></div>
+  </div>
+ </div>
+
+ <div id="packageBox" class="card" style="box-shadow:none;background:#fff;margin:8px 0 12px;padding:12px;border:1px solid #e5e7eb">
+  <div class="head" style="margin-bottom:8px"><h2 style="font-size:16px">Package Selection</h2></div>
+  <div class="row two">
+   <div class="fg"><label>Select Package</label><select id="pkgSelect" onchange="selectPackageForInvoice()">${packageOptions()}</select></div>
+   <div class="fg"><label>Package Note</label><input id="pkgNote" placeholder="Package will be added as invoice line"></div>
+  </div>
+ </div>
+
+ <h3 style="margin:14px 0 12px;color:#243447">Items / Services</h3>
+ <div class="row">
+  <div class="fg"><label>Select Item from Inventory</label><select id="itSelect" onchange="selectInventoryItem()">${itemOptions()}</select></div>
+  <div class="fg"><label>Quantity</label><input id="itQty" type="number" value="1"></div>
+  <div class="fg"><label>Sale Rate</label><input id="itRate" type="number" value="0"></div>
+ </div>
+ <div class="row">
+  <div class="fg"><label>Custom Item / Service Name</label><input id="itName" placeholder="Only if custom item"></div>
+  <div class="fg"><label>Purchase Cost / Unit</label><input id="itCost" type="number" value="0"></div>
+  <div class="fg"><label>&nbsp;</label><button class="btn btn-i" style="width:100%" onclick="addItem()">Add Item</button></div>
+ </div>
+
+ <div id="itemsArea"></div>
+
+ <h3 style="margin:14px 0 12px;color:#243447">Payment Details</h3>
+ <div class="row">
+  <div class="fg"><label>Discount</label><input id="disc" type="number" value="0" oninput="drawItems()"></div>
+  <div class="fg"><label>Amount Received</label><input id="received" type="number" value="0" oninput="drawItems()"></div>
+  <div class="fg"><label>Notes</label><input id="invNotes" placeholder="Optional notes"></div>
+ </div>
+
+ <div class="actions">
+  <button class="btn btn-p" onclick="saveInv()">Save Invoice</button>
+  <button class="btn btn-s" onclick="sendDraftInv()">Send WhatsApp</button>
+ </div>
+</div>
 <div class="card"><div class="head"><h2>Due Invoices</h2></div>${dueTable()}</div>
 <div class="card"><div class="head"><h2>Invoice History</h2></div>${invTable()}</div>`;
 drawItems();toggleRewardBox();togglePackageBox();selectInventoryItem()}
 function invoiceSummaryCards(){let x=invoiceSummary();let profit=(myInv()).reduce((s,v)=>s+(+v.profit||0),0);return`<div class="sum">Total Sales<b>${money(x.sales)}</b></div><div class="sum">Amount Received<b>${money(x.received)}</b></div><div class="sum">Due Amount<b>${money(x.due)}</b></div><div class="sum">Net Profit<b>${money(profit)}</b></div>`}
-function toggleRewardBox(){let b=document.getElementById('rewardBox');if(b)b.style.display=document.getElementById('invWork').value==='New Connection'?'grid':'none'}
-function togglePackageBox(){let b=document.getElementById('packageBox');if(b)b.style.display=['New Connection','Package Change'].includes(document.getElementById('invWork').value)?'grid':'none'}
+function toggleRewardBox(){let b=document.getElementById('rewardBox');if(b)b.style.display=document.getElementById('invWork').value==='New Connection'?'block':'none'}
+function togglePackageBox(){let b=document.getElementById('packageBox');if(b)b.style.display=['New Connection','Package Change'].includes(document.getElementById('invWork').value)?'block':'none'}
 function selectInventoryItem(){
  let sel=document.getElementById('itSelect');if(!sel)return;
  let idv=sel.value;
@@ -304,7 +425,7 @@ function addItem(){
 function remItem(i){draft.splice(i,1);drawItems()}
 function totals(){let sub=draft.reduce((s,x)=>s+x.qty*x.rate,0),cost=draft.reduce((s,x)=>s+x.qty*(+x.cost||0),0),d=+document.getElementById('disc')?.value||0,total=Math.max(0,sub-d),rec=+document.getElementById('received')?.value||0;return{sub,cost,disc:d,total,received:Math.min(rec,total),due:Math.max(0,total-rec),profit:total-cost}}
 function drawItems(){let a=document.getElementById('itemsArea');if(!a)return;let t=totals();a.innerHTML=draft.length?`<div class="tbl"><table><thead><tr><th>Item</th><th>Type</th><th>Qty</th><th>Sale Rate</th><th>Cost/Unit</th><th>Total</th><th>Profit</th><th></th></tr></thead><tbody>${draft.map((x,i)=>`<tr><td>${esc(x.name)}</td><td>${esc(x.type||'custom')}</td><td>${x.qty}</td><td>${money(x.rate)}</td><td>${money(x.cost||0)}</td><td>${money(x.qty*x.rate)}</td><td><b>${money((x.qty*x.rate)-(x.qty*(+x.cost||0)))}</b></td><td><button class="btn btn-e btn-sm" onclick="remItem(${i})">X</button></td></tr>`).join('')}</tbody></table></div><div class="summary"><div class="sum">Subtotal<b>${money(t.sub)}</b></div><div class="sum">Purchase Cost<b>${money(t.cost)}</b></div><div class="sum">Discount<b>${money(t.disc)}</b></div><div class="sum">Net Profit<b>${money(t.profit)}</b></div><div class="sum">Received<b>${money(t.received)}</b></div><div class="sum">Due<b>${money(t.due)}</b></div></div>`:'<div class="empty">No items added</div>'}
-function invObj(){let t=totals(),phone=pkMobile(invPhone.value);return{id:id('inv'),cust:invCust.value.trim(),phone,work:invWork.value,refEmp:document.getElementById('refEmp')?.value||key(),rewardSource:document.getElementById('rewardSource')?.value||'',items:[...draft],sub:t.sub,cost:t.cost,disc:t.disc,total:t.total,profit:t.profit,received:t.received,due:t.due,notes:invNotes.value.trim(),date:today(),time:now(),by:key(),byName:U.name}}
+function invObj(){let t=totals(),phone=pkMobile(invPhone.value),work=invWork.value;return{id:id('inv'),cust:invCust.value.trim(),phone,work,refEmp:work==='New Connection'?(document.getElementById('refEmp')?.value||''):'',rewardSource:work==='New Connection'?'New Connection':'',items:[...draft],sub:t.sub,cost:t.cost,disc:t.disc,total:t.total,profit:t.profit,received:t.received,due:t.due,notes:invNotes.value.trim(),date:today(),time:now(),by:key(),byName:U.name}}
 function invMsg(v){
  return `🧾 *FIRE.NET.PK - SERVICE INVOICE*
 ━━━━━━━━━━━━━━━━━━━━
@@ -318,7 +439,7 @@ Mobile: ${v.phone||'-'}
 
 🛠️ *WORK DETAILS*
 Work Type: ${v.work}
-Reference Employee: ${empName(v.refEmp)||'-'}
+Reference Employee: ${v.refEmp?empName(v.refEmp):'-'}
 
 📦 *ITEMS / SERVICES*
 ${v.items.map((x,i)=>`${i+1}. ${x.name}\n   Qty: ${x.qty} × ${money(x.rate)} = ${money(x.qty*x.rate)}`).join('\n')}
@@ -343,7 +464,7 @@ function reduceStockForInvoice(v){
    }
  });
 }
-function saveInv(){if(!draft.length)return toast('Add item','error');let v=invObj();if(!v.cust)return toast('Customer required','error');if(v.phone&&!validPk(v.phone))return toast('Mobile number format use karein: 03001234561','error');S.invoices.push(v);reduceStockForInvoice(v);saveAndSync('invoices',v);if(v.received>0)addFinanceFromInvoice(v,v.received);if(v.work==='New Connection')applyTarget(v.refEmp,v.total);draft=[];toast('Invoice saved + inventory updated','success');invoice()}
+function saveInv(){if(!draft.length)return toast('Add item','error');let v=invObj();if(!v.cust)return toast('Customer required','error');if(v.phone&&!validPk(v.phone))return toast('Mobile number format use karein: 03001234561','error');if(v.work==='New Connection'&&!v.refEmp)return toast('Select sales reward employee for New Connection','error');S.invoices.push(v);reduceStockForInvoice(v);saveAndSync('invoices',v);if(v.received>0)addFinanceFromInvoice(v,v.received);if(v.work==='New Connection'&&v.refEmp)applyTarget(v.refEmp,v.total,'sales');draft=[];toast('Invoice saved + inventory updated','success');invoice()}
 function addFinanceFromInvoice(v,amount){let rec={id:id('fin'),type:'income',mode:'cash',cat:'Invoice - '+v.work,amount,customer:v.cust,paidBy:v.cust,payer:v.cust,receiver:empName(v.refEmp)||v.byName,online:'',phone:v.phone,notes:`Auto income from invoice ${v.id} | Cost: ${money(v.cost||0)} | Profit: ${money(v.profit||0)}`,date:today(),time:now(),by:v.refEmp||v.by,byName:empName(v.refEmp)||v.byName};S.finance.push(rec);fbSet('finance',rec);saveLocal()}
 function sendDraftInv(){if(!draft.length)return toast('Add item','error');let v=invObj();if(!validPk(v.phone))return toast('Mobile number format use karein: 03001234561','error');window.open('https://wa.me/'+waNumber(v.phone)+'?text='+encodeURIComponent(invMsg(v)),'_blank')}
 function invTable(){let r=myInv().slice().reverse();if(!r.length)return'<div class="empty">No invoices</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Total</th><th>Cost</th><th>Profit</th><th>Received</th><th>Due</th><th>Ref Employee</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td>${money(v.cost||0)}</td><td><b>${money(v.profit||0)}</b></td><td>${money(v.received)}</td><td>${money(v.due)}</td><td>${esc(empName(v.refEmp))}</td><td><div class="actions"><button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button>${(+v.due||0)>0?`<button class="btn btn-i btn-sm" onclick="receiveDue('${v.id}')">Receive</button>`:''}${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delInv('${v.id}')">Delete</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`}
@@ -423,7 +544,41 @@ Prepared by: ${U?U.name:'System'}
 *Fire.net.pk Accounts*`;
 }
 function dailyReport(){let p=prompt('WhatsApp number 03001234561');if(!p)return;p=pkMobile(p);if(!validPk(p))return toast('Mobile number format use karein: 03001234561','error');window.open('https://wa.me/'+waNumber(p)+'?text='+encodeURIComponent(financeReportText()),'_blank')}
-function printFinanceReport(){let r=filteredFinance(),f=calc(r),title=financeAll?'All Dates':financeDate;let html=`<!doctype html><html><head><title>Finance Report</title><style>body{font-family:Arial;padding:25px;color:#111}h1{color:#e74c3c;margin:0}.top{border-bottom:3px solid #243447;padding-bottom:12px;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.box{border:1px solid #ddd;padding:10px;border-radius:8px}table{width:100%;border-collapse:collapse;margin-top:14px}th,td{border:1px solid #ddd;padding:7px;font-size:12px}th{background:#243447;color:white}.sign{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:45px}.sig{border-top:1px solid #333;text-align:center;padding-top:8px}</style></head><body><div class="top"><h1>Fire.net.pk Finance Report</h1><p>Report Period: ${title}<br>Employee: ${financeEmp==='all'?'All':financeEmp==='admin'?'Admin':empName(financeEmp)}<br>Generated: ${now()}</p></div><div class="grid"><div class="box">Income<br><b>${money(f.inc)}</b></div><div class="box">Expense<br><b>${money(f.exp)}</b></div><div class="box">Cash<br><b>${money(f.cash)}</b></div><div class="box">Online<br><b>${money(f.online)}</b></div><div class="box">Cash Expense<br><b>${money(f.cashExp)}</b></div><div class="box">Online Expense<br><b>${money(f.onlineExp)}</b></div><div class="box">Net Balance<br><b>${money(f.bal)}</b></div><div class="box">Entries<br><b>${r.length}</b></div></div><h2>Employee-wise Summary</h2>${employeeWiseSummary().replaceAll('class="tbl"','').replaceAll('class="empty"','')}<h2>Entries</h2><table><thead><tr><th>Date</th><th>Employee</th><th>Type</th><th>Mode</th><th>Paid By</th><th>Category</th><th>Amount</th></tr></thead><tbody>${r.map(e=>`<tr><td>${e.date}</td><td>${e.by==='admin'?'Admin':empName(e.by)}</td><td>${typeOf(e)}</td><td>${modeOf(e)}</td><td>${esc(paidBy(e))}</td><td>${esc(e.cat)}</td><td>${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td></tr>`).join('')}</tbody></table><div class="sign"><div class="sig">Prepared By</div><div class="sig">Checked By</div><div class="sig">Approved By</div></div></body></html>`;let w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500)}
+function printFinanceReport(){let r=filteredFinance(),f=calc(r),title=financeAll?'All Dates':financeDate;let html=`<!doctype html><html><head><title>Finance Report</title><style>body{font-family:Arial;padding:25px;color:#111}h1{color:#e74c3c;margin:0}.top{border-bottom:3px solid #243447;padding-bottom:12px;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.box{border:1px solid #ddd;padding:10px;border-radius:8px}table{width:100%;border-collapse:collapse;margin-top:14px}th,td{border:1px solid #ddd;padding:7px;font-size:12px}th{background:#243447;color:white}.sign{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:45px}.sig{border-top:1px solid #333;text-align:center;padding-top:8px}
+/* Side menu layout */
+.main-layout{display:grid;grid-template-columns:245px 1fr;gap:12px;align-items:start}
+.side-toggle{display:none;background:var(--p);color:#fff;border-radius:12px;padding:10px 13px;font-weight:900}
+.sidebar-card{background:#fff;border-radius:18px;box-shadow:0 10px 25px rgba(15,23,42,.07);padding:10px;position:sticky;top:12px}
+.sidebar-title{font-weight:900;color:var(--d);padding:10px 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.nav.side{display:flex;flex-direction:column;gap:6px;background:transparent;padding:0;margin:0;box-shadow:none;border-radius:0;overflow:visible}
+.nav.side button{width:100%;text-align:left;justify-content:flex-start;border-radius:12px}
+.content-area{min-width:0}
+@media(max-width:850px){
+ .side-toggle{display:inline-flex;margin-bottom:10px}
+ .main-layout{display:block}
+ .sidebar-card{display:none;position:fixed;left:10px;right:10px;top:10px;z-index:40;max-height:90vh;overflow:auto}
+ .sidebar-card.open{display:block}
+ .nav.side{display:flex!important;grid-template-columns:none}
+ .nav.side button{font-size:14px;padding:12px}
+ .content-area{width:100%}
+}
+
+
+.news-ticker{background:linear-gradient(135deg,#111827,#243447);color:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 10px 25px rgba(15,23,42,.12)}
+.news-ticker .ticker-inner{white-space:nowrap;display:flex;width:max-content;padding:12px 0;font-weight:900;animation:tickerMove 22s linear infinite}
+.news-ticker span{display:inline-block;padding-right:80px}
+@keyframes tickerMove{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.target-banner{background:linear-gradient(135deg,#fff7ed,#ecfdf5);border:1px solid #fed7aa;border-left:6px solid var(--s);border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 10px 25px rgba(15,23,42,.06)}
+.target-banner h2{font-size:18px;color:var(--d);margin-bottom:8px}
+.target-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px}
+.target-mini div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+.target-mini small{display:block;color:#64748b;font-weight:900}
+.target-mini b{font-size:18px}
+.news-admin-preview{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:12px;font-weight:800;color:#475569}
+@media(max-width:850px){.target-mini{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.target-mini{grid-template-columns:1fr}.news-ticker .ticker-inner{animation-duration:14s}}
+
+</style></head><body><div class="top"><h1>Fire.net.pk Finance Report</h1><p>Report Period: ${title}<br>Employee: ${financeEmp==='all'?'All':financeEmp==='admin'?'Admin':empName(financeEmp)}<br>Generated: ${now()}</p></div><div class="grid"><div class="box">Income<br><b>${money(f.inc)}</b></div><div class="box">Expense<br><b>${money(f.exp)}</b></div><div class="box">Cash<br><b>${money(f.cash)}</b></div><div class="box">Online<br><b>${money(f.online)}</b></div><div class="box">Cash Expense<br><b>${money(f.cashExp)}</b></div><div class="box">Online Expense<br><b>${money(f.onlineExp)}</b></div><div class="box">Net Balance<br><b>${money(f.bal)}</b></div><div class="box">Entries<br><b>${r.length}</b></div></div><h2>Employee-wise Summary</h2>${employeeWiseSummary().replaceAll('class="tbl"','').replaceAll('class="empty"','')}<h2>Entries</h2><table><thead><tr><th>Date</th><th>Employee</th><th>Type</th><th>Mode</th><th>Paid By</th><th>Category</th><th>Amount</th></tr></thead><tbody>${r.map(e=>`<tr><td>${e.date}</td><td>${e.by==='admin'?'Admin':empName(e.by)}</td><td>${typeOf(e)}</td><td>${modeOf(e)}</td><td>${esc(paidBy(e))}</td><td>${esc(e.cat)}</td><td>${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td></tr>`).join('')}</tbody></table><div class="sign"><div class="sig">Prepared By</div><div class="sig">Checked By</div><div class="sig">Approved By</div></div></body></html>`;let w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500)}
 
 
 
@@ -530,7 +685,7 @@ function addAdvance(){
  const emp=U.role==='admin'?adEmp.value:U.id, type=adType.value, amount=+adAmount.value||0;
  if(amount<=0)return toast('Amount required','error');
  let rec={id:id('adv'),emp,type,amount,reason:adReason.value.trim(),date:adDate.value,time:now(),by:key(),byName:U.name};
- S.advances=S.advances||[];S.advances.push(rec);saveAndSync('advances',rec);
+ S.advances=S.advances||[];S.news=S.news||D.news;S.advances.push(rec);saveAndSync('advances',rec);
  // finance auto link
  let f={id:id('fin'),type:type==='given'?'expense':'income',mode:'cash',cat:type==='given'?'Employee Advance':type==='return'?'Advance Return':'Advance Adjustment',amount,customer:empName(emp),paidBy:empName(emp),payer:empName(emp),receiver:U.name,online:'',phone:empPhone(emp),notes:'Auto from employee advance: '+(rec.reason||'-'),date:rec.date,time:now(),by:key(),byName:U.name};
  S.finance.push(f);fbSet('finance',f);saveLocal();
@@ -682,11 +837,40 @@ function sendPackageSlip(i){
  window.open('https://wa.me/'+waNumber(p)+'?text='+encodeURIComponent(packageSlipMsg(x)),'_blank');
 }
 
-function targets(){content.innerHTML=`${U.role==='admin'?`<div class="card"><div class="head"><h2>Assign Target</h2></div><div class="row"><div class="fg"><label>Employee</label><select id="te">${empOpts()}</select></div><div class="fg"><label>Target Amount</label><input id="ta" type="number" value="20000"></div><div class="fg"><label>Reward Type</label><select id="rt"><option value="fixed">Fixed Amount</option><option value="percentage">Percentage</option></select></div></div><div class="row two"><div class="fg"><label>Reward Value</label><input id="rv" type="number" value="1000"></div><div class="fg"><label>Reward Label</label><input id="tr" value="Daily Target Reward"></div></div><button class="btn btn-p" onclick="assignTarget()">Assign Target</button></div>`:''}<div class="card"><div class="head"><h2>Target Progress</h2></div>${targetTable()}</div>`}
-function assignTarget(){let target=+ta.value||0;if(target<=0)return toast('Target required','error');let rec={id:id('t'),emp:te.value,target,achieved:0,rewardType:rt.value,rewardValue:+rv.value||0,reward:tr.value.trim()||'Reward',date:today()};S.targets.push(rec);saveAndSync('targets',rec);targets()}
-function applyTarget(emp,amount){let t=S.targets.find(x=>x.emp===emp&&(+x.achieved)<(+x.target));if(t){t.achieved=(+t.achieved)+(+amount);saveAndSync('targets',t);if(t.achieved>=t.target){toast('Target completed! Reward unlocked','success');beep()}}}
-function targetTable(){let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Employee</th><th>Date</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Reward Rule</th><th>Reward Earned</th></tr></thead><tbody>${r.map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${empName(t.emp)}</td><td>${t.date}</td><td>${money(t.target)}</td><td>${money(t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td>${t.rewardType==='percentage'?(+t.rewardValue||0)+'%':money(t.rewardValue)} - ${esc(t.reward)}</td><td>${money(rewardEarned(t))}</td></tr>`}).join('')}</tbody></table></div>`}
 
+function closeOldDailyTargets(){
+ let changed=false;
+ (S.targets||[]).forEach(t=>{
+   if(!t.closed && t.date && t.date<today()){
+     t.closed=true;
+     t.closedAt='Day End Closed';
+     changed=true;
+     fbSet('targets',t);
+   }
+ });
+ if(changed)saveLocal();
+}
+function targets(){content.innerHTML=`${U.role==='admin'?`<div class="card"><div class="head"><h2>Assign Target</h2></div><div class="row"><div class="fg"><label>Employee</label><select id="te">${empOpts()}</select></div><div class="fg"><label>Target Type</label><select id="tt"><option value="collection">Daily Collection Target</option><option value="sales">Daily Sales Target</option></select></div><div class="fg"><label>Target Amount</label><input id="ta" type="number" value="20000"></div></div><div class="row"><div class="fg"><label>Target Date</label><input id="td" type="date" value="${today()}"></div><div class="fg"><label>Reward Type</label><select id="rt"><option value="fixed">Fixed Amount</option><option value="percentage">Percentage</option></select></div><div class="fg"><label>Reward Value</label><input id="rv" type="number" value="1000"></div></div><div class="fg"><label>Reward Label</label><input id="tr" value="Daily Target Reward"></div><p style="color:#64748b;font-weight:800;margin-bottom:10px">Daily targets close at day-end. Next day admin must assign a new target if needed.</p><button class="btn btn-p" onclick="assignTarget()">Assign Target</button></div>`:''}<div class="card"><div class="head"><h2>Target Progress</h2></div>${targetTable()}</div>`}
+function assignTarget(){let target=+ta.value||0;if(target<=0)return toast('Target required','error');let rec={id:id('t'),emp:te.value,targetType:tt.value,target,achieved:0,rewardType:rt.value,rewardValue:+rv.value||0,reward:tr.value.trim()||'Reward',date:td.value||today(),closed:false,closedAt:''};S.targets.push(rec);saveAndSync('targets',rec);targets()}
+function applyTarget(emp,amount,targetType='collection'){closeOldDailyTargets();let t=S.targets.find(x=>x.emp===emp&&(x.targetType||'collection')===targetType&&x.date===today()&&!x.closed&&(+x.achieved)<(+x.target));if(t){t.achieved=(+t.achieved)+(+amount);if(t.achieved>=t.target){t.closed=true;t.closedAt=now();toast((targetType==='sales'?'Sales':'Collection')+' target completed! Reward unlocked','success');beep()}saveAndSync('targets',t)}}
+function targetTable(){closeOldDailyTargets();let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Employee</th><th>Date</th><th>Type</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Status</th><th>Reward Rule</th><th>Reward Earned</th></tr></thead><tbody>${r.slice().reverse().map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${empName(t.emp)}</td><td>${t.date}</td><td>${(t.targetType||'collection').toUpperCase()}</td><td>${money(t.target)}</td><td>${money(t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td><span class="badge ${t.closed?'done':'pending'}">${t.closed?'Closed':'Active'}</span></td><td>${t.rewardType==='percentage'?(+t.rewardValue||0)+'%':money(t.rewardValue)} - ${esc(t.reward)}</td><td>${money(rewardEarned(t))}</td></tr>`}).join('')}</tbody></table></div>`}
+
+
+function newsPage(){
+ if(U.role!=='admin')return dash();
+ content.innerHTML=`<div class="card"><div class="head"><h2>Employee Dashboard News / Scrolling Announcement</h2></div>
+  <div class="fg"><label>News Text</label><textarea id="newsText" placeholder="Type announcement for employees">${esc(S.news?.text||'')}</textarea></div>
+  <label style="font-weight:900"><input type="checkbox" id="newsActive" ${S.news?.active?'checked':''}> Active / Show on employee dashboard</label>
+  <br><br>
+  <div class="actions"><button class="btn btn-p" onclick="saveNews()">Save News</button><button class="btn btn-l" onclick="previewNews()">Preview</button></div>
+ </div>
+ <div class="card"><div class="head"><h2>Preview</h2></div><div class="news-admin-preview">${S.news?.active?'Active':'Inactive'}: ${esc(S.news?.text||'No news')}</div></div>`;
+}
+function saveNews(){
+ S.news={text:document.getElementById('newsText').value.trim(),active:document.getElementById('newsActive').checked};
+ saveLocal();fbSettings();toast('News updated for employee dashboard','success');newsPage();
+}
+function previewNews(){S.news={text:document.getElementById('newsText').value.trim(),active:document.getElementById('newsActive').checked};newsPage();}
 function backup(){content.innerHTML=`<div class="card"><div class="head"><h2>Backup & Restore</h2></div><div class="actions"><button class="btn btn-s" onclick="syncAll()">Sync All to Firebase</button><button class="btn btn-i" onclick="loadFirebase()">Fetch Firebase</button><button class="btn btn-s" onclick="downloadBackup()">Download Backup</button><button class="btn btn-i" onclick="restoreFile.click()">Restore Backup</button><button class="btn btn-e" onclick="clearAll()">Clear All</button></div><input class="hidden" type="file" id="restoreFile" accept=".json" onchange="restoreBackup(event)"></div>`}
 async function syncAll(){for(const e of S.employees)await fbSet('employees',e);for(const e of S.complaints)await fbSet('complaints',e);for(const e of S.finance)await fbSet('finance',e);for(const e of S.invoices)await fbSet('invoices',e);for(const e of S.targets)await fbSet('targets',e);for(const e of S.attendance)await fbSet('attendance',e);for(const e of (S.items||[]))await fbSet('items',e);for(const e of (S.packages||[]))await fbSet('packages',e);for(const e of (S.advances||[]))await fbSet('advances',e);await fbSettings();toast('Sync complete','success')}
 function downloadBackup(){let blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='firenet-backup-'+today()+'.json';a.click()}
