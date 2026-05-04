@@ -3077,10 +3077,7 @@
                 <div class="main-card">
                     <div class="card-header">
                         <h2><i class="fas fa-triangle-exclamation"></i> Missed / Overdue Complaints</h2>
-                        <div class="missed-header-actions">
-                            <span style="font-size:0.9rem;opacity:0.9;">These complaints reduce technical performance.</span>
-                            <button type="button" class="btn btn-warning" onclick="manualRefreshEmployeeMissed(event)"><i class="fas fa-rotate"></i> Refresh</button>
-                        </div>
+                        <div style="font-size:0.9rem;opacity:0.9;">These complaints reduce technical performance.</div>
                     </div>
                     <div id="empMissedList" style="padding: 20px;"></div>
                 </div>
@@ -7544,28 +7541,127 @@ ${dailyRows}
     }
     window.adminEditRecord = async function(type,id){
         if(!acIsAdmin()){ acToast('Only admin can edit records.','error'); return; }
-        let list, writer=null, saver=null;
-        if(type==='complaints'){ list=complaints; saver=()=>acSave('complaints'); }
-        else if(type==='employees'){ list=employees; saver=()=>acSave('employees'); }
-        else if(type==='attendance'){ list=attendance; saver=()=>acSave('attendance'); }
-        else if(type==='payroll'){ list=payroll; saver=()=>acSave('payroll'); }
-        else if(type==='finance'){ list=dailyFinance; saver=()=>acSave('finance'); }
-        else if(type==='targets'){ list=acReadTargets(); writer=acWriteTargets; }
-        else if(type==='salesTargets'){ list=acReadSales(); writer=acWriteSales; }
-        else { acToast('Unknown record type.','error'); return; }
-        const idx = list.findIndex(x => String(x.id) === String(id));
-        if(idx < 0){ acToast('Record not found.','error'); return; }
-        const updated = prompt('Edit this record as JSON. Change only what you need, then press OK.', JSON.stringify(list[idx], null, 2));
-        if(updated === null) return;
-        try{
-            const obj = JSON.parse(updated);
-            if(!obj.id) obj.id = id;
-            list[idx] = obj;
-            if(writer) writer(list);
-            if(saver) await saver();
-            acToast('Record updated successfully.','success');
-            acRefreshAll();
-        }catch(e){ acToast('Invalid JSON. Edit cancelled.','error'); }
+
+        // Use proper UI modals instead of raw JSON/code prompt.
+        if(type==='complaints' && typeof openComplaintModal === 'function'){ openComplaintModal(id); return; }
+        if(type==='employees' && typeof openEmployeeModal === 'function'){ openEmployeeModal(id); return; }
+        if(type==='attendance' && typeof openAttendanceModal === 'function'){ openAttendanceModal(id); return; }
+        if(type==='payroll' && typeof openPayrollModal === 'function'){ openPayrollModal(id); return; }
+        if(type==='finance' && typeof editFinanceEntry === 'function'){ editFinanceEntry(id); return; }
+
+        if(type==='targets' || type==='salesTargets'){
+            openAdminTargetEditForm(type,id);
+            return;
+        }
+
+        acToast('No edit form found for this record.','error');
+    };
+
+    function ensureAdminEditModal(){
+        let modal = document.getElementById('adminSimpleEditModal');
+        if(modal) return modal;
+        modal = document.createElement('div');
+        modal.id = 'adminSimpleEditModal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal">
+                <div class="modal-header">
+                    <h2><i class="fas fa-pen-to-square"></i> <span id="adminSimpleEditTitle">Edit Record</span></h2>
+                    <button class="close-btn" type="button" onclick="closeAdminSimpleEditModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="adminSimpleEditType">
+                    <input type="hidden" id="adminSimpleEditId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Employee</label>
+                            <select id="adminSimpleEditEmployee"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="adminSimpleEditDate">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label id="adminSimpleEditAmountLabel">Target Amount</label>
+                            <input type="number" id="adminSimpleEditAmount" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label id="adminSimpleEditPercentLabel">Reward / Commission %</label>
+                            <input type="number" id="adminSimpleEditPercent" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Note</label>
+                        <textarea id="adminSimpleEditNote" placeholder="Optional note"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" onclick="closeAdminSimpleEditModal()">Cancel</button>
+                    <button class="btn btn-primary" type="button" onclick="saveAdminSimpleEditForm()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        return modal;
+    }
+
+    window.closeAdminSimpleEditModal = function(){
+        document.getElementById('adminSimpleEditModal')?.classList.remove('active');
+    };
+
+    window.openAdminTargetEditForm = function(type,id){
+        const modal = ensureAdminEditModal();
+        const list = type === 'targets' ? acReadTargets() : acReadSales();
+        const item = list.find(x => String(x.id) === String(id));
+        if(!item){ acToast('Record not found.','error'); return; }
+
+        const empSelect = document.getElementById('adminSimpleEditEmployee');
+        const activeEmployees = (employees || []).filter(e => e.status !== 'inactive');
+        empSelect.innerHTML = activeEmployees.map(e => `<option value="${acEscape(e.id)}">${acEscape(e.name)} - ${acEscape(e.role || 'Staff')}</option>`).join('');
+        empSelect.value = item.employeeId || '';
+
+        document.getElementById('adminSimpleEditType').value = type;
+        document.getElementById('adminSimpleEditId').value = id;
+        document.getElementById('adminSimpleEditTitle').textContent = type === 'targets' ? 'Edit Daily Account Target' : 'Edit Sales Commission Target';
+        document.getElementById('adminSimpleEditAmountLabel').textContent = type === 'targets' ? 'Daily Collection Target (PKR)' : 'Daily Sales Target (PKR)';
+        document.getElementById('adminSimpleEditPercentLabel').textContent = type === 'targets' ? 'Reward %' : 'Commission %';
+        document.getElementById('adminSimpleEditDate').value = item.date || ((typeof localTodayISO === 'function') ? localTodayISO() : new Date().toISOString().slice(0,10));
+        document.getElementById('adminSimpleEditAmount').value = item.amount || 0;
+        document.getElementById('adminSimpleEditPercent').value = type === 'targets' ? (item.rewardPercent || 0) : (item.commissionPercent || 0);
+        document.getElementById('adminSimpleEditNote').value = item.note || '';
+
+        modal.classList.add('active');
+    };
+
+    window.saveAdminSimpleEditForm = function(){
+        const type = document.getElementById('adminSimpleEditType').value;
+        const id = document.getElementById('adminSimpleEditId').value;
+        const employeeId = document.getElementById('adminSimpleEditEmployee').value;
+        const emp = (employees || []).find(e => String(e.id) === String(employeeId));
+        const date = document.getElementById('adminSimpleEditDate').value;
+        const amount = Number(document.getElementById('adminSimpleEditAmount').value || 0);
+        const percent = Number(document.getElementById('adminSimpleEditPercent').value || 0);
+        const note = document.getElementById('adminSimpleEditNote').value.trim();
+
+        if(!employeeId || !date || !amount){ acToast('Employee, date and amount are required.','error'); return; }
+
+        if(type === 'targets'){
+            const list = acReadTargets().map(x => String(x.id) === String(id) ? {
+                ...x, employeeId, employeeName: emp?.name || '', date, amount, rewardPercent: percent, note, updatedAt: new Date().toISOString()
+            } : x);
+            acWriteTargets(list);
+        } else if(type === 'salesTargets'){
+            const list = acReadSales().map(x => String(x.id) === String(id) ? {
+                ...x, employeeId, employeeName: emp?.name || '', date, amount, commissionPercent: percent, note, updatedAt: new Date().toISOString()
+            } : x);
+            acWriteSales(list);
+        }
+
+        closeAdminSimpleEditModal();
+        acToast('Record updated successfully.','success');
+        acRefreshAll();
     };
     window.adminDeleteRecord = async function(type,id){
         if(!acIsAdmin()){ acToast('Only admin can delete records.','error'); return; }
@@ -7614,7 +7710,6 @@ ${dailyRows}
             <td>${acEscape(item.status || item.type || item.department || '')}</td>
             <td class="action-btns">
                 <button class="btn btn-info btn-sm" onclick="adminEditRecord('${type}','${String(item.id).replace(/'/g,"\\'")}')"><i class="fas fa-edit"></i> Edit</button>
-                <button class="btn btn-warning btn-sm" onclick="adminDuplicateRecord('${type}','${String(item.id).replace(/'/g,"\\'")}')"><i class="fas fa-copy"></i> Copy</button>
                 <button class="btn btn-danger btn-sm" onclick="adminDeleteRecord('${type}','${String(item.id).replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i> Delete</button>
             </td>
         </tr>`).join('');
@@ -7641,7 +7736,7 @@ ${dailyRows}
             ${acSection('Finance / Sales / Income / Expense', 'finance', dailyFinance, [{label:'Type', key:'type'},{label:'Category', key:'category'},{label:'Amount', value:x=>acMoney(x.amount)}])}
             ${acSection('Attendance', 'attendance', attendance, [{label:'Employee', key:'employeeName'},{label:'Status', key:'status'},{label:'Time', key:'time'}])}
             ${acSection('Payroll', 'payroll', payroll, [{label:'Employee', key:'employeeName'},{label:'Net Salary', value:x=>acMoney(x.netSalary||x.netPay||x.amount)},{label:'Status', key:'status'}])}
-            <div class="main-card"><div class="card-header"><h2><i class="fas fa-shield-alt"></i> Admin Rule</h2></div><div style="padding:20px;line-height:1.7;color:#566573;">Admin can edit, copy, or delete all records from this page. Employee deletion will unassign that employee from complaints instead of breaking old records. Use JSON edit carefully for advanced changes.</div></div>
+            <div class="main-card"><div class="card-header"><h2><i class="fas fa-shield-alt"></i> Admin Rule</h2></div><div style="padding:20px;line-height:1.7;color:#566573;">Admin can edit or delete all records from this page. Employee deletion will unassign that employee from complaints instead of breaking old records. Edit opens a clean form, not code/JSON.</div></div>
         `;
     };
     function acSection(title,type,list,fields){
@@ -7817,22 +7912,27 @@ ${dailyRows}
                 <td><span class="badge badge-missed">${c.status || 'Missed'}</span></td>
                 <td>${c.missedAt ? new Date(c.missedAt).toLocaleString('en-PK') : (c.updatedAt || c.createdAt || '-')}</td>
                 <td>${c.performancePenalty || 10}% minus</td>
+                <td class="action-btns">
+                    <button class="btn btn-info btn-sm" onclick="adminEditRecord('complaints','${String(c.id || '').replace(/'/g,"\\'")}')"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="adminDeleteRecord('complaints','${String(c.id || '').replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i> Delete</button>
+                </td>
             </tr>
         `).join('');
 
         panel.innerHTML = `
             <div class="card-header overdue-header">
                 <h2><i class="fas fa-triangle-exclamation"></i> Overdue / Missed Complaints Dashboard</h2>
-                <button class="btn btn-warning" onclick="try{markExpiredComplaints();renderOverdueDashboard();applyAllTablePaging();}catch(e){}"><i class="fas fa-rotate"></i> Refresh</button>
+                <button class="btn btn-warning" onclick="manualRefreshAdminMissed(event)"><i class="fas fa-rotate"></i> Refresh</button>
             </div>
-            <div style="overflow-x:auto;">
+            <div class="admin-overdue-table-scroll draggable-table" style="overflow-x:auto; cursor:grab;">
                 <table>
-                    <thead><tr><th>ID</th><th>Complainant</th><th>Assigned Employee</th><th>Status</th><th>Missed Time</th><th>Performance Effect</th></tr></thead>
-                    <tbody>${rows || '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-check-circle"></i><h3>No overdue complaints</h3><p>All active complaints are within time.</p></div></td></tr>'}</tbody>
+                    <thead><tr><th>ID</th><th>Complainant</th><th>Assigned Employee</th><th>Status</th><th>Missed Time</th><th>Performance Effect</th><th>Admin Actions</th></tr></thead>
+                    <tbody>${rows || '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-check-circle"></i><h3>No overdue complaints</h3><p>All active complaints are within time.</p></div></td></tr>'}</tbody>
                 </table>
             </div>
         `;
         applyAllTablePaging();
+        try{ installDragScroll(); }catch(e){}
     }
 
     const style = document.createElement('style');
@@ -7845,6 +7945,8 @@ ${dailyRows}
         .overdue-dashboard-card small{color:#7f8c8d;font-weight:700}
         .overdue-dashboard-panel{border:2px solid rgba(231,76,60,.18)}
         .overdue-header{background:linear-gradient(135deg,var(--danger),#b91c1c)!important}
+        .draggable-table{user-select:none;-webkit-overflow-scrolling:touch}
+        #adminSimpleEditModal .modal{max-width:760px}
         @media(max-width:640px){.table-page-size-control{align-items:flex-start}.table-page-size-left,.table-page-size-info{width:100%}.table-page-size-left select{flex:1}}
     `;
     document.head.appendChild(style);
@@ -7878,6 +7980,40 @@ ${dailyRows}
     });
     observer.observe(document.body, {childList:true, subtree:true});
 
+
+    window.manualRefreshAdminMissed = function(event){
+        if(event){ event.preventDefault(); event.stopPropagation(); }
+        try { if (typeof markExpiredComplaints === 'function') markExpiredComplaints(); } catch(e) {}
+        try { renderOverdueDashboard(); } catch(e) {}
+        try { if (typeof renderAdminFullControl === 'function') renderAdminFullControl(); } catch(e) {}
+        try { applyAllTablePaging(); } catch(e) {}
+        try { installDragScroll(); } catch(e) {}
+        try { if (typeof showToast === 'function') showToast('Admin missed / overdue complaints refreshed', 'success'); } catch(e) {}
+        return false;
+    };
+
+    function installDragScroll(){
+        document.querySelectorAll('.draggable-table').forEach(el => {
+            if(el.dataset.dragScrollReady) return;
+            el.dataset.dragScrollReady = '1';
+            let down = false, startX = 0, scrollLeft = 0;
+            el.addEventListener('mousedown', e => {
+                down = true;
+                el.style.cursor = 'grabbing';
+                startX = e.pageX - el.offsetLeft;
+                scrollLeft = el.scrollLeft;
+            });
+            el.addEventListener('mouseleave', () => { down = false; el.style.cursor = 'grab'; });
+            el.addEventListener('mouseup', () => { down = false; el.style.cursor = 'grab'; });
+            el.addEventListener('mousemove', e => {
+                if(!down) return;
+                e.preventDefault();
+                const x = e.pageX - el.offsetLeft;
+                el.scrollLeft = scrollLeft - (x - startX);
+            });
+        });
+    }
+
     window.applyAllTablePaging = applyAllTablePaging;
     window.renderOverdueDashboard = renderOverdueDashboard;
 
@@ -7887,121 +8023,711 @@ ${dailyRows}
 </script>
 
 
-
 <script>
-/* ==================== UI FIX: MISSED REFRESH + EMPLOYEE GHOST CLICK ==================== */
+/* ==================== PER SALE / NEW CONNECTION FIXED BONUS PATCH ====================
+   Logic:
+   - Sale comes from invoice/new connection reference only.
+   - Each sale/connection has Sales By Employee dropdown.
+   - Fixed bonus per sale/connection, not percentage.
+   - Bonus = number of valid sales by employee × fixed bonus per sale.
+*/
 (function(){
-    if (window.__uiMissedRefreshGhostFix) return;
-    window.__uiMissedRefreshGhostFix = true;
+    const SALES_KEY = "fire_per_connection_sales_v1";
+    const BONUS_KEY = "fire_per_sale_bonus_amount_v1";
 
-    function injectUiFixStyle(){
-        if (document.getElementById('uiMissedRefreshGhostFixStyle')) return;
-        const style = document.createElement('style');
-        style.id = 'uiMissedRefreshGhostFixStyle';
-        style.textContent = `
-            .missed-header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-            .missed-header-actions .btn{min-height:40px;white-space:nowrap}
-            #employeeApp .tab-content:not(.active), #adminApp .tab-content:not(.active){display:none!important;pointer-events:none!important;visibility:hidden!important;position:relative;z-index:0!important}
-            #employeeApp .tab-content.active, #adminApp .tab-content.active{display:block!important;pointer-events:auto!important;visibility:visible!important;position:relative;z-index:1!important}
-            .app-container:not(.active){display:none!important;pointer-events:none!important;visibility:hidden!important}
-            .app-container.active{display:block!important;pointer-events:auto!important;visibility:visible!important}
-            #employeeApp .nav-tab{position:relative;z-index:3;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-            #employeeApp .nav-tabs{position:relative;z-index:4}
-            #employeeApp .main-card, #employeeApp .portal-welcome{position:relative;z-index:1}
-            #employeeApp .nav-tab.hidden{display:none!important;pointer-events:none!important}
-            @media(max-width:640px){.missed-header-actions{width:100%;align-items:stretch}.missed-header-actions .btn{width:100%;justify-content:center}}
-        `;
-        document.head.appendChild(style);
+    function todayISO(){
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const day = String(d.getDate()).padStart(2,'0');
+        return `${y}-${m}-${day}`;
     }
 
-    window.manualRefreshEmployeeMissed = function(event){
-        if (event) { event.preventDefault(); event.stopPropagation(); }
-        try { if (typeof markExpiredComplaints === 'function') markExpiredComplaints(); } catch(e) {}
-        try { if (typeof refreshEmployeeMissed === 'function') refreshEmployeeMissed(); } catch(e) {}
-        try { if (typeof refreshEmployeeTasks === 'function') refreshEmployeeTasks(); } catch(e) {}
-        try { if (typeof renderEmployeeTargetBanner === 'function') renderEmployeeTargetBanner(); } catch(e) {}
-        try { if (typeof showToast === 'function') showToast('Missed / overdue complaints refreshed', 'success'); } catch(e) {}
-        return false;
+    function readSales(){
+        try { return JSON.parse(localStorage.getItem(SALES_KEY) || "[]"); }
+        catch(e){ return []; }
+    }
+
+    function writeSales(data){
+        localStorage.setItem(SALES_KEY, JSON.stringify(data || []));
+    }
+
+    function getFixedBonus(){
+        return Number(localStorage.getItem(BONUS_KEY) || 0);
+    }
+
+    function setFixedBonus(v){
+        localStorage.setItem(BONUS_KEY, String(Number(v || 0)));
+    }
+
+    function money(v){
+        return "Rs. " + Number(v || 0).toLocaleString("en-PK", {maximumFractionDigits: 0});
+    }
+
+    function getEmployeesList(){
+        if(Array.isArray(window.employees)) return window.employees;
+        if(typeof employees !== "undefined" && Array.isArray(employees)) return employees;
+        try { return JSON.parse(localStorage.getItem("employees") || "[]"); } catch(e){ return []; }
+    }
+
+    function getEmployeeName(id){
+        const emp = getEmployeesList().find(e => String(e.id) === String(id) || String(e.phone) === String(id));
+        return emp ? (emp.name || emp.employeeName || emp.phone || id) : (id || "-");
+    }
+
+    function employeeOptions(selected){
+        const emps = getEmployeesList().filter(e => (e.status || "active") !== "inactive");
+        return `<option value="">Select Sales Employee</option>` + emps.map(e => {
+            const id = e.id || e.phone || e.name;
+            const label = `${e.name || e.employeeName || id}${e.role ? " - " + e.role : ""}`;
+            return `<option value="${String(id).replace(/"/g,'&quot;')}" ${String(selected||"")===String(id) ? "selected" : ""}>${label}</option>`;
+        }).join("");
+    }
+
+    function ensureSalesByDropdowns(){
+        // Add Sales By dropdown to invoice/new connection forms when available.
+        const possibleForms = [
+            document.getElementById("invoiceForm"),
+            document.getElementById("simpleInvoiceForm"),
+            document.getElementById("adminInvoiceForm"),
+            document.getElementById("empInvoiceForm"),
+            document.getElementById("newConnectionForm"),
+            document.getElementById("connectionForm")
+        ].filter(Boolean);
+
+        possibleForms.forEach(form => {
+            if(form.querySelector(".sales-by-employee-wrap")) return;
+            const wrap = document.createElement("div");
+            wrap.className = "form-group sales-by-employee-wrap";
+            wrap.innerHTML = `
+                <label><i class="fas fa-user-tie"></i> Sales By Employee</label>
+                <select class="form-control sales-by-employee-select" id="${form.id || 'form'}SalesByEmployee">
+                    ${employeeOptions("")}
+                </select>
+                <small style="color:#7f8c8d;display:block;margin-top:6px;">
+                    This employee will receive fixed bonus per sale/connection.
+                </small>
+            `;
+            const firstRow = form.querySelector(".form-row") || form;
+            firstRow.appendChild(wrap);
+        });
+
+        // Also add a floating selector near invoice tabs if no actual form id exists.
+        document.querySelectorAll("#adminInvoiceTab .quick-finance-form, #empInvoiceTab .quick-finance-form").forEach(box => {
+            if(box.querySelector(".sales-by-employee-wrap")) return;
+            const wrap = document.createElement("div");
+            wrap.className = "form-group sales-by-employee-wrap";
+            wrap.innerHTML = `
+                <label><i class="fas fa-user-tie"></i> Sales By Employee</label>
+                <select class="form-control sales-by-employee-select" id="${box.closest('.tab-content')?.id || 'invoice'}SalesByEmployee">
+                    ${employeeOptions("")}
+                </select>
+            `;
+            box.prepend(wrap);
+        });
+    }
+
+    function ensureSalesAdminPanel(){
+        if(document.getElementById("perSaleBonusPanel")) return;
+        const adminFinance = document.getElementById("adminFinanceTab") || document.getElementById("adminInvoiceTab") || document.querySelector("#adminApp .container");
+        if(!adminFinance) return;
+
+        const panel = document.createElement("div");
+        panel.className = "main-card";
+        panel.id = "perSaleBonusPanel";
+        panel.innerHTML = `
+            <div class="card-header">
+                <h2><i class="fas fa-hand-holding-dollar"></i> Per Sale / New Connection Bonus</h2>
+                <button class="btn btn-success" onclick="renderPerSaleBonusPanel()"><i class="fas fa-rotate"></i> Refresh</button>
+            </div>
+            <div class="quick-finance-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fixed Bonus Per Sale / Connection</label>
+                        <input type="number" class="form-control" id="fixedPerSaleBonusInput" placeholder="Example: 200" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Manual Sale Amount</label>
+                        <input type="number" class="form-control" id="manualSaleAmountInput" placeholder="Example: 3000" min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sales By Employee</label>
+                        <select class="form-control" id="manualSaleEmployeeSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Reference / Customer</label>
+                        <input type="text" class="form-control" id="manualSaleRefInput" placeholder="Customer name / invoice no">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="saveFixedPerSaleBonus()"><i class="fas fa-save"></i> Save Fixed Bonus</button>
+                <button class="btn btn-success" onclick="addManualPerConnectionSale()"><i class="fas fa-plus"></i> Add Sale / Connection</button>
+            </div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Employee</th>
+                            <th>Reference</th>
+                            <th>Sale Amount</th>
+                            <th>Fixed Bonus</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="perSaleBonusRows"></tbody>
+                </table>
+            </div>
+        `;
+        adminFinance.prepend(panel);
+    }
+
+    window.saveFixedPerSaleBonus = function(){
+        const input = document.getElementById("fixedPerSaleBonusInput");
+        setFixedBonus(input?.value || 0);
+        if(typeof showToast === "function") showToast("Fixed per-sale bonus saved", "success");
+        renderPerSaleBonusPanel();
     };
 
-    function fixedSwitchEmployeeTab(tab){
-        const permissions = { ...(window.DEFAULT_EMPLOYEE_PERMISSIONS || {}), ...((window.currentUser && window.currentUser.permissions) || {}) };
-        if (permissions[tab] === false) {
-            if (typeof showToast === 'function') showToast('You do not have permission to open this module.', 'warning');
+    window.addManualPerConnectionSale = function(){
+        const amount = Number(document.getElementById("manualSaleAmountInput")?.value || 0);
+        const employeeId = document.getElementById("manualSaleEmployeeSelect")?.value || "";
+        const ref = document.getElementById("manualSaleRefInput")?.value || "Manual Sale / Connection";
+        if(!amount || !employeeId){
+            alert("Sale amount and employee are required.");
             return;
         }
-        const tabButtons = Array.from(document.querySelectorAll('#employeeApp .nav-tabs .nav-tab'));
-        const tabMap = { mytasks:0, invoice:1, attendance:2, payroll:3, accounts:4, resolved:5, missed:6, profile:7 };
-        const tabIdMap = { mytasks:'empMyTasksTab', invoice:'empInvoiceTab', attendance:'empAttendanceTab', payroll:'empPayrollTab', accounts:'empAccountsTab', resolved:'empResolvedTab', missed:'empMissedTab', profile:'empProfileTab' };
+        const sale = {
+            id: "SALE-" + Date.now(),
+            date: todayISO(),
+            employeeId,
+            employeeName: getEmployeeName(employeeId),
+            reference: ref,
+            amount,
+            fixedBonus: getFixedBonus(),
+            source: "manual"
+        };
+        const data = readSales();
+        data.push(sale);
+        writeSales(data);
+        document.getElementById("manualSaleAmountInput").value = "";
+        document.getElementById("manualSaleRefInput").value = "";
+        if(typeof showToast === "function") showToast("Sale / connection added", "success");
+        renderPerSaleBonusPanel();
+        renderEmployeePerSaleBanner();
+    };
 
-        document.querySelectorAll('#employeeApp .nav-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('#employeeApp .tab-content').forEach(t => {
-            t.classList.remove('active');
-            t.style.pointerEvents = 'none';
-            t.style.visibility = 'hidden';
-            t.style.display = 'none';
+    window.deletePerConnectionSale = function(id){
+        if(!confirm("Delete this sale / connection?")) return;
+        writeSales(readSales().filter(s => String(s.id) !== String(id)));
+        renderPerSaleBonusPanel();
+        renderEmployeePerSaleBanner();
+    };
+
+    window.recordSaleFromInvoice = function(invoiceId, amount, employeeId, reference){
+        if(!employeeId) return;
+        const data = readSales();
+        if(data.some(s => String(s.invoiceId) === String(invoiceId))) return;
+        data.push({
+            id: "SALE-" + Date.now(),
+            invoiceId,
+            date: todayISO(),
+            employeeId,
+            employeeName: getEmployeeName(employeeId),
+            reference: reference || invoiceId || "Invoice / New Connection",
+            amount: Number(amount || 0),
+            fixedBonus: getFixedBonus(),
+            source: "invoice"
         });
+        writeSales(data);
+        renderPerSaleBonusPanel();
+        renderEmployeePerSaleBanner();
+    };
 
-        const btn = tabButtons[tabMap[tab]];
-        if (btn) btn.classList.add('active');
-        const tabEl = document.getElementById(tabIdMap[tab]);
-        if (tabEl) {
-            tabEl.classList.add('active');
-            tabEl.style.pointerEvents = 'auto';
-            tabEl.style.visibility = 'visible';
-            tabEl.style.display = 'block';
+    function hookInvoiceButtons(){
+        // Generic safety hook: when user clicks invoice generate/save buttons, try to record sale using visible amount and dropdown.
+        document.querySelectorAll("button").forEach(btn => {
+            const text = (btn.textContent || "").toLowerCase();
+            if(btn.dataset.salesHooked) return;
+            if(!(text.includes("invoice") || text.includes("connection") || text.includes("generate") || text.includes("save"))) return;
+            btn.dataset.salesHooked = "1";
+            btn.addEventListener("click", () => {
+                setTimeout(() => {
+                    const dropdown = document.querySelector(".sales-by-employee-select");
+                    const employeeId = dropdown?.value || "";
+                    if(!employeeId) return;
+
+                    const amountInputs = Array.from(document.querySelectorAll("input")).filter(i => {
+                        const id = (i.id || "").toLowerCase();
+                        const ph = (i.placeholder || "").toLowerCase();
+                        return id.includes("total") || id.includes("amount") || id.includes("price") || ph.includes("amount") || ph.includes("total");
+                    });
+                    let amount = 0;
+                    for(const i of amountInputs){
+                        const v = Number(i.value || 0);
+                        if(v > amount) amount = v;
+                    }
+                    if(!amount) return;
+                    const ref = "Invoice/New Connection - " + new Date().toLocaleString("en-PK");
+                    window.recordSaleFromInvoice(ref, amount, employeeId, ref);
+                }, 300);
+            }, true);
+        });
+    }
+
+    window.renderPerSaleBonusPanel = function(){
+        ensureSalesAdminPanel();
+        const bonus = getFixedBonus();
+        const bonusInput = document.getElementById("fixedPerSaleBonusInput");
+        if(bonusInput) bonusInput.value = bonus;
+
+        const empSel = document.getElementById("manualSaleEmployeeSelect");
+        if(empSel) empSel.innerHTML = employeeOptions(empSel.value);
+
+        const rows = document.getElementById("perSaleBonusRows");
+        if(rows){
+            const data = readSales().slice().reverse();
+            rows.innerHTML = data.length ? data.map(s => `
+                <tr>
+                    <td>${s.date || "-"}</td>
+                    <td>${s.employeeName || getEmployeeName(s.employeeId)}</td>
+                    <td>${s.reference || s.invoiceId || "-"}</td>
+                    <td>${money(s.amount)}</td>
+                    <td><strong>${money(s.fixedBonus)}</strong></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deletePerConnectionSale('${String(s.id).replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i> Delete</button></td>
+                </tr>
+            `).join("") : `<tr><td colspan="6"><div class="empty-state"><i class="fas fa-receipt"></i><h3>No sales yet</h3><p>Add sales from invoice/new connection or manual entry.</p></div></td></tr>`;
         }
 
+        renderEmployeePerSaleBanner();
+    };
+
+    window.renderEmployeePerSaleBanner = function(){
+        const app = document.getElementById("employeeApp");
+        if(!app || !app.classList.contains("active")) return;
+
+        const employee = window.currentEmployee || (typeof currentEmployee !== "undefined" ? currentEmployee : null);
+        if(!employee) return;
+        const empId = employee.id || employee.phone || employee.name;
+        const today = todayISO();
+        const mySales = readSales().filter(s => String(s.employeeId) === String(empId) && s.date === today);
+        const totalSale = mySales.reduce((sum,s)=>sum+Number(s.amount||0),0);
+        const totalBonus = mySales.reduce((sum,s)=>sum+Number(s.fixedBonus||0),0);
+
+        let banner = document.getElementById("employeePerSaleBanner");
+        const host = document.querySelector("#employeeDashboardTab .portal-welcome") || document.querySelector("#employeeApp .container") || app;
+        if(!banner){
+            banner = document.createElement("div");
+            banner.id = "employeePerSaleBanner";
+            banner.className = "main-card";
+            banner.style.marginBottom = "20px";
+            host.parentNode.insertBefore(banner, host.nextSibling);
+        }
+        banner.innerHTML = `
+            <div class="card-header" style="background:linear-gradient(135deg,#16a085,#27ae60);">
+                <h2><i class="fas fa-coins"></i> Today Per Sale / Connection Bonus</h2>
+            </div>
+            <div class="payroll-summary">
+                <div class="payroll-card"><h4>Today Sales / Connections</h4><div class="payroll-row net"><span class="label">Count</span><span class="value">${mySales.length}</span></div></div>
+                <div class="payroll-card"><h4>Total Sale Amount</h4><div class="payroll-row net"><span class="label">Amount</span><span class="value">${money(totalSale)}</span></div></div>
+                <div class="payroll-card"><h4>Fixed Bonus Earned</h4><div class="payroll-row net"><span class="label">Bonus</span><span class="value">${money(totalBonus)}</span></div></div>
+            </div>
+        `;
+    };
+
+    function bootPerSalePatch(){
+        ensureSalesByDropdowns();
+        ensureSalesAdminPanel();
+        hookInvoiceButtons();
+        renderPerSaleBonusPanel();
+        renderEmployeePerSaleBanner();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => setTimeout(bootPerSalePatch, 800));
+    setInterval(() => {
+        ensureSalesByDropdowns();
+        hookInvoiceButtons();
+        renderEmployeePerSaleBanner();
+    }, 3000);
+
+    window.bootPerSalePatch = bootPerSalePatch;
+})();
+</script>
+
+
+
+
+
+<script>
+/* ==================== EMPLOYEE ASSIGNED COMPLAINT SOUND + POPUP PATCH ====================
+   Works when any complaint is assigned/tagged to the logged-in employee.
+   - Sound notification
+   - Popup toast / modal style alert
+   - Prevents repeated alerts using localStorage seen list
+*/
+(function(){
+    const SEEN_KEY_PREFIX = "fire_seen_assigned_complaints_";
+    let audioUnlocked = false;
+
+    function getCurrentEmp(){
+        try{
+            if(window.currentEmployee) return window.currentEmployee;
+            if(typeof currentEmployee !== "undefined" && currentEmployee) return currentEmployee;
+            const session = JSON.parse(localStorage.getItem("currentEmployee") || localStorage.getItem("employeeSession") || "null");
+            return session;
+        }catch(e){ return null; }
+    }
+
+    function getEmpId(emp){
+        if(!emp) return "";
+        return String(emp.id || emp.phone || emp.employeeId || emp.name || "");
+    }
+
+    function getSeenKey(){
+        const emp = getCurrentEmp();
+        return SEEN_KEY_PREFIX + (getEmpId(emp) || "unknown");
+    }
+
+    function readSeen(){
+        try{return JSON.parse(localStorage.getItem(getSeenKey()) || "[]");}
+        catch(e){return [];}
+    }
+
+    function writeSeen(arr){
+        localStorage.setItem(getSeenKey(), JSON.stringify(arr || []));
+    }
+
+    function playAssignSound(){
+        try{
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = "sine";
+            o.frequency.setValueAtTime(880, ctx.currentTime);
+            o.frequency.setValueAtTime(1175, ctx.currentTime + 0.12);
+            g.gain.setValueAtTime(0.0001, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.45);
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.start();
+            o.stop(ctx.currentTime + 0.5);
+        }catch(e){}
+    }
+
+    function unlockAudio(){
+        if(audioUnlocked) return;
+        audioUnlocked = true;
+        try{
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            g.gain.value = 0.0001;
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.start();
+            o.stop(ctx.currentTime + 0.01);
+        }catch(e){}
+    }
+
+    document.addEventListener("click", unlockAudio, {once:true});
+    document.addEventListener("touchstart", unlockAudio, {once:true});
+
+    function ensureAssignPopup(){
+        let box = document.getElementById("employeeAssignPopup");
+        if(box) return box;
+        box = document.createElement("div");
+        box.id = "employeeAssignPopup";
+        box.style.cssText = `
+            position:fixed;
+            right:20px;
+            top:20px;
+            z-index:99999;
+            width:min(380px, calc(100vw - 30px));
+            background:#ffffff;
+            border-left:6px solid #e74c3c;
+            border-radius:16px;
+            box-shadow:0 18px 55px rgba(0,0,0,.25);
+            padding:18px;
+            display:none;
+            animation:assignPopupIn .25s ease;
+        `;
+        box.innerHTML = `
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+                <div style="width:44px;height:44px;border-radius:14px;background:#e74c3c;color:white;display:flex;align-items:center;justify-content:center;font-size:20px;">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <h3 style="margin:0 0 6px;color:#2c3e50;font-size:1rem;">New Complaint Assigned</h3>
+                    <div id="employeeAssignPopupText" style="color:#566573;line-height:1.45;font-size:.92rem;"></div>
+                    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+                        <button type="button" onclick="openAssignedComplaintFromPopup()" style="border:0;background:#e74c3c;color:white;border-radius:10px;padding:9px 12px;font-weight:700;cursor:pointer;">Open Tasks</button>
+                        <button type="button" onclick="closeEmployeeAssignPopup()" style="border:0;background:#ecf0f1;color:#2c3e50;border-radius:10px;padding:9px 12px;font-weight:700;cursor:pointer;">Close</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(box);
+
+        const style = document.createElement("style");
+        style.textContent = `
+            @keyframes assignPopupIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+            .assigned-complaint-pulse{animation:assignedPulse 1s ease 4}
+            @keyframes assignedPulse{0%,100%{box-shadow:0 0 0 rgba(231,76,60,0)}50%{box-shadow:0 0 0 6px rgba(231,76,60,.18)}}
+        `;
+        document.head.appendChild(style);
+        return box;
+    }
+
+    window.closeEmployeeAssignPopup = function(){
+        const box = document.getElementById("employeeAssignPopup");
+        if(box) box.style.display = "none";
+    };
+
+    window.openAssignedComplaintFromPopup = function(){
+        closeEmployeeAssignPopup();
+        try{
+            if(typeof switchEmployeeTab === "function") switchEmployeeTab("tasks");
+            const btn = Array.from(document.querySelectorAll(".nav-tab,button")).find(b => (b.textContent || "").toLowerCase().includes("task") || (b.textContent || "").toLowerCase().includes("complaint"));
+            if(btn) btn.click();
+        }catch(e){}
+    };
+
+    function showAssignPopup(complaints){
+        const first = complaints[0] || {};
+        const box = ensureAssignPopup();
+        const text = document.getElementById("employeeAssignPopupText");
+        const countText = complaints.length > 1 ? `${complaints.length} new complaints assigned to you.` : `Complaint #${first.id || "-"} assigned to you.`;
+        text.innerHTML = `
+            <strong>${countText}</strong><br>
+            ${first.complainantName || first.customerName || first.name || "Customer"} 
+            ${first.type ? " • " + first.type : ""}
+            ${first.status ? " • " + first.status : ""}
+        `;
+        box.style.display = "block";
+        box.classList.remove("assigned-complaint-pulse");
+        void box.offsetWidth;
+        box.classList.add("assigned-complaint-pulse");
+
+        if(typeof showToast === "function"){
+            showToast(countText, "info");
+        }
+        playAssignSound();
+
+        setTimeout(()=>{ if(box.style.display === "block") box.style.display = "none"; }, 12000);
+    }
+
+    function getComplaints(){
+        try{
+            if(Array.isArray(window.complaints)) return window.complaints;
+            if(typeof complaints !== "undefined" && Array.isArray(complaints)) return complaints;
+            return JSON.parse(localStorage.getItem("complaints") || "[]");
+        }catch(e){ return []; }
+    }
+
+    function isAssignedToEmployee(c, emp){
+        const empId = getEmpId(emp);
+        const phone = String(emp?.phone || "");
+        const name = String(emp?.name || "");
+        const possible = [
+            c.assignedTo,
+            c.assignedToId,
+            c.assignedEmployee,
+            c.assignedEmployeeId,
+            c.employeeId,
+            c.handlerId,
+            c.handler,
+            c.taggedEmployee,
+            c.taggedEmployeeId,
+            c.assignedToPhone,
+            c.handlerPhone,
+            c.employeePhone,
+            c.assignedToName,
+            c.handlerName,
+            c.employeeName
+        ].filter(v => v !== undefined && v !== null).map(String);
+
+        return possible.some(v => 
+            (empId && v === empId) ||
+            (phone && v === phone) ||
+            (name && v.toLowerCase() === name.toLowerCase())
+        );
+    }
+
+    function isOpenComplaint(c){
+        const status = String(c.status || "").toLowerCase();
+        return !["resolved","closed","completed","missed","overdue"].includes(status);
+    }
+
+    window.checkEmployeeAssignedComplaintNotifications = function(force){
+        const emp = getCurrentEmp();
+        const empId = getEmpId(emp);
+        if(!empId) return;
+
+        const seen = readSeen();
+        const list = getComplaints().filter(c => isAssignedToEmployee(c, emp) && isOpenComplaint(c));
+        const unseen = list.filter(c => {
+            const id = String(c.id || c.complaintId || c.ticketId || JSON.stringify(c).slice(0,50));
+            return force || !seen.includes(id);
+        });
+
+        if(unseen.length){
+            const updatedSeen = Array.from(new Set(seen.concat(unseen.map(c => String(c.id || c.complaintId || c.ticketId || JSON.stringify(c).slice(0,50))))));
+            writeSeen(updatedSeen);
+            showAssignPopup(unseen);
+        }
+    };
+
+    function hookComplaintSaveActions(){
+        document.querySelectorAll("button").forEach(btn => {
+            if(btn.dataset.assignNotifyHooked) return;
+            const text = (btn.textContent || "").toLowerCase();
+            if(!(text.includes("assign") || text.includes("complaint") || text.includes("save") || text.includes("update")) && !String(btn.getAttribute("onclick")||"").toLowerCase().includes("complaint")) return;
+            btn.dataset.assignNotifyHooked = "1";
+            btn.addEventListener("click", () => {
+                setTimeout(() => {
+                    try{ window.checkEmployeeAssignedComplaintNotifications(false); }catch(e){}
+                }, 600);
+            }, true);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
-            try { if (tab === 'mytasks' && typeof refreshEmployeeTasks === 'function') refreshEmployeeTasks(); } catch(e) {}
-            try { if (tab === 'invoice' && typeof calculateInvoiceTotals === 'function') calculateInvoiceTotals('emp'); } catch(e) {}
-            try { if (tab === 'attendance' && typeof renderEmployeeAttendance === 'function') renderEmployeeAttendance(); } catch(e) {}
-            try { if (tab === 'payroll' && typeof renderEmployeePayroll === 'function') renderEmployeePayroll(); } catch(e) {}
-            try { if (tab === 'accounts' && typeof renderEmployeeFinance === 'function') renderEmployeeFinance(); } catch(e) {}
-            try { if (tab === 'resolved' && typeof refreshEmployeeResolved === 'function') refreshEmployeeResolved(); } catch(e) {}
-            try { if (tab === 'missed') window.manualRefreshEmployeeMissed(); } catch(e) {}
-            try { if (tab === 'profile' && typeof refreshEmployeeProfile === 'function') refreshEmployeeProfile(); } catch(e) {}
-        }, 20);
+            hookComplaintSaveActions();
+            window.checkEmployeeAssignedComplaintNotifications(false);
+        }, 1200);
+    });
+
+    window.addEventListener("storage", e => {
+        if(String(e.key || "").toLowerCase().includes("complaint")){
+            setTimeout(() => window.checkEmployeeAssignedComplaintNotifications(false), 300);
+        }
+    });
+
+    setInterval(() => {
+        hookComplaintSaveActions();
+        window.checkEmployeeAssignedComplaintNotifications(false);
+    }, 5000);
+})();
+</script>
+
+
+<script>
+/* ==================== SAFE NEW CONNECTION EMPLOYEE DROPDOWN PATCH ====================
+   Fix:
+   - Do NOT show Invoice/New Connection selector on login page.
+   - Show employee dropdown only inside invoice/new-connection admin/employee tabs.
+   - When "New Connection" is selected, employee dropdown appears.
+   - When "Invoice" is selected, employee dropdown hides.
+*/
+(function(){
+    function getEmployeesSafe(){
+        try{
+            if(Array.isArray(window.employees)) return window.employees;
+            if(typeof employees !== "undefined" && Array.isArray(employees)) return employees;
+            return JSON.parse(localStorage.getItem("employees") || "[]");
+        }catch(e){ return []; }
     }
 
-    function fixedApplyEmployeePermissions(){
-        if (!window.currentUser || window.currentUser.type !== 'employee') return;
-        const permissions = { ...(window.DEFAULT_EMPLOYEE_PERMISSIONS || {}), ...(window.currentUser.permissions || {}) };
-        const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
-        const tabMap = { mytasks:0, invoice:1, attendance:2, payroll:3, accounts:4, resolved:5, missed:6, profile:7 };
-        const tabIdMap = { mytasks:'empMyTasksTab', invoice:'empInvoiceTab', attendance:'empAttendanceTab', payroll:'empPayrollTab', accounts:'empAccountsTab', resolved:'empResolvedTab', missed:'empMissedTab', profile:'empProfileTab' };
-        Object.entries(tabMap).forEach(([key,index]) => {
-            const allowed = permissions[key] !== false;
-            if (tabButtons[index]) tabButtons[index].classList.toggle('hidden', !allowed);
-            const tabEl = document.getElementById(tabIdMap[key]);
-            if (tabEl) tabEl.classList.toggle('hidden', !allowed);
+    function empLabel(e){
+        return (e.name || e.employeeName || e.phone || e.id || "Employee") + (e.role ? " - " + e.role : "");
+    }
+
+    function empId(e){
+        return e.id || e.phone || e.employeeId || e.name || "";
+    }
+
+    function buildEmployeeOptions(){
+        const list = getEmployeesSafe().filter(e => (e.status || "active") !== "inactive");
+        return '<option value="">Select Employee</option>' + list.map(e => {
+            const id = String(empId(e)).replace(/"/g, "&quot;");
+            return `<option value="${id}">${empLabel(e)}</option>`;
+        }).join("");
+    }
+
+    function removeLoginInjectedFields(){
+        const login = document.getElementById("loginScreen");
+        if(!login) return;
+        login.querySelectorAll(".safe-entry-type-wrap,.sales-by-employee-wrap").forEach(el => el.remove());
+        login.querySelectorAll("#entryType").forEach(el => {
+            const wrap = el.closest(".form-group");
+            if(wrap && (wrap.textContent || "").toLowerCase().includes("select entry type")) wrap.remove();
         });
-        const active = document.querySelector('#employeeApp .nav-tabs .nav-tab.active:not(.hidden)');
-        if (!active) {
-            const firstAllowed = Object.keys(tabMap).find(key => permissions[key] !== false);
-            if (firstAllowed) fixedSwitchEmployeeTab(firstAllowed);
-        }
     }
 
-    function install(){
-        injectUiFixStyle();
-        window.switchEmployeeTab = fixedSwitchEmployeeTab;
-        window.applyEmployeePermissions = fixedApplyEmployeePermissions;
-        const missedHeader = document.querySelector('#empMissedTab .card-header');
-        if (missedHeader && !missedHeader.querySelector('button[onclick*="manualRefreshEmployeeMissed"]')) {
-            const holder = document.createElement('div');
-            holder.className = 'missed-header-actions';
-            holder.innerHTML = '<span style="font-size:0.9rem;opacity:0.9;">These complaints reduce technical performance.</span><button type="button" class="btn btn-warning" onclick="manualRefreshEmployeeMissed(event)"><i class="fas fa-rotate"></i> Refresh</button>';
-            const existing = missedHeader.querySelector('div:not(.employee-card)');
-            if (existing) existing.replaceWith(holder); else missedHeader.appendChild(holder);
-        }
-        document.querySelectorAll('#employeeApp .tab-content:not(.active)').forEach(t => {t.style.display='none';t.style.pointerEvents='none';t.style.visibility='hidden';});
-        document.querySelectorAll('#employeeApp .tab-content.active').forEach(t => {t.style.display='block';t.style.pointerEvents='auto';t.style.visibility='visible';});
+    function findInvoiceContainers(){
+        return [
+            document.getElementById("adminInvoiceTab"),
+            document.getElementById("empInvoiceTab"),
+            document.getElementById("newConnectionTab"),
+            document.getElementById("adminNewConnectionTab"),
+            document.getElementById("employeeNewConnectionTab")
+        ].filter(Boolean);
     }
 
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
-    setTimeout(install, 500);
-    setTimeout(install, 1500);
+    function handleScopedEntryChange(container){
+        const type = container.querySelector(".safe-entry-type-select")?.value || "";
+        const boxes = container.querySelectorAll(".sales-by-employee-wrap");
+        boxes.forEach(box => {
+            box.style.display = type === "connection" ? "block" : "none";
+        });
+        container.querySelectorAll(".sales-by-employee-select").forEach(sel => {
+            sel.innerHTML = buildEmployeeOptions();
+        });
+    }
+
+    function ensureScopedControls(){
+        removeLoginInjectedFields();
+
+        findInvoiceContainers().forEach(container => {
+            const targetBox = container.querySelector(".quick-finance-form") || container.querySelector(".main-card") || container;
+            if(!targetBox) return;
+
+            let entryWrap = container.querySelector(".safe-entry-type-wrap");
+            if(!entryWrap){
+                entryWrap = document.createElement("div");
+                entryWrap.className = "form-group safe-entry-type-wrap";
+                entryWrap.innerHTML = `
+                    <label><i class="fas fa-list"></i> Entry Type</label>
+                    <select class="form-control safe-entry-type-select">
+                        <option value="invoice">Invoice</option>
+                        <option value="connection">New Connection</option>
+                    </select>
+                `;
+                targetBox.prepend(entryWrap);
+                entryWrap.querySelector("select").addEventListener("change", () => handleScopedEntryChange(container));
+            }
+
+            let salesWrap = container.querySelector(".sales-by-employee-wrap");
+            if(!salesWrap){
+                salesWrap = document.createElement("div");
+                salesWrap.className = "form-group sales-by-employee-wrap";
+                salesWrap.style.display = "none";
+                salesWrap.innerHTML = `
+                    <label><i class="fas fa-user-tie"></i> Sales By Employee</label>
+                    <select class="form-control sales-by-employee-select">
+                        ${buildEmployeeOptions()}
+                    </select>
+                    <small style="color:#7f8c8d;display:block;margin-top:6px;">
+                        Required only for New Connection. This employee will get fixed bonus per connection.
+                    </small>
+                `;
+                entryWrap.insertAdjacentElement("afterend", salesWrap);
+            }else{
+                const sel = salesWrap.querySelector(".sales-by-employee-select");
+                if(sel) sel.innerHTML = buildEmployeeOptions();
+            }
+
+            handleScopedEntryChange(container);
+        });
+    }
+
+    window.refreshConnectionEmployeeDropdowns = ensureScopedControls;
+
+    document.addEventListener("DOMContentLoaded", () => setTimeout(ensureScopedControls, 700));
+    setInterval(ensureScopedControls, 3000);
 })();
 </script>
 
