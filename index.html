@@ -392,7 +392,7 @@ const firebaseConfig={apiKey:'AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E',authDomai
 let S,U,TAB='dashboard',draft=[],db=null,fbReady=false,fbLoading=false,unsubs=[];
 let financeDate=today(), financeAll=true, financeEmp='all', complaintDate=today(), complaintAll=false;
 
-function def(){return{admin:{u:'admin',p:'admin123',recovery:'1122'},employees:[{id:'e1',name:'Ali',phone:'ali',mobile:'03001234561',pin:'1234',role:'Collection',active:true,per:{complaints:1,attendance:1,invoice:1,finance:1,targets:1,advance:1}},{id:'e2',name:'Usman',phone:'usman',mobile:'03001234562',pin:'1234',role:'Technician',active:true,per:{complaints:1,attendance:1,invoice:1,finance:0,targets:1,advance:1}}],complaints:[],finance:[],invoices:[],targets:[],attendance:[],clients:[],advances:[],news:{text:'Welcome to Fire.net.pk employee portal. Complete your tasks on time.',active:true},notificationSettings:{sound:true,toast:true,bell:true},notifications:[],
+function def(){return{admin:{u:'admin',p:'admin123',recovery:'1122'},employees:[{id:'e1',name:'Ali',phone:'ali',mobile:'03001234561',pin:'1234',role:'Collection',active:true,per:{complaints:1,attendance:1,invoice:1,finance:1,targets:1,advance:1}},{id:'e2',name:'Usman',phone:'usman',mobile:'03001234562',pin:'1234',role:'Technician',active:true,per:{complaints:1,attendance:1,invoice:1,finance:0,targets:1,advance:1}}],complaints:[],finance:[],invoices:[],targets:[],attendance:[],clients:[],advances:[],news:{text:'Welcome to Fire.net.pk employee portal. Complete your tasks on time.',active:true},clientNews:{text:'Welcome to Fire.net.pk client portal. Pay your bill on time to avoid interruption.',active:true},notificationSettings:{sound:true,toast:true,bell:true},notifications:[],appSettings:{companyName:'Fire.net.pk',supportWhatsApp:'03001234561',billingWhatsApp:'03001234561',adminWhatsApp:'03001234561',currency:'Rs.',invoiceFooter:'Thank you for choosing Fire.net.pk',clientSupportText:'For support, contact Fire.net.pk WhatsApp support.',defaultDueDay:'10',officeAddress:'',portalNote:'Pay your bill on time to avoid service interruption.'},
 items:[
  {id:'it1',name:'ONU Router',category:'Device',purchase:4000,sale:5000,stock:10,notes:'Default device'},
  {id:'it2',name:'Fiber Wire Per Meter',category:'Wire',purchase:25,sale:40,stock:1000,notes:'Default wire'}
@@ -416,12 +416,44 @@ function sanitizeState(){
  S.advances=Array.isArray(S.advances)?S.advances:[];
  S.items=Array.isArray(S.items)?S.items:D.items;
  S.packages=Array.isArray(S.packages)?S.packages:D.packages;
- S.news=S.news||D.news;S.notificationSettings=S.notificationSettings||D.notificationSettings;S.notifications=Array.isArray(S.notifications)?S.notifications:[];
+ S.news=S.news||D.news;S.appSettings=S.appSettings||D.appSettings;S.ownerWhatsApp=S.ownerWhatsApp||S.appSettings?.supportWhatsApp||D.ownerWhatsApp||'03001234561';S.clientNews=S.clientNews||D.clientNews;S.notificationSettings=S.notificationSettings||D.notificationSettings;S.notifications=Array.isArray(S.notifications)?S.notifications:[];
  S.employees.forEach(e=>{e.per=e.per||{complaints:1,attendance:1,invoice:1,finance:1,advance:1,targets:1};e.active=e.active!==false;});
  S.targets.forEach(t=>{t.targetType=t.targetType||'collection';t.date=t.date||today();t.closed=!!t.closed;t.inactive=!!t.inactive;});
 }
-function load(){try{S=JSON.parse(localStorage.getItem(KEY)||'null')||def()}catch(e){S=def()}sanitizeState();saveLocal()}
-function saveLocal(){localStorage.setItem(KEY,JSON.stringify(S))}
+function load(){
+ try{
+   S=JSON.parse(localStorage.getItem(KEY)||'null')||def();
+ }catch(e){
+   try{localStorage.removeItem(KEY)}catch(_){}
+   S=def();
+ }
+ try{
+   sanitizeState();
+ }catch(e){
+   console.warn('sanitize failed',e);
+   S=def();
+   sanitizeState();
+ }
+ saveLocal();
+}
+function saveLocal(){
+ try{
+   if(!S)return;
+   const small={...S};
+   small.clients=(S.clients||[]).slice(-80);
+   small.finance=(S.finance||[]).slice(-120);
+   small.invoices=(S.invoices||[]).slice(-120);
+   small.complaints=(S.complaints||[]).slice(-120);
+   small.notifications=(S.notifications||[]).slice(-80);
+   small.attendance=(S.attendance||[]).slice(-120);
+   small.targets=(S.targets||[]).slice(-120);
+   small.advances=(S.advances||[]).slice(-120);
+   localStorage.setItem(KEY,JSON.stringify(small));
+ }catch(e){
+   console.warn('Local cache save skipped',e);
+   try{localStorage.setItem(KEY,JSON.stringify({admin:S.admin,employees:S.employees||[],items:S.items||[],packages:S.packages||[],news:S.news,notificationSettings:S.notificationSettings,session:S.session,clients:[],finance:[],invoices:[],complaints:[],targets:[],attendance:[],advances:[],notifications:[]}))}catch(_){}
+ }
+}
 function setSync(t,ok){const el=document.getElementById('syncStatus');if(el){el.textContent=t;el.style.color=ok?'#166534':t.includes('failed')||t.includes('error')?'#dc2626':'#475569'}}
 function id(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function today(){return new Date().toISOString().slice(0,10)}
@@ -450,7 +482,7 @@ async function loadFirebase(){
  if(!db)return; fbLoading=true; setSync('Firebase: loading');
  try{
    const settings=await db.collection('settings').doc('main').get();
-   if(settings.exists){if(settings.data().admin)S.admin=settings.data().admin;if(settings.data().news)S.news=settings.data().news;if(settings.data().notificationSettings)S.notificationSettings=settings.data().notificationSettings;}
+   if(settings.exists){if(settings.data().admin)S.admin=settings.data().admin;if(settings.data().news)S.news=settings.data().news;if(settings.data().clientNews)S.clientNews=settings.data().clientNews;if(settings.data().notificationSettings)S.notificationSettings=settings.data().notificationSettings;if(settings.data().ownerWhatsApp)S.ownerWhatsApp=settings.data().ownerWhatsApp;if(settings.data().appSettings)S.appSettings=settings.data().appSettings;}
    const [employees,complaints,clients,finance,invoices,targets,attendance,items,packages,advances,notifications]=await Promise.all(['employees','complaints','clients','finance','invoices','targets','attendance','items','packages','advances','notifications'].map(loadCol));
    if(employees.length)S.employees=employees;
    S.complaints=complaints;S.clients=clients;S.finance=finance;S.invoices=invoices;S.targets=targets;S.attendance=attendance;if(items.length)S.items=items;if(packages.length)S.packages=packages;if(advances.length)S.advances=advances;if(notifications.length)S.notifications=notifications;
@@ -471,12 +503,12 @@ function startRealtime(){
 }
 async function fbSet(col,obj){if(!fbReady||fbLoading||!obj?.id)return;try{await db.collection(col).doc(obj.id).set(JSON.parse(JSON.stringify(obj)),{merge:true});setSync('Firebase: synced',true)}catch(e){console.error(e);toast('Firebase write failed','error');setSync('Firebase write failed',false)}}
 async function fbDel(col,i){if(!fbReady||!i)return;try{await db.collection(col).doc(i).delete();setSync('Firebase: deleted',true)}catch(e){toast('Firebase delete failed','error')}}
-async function fbSettings(){if(!fbReady)return;try{await db.collection('settings').doc('main').set({admin:S.admin,news:S.news,notificationSettings:S.notificationSettings},{merge:true})}catch(e){}}
+async function fbSettings(){if(!fbReady)return;try{await db.collection('settings').doc('main').set({admin:S.admin,news:S.news,clientNews:S.clientNews,notificationSettings:S.notificationSettings,ownerWhatsApp:S.ownerWhatsApp,appSettings:S.appSettings},{merge:true})}catch(e){}}
 function saveAndSync(col,obj){saveLocal();if(col&&obj)fbSet(col,obj)}
 function delAndSync(col,idv){saveLocal();if(col&&idv)fbDel(col,idv)}
 
 function loginUser(){let u=lu.value.trim(),p=lp.value.trim();if(!u||!p)return toast('Enter username and password','error');if(u.toLowerCase()===S.admin.u&&p===S.admin.p){U={role:'admin',id:'admin',name:'Administrator'};S.session=U;saveLocal();return openApp()}let e=S.employees.find(x=>x.active&&(String(x.phone).toLowerCase()===u.toLowerCase()||String(x.name).toLowerCase()===u.toLowerCase()||String(x.mobile||'')===pkMobile(u)||String(x.mobile||'')===u)&&x.pin===p);if(e){U={role:'employee',...e};S.session=U;saveLocal();return openApp()}
-let c=(S.clients||[]).find(x=>x.active!==false&&(String(x.mobile||'')===pkMobile(u)||String(x.username||'').toLowerCase()===u.toLowerCase()||String(x.pppoe||'').toLowerCase()===u.toLowerCase())&&String(x.pin||'1234')===p);
+let c=(S.clients||[]).find(x=>x.active!==false&&(String(x.mobile||'')===pkMobile(u)||String(x.username||'').toLowerCase()===u.toLowerCase()||String(x.pppoe||'').toLowerCase()===u.toLowerCase())&&String(x.ccode||x.pin||'1234')===p);
 if(c){U={role:'client',id:c.id,name:c.name,clientId:c.id,mobile:c.mobile};S.session=U;saveLocal();return openApp()}
 toast('Invalid login','error')}
 
@@ -555,17 +587,17 @@ function openApp(){sanitizeState();if(!U||!U.role){S.session=null;saveLocal();re
 function logout(){S.session=null;saveLocal();location.reload()}function toggleMenu(){pm.classList.toggle('active')}function openPwd(){pwdModal.classList.add('active');pm.classList.remove('active')}function closePwd(){pwdModal.classList.remove('active')}
 function savePwd(){let v=newPwd.value.trim();if(v.length<3)return toast('Minimum 3 characters','error');if(U.role==='admin'){S.admin.p=v;fbSettings()}else{let e=S.employees.find(x=>x.id===U.id);if(e){e.pin=v;fbSet('employees',e)}U.pin=v;S.session=U}saveLocal();newPwd.value='';closePwd();toast('Password changed','success')}
 function items(){
- let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['clients','Clients','🌐'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['backup','Backup','💾']];
+ let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['clients','Clients','🌐'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['settings','Settings','⚙️'],['backup','Backup','💾']];
  if(U.role==='client')return [['dashboard','My Portal','🏠'],['complaints','Support','🛠️']];
  return U.role==='admin'?a:a.filter(x=>x[0]==='dashboard'||can(x[0]));
 }
-function navRender(){nav.innerHTML=items().map(x=>`<button id="n-${x[0]}" onclick="tab('${x[0]}')">${x[2]} ${x[1]}</button>`).join('')}
+function navRender(){nav.innerHTML=items().map(x=>`<button id="n-${x[0]}" onclick="${x[0]==='news'?'openNewsPage()':`tab('${x[0]}')`}">${x[2]} ${x[1]}</button>`).join('')}
 function toggleSideMenu(){document.getElementById('sidePanel')?.classList.toggle('open')}
 function tab(x){if(!items().some(i=>i[0]===x))x='dashboard';TAB=x;document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-'+x);if(n)n.classList.add('active');document.getElementById('sidePanel')?.classList.remove('open');renderCurrent()}
 function renderCurrent(){
  try{
   sanitizeState();
-  const map={dashboard:dash,complaints,clients:clientsPage,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:(typeof newsPage==='function'?newsPage:dash),backup};
+  const map={dashboard:dash,complaints,clients:clientsPage,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:openNewsPage,settings:openSettingsPage,backup};
   (map[TAB]||dash)();
   setTimeout(()=>{if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker();if(typeof setupTableEnhancer==='function')setupTableEnhancer();if(typeof enhanceAllTables==='function')enhanceAllTables();},50);
  }catch(err){
@@ -593,7 +625,12 @@ function stats(){
 }
 
 function newsTickerHtml(){
- const msg=(S.news&&S.news.active&&S.news.text)?S.news.text:'Welcome to Fire.net.pk portal.';
+ let msg='';
+ if(U&&U.role==='client'){
+   msg=(S.clientNews&&S.clientNews.active&&S.clientNews.text)?S.clientNews.text:'Welcome to Fire.net.pk client portal.';
+ }else{
+   msg=(S.news&&S.news.active&&S.news.text)?S.news.text:'Welcome to Fire.net.pk portal.';
+ }
  const n=`📢 ${esc(msg)}`;
  return `<div class="force-news-bar"><div class="force-news-track"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
 }
@@ -604,7 +641,12 @@ function renderGlobalNewsTicker(){
 
 
 function stableNewsTickerHtml(){
- const msg=(S.news&&S.news.active&&S.news.text)?S.news.text:'Welcome to Fire.net.pk portal.';
+ let msg='';
+ if(U&&U.role==='client'){
+   msg=(S.clientNews&&S.clientNews.active&&S.clientNews.text)?S.clientNews.text:'Welcome to Fire.net.pk client portal.';
+ }else{
+   msg=(S.news&&S.news.active&&S.news.text)?S.news.text:'Welcome to Fire.net.pk portal.';
+ }
  const n=`📢 ${esc(msg)}`;
  return `<div class="stable-news-bar"><div class="stable-news-track"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
 }
@@ -684,6 +726,8 @@ function dash(){
     <div class="stable-quick-card" onclick="tab('invoice')"><div class="q">🧾</div><b>Create Invoice</b><small>New connection and due</small></div>
     <div class="stable-quick-card" onclick="tab('finance')"><div class="q">💰</div><b>Finance</b><small>Recovery and expenses</small></div>
     <div class="stable-quick-card" onclick="tab('targets')"><div class="q">🎯</div><b>Targets</b><small>Sales and collection</small></div>
+    <div class="stable-quick-card" onclick="openSettingsPage()"><div class="q">⚙️</div><b>Settings</b><small>WhatsApp and company settings</small></div>
+    <div class="stable-quick-card" onclick="openNewsPage()"><div class="q">📢</div><b>News</b><small>Ticker and notifications</small></div>
    </div>
 
    <div class="stable-section"><h2>Today Overview</h2><div class="line"></div></div>
@@ -808,7 +852,7 @@ function clientDue(cid){
  return invoiceDue+manualDue;
 }
 function clientTickerHtml(){
- const msg=(S.clientNews&&S.clientNews.active&&S.clientNews.text)?S.clientNews.text:(S.news&&S.news.active&&S.news.text?S.news.text:'Welcome to Fire.net.pk client portal.');
+ const msg=(S.clientNews&&S.clientNews.active&&S.clientNews.text)?S.clientNews.text:'Welcome to Fire.net.pk client portal.';
  const n=`📢 ${esc(msg)}`;
  return `<div class="stable-news-bar"><div class="stable-news-track"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
 }
@@ -851,7 +895,7 @@ function saveClientComplaint(){
 function clientWhatsAppSupport(){
  const c=currentClient();if(!c)return;
  const msg=`*Fire.net.pk Client Support*%0AName: ${encodeURIComponent(c.name)}%0AMobile: ${encodeURIComponent(c.mobile)}%0APPPoE: ${encodeURIComponent(c.pppoe||'-')}%0AI need support.`;
- window.open('https://wa.me/'+waNumber(S.ownerWhatsApp||'03001234561')+'?text='+msg,'_blank');
+ window.open('https://wa.me/'+waNumber(supportNumber())+'?text='+msg,'_blank');
 }
 function clientPaymentInfo(){
  const c=currentClient();if(!c)return;
@@ -1296,7 +1340,7 @@ function addAdvance(){
  const emp=U.role==='admin'?adEmp.value:U.id, type=adType.value, amount=+adAmount.value||0;
  if(amount<=0)return toast('Amount required','error');
  let rec={id:id('adv'),emp,type,amount,reason:adReason.value.trim(),date:adDate.value,time:now(),by:key(),byName:U.name};
- S.advances=S.advances||[];S.news=S.news||D.news;S.notificationSettings=S.notificationSettings||D.notificationSettings;S.notifications=Array.isArray(S.notifications)?S.notifications:[];S.advances.push(rec);saveAndSync('advances',rec);
+ S.advances=S.advances||[];S.news=S.news||D.news;S.appSettings=S.appSettings||D.appSettings;S.ownerWhatsApp=S.ownerWhatsApp||S.appSettings?.supportWhatsApp||D.ownerWhatsApp||'03001234561';S.clientNews=S.clientNews||D.clientNews;S.notificationSettings=S.notificationSettings||D.notificationSettings;S.notifications=Array.isArray(S.notifications)?S.notifications:[];S.advances.push(rec);saveAndSync('advances',rec);
  // finance auto link
  let f={id:id('fin'),type:type==='given'?'expense':'income',mode:'cash',cat:type==='given'?'Employee Advance':type==='return'?'Advance Return':'Advance Adjustment',amount,customer:empName(emp),paidBy:empName(emp),payer:empName(emp),receiver:U.name,online:'',phone:empPhone(emp),notes:'Auto from employee advance: '+(rec.reason||'-'),date:rec.date,time:now(),by:key(),byName:U.name};
  S.finance.push(f);fbSet('finance',f);saveLocal();
@@ -1547,7 +1591,28 @@ function targetValueDisplay(t,v){
 }
 function targetTable(){closeOldDailyTargets();let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Employee</th><th>Date</th><th>Type</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Status</th><th>Reward Rule</th><th>Reward Earned</th><th>Action</th></tr></thead><tbody>${r.slice().reverse().map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));let action='-';if(U.role==='admin'){action=t.inactive?`<div class="actions"><button class="btn btn-s btn-sm" onclick="activateTarget('${t.id}')">Active</button><button class="btn btn-e btn-sm" onclick="deleteTarget('${t.id}')">Delete</button></div>`:`<div class="actions"><button class="btn btn-w btn-sm" onclick="inactiveTarget('${t.id}')">Inactive</button><button class="btn btn-e btn-sm" onclick="deleteTarget('${t.id}')">Delete</button></div>`;}return`<tr><td>${empName(t.emp)}</td><td>${t.date}</td><td>${(t.targetType||'collection').toUpperCase()}</td><td>${targetValueDisplay(t,t.target)}</td><td>${targetValueDisplay(t,t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td>${targetStatusBadge(t)}</td><td>${t.rewardType==='percentage'?(+t.rewardValue||0)+'%':money(t.rewardValue)} - ${esc(t.reward)}</td><td>${money(rewardEarned(t))}</td><td>${action}</td></tr>`}).join('')}</tbody></table></div>`}
 
-function backup(){content.innerHTML=`<div class="card"><div class="head"><h2>Backup & Restore</h2></div><div class="actions"><button class="btn btn-s" onclick="syncAll()">Sync All to Firebase</button><button class="btn btn-i" onclick="loadFirebase()">Fetch Firebase</button><button class="btn btn-s" onclick="downloadBackup()">Download Backup</button><button class="btn btn-i" onclick="restoreFile.click()">Restore Backup</button><button class="btn btn-e" onclick="clearAll()">Clear All</button></div><input class="hidden" type="file" id="restoreFile" accept=".json" onchange="restoreBackup(event)"></div>
+function clearLocalCacheOnly(){try{localStorage.removeItem(KEY)}catch(e){} toast('Local cache cleared'); setTimeout(()=>location.reload(),500)}
+
+function newsPage(){
+ if(U.role!=='admin')return dash();
+ content.innerHTML=`<div class="card">
+  <div class="head"><h2>News / Ticker</h2></div>
+  <div class="fg"><label>News Text</label><textarea id="newsText">${esc(S.news?.text||'')}</textarea></div>
+  <label style="font-weight:900"><input type="checkbox" id="newsActive" ${S.news?.active?'checked':''}> Active / show ticker</label><br>
+  <label style="font-weight:900"><input type="checkbox" id="newsNotify" checked> Send notification to employees</label><br><br>
+  <button class="btn btn-p" onclick="saveNews()">Save News</button>
+ </div>`;
+}
+function saveNews(){
+ S.news={text:newsText.value.trim(),active:newsActive.checked};
+ saveLocal();fbSettings();
+ if(newsNotify?.checked && S.news.text && typeof notifyEmployeeNews==='function')notifyEmployeeNews();
+ if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker();
+ toast('News saved','success');
+ newsPage();
+}
+
+function backup(){content.innerHTML=`<div class="card"><div class="head"><h2>Backup & Restore</h2></div><div class="actions"><button class="btn btn-s" onclick="syncAll()">Sync All to Firebase</button><button class="btn btn-i" onclick="loadFirebase()">Fetch Firebase</button><button class="btn btn-s" onclick="downloadBackup()">Download Backup</button><button class="btn btn-i" onclick="restoreFile.click()">Restore Backup</button><button class="btn btn-w" onclick="clearLocalCacheOnly()">Clear Local Cache</button><button class="btn btn-e" onclick="clearAll()">Clear All</button></div><input class="hidden" type="file" id="restoreFile" accept=".json" onchange="restoreBackup(event)"></div>
  <div class="card"><div class="head"><h2>Admin Security</h2></div><div class="row two"><div class="fg"><label>Admin Recovery Code</label><input id="recoveryCodeInput" value="${esc(S.admin.recovery||'1122')}"></div><div class="fg"><label>&nbsp;</label><button class="btn btn-p" onclick="saveRecoveryCode()">Save Recovery Code</button></div></div><p style="color:#64748b;font-weight:800">Use this code only for admin forgot-password reset.</p></div>`}
 async function syncAll(){for(const e of S.employees)await fbSet('employees',e);for(const e of S.complaints)await fbSet('complaints',e);for(const e of (S.clients||[]))await fbSet('clients',e);for(const e of S.finance)await fbSet('finance',e);for(const e of S.invoices)await fbSet('invoices',e);for(const e of S.targets)await fbSet('targets',e);for(const e of S.attendance)await fbSet('attendance',e);for(const e of (S.items||[]))await fbSet('items',e);for(const e of (S.packages||[]))await fbSet('packages',e);for(const e of (S.advances||[]))await fbSet('advances',e);for(const e of (S.notifications||[]))await fbSet('notifications',e);await fbSettings();toast('Sync complete','success')}
 
@@ -1623,7 +1688,558 @@ function setupTableEnhancer(){
  setTimeout(enhanceAllTables,80);
 }
 
-load();window.addEventListener('load',()=>{clock();setupTableEnhancer();initFirebase();if(S.session){U=S.session;openApp()}else{setTimeout(setupTableEnhancer,100)}});
+load();window.addEventListener('load',()=>{
+ clock();setupTableEnhancer();initFirebase();
+ const btn=document.querySelector('#loginScreen button.btn-p');
+ if(btn)btn.onclick=loginUser;
+ const pass=document.getElementById('lp');
+ if(pass)pass.addEventListener('keydown',e=>{if(e.key==='Enter')loginUser()});
+ if(S.session&&S.session.role){U=S.session;openApp()}else{S.session=null;saveLocal();setTimeout(setupTableEnhancer,100)}
+});
+
+
+/* any button with text News */
+
+window.addEventListener('click',function(ev){
+  const b=ev.target.closest && ev.target.closest('button');
+  if(b && (b.textContent||'').includes('News')){
+    ev.preventDefault();
+    openNewsPage();
+  }
+},true);
+
+
+
+/* ===== ROBUST NEWS BUTTON FIX WITH CLIENT NEWS ===== */
+function openNewsPage(){
+  try{
+    TAB='news';
+    return renderNewsPageDirect();
+  }catch(e){
+    console.error('openNewsPage error',e);
+    const c=document.getElementById('content');
+    if(c)c.innerHTML='<div class="card"><div class="head"><h2>News Error</h2></div><p style="color:#dc2626;font-weight:900">'+(e.message||e)+'</p></div>';
+  }
+}
+function renderNewsPageDirect(){
+  const c=document.getElementById('content');
+  if(!c)return;
+  S.news=S.news||{text:'',active:true};
+  S.clientNews=S.clientNews||{text:'',active:true};
+  c.innerHTML=`<div class="card">
+    <div class="head"><h2>📢 Employee/Admin News Ticker</h2></div>
+    <div class="fg"><label>Employee/Admin News Text</label><textarea id="newsText">${esc(S.news?.text||'')}</textarea></div>
+    <label style="font-weight:900"><input type="checkbox" id="newsActive" ${S.news?.active?'checked':''}> Active / show employee ticker</label><br>
+    <label style="font-weight:900"><input type="checkbox" id="newsNotify" checked> Send notification to employees</label><br><br>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveNewsDirect()">Save Employee News</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="head"><h2>🌐 Client Portal News Ticker</h2></div>
+    <div class="fg"><label>Client Portal News Text</label><textarea id="clientNewsText" placeholder="Example: Bill due date is 10th. Please pay on time.">${esc(S.clientNews?.text||'')}</textarea></div>
+    <label style="font-weight:900"><input type="checkbox" id="clientNewsActive" ${S.clientNews?.active?'checked':''}> Active / show on client portal ticker</label><br>
+    <label style="font-weight:900"><input type="checkbox" id="clientNewsNotify"> Send notification to active clients</label><br><br>
+    <div class="actions">
+      <button class="btn btn-s" onclick="saveClientNewsDirect()">Save Client News</button>
+      <button class="btn btn-l" onclick="dash()">Back Dashboard</button>
+    </div>
+    <p style="color:#64748b;font-weight:800;margin-top:10px">Client login ke baad yahi news ticker client portal dashboard ke top par chalegi.</p>
+  </div>`;
+}
+function newsPage(){ return renderNewsPageDirect(); }
+
+function saveNewsDirect(){
+  try{
+    S.news={text:(document.getElementById('newsText')?.value||'').trim(),active:document.getElementById('newsActive')?.checked!==false};
+    saveLocal();
+    if(typeof fbSettings==='function')fbSettings();
+    if(document.getElementById('newsNotify')?.checked && S.news.text){
+      if(typeof notifyEmployeeNews==='function') notifyEmployeeNews();
+      else if(typeof addNotification==='function') (S.employees||[]).forEach(e=>addNotification('New Announcement',S.news.text,e.id,false));
+    }
+    if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker();
+    if(typeof toast==='function')toast('Employee news saved','success'); else alert('Employee news saved');
+    renderNewsPageDirect();
+  }catch(e){
+    alert('News save error: '+(e.message||e));
+  }
+}
+function saveClientNewsDirect(){
+  try{
+    S.clientNews={text:(document.getElementById('clientNewsText')?.value||'').trim(),active:document.getElementById('clientNewsActive')?.checked!==false};
+    saveLocal();
+    if(typeof fbSettings==='function')fbSettings();
+    if(document.getElementById('clientNewsNotify')?.checked && S.clientNews.text){
+      notifyClientNewsDirect();
+    }
+    if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker();
+    if(typeof toast==='function')toast('Client news saved','success'); else alert('Client news saved');
+    renderNewsPageDirect();
+  }catch(e){
+    alert('Client news save error: '+(e.message||e));
+  }
+}
+function notifyClientNewsDirect(){
+  if(typeof addNotification!=='function')return;
+  (S.clients||[]).filter(c=>c.active!==false).forEach(c=>{
+    addNotification('Client Announcement',S.clientNews.text,c.id,false);
+  });
+}
+function saveNews(){ return saveNewsDirect(); }
+function saveClientNews(){ return saveClientNewsDirect(); }
+
+
+
+/* ===== ADMIN SETTINGS PANEL FIX ===== */
+function settings(){
+ if(U && U.role!=='admin')return dash();
+ S.appSettings=S.appSettings||{};
+ const A=S.appSettings;
+ content.innerHTML=`<div class="card">
+  <div class="head"><h2>⚙️ Admin Settings</h2></div>
+  <div class="row">
+   <div class="fg"><label>Company Name</label><input id="setCompanyName" value="${esc(A.companyName||'Fire.net.pk')}"></div>
+   <div class="fg"><label>Currency Prefix</label><input id="setCurrency" value="${esc(A.currency||'Rs.')}"></div>
+   <div class="fg"><label>Default Bill Due Day</label><input id="setDueDay" type="number" min="1" max="31" value="${esc(A.defaultDueDay||'10')}"></div>
+  </div>
+  <div class="row">
+   <div class="fg"><label>Support WhatsApp Number</label><input id="setSupportWA" value="${esc(A.supportWhatsApp||S.ownerWhatsApp||'03001234561')}" placeholder="03001234561"></div>
+   <div class="fg"><label>Billing WhatsApp Number</label><input id="setBillingWA" value="${esc(A.billingWhatsApp||A.supportWhatsApp||S.ownerWhatsApp||'03001234561')}" placeholder="03001234561"></div>
+   <div class="fg"><label>Admin WhatsApp Number</label><input id="setAdminWA" value="${esc(A.adminWhatsApp||A.supportWhatsApp||S.ownerWhatsApp||'03001234561')}" placeholder="03001234561"></div>
+  </div>
+  <div class="row two">
+   <div class="fg"><label>Office Address</label><input id="setOfficeAddress" value="${esc(A.officeAddress||'')}" placeholder="Office address"></div>
+   <div class="fg"><label>Client Portal Note</label><input id="setPortalNote" value="${esc(A.portalNote||'Pay your bill on time to avoid service interruption.')}" placeholder="Client portal note"></div>
+  </div>
+  <div class="fg"><label>Invoice Footer Text</label><textarea id="setInvoiceFooter">${esc(A.invoiceFooter||'Thank you for choosing Fire.net.pk')}</textarea></div>
+  <div class="fg"><label>Client Support Message Text</label><textarea id="setClientSupportText">${esc(A.clientSupportText||'For support, contact Fire.net.pk WhatsApp support.')}</textarea></div>
+  <div class="actions">
+   <button class="btn btn-p" onclick="saveAdminSettings()">Save Settings</button>
+   <button class="btn btn-l" onclick="dash()">Back Dashboard</button>
+  </div>
+ </div>
+ <div class="card">
+  <div class="head"><h2>Current Settings Preview</h2></div>
+  <div class="summary">
+   <div class="sum">Support WA<b>${esc(A.supportWhatsApp||S.ownerWhatsApp||'-')}</b></div>
+   <div class="sum">Billing WA<b>${esc(A.billingWhatsApp||'-')}</b></div>
+   <div class="sum">Admin WA<b>${esc(A.adminWhatsApp||'-')}</b></div>
+   <div class="sum">Due Day<b>${esc(A.defaultDueDay||'10')}</b></div>
+  </div>
+ </div>`;
+}
+function saveAdminSettings(){
+ const support=pkMobile(document.getElementById('setSupportWA')?.value||'');
+ const billing=pkMobile(document.getElementById('setBillingWA')?.value||'');
+ const admin=pkMobile(document.getElementById('setAdminWA')?.value||'');
+ if(!validPk(support))return toast('Support WhatsApp format use karein: 03001234561','error');
+ if(billing && !validPk(billing))return toast('Billing WhatsApp format use karein: 03001234561','error');
+ if(admin && !validPk(admin))return toast('Admin WhatsApp format use karein: 03001234561','error');
+ S.appSettings={
+  companyName:document.getElementById('setCompanyName')?.value.trim()||'Fire.net.pk',
+  currency:document.getElementById('setCurrency')?.value.trim()||'Rs.',
+  defaultDueDay:document.getElementById('setDueDay')?.value||'10',
+  supportWhatsApp:support,
+  billingWhatsApp:billing||support,
+  adminWhatsApp:admin||support,
+  officeAddress:document.getElementById('setOfficeAddress')?.value.trim()||'',
+  portalNote:document.getElementById('setPortalNote')?.value.trim()||'',
+  invoiceFooter:document.getElementById('setInvoiceFooter')?.value.trim()||'',
+  clientSupportText:document.getElementById('setClientSupportText')?.value.trim()||''
+ };
+ S.ownerWhatsApp=S.appSettings.supportWhatsApp;
+ saveLocal();
+ if(typeof fbSettings==='function')fbSettings();
+ toast('Admin settings saved','success');
+ settings();
+}
+function supportNumber(){return (S.appSettings&&S.appSettings.supportWhatsApp)||S.ownerWhatsApp||'03001234561'}
+function billingNumber(){return (S.appSettings&&S.appSettings.billingWhatsApp)||supportNumber()}
+function adminNumber(){return (S.appSettings&&S.appSettings.adminWhatsApp)||supportNumber()}
+
+
+
+/* ===== FINAL NEWS + SETTINGS WORKING PATCH ===== */
+function ensureExtraDefaults(){
+  try{
+    const D = (typeof def==='function') ? def() : {};
+    S = S || D || {};
+    S.news = S.news || {text:'Welcome to Fire.net.pk employee portal.', active:true};
+    S.clientNews = S.clientNews || {text:'Welcome to Fire.net.pk client portal.', active:true};
+    S.appSettings = S.appSettings || {
+      companyName:'Fire.net.pk',
+      supportWhatsApp:S.ownerWhatsApp||'03001234561',
+      billingWhatsApp:S.ownerWhatsApp||'03001234561',
+      adminWhatsApp:S.ownerWhatsApp||'03001234561',
+      currency:'Rs.',
+      invoiceFooter:'Thank you for choosing Fire.net.pk',
+      clientSupportText:'For support, contact Fire.net.pk WhatsApp support.',
+      defaultDueDay:'10',
+      officeAddress:'',
+      portalNote:'Pay your bill on time to avoid service interruption.'
+    };
+    S.ownerWhatsApp = S.ownerWhatsApp || S.appSettings.supportWhatsApp || '03001234561';
+    S.notifications = Array.isArray(S.notifications) ? S.notifications : [];
+    S.employees = Array.isArray(S.employees) ? S.employees : [];
+    S.clients = Array.isArray(S.clients) ? S.clients : [];
+  }catch(e){ console.warn('ensure defaults failed',e); }
+}
+
+function saveSettingsToFirebase(){
+  try{
+    if(typeof fbSettings==='function') fbSettings();
+    else if(typeof db!=='undefined' && db) db.collection('settings').doc('main').set({
+      admin:S.admin, news:S.news, clientNews:S.clientNews,
+      notificationSettings:S.notificationSettings,
+      ownerWhatsApp:S.ownerWhatsApp, appSettings:S.appSettings
+    },{merge:true});
+  }catch(e){ console.warn('settings firebase save failed',e); }
+}
+
+function openNewsPage(){
+  ensureExtraDefaults();
+  TAB='news';
+  const c=document.getElementById('content');
+  if(!c)return;
+  c.innerHTML=`<div class="card">
+    <div class="head"><h2>📢 Employee/Admin News Ticker</h2></div>
+    <div class="fg"><label>Employee/Admin News Text</label><textarea id="newsText">${esc(S.news?.text||'')}</textarea></div>
+    <label style="font-weight:900"><input type="checkbox" id="newsActive" ${S.news?.active?'checked':''}> Active / show employee ticker</label><br>
+    <label style="font-weight:900"><input type="checkbox" id="newsNotify" checked> Send notification to employees</label><br><br>
+    <div class="actions"><button class="btn btn-p" onclick="saveNewsFinal()">Save Employee News</button></div>
+  </div>
+  <div class="card">
+    <div class="head"><h2>🌐 Client Portal News Ticker</h2></div>
+    <div class="fg"><label>Client Portal News Text</label><textarea id="clientNewsText">${esc(S.clientNews?.text||'')}</textarea></div>
+    <label style="font-weight:900"><input type="checkbox" id="clientNewsActive" ${S.clientNews?.active?'checked':''}> Active / show client portal ticker</label><br>
+    <label style="font-weight:900"><input type="checkbox" id="clientNewsNotify"> Send notification to active clients</label><br><br>
+    <div class="actions">
+      <button class="btn btn-s" onclick="saveClientNewsFinal()">Save Client News</button>
+      <button class="btn btn-l" onclick="tab('dashboard')">Back Dashboard</button>
+    </div>
+  </div>`;
+  try{document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-news');if(n)n.classList.add('active')}catch(e){}
+}
+function newsPage(){return openNewsPage();}
+
+function saveNewsFinal(){
+  ensureExtraDefaults();
+  S.news={
+    text:(document.getElementById('newsText')?.value||'').trim(),
+    active:document.getElementById('newsActive')?.checked!==false
+  };
+  if(document.getElementById('newsNotify')?.checked && S.news.text){
+    try{
+      if(typeof notifyEmployeeNews==='function') notifyEmployeeNews();
+      else if(typeof addNotification==='function') (S.employees||[]).filter(e=>e.active!==false).forEach(e=>addNotification('New Announcement',S.news.text,e.id,false));
+    }catch(e){}
+  }
+  try{saveLocal()}catch(e){}
+  saveSettingsToFirebase();
+  try{if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker()}catch(e){}
+  toast('Employee news saved','success');
+  openNewsPage();
+}
+function saveNews(){return saveNewsFinal();}
+
+function saveClientNewsFinal(){
+  ensureExtraDefaults();
+  S.clientNews={
+    text:(document.getElementById('clientNewsText')?.value||'').trim(),
+    active:document.getElementById('clientNewsActive')?.checked!==false
+  };
+  if(document.getElementById('clientNewsNotify')?.checked && S.clientNews.text){
+    try{
+      if(typeof addNotification==='function') (S.clients||[]).filter(c=>c.active!==false).forEach(c=>addNotification('Client Announcement',S.clientNews.text,c.id,false));
+    }catch(e){}
+  }
+  try{saveLocal()}catch(e){}
+  saveSettingsToFirebase();
+  try{if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker()}catch(e){}
+  toast('Client news saved','success');
+  openNewsPage();
+}
+function saveClientNews(){return saveClientNewsFinal();}
+
+function openSettingsPage(){
+  ensureExtraDefaults();
+  TAB='settings';
+  const A=S.appSettings||{};
+  const c=document.getElementById('content');
+  if(!c)return;
+  c.innerHTML=`<div class="card">
+    <div class="head"><h2>⚙️ Admin Settings</h2></div>
+    <div class="row">
+      <div class="fg"><label>Company Name</label><input id="setCompanyName" value="${esc(A.companyName||'Fire.net.pk')}"></div>
+      <div class="fg"><label>Currency Prefix</label><input id="setCurrency" value="${esc(A.currency||'Rs.')}"></div>
+      <div class="fg"><label>Default Bill Due Day</label><input id="setDueDay" type="number" min="1" max="31" value="${esc(A.defaultDueDay||'10')}"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Support WhatsApp Number</label><input id="setSupportWA" value="${esc(A.supportWhatsApp||S.ownerWhatsApp||'03001234561')}" placeholder="03001234561"></div>
+      <div class="fg"><label>Billing WhatsApp Number</label><input id="setBillingWA" value="${esc(A.billingWhatsApp||A.supportWhatsApp||S.ownerWhatsApp||'03001234561')}" placeholder="03001234561"></div>
+      <div class="fg"><label>Admin WhatsApp Number</label><input id="setAdminWA" value="${esc(A.adminWhatsApp||A.supportWhatsApp||S.ownerWhatsApp||'03001234561')}" placeholder="03001234561"></div>
+    </div>
+    <div class="row two">
+      <div class="fg"><label>Office Address</label><input id="setOfficeAddress" value="${esc(A.officeAddress||'')}"></div>
+      <div class="fg"><label>Client Portal Note</label><input id="setPortalNote" value="${esc(A.portalNote||'Pay your bill on time to avoid service interruption.')}"></div>
+    </div>
+    <div class="fg"><label>Invoice Footer Text</label><textarea id="setInvoiceFooter">${esc(A.invoiceFooter||'Thank you for choosing Fire.net.pk')}</textarea></div>
+    <div class="fg"><label>Client Support Message Text</label><textarea id="setClientSupportText">${esc(A.clientSupportText||'For support, contact Fire.net.pk WhatsApp support.')}</textarea></div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveAdminSettingsFinal()">Save Settings</button>
+      <button class="btn btn-l" onclick="tab('dashboard')">Back Dashboard</button>
+    </div>
+  </div>`;
+  try{document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-settings');if(n)n.classList.add('active')}catch(e){}
+}
+function settings(){return openSettingsPage();}
+
+function saveAdminSettingsFinal(){
+  ensureExtraDefaults();
+  const support=pkMobile(document.getElementById('setSupportWA')?.value||'');
+  const billing=pkMobile(document.getElementById('setBillingWA')?.value||'');
+  const admin=pkMobile(document.getElementById('setAdminWA')?.value||'');
+  if(!validPk(support))return toast('Support WhatsApp format use karein: 03001234561','error');
+  if(billing && !validPk(billing))return toast('Billing WhatsApp format use karein: 03001234561','error');
+  if(admin && !validPk(admin))return toast('Admin WhatsApp format use karein: 03001234561','error');
+  S.appSettings={
+    companyName:document.getElementById('setCompanyName')?.value.trim()||'Fire.net.pk',
+    currency:document.getElementById('setCurrency')?.value.trim()||'Rs.',
+    defaultDueDay:document.getElementById('setDueDay')?.value||'10',
+    supportWhatsApp:support,
+    billingWhatsApp:billing||support,
+    adminWhatsApp:admin||support,
+    officeAddress:document.getElementById('setOfficeAddress')?.value.trim()||'',
+    portalNote:document.getElementById('setPortalNote')?.value.trim()||'',
+    invoiceFooter:document.getElementById('setInvoiceFooter')?.value.trim()||'',
+    clientSupportText:document.getElementById('setClientSupportText')?.value.trim()||''
+  };
+  S.ownerWhatsApp=S.appSettings.supportWhatsApp;
+  try{saveLocal()}catch(e){}
+  saveSettingsToFirebase();
+  toast('Settings saved','success');
+  openSettingsPage();
+}
+function saveAdminSettings(){return saveAdminSettingsFinal();}
+function supportNumber(){ensureExtraDefaults();return S.appSettings?.supportWhatsApp||S.ownerWhatsApp||'03001234561'}
+function billingNumber(){ensureExtraDefaults();return S.appSettings?.billingWhatsApp||supportNumber()}
+function adminNumber(){ensureExtraDefaults();return S.appSettings?.adminWhatsApp||supportNumber()}
+
+/* Direct button safety */
+window.addEventListener('click',function(ev){
+  const b=ev.target.closest&&ev.target.closest('button');
+  if(!b)return;
+  const txt=(b.textContent||'').trim();
+  if(txt.includes('News')){ev.preventDefault();openNewsPage();}
+  if(txt.includes('Settings') || txt.includes('WhatsApp')){ 
+    if(txt.includes('Save')) return;
+    ev.preventDefault();openSettingsPage();
+  }
+},true);
+
+
+
+
+
+
+
+/* ===== DIRECT EDITABLE TICKER + NEWS SAVE FIX ===== */
+function ensureTickerState(){
+  S = S || {};
+  S.news = S.news || {text:'Welcome to Fire.net.pk employee portal.', active:true};
+  S.clientNews = S.clientNews || {text:'Welcome to Fire.net.pk client portal.', active:true};
+  S.notifications = Array.isArray(S.notifications) ? S.notifications : [];
+  S.employees = Array.isArray(S.employees) ? S.employees : [];
+  S.clients = Array.isArray(S.clients) ? S.clients : [];
+}
+function tickerTextForCurrentUser(){
+  ensureTickerState();
+  if(U && U.role==='client'){
+    return (S.clientNews && S.clientNews.active && S.clientNews.text) ? S.clientNews.text : 'Welcome to Fire.net.pk client portal.';
+  }
+  return (S.news && S.news.active && S.news.text) ? S.news.text : 'Welcome to Fire.net.pk portal.';
+}
+function stableNewsTickerHtml(){
+  const n = `📢 ${esc(tickerTextForCurrentUser())}`;
+  return `<div class="stable-news-bar"><div class="stable-news-track"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
+}
+function newsTickerHtml(){
+  const n = `📢 ${esc(tickerTextForCurrentUser())}`;
+  return `<div class="force-news-bar"><div class="force-news-track"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
+}
+function renderGlobalNewsTicker(){
+  const el=document.getElementById('globalNewsTicker');
+  if(el) el.innerHTML = stableNewsTickerHtml();
+}
+function saveTickerSettingsToStorage(){
+  ensureTickerState();
+  try{ saveLocal(); }catch(e){ console.warn('saveLocal failed',e); }
+  try{
+    localStorage.setItem('firenet_ticker_direct_backup', JSON.stringify({
+      news:S.news,
+      clientNews:S.clientNews,
+      savedAt:new Date().toLocaleString()
+    }));
+  }catch(e){}
+  try{
+    if(typeof db !== 'undefined' && db){
+      db.collection('settings').doc('main').set({
+        news:S.news,
+        clientNews:S.clientNews,
+        notificationSettings:S.notificationSettings || {},
+        ownerWhatsApp:S.ownerWhatsApp || '03001234561',
+        appSettings:S.appSettings || {},
+        admin:S.admin || {}
+      }, {merge:true}).catch(err=>console.warn('ticker firebase save failed',err));
+    }
+  }catch(e){ console.warn(e); }
+}
+function restoreTickerDirectBackup(){
+  try{
+    const b=JSON.parse(localStorage.getItem('firenet_ticker_direct_backup')||'null');
+    if(b){
+      S=S||{};
+      if(b.news) S.news=b.news;
+      if(b.clientNews) S.clientNews=b.clientNews;
+    }
+  }catch(e){}
+}
+function addNotification(title,message,to='all',alertNow=false){
+  ensureTickerState();
+  const rec={
+    id:(typeof id==='function'?id('nt'):'nt'+Date.now()+Math.random().toString(36).slice(2,6)),
+    title:title||'Notification',
+    message:message||'',
+    to:to||'all',
+    createdAt:(typeof now==='function'?now():new Date().toLocaleString()),
+    date:(typeof today==='function'?today():new Date().toISOString().slice(0,10)),
+    readBy:[]
+  };
+  S.notifications.push(rec);
+  try{ saveLocal(); }catch(e){}
+  try{ if(typeof db!=='undefined'&&db) db.collection('notifications').doc(rec.id).set(rec,{merge:true}); }catch(e){}
+  try{ if(typeof updateNotificationBell==='function') updateNotificationBell(); }catch(e){}
+  if(alertNow && typeof toast==='function') toast(title+': '+message,'warning');
+  return rec;
+}
+function notifyEmployeeTickerNews(){
+  ensureTickerState();
+  let count=0;
+  (S.employees||[]).filter(e=>e.active!==false).forEach(e=>{
+    addNotification('New Announcement',S.news.text,e.id,false);
+    count++;
+  });
+  return count;
+}
+function notifyClientTickerNews(){
+  ensureTickerState();
+  let count=0;
+  (S.clients||[]).filter(c=>c.active!==false).forEach(c=>{
+    addNotification('Client Announcement',S.clientNews.text,c.id,false);
+    count++;
+  });
+  return count;
+}
+function openNewsPage(){
+  ensureTickerState();
+  restoreTickerDirectBackup();
+  TAB='news';
+  const last=(()=>{try{return JSON.parse(localStorage.getItem('firenet_ticker_direct_backup')||'{}').savedAt||'-'}catch(e){return '-'}})();
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>📢 Employee/Admin Ticker Text</h2></div>
+    <div class="fg"><label>Employee/Admin Ticker Text</label><textarea id="newsText">${esc(S.news?.text||'')}</textarea></div>
+    <label style="font-weight:900"><input type="checkbox" id="newsActive" ${S.news?.active?'checked':''}> Active / show employee ticker</label><br>
+    <label style="font-weight:900"><input type="checkbox" id="newsNotify"> Send notification to employees</label><br><br>
+    <button class="btn btn-p" onclick="saveEmployeeTickerText()">Save Employee Ticker</button>
+  </div>
+  <div class="card">
+    <div class="head"><h2>🌐 Client Portal Ticker Text</h2></div>
+    <div class="fg"><label>Client Portal Ticker Text</label><textarea id="clientNewsText">${esc(S.clientNews?.text||'')}</textarea></div>
+    <label style="font-weight:900"><input type="checkbox" id="clientNewsActive" ${S.clientNews?.active?'checked':''}> Active / show client ticker</label><br>
+    <label style="font-weight:900"><input type="checkbox" id="clientNewsNotify"> Send notification to active clients</label><br><br>
+    <div class="actions">
+      <button class="btn btn-s" onclick="saveClientTickerText()">Save Client Ticker</button>
+      <button class="btn btn-l" onclick="tab('dashboard')">Back Dashboard</button>
+    </div>
+    <p id="newsSaveStatus" style="color:#64748b;font-weight:900;margin-top:12px">Last saved: ${esc(last)}</p>
+  </div>`;
+}
+function newsPage(){ return openNewsPage(); }
+function saveEmployeeTickerText(){
+  ensureTickerState();
+  const txt=(document.getElementById('newsText')?.value||'').trim();
+  S.news={text:txt,active:document.getElementById('newsActive')?.checked!==false};
+  let count=0;
+  if(document.getElementById('newsNotify')?.checked && txt) count=notifyEmployeeTickerNews();
+  saveTickerSettingsToStorage();
+  renderGlobalNewsTicker();
+  toast(`Employee ticker saved${count?' + '+count+' notifications':''}`,'success');
+  openNewsPage();
+}
+function saveClientTickerText(){
+  ensureTickerState();
+  const txt=(document.getElementById('clientNewsText')?.value||'').trim();
+  S.clientNews={text:txt,active:document.getElementById('clientNewsActive')?.checked!==false};
+  let count=0;
+  if(document.getElementById('clientNewsNotify')?.checked && txt) count=notifyClientTickerNews();
+  saveTickerSettingsToStorage();
+  renderGlobalNewsTicker();
+  toast(`Client ticker saved${count?' + '+count+' notifications':''}`,'success');
+  openNewsPage();
+}
+/* Compatibility aliases */
+function saveNews(){return saveEmployeeTickerText();}
+function saveClientNews(){return saveClientTickerText();}
+function saveNewsHard(){return saveEmployeeTickerText();}
+function saveClientNewsHard(){return saveClientTickerText();}
+function saveNewsDirect(){return saveEmployeeTickerText();}
+function saveClientNewsDirect(){return saveClientTickerText();}
+function saveNewsFinal(){return saveEmployeeTickerText();}
+function saveClientNewsFinal(){return saveClientTickerText();}
+function notifyEmployeeNews(){return notifyEmployeeTickerNews();}
+function notifyClientNews(){return notifyClientTickerNews();}
+
+/* Notification panel persistence */
+function visibleNotifications(){
+  ensureTickerState();
+  if(!U) return [];
+  return S.notifications.filter(n=>n.to==='all'||n.to===U.id||n.to===U.role||(U.role==='employee'&&n.to==='employee_all')||(U.role==='client'&&n.to==='client_all'));
+}
+function unreadNotifications(){return visibleNotifications().filter(n=>!(n.readBy||[]).includes(U.id));}
+function updateNotificationBell(){
+  const c=document.getElementById('notifyCount');
+  if(!c||!U)return;
+  const n=unreadNotifications().length;
+  c.textContent=n;
+  c.classList.toggle('hidden',n===0);
+}
+function toggleNotifications(){
+  const p=document.getElementById('notifyPanel');
+  if(!p)return;
+  p.classList.toggle('open');
+  renderNotificationsPanel();
+}
+function renderNotificationsPanel(){
+  const p=document.getElementById('notifyPanel');
+  if(!p||!U)return;
+  const rows=visibleNotifications().slice().sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+  p.innerHTML=`<div class="notify-head"><span>Notifications</span><button class="btn btn-l btn-sm" onclick="markAllNotificationsRead()">Mark all read</button></div>`+
+    (rows.length?rows.map(n=>`<div class="notify-item ${(n.readBy||[]).includes(U.id)?'':'unread'}"><b>${esc(n.title||'Notification')}</b><div>${esc(n.message||'')}</div><small>${esc(n.createdAt||'')}</small></div>`).join(''):`<div class="notify-empty">No notifications</div>`);
+}
+function markAllNotificationsRead(){
+  unreadNotifications().forEach(n=>{
+    n.readBy=n.readBy||[];
+    if(!n.readBy.includes(U.id))n.readBy.push(U.id);
+    try{if(typeof db!=='undefined'&&db)db.collection('notifications').doc(n.id).set(n,{merge:true});}catch(e){}
+  });
+  try{saveLocal();}catch(e){}
+  updateNotificationBell();
+  renderNotificationsPanel();
+}
+try{restoreTickerDirectBackup();}catch(e){}
+
 </script>
 </body>
 </html>
