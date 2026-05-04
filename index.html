@@ -5,12 +5,134 @@
 <title>FireNetPK Single HTML System</title>
 <style>
 :root{--p:#e74c3c;--d:#243447;--s:#16a34a;--e:#dc2626;--b:#f4f7fb;--m:#64748b;--i:#2563eb;--w:#d97706}*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}body{background:linear-gradient(135deg,#eef2ff,#fff1f2);min-height:100vh;color:#1f2937}button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden{display:none!important}.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:15px}.login-card,.card{background:#fff;border-radius:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);border:1px solid #eef2f7}.login-card{max-width:420px;width:100%;overflow:hidden}.login-head{background:linear-gradient(135deg,var(--d),#111827);color:white;text-align:center;padding:32px}.login-body{padding:24px}.app{display:none;padding:12px}.container{max-width:1200px;margin:auto}.header{background:#fff;border-radius:18px;padding:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;box-shadow:0 12px 30px rgba(15,23,42,.08)}.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:14px;background:var(--p);color:white;display:flex;align-items:center;justify-content:center;font-size:23px}.brand h1{font-size:20px;color:var(--d)}.dt{font-weight:800;background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:9px}.profile{position:relative}.profile-btn{display:flex;gap:8px;align-items:center;background:#f8fafc;border:1px solid #e5e7eb;border-radius:999px;padding:6px 10px}.avatar{width:34px;height:34px;border-radius:50%;background:#7c3aed;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900}.menu{display:none;position:absolute;right:0;top:48px;background:white;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.15);min-width:190px;overflow:hidden;z-index:10}.menu.active{display:block}.menu button{display:block;width:100%;background:white;text-align:left;padding:12px}.menu button:hover{background:#f8fafc;color:var(--p)}.nav{display:flex;gap:8px;background:#fff;padding:8px;border-radius:16px;margin-bottom:12px;overflow-x:auto;box-shadow:0 10px 25px rgba(15,23,42,.07)}.nav button{white-space:nowrap;background:#f8fafc;color:#475569;padding:10px 13px;border-radius:12px;font-weight:900}.nav button.active{background:var(--p);color:white}.card{padding:16px;margin-bottom:12px}.head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.head h2{font-size:18px;color:var(--d)}.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.row.two{grid-template-columns:repeat(2,1fr)}.fg{margin-bottom:12px}.fg label{display:block;font-size:13px;font-weight:900;margin-bottom:6px;color:#374151}input,select,textarea{width:100%;padding:11px;border:1px solid #e5e7eb;border-radius:12px;outline:none}textarea{min-height:75px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 13px;border-radius:12px;color:white;background:var(--d);font-weight:900;text-decoration:none}.btn-p{background:var(--p)}.btn-s{background:var(--s)}.btn-e{background:var(--e)}.btn-i{background:var(--i)}.btn-w{background:var(--w)}.btn-l{background:#e5e7eb;color:#111827}.btn-sm{font-size:12px;padding:7px 9px}.actions{display:flex;gap:8px;flex-wrap:wrap}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;background:#fff;border-radius:16px;box-shadow:0 8px 18px rgba(15,23,42,.05);border:1px solid #eef2f7}.stat span{font-size:12px;color:var(--m);font-weight:900}.stat b{display:block;font-size:22px;margin-top:5px}.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:14px;vertical-align:top}th{background:#f8fafc;color:#475569;text-transform:uppercase;font-size:12px}.badge{padding:5px 9px;border-radius:999px;font-size:12px;font-weight:900;display:inline-block;text-transform:uppercase}.cash{background:#dcfce7;color:#166534}.online{background:#dbeafe;color:#1e40af}.income{background:#dcfce7;color:#166534}.expense{background:#fee2e2;color:#991b1b}.pending{background:#fef3c7;color:#92400e}.done{background:#dcfce7;color:#166534}.income-row{background:#f0fdf4}.expense-row{background:#fff1f2}.amount-income{color:#166534;font-weight:900}.amount-expense{color:#991b1b;font-weight:900}.finance-type-box{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.empty{text-align:center;color:var(--m);font-weight:800;padding:25px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.sum{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:13px}.sum b{display:block;font-size:20px;margin-top:4px}.item-line{display:grid;grid-template-columns:2fr .7fr 1fr auto;gap:10px;align-items:end}.toast-wrap{position:fixed;right:14px;top:14px;z-index:99}.toast{background:white;border-left:5px solid var(--i);box-shadow:0 14px 35px rgba(15,23,42,.18);padding:12px 14px;border-radius:14px;margin-bottom:8px;font-weight:800}.toast.success{border-left-color:var(--s)}.toast.error{border-left-color:var(--e)}.toast.warning{border-left-color:var(--w)}.prog{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,var(--s),#84cc16)}.modal-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;align-items:center;justify-content:center;padding:15px}.modal-bg.active{display:flex}.modal{background:white;border-radius:18px;max-width:500px;width:100%;padding:18px}@media(max-width:850px){.grid,.summary{grid-template-columns:repeat(2,1fr)}.row,.row.two{grid-template-columns:1fr}}@media(max-width:560px){.app{padding:8px}.header>*{width:100%}.profile-btn{width:100%}.nav{display:grid;grid-template-columns:1fr 1fr}.grid,.summary{grid-template-columns:1fr}.item-line{grid-template-columns:1fr}.actions .btn{width:100%}}
-</style></head><body>
+.badge.expense{background:#fee2e2;color:#991b1b}.eta-overdue{background:#fef2f2}.eta-ok{background:#f0fdf4}</style></head><body>
 <div id="login" class="login"><div class="login-card"><div class="login-head"><h1>🔥 Fire.net.pk</h1><p>ISP Management System</p></div><div class="login-body"><div class="fg"><label>Username / Phone</label><input id="lu" placeholder="admin or ali"></div><div class="fg"><label>Password / PIN</label><input id="lp" type="password" placeholder="admin123 or 1234"></div><button class="btn btn-p" style="width:100%" onclick="login()">Login</button><p style="font-size:12px;color:#64748b;margin-top:12px;line-height:1.5">Default: <b>admin/admin123</b> or employee <b>ali/1234</b>. Admin password can be changed from profile.</p></div></div></div>
 <div id="app" class="app"><div class="container"><div class="header"><div class="brand"><div class="logo">🔥</div><div><h1>Fire.net.pk ISP</h1><small style="color:#64748b;font-weight:800">Complaints • Accounts • Invoice • Targets</small></div></div><div id="dt" class="dt"></div><div id="syncStatus" class="dt" style="font-size:12px">Firebase: starting...</div><div class="profile"><button class="profile-btn" onclick="toggleMenu()"><span id="av" class="avatar">A</span><span><b id="pn">Admin</b><br><small id="pr">Admin</small></span></button><div id="pm" class="menu"><button onclick="openPwd()">Change Password</button><button onclick="logout()">Logout</button></div></div></div><div id="nav" class="nav"></div><div id="content"></div></div></div>
 <div id="tw" class="toast-wrap"></div><div id="pwdModal" class="modal-bg"><div class="modal"><div class="head"><h2>Change Password / PIN</h2><button class="btn btn-l btn-sm" onclick="closePwd()">Close</button></div><div class="fg"><label>New Password / PIN</label><input id="newPwd" type="password"></div><button class="btn btn-p" onclick="savePwd()">Save</button></div></div>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
+/* ================= COMPLAINT TIME / ETA PATCH ================= */
+function pad2(n){return String(n).padStart(2,'0')}
+function toDateTimeLocalValue(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`}
+function defaultResolveAt(){let d=new Date();d.setHours(d.getHours()+2);return toDateTimeLocalValue(d)}
+function formatDT(v){
+  if(!v)return '-';
+  try{
+    const d=new Date(v);
+    if(!isNaN(d.getTime()))return d.toLocaleString();
+  }catch(e){}
+  return String(v).replace('T',' ');
+}
+function etaStatus(c){
+  if(c.status==='Resolved')return '<span class="badge done">Resolved</span>';
+  if(!c.resolveBy&&!c.eta)return '<span class="badge pending">No ETA</span>';
+  const due=new Date(c.resolveBy||c.eta).getTime();
+  if(!isNaN(due)&&Date.now()>due)return '<span class="badge expense">Overdue</span>';
+  return '<span class="badge online">On Time</span>';
+}
+function complaints(){
+  const dateTitle=(typeof complaintShowAll!=='undefined'&&complaintShowAll)?'(All Dates)':`(${typeof complaintDateFilter!=='undefined'?complaintDateFilter:today()})`;
+  const dateControls=(typeof complaintDateFilter!=='undefined')?`<div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${complaintDateFilter}" onchange="setComplaintDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayComplaintsFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllComplaintsFilter()">Show All</button></div>`:'';
+  content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div>
+  <div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div>
+  <div class="row"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Expected Resolve Time</label><input id="cEta" type="datetime-local" value="${defaultResolveAt()}"></div><div class="fg"><label>Details</label><input id="cDet" placeholder="Issue details"></div></div>
+  <button class="btn btn-p" onclick="addComp()">Add Complaint</button></div>
+  <div class="card"><div class="head"><h2>Complaint List ${dateTitle}</h2>${dateControls}</div>${compTable()}</div>`;
+}
+function addComp(){
+  let assigned=U.role==='employee'?U.id:cAssign.value;
+  if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');
+  let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),createdAt:now(),resolveBy:cEta.value||'',eta:cEta.value||'',resolvedAt:'',by:key()};
+  S.complaints.push(rec);save();if(typeof fbSet==='function')fbSet('complaints',rec);toast('Complaint added with expected resolve time','success');beep();complaints();
+}
+function compTable(){
+  let r=myComp().slice().reverse();
+  if(typeof complaintShowAll!=='undefined' && !complaintShowAll) r=r.filter(c=>(c.date||'')===complaintDateFilter);
+  if(!r.length)return`<div class="empty">No complaints ${typeof complaintShowAll!=='undefined'&&!complaintShowAll?'on '+complaintDateFilter:''}</div>`;
+  return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Created Time</th><th>Expected Resolve</th><th>Resolved Time</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span><br>${etaStatus(c)}</td><td>${esc(c.time||c.createdAt||c.date||'-')}</td><td><b>${esc(formatDT(c.resolveBy||c.eta))}</b></td><td>${esc(c.resolvedAt||'-')}</td><td>${adminButtons('complaint',c.id,`<button class="btn btn-s btn-sm" onclick="sendComplaintWA('${c.id}')">WhatsApp</button>${c.status!=='Resolved'?` <button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}`)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function complaintMsg(c){return`*Fire.net.pk Complaint Update*
+Complaint ID: ${c.id}
+Customer: ${c.name}
+Phone: ${c.phone}
+Type: ${c.type}
+Status: ${c.status}
+Assigned To: ${empName(c.assigned)}
+Date: ${c.date}
+Created Time: ${c.time||c.createdAt||'-'}
+Expected Resolve Time: ${formatDT(c.resolveBy||c.eta)}
+Resolved Time: ${c.resolvedAt||'-'}
+
+Details: ${c.det||'-'}
+
+Thank you,
+Fire.net.pk Support`}
+function sendComplaintWA(i){let c=S.complaints.find(x=>x.id===i);if(!c)return toast('Complaint not found','error');if(!c.phone)return toast('Customer phone not available','error');window.open('https://wa.me/'+String(c.phone).replace(/\D/g,'')+'?text='+encodeURIComponent(complaintMsg(c)),'_blank')}
+function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';c.resolvedAt=now();if(typeof fbSet==='function')fbSet('complaints',c)}save();toast('Complaint resolved with resolved time','success');complaints()}
+/* ================= END COMPLAINT TIME / ETA PATCH ================= */
+
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js">
+/* ================= COMPLAINT TIME / ETA PATCH ================= */
+function pad2(n){return String(n).padStart(2,'0')}
+function toDateTimeLocalValue(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`}
+function defaultResolveAt(){let d=new Date();d.setHours(d.getHours()+2);return toDateTimeLocalValue(d)}
+function formatDT(v){
+  if(!v)return '-';
+  try{
+    const d=new Date(v);
+    if(!isNaN(d.getTime()))return d.toLocaleString();
+  }catch(e){}
+  return String(v).replace('T',' ');
+}
+function etaStatus(c){
+  if(c.status==='Resolved')return '<span class="badge done">Resolved</span>';
+  if(!c.resolveBy&&!c.eta)return '<span class="badge pending">No ETA</span>';
+  const due=new Date(c.resolveBy||c.eta).getTime();
+  if(!isNaN(due)&&Date.now()>due)return '<span class="badge expense">Overdue</span>';
+  return '<span class="badge online">On Time</span>';
+}
+function complaints(){
+  const dateTitle=(typeof complaintShowAll!=='undefined'&&complaintShowAll)?'(All Dates)':`(${typeof complaintDateFilter!=='undefined'?complaintDateFilter:today()})`;
+  const dateControls=(typeof complaintDateFilter!=='undefined')?`<div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${complaintDateFilter}" onchange="setComplaintDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayComplaintsFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllComplaintsFilter()">Show All</button></div>`:'';
+  content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div>
+  <div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div>
+  <div class="row"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Expected Resolve Time</label><input id="cEta" type="datetime-local" value="${defaultResolveAt()}"></div><div class="fg"><label>Details</label><input id="cDet" placeholder="Issue details"></div></div>
+  <button class="btn btn-p" onclick="addComp()">Add Complaint</button></div>
+  <div class="card"><div class="head"><h2>Complaint List ${dateTitle}</h2>${dateControls}</div>${compTable()}</div>`;
+}
+function addComp(){
+  let assigned=U.role==='employee'?U.id:cAssign.value;
+  if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');
+  let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),createdAt:now(),resolveBy:cEta.value||'',eta:cEta.value||'',resolvedAt:'',by:key()};
+  S.complaints.push(rec);save();if(typeof fbSet==='function')fbSet('complaints',rec);toast('Complaint added with expected resolve time','success');beep();complaints();
+}
+function compTable(){
+  let r=myComp().slice().reverse();
+  if(typeof complaintShowAll!=='undefined' && !complaintShowAll) r=r.filter(c=>(c.date||'')===complaintDateFilter);
+  if(!r.length)return`<div class="empty">No complaints ${typeof complaintShowAll!=='undefined'&&!complaintShowAll?'on '+complaintDateFilter:''}</div>`;
+  return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Created Time</th><th>Expected Resolve</th><th>Resolved Time</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span><br>${etaStatus(c)}</td><td>${esc(c.time||c.createdAt||c.date||'-')}</td><td><b>${esc(formatDT(c.resolveBy||c.eta))}</b></td><td>${esc(c.resolvedAt||'-')}</td><td>${adminButtons('complaint',c.id,`<button class="btn btn-s btn-sm" onclick="sendComplaintWA('${c.id}')">WhatsApp</button>${c.status!=='Resolved'?` <button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}`)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function complaintMsg(c){return`*Fire.net.pk Complaint Update*
+Complaint ID: ${c.id}
+Customer: ${c.name}
+Phone: ${c.phone}
+Type: ${c.type}
+Status: ${c.status}
+Assigned To: ${empName(c.assigned)}
+Date: ${c.date}
+Created Time: ${c.time||c.createdAt||'-'}
+Expected Resolve Time: ${formatDT(c.resolveBy||c.eta)}
+Resolved Time: ${c.resolvedAt||'-'}
+
+Details: ${c.det||'-'}
+
+Thank you,
+Fire.net.pk Support`}
+function sendComplaintWA(i){let c=S.complaints.find(x=>x.id===i);if(!c)return toast('Complaint not found','error');if(!c.phone)return toast('Customer phone not available','error');window.open('https://wa.me/'+String(c.phone).replace(/\D/g,'')+'?text='+encodeURIComponent(complaintMsg(c)),'_blank')}
+function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';c.resolvedAt=now();if(typeof fbSet==='function')fbSet('complaints',c)}save();toast('Complaint resolved with resolved time','success');complaints()}
+/* ================= END COMPLAINT TIME / ETA PATCH ================= */
+
+</script>
 <script>
 const KEY='firenet_single_html_final_v2';let S,U,TAB='dashboard',draft=[];
 let db=null, firebaseReady=false, fbLoading=false, unsubscribers=[];
@@ -95,7 +217,22 @@ function empOpts(sel=''){return S.employees.filter(e=>e.active).map(e=>`<option 
 function stats(){let f=calc(),pend=myComp().filter(c=>c.status!=='Resolved').length,ts=(U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id)),tar=ts.reduce((s,t)=>s+(+t.target||0),0),ach=ts.reduce((s,t)=>s+(+t.achieved||0),0);return`<div class="grid"><div class="stat"><span>Cash Payment</span><b>${money(f.cash)}</b></div><div class="stat"><span>Online Payment</span><b>${money(f.online)}</b></div><div class="stat"><span>Pending Tasks</span><b>${pend}</b></div><div class="stat"><span>Target Progress</span><b>${tar?Math.min(100,Math.round(ach/tar*100)):0}%</b></div></div>`}
 function dash(){content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Welcome, ${esc(U.name)}</h2></div><p style="color:#64748b;font-weight:700;line-height:1.6">${U.role==='admin'?'Admin can view all entries and manage employees.':'Employee can only see own entries.'}</p></div>`}
 function complaints(){content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div><div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div><div class="row two"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Details</label><input id="cDet"></div></div><button class="btn btn-p" onclick="addComp()">Add Complaint</button></div><div class="card"><div class="head"><h2>Complaint List</h2></div>${compTable()}</div>`}
-function addComp(){let assigned=U.role==='employee'?U.id:cAssign.value;if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),by:key()};S.complaints.push(rec);save();fbSet('complaints',rec);toast('Complaint added','success');beep();complaints()}function compTable(){let r=myComp().slice().reverse();if(!r.length)return'<div class="empty">No complaints</div>';return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span></td><td>${c.date}</td><td>${c.status!=='Resolved'?`<button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}</td></tr>`).join('')}</tbody></table></div>`}function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';fbSet('complaints',c)}save();complaints()}
+function addComp(){let assigned=U.role==='employee'?U.id:cAssign.value;if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),by:key()};S.complaints.push(rec);save();fbSet('complaints',rec);toast('Complaint added','success');beep();complaints()}function compTable(){let r=myComp().slice().reverse();if(!r.length)return'<div class="empty">No complaints</div>';return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span></td><td>${c.date}</td><td><div class="actions"><button class="btn btn-s btn-sm" onclick="sendComplaintWA('${c.id}')">WhatsApp</button>${c.status!=='Resolved'?`<button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`}
+function complaintMsg(c){return`*Fire.net.pk Complaint Update*
+Complaint ID: ${c.id}
+Customer: ${c.name}
+Phone: ${c.phone}
+Type: ${c.type}
+Status: ${c.status}
+Assigned To: ${empName(c.assigned)}
+Date: ${c.date}
+
+Details: ${c.det||'-'}
+
+Thank you,
+Fire.net.pk Support`}
+function sendComplaintWA(i){let c=S.complaints.find(x=>x.id===i);if(!c)return toast('Complaint not found','error');if(!c.phone)return toast('Customer phone not available','error');window.open('https://wa.me/'+String(c.phone).replace(/\D/g,'')+'?text='+encodeURIComponent(complaintMsg(c)),'_blank')}
+function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';fbSet('complaints',c)}save();complaints()}
 function employees(){if(U.role!=='admin')return dash();content.innerHTML=`<div class="card"><div class="head"><h2>Add Employee</h2></div><div class="row"><div class="fg"><label>Name</label><input id="eName"></div><div class="fg"><label>Phone/Login</label><input id="ePhone"></div><div class="fg"><label>PIN</label><input id="ePin" value="1234"></div></div><div class="row two"><div class="fg"><label>Role</label><input id="eRole" placeholder="Collection"></div><div class="fg"><label>Permissions</label><div class="actions">${['complaints','attendance','invoice','finance','targets'].map(p=>`<label><input type="checkbox" class="perm" value="${p}" checked> ${p}</label>`).join('')}</div></div></div><button class="btn btn-p" onclick="addEmp()">Add Employee</button></div><div class="card"><div class="head"><h2>Employees</h2></div>${empTable()}</div>`}function addEmp(){let per={};document.querySelectorAll('.perm').forEach(x=>per[x.value]=x.checked);let name=eName.value.trim(),phone=ePhone.value.trim();if(!name||!phone)return toast('Name and phone required','error');let dup=findEmployeeDuplicate(phone,name);if(dup){if(!confirm('This employee/login already exists. Update existing user instead of adding duplicate?'))return toast('User already exists in database','error');dup.name=name;dup.phone=phone;dup.pin=ePin.value.trim()||dup.pin||'1234';dup.role=eRole.value.trim()||dup.role||'Employee';dup.active=true;dup.per=per;save();fbSet('employees',dup);toast('Existing employee updated','success');employees();return}let rec={id:id('e'),name,phone,pin:ePin.value.trim()||'1234',role:eRole.value.trim()||'Employee',active:true,per};S.employees.push(rec);save();fbSet('employees',rec);toast('Employee added','success');employees()}function empTable(){return`<div class="tbl"><table><thead><tr><th>ID</th><th>Name</th><th>Login</th><th>Role</th><th>PIN</th><th>Status</th><th>Action</th></tr></thead><tbody>${S.employees.map(e=>`<tr><td>${e.id}</td><td>${esc(e.name)}</td><td>${esc(e.phone)}</td><td>${esc(e.role)}</td><td>${esc(e.pin)}</td><td>${e.active?'Active':'Inactive'}</td><td><button class="btn btn-w btn-sm" onclick="togEmp('${e.id}')">${e.active?'Disable':'Enable'}</button></td></tr>`).join('')}</tbody></table></div>`}function togEmp(i){let e=S.employees.find(x=>x.id===i);if(e){e.active=!e.active;fbSet('employees',e)}save();employees()}
 function attendance(){content.innerHTML=`<div class="card"><div class="head"><h2>Mark Attendance</h2></div><div class="row"><div class="fg"><label>Employee</label><select id="aEmp">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Status</label><select id="aStatus"><option>Present</option><option>Absent</option><option>Leave</option><option>Half Day</option></select></div><div class="fg"><label>Date</label><input id="aDate" type="date" value="${today()}"></div></div><button class="btn btn-p" onclick="markAtt()">Save Attendance</button></div><div class="card"><div class="head"><h2>Attendance List</h2></div>${attTable()}</div>`}function markAtt(){let emp=U.role==='employee'?U.id:aEmp.value,old=S.attendance.find(a=>a.emp===emp&&a.date===aDate.value);if(old)old.status=aStatus.value;else {old={id:id('a'),emp,date:aDate.value,status:aStatus.value,by:key(),time:now()};S.attendance.push(old)};fbSet('attendance',old);save();attendance()}function attTable(){let r=U.role==='admin'?S.attendance:S.attendance.filter(a=>a.emp===U.id);if(!r.length)return'<div class="empty">No attendance</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Employee</th><th>Status</th><th>Time</th></tr></thead><tbody>${r.slice().reverse().map(a=>`<tr><td>${a.date}</td><td>${empName(a.emp)}</td><td>${a.status}</td><td>${a.time}</td></tr>`).join('')}</tbody></table></div>`}
 function invoice(){content.innerHTML=`<div class="card"><div class="head"><h2>Create Invoice</h2><button class="btn btn-l btn-sm" onclick="draft=[];invoice()">Clear</button></div><div class="row"><div class="fg"><label>Customer</label><input id="invCust"></div><div class="fg"><label>WhatsApp</label><input id="invPhone" placeholder="923xx"></div><div class="fg"><label>Work Type</label><select id="invWork"><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Repair</option><option>Other Work</option></select></div></div><div class="item-line"><div class="fg"><label>Product / Service</label><input id="itName"></div><div class="fg"><label>Qty</label><input id="itQty" type="number" value="1"></div><div class="fg"><label>Rate</label><input id="itRate" type="number" value="0"></div><button class="btn btn-i" onclick="addItem()">Add</button></div><div id="itemsArea"></div><div class="row two"><div class="fg"><label>Discount</label><input id="disc" type="number" value="0" oninput="drawItems()"></div><div class="fg"><label>Notes</label><input id="invNotes"></div></div><div class="actions"><button class="btn btn-p" onclick="saveInv()">Save Invoice</button><button class="btn btn-s" onclick="sendDraftInv()">Send WhatsApp</button></div></div><div class="card"><div class="head"><h2>Invoice History</h2></div>${invTable()}</div>`;drawItems()}function addItem(){if(!itName.value.trim())return toast('Item name required','error');draft.push({name:itName.value.trim(),qty:+itQty.value||1,rate:+itRate.value||0});itName.value='';itQty.value=1;itRate.value=0;drawItems()}function remItem(i){draft.splice(i,1);drawItems()}function totals(){let sub=draft.reduce((s,x)=>s+x.qty*x.rate,0),d=+document.getElementById('disc')?.value||0;return{sub,disc:d,total:Math.max(0,sub-d)}}function drawItems(){let a=document.getElementById('itemsArea');if(!a)return;let t=totals();a.innerHTML=draft.length?`<div class="tbl"><table><thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Total</th><th></th></tr></thead><tbody>${draft.map((x,i)=>`<tr><td>${esc(x.name)}</td><td>${x.qty}</td><td>${money(x.rate)}</td><td>${money(x.qty*x.rate)}</td><td><button class="btn btn-e btn-sm" onclick="remItem(${i})">X</button></td></tr>`).join('')}</tbody></table></div><div class="summary"><div class="sum">Subtotal<b>${money(t.sub)}</b></div><div class="sum">Discount<b>${money(t.disc)}</b></div><div class="sum">Total<b>${money(t.total)}</b></div></div>`:'<div class="empty">No items added</div>'}function invObj(){let t=totals();return{id:id('inv'),cust:invCust.value.trim(),phone:invPhone.value.trim(),work:invWork.value,items:[...draft],sub:t.sub,disc:t.disc,total:t.total,notes:invNotes.value.trim(),date:today(),time:now(),by:key(),byName:U.name}}function invMsg(v){return`*Fire.net.pk Invoice*\nID: ${v.id}\nCustomer: ${v.cust}\nWork: ${v.work}\nDate: ${v.date}\n\n*Items*\n${v.items.map((x,i)=>`${i+1}. ${x.name} | Qty ${x.qty} | Rate ${money(x.rate)} | Total ${money(x.qty*x.rate)}`).join('\n')}\n\nSubtotal: ${money(v.sub)}\nDiscount: ${money(v.disc)}\n*Final Total: ${money(v.total)}*\nNotes: ${v.notes||'-'}\nBy: ${v.byName}`}function saveInv(){if(!draft.length)return toast('Add item','error');let v=invObj();if(!v.cust)return toast('Customer required','error');S.invoices.push(v);save();fbSet('invoices',v);draft=[];toast('Invoice saved','success');invoice()}function sendDraftInv(){if(!draft.length)return toast('Add item','error');let v=invObj();if(!v.phone)return toast('WhatsApp number required','error');window.open('https://wa.me/'+v.phone.replace(/\D/g,'')+'?text='+encodeURIComponent(invMsg(v)),'_blank')}function invTable(){let r=myInv().slice().reverse();if(!r.length)return'<div class="empty">No invoices</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Total</th><th>By</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td>${esc(v.byName)}</td><td><button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button></td></tr>`).join('')}</tbody></table></div>`}function sendSavedInv(i){let v=S.invoices.find(x=>x.id===i);if(v)window.open('https://wa.me/'+v.phone.replace(/\D/g,'')+'?text='+encodeURIComponent(invMsg(v)),'_blank')}
@@ -430,6 +567,67 @@ function dailyReport(){let r=financeShowAll?myFin():myFin().filter(e=>(e.date||'
 /* ================= END FINANCE CUSTOMER + FETCH ALL PATCH ================= */
 
 /* ================= END DATE FILTER PATCH ================= */
+
+/* ================= COMPLAINT TIME / ETA PATCH ================= */
+function pad2(n){return String(n).padStart(2,'0')}
+function toDateTimeLocalValue(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`}
+function defaultResolveAt(){let d=new Date();d.setHours(d.getHours()+2);return toDateTimeLocalValue(d)}
+function formatDT(v){
+  if(!v)return '-';
+  try{
+    const d=new Date(v);
+    if(!isNaN(d.getTime()))return d.toLocaleString();
+  }catch(e){}
+  return String(v).replace('T',' ');
+}
+function etaStatus(c){
+  if(c.status==='Resolved')return '<span class="badge done">Resolved</span>';
+  if(!c.resolveBy&&!c.eta)return '<span class="badge pending">No ETA</span>';
+  const due=new Date(c.resolveBy||c.eta).getTime();
+  if(!isNaN(due)&&Date.now()>due)return '<span class="badge expense">Overdue</span>';
+  return '<span class="badge online">On Time</span>';
+}
+function complaints(){
+  const dateTitle=(typeof complaintShowAll!=='undefined'&&complaintShowAll)?'(All Dates)':`(${typeof complaintDateFilter!=='undefined'?complaintDateFilter:today()})`;
+  const dateControls=(typeof complaintDateFilter!=='undefined')?`<div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${complaintDateFilter}" onchange="setComplaintDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayComplaintsFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllComplaintsFilter()">Show All</button></div>`:'';
+  content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div>
+  <div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div>
+  <div class="row"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Expected Resolve Time</label><input id="cEta" type="datetime-local" value="${defaultResolveAt()}"></div><div class="fg"><label>Details</label><input id="cDet" placeholder="Issue details"></div></div>
+  <button class="btn btn-p" onclick="addComp()">Add Complaint</button></div>
+  <div class="card"><div class="head"><h2>Complaint List ${dateTitle}</h2>${dateControls}</div>${compTable()}</div>`;
+}
+function addComp(){
+  let assigned=U.role==='employee'?U.id:cAssign.value;
+  if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');
+  let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),createdAt:now(),resolveBy:cEta.value||'',eta:cEta.value||'',resolvedAt:'',by:key()};
+  S.complaints.push(rec);save();if(typeof fbSet==='function')fbSet('complaints',rec);toast('Complaint added with expected resolve time','success');beep();complaints();
+}
+function compTable(){
+  let r=myComp().slice().reverse();
+  if(typeof complaintShowAll!=='undefined' && !complaintShowAll) r=r.filter(c=>(c.date||'')===complaintDateFilter);
+  if(!r.length)return`<div class="empty">No complaints ${typeof complaintShowAll!=='undefined'&&!complaintShowAll?'on '+complaintDateFilter:''}</div>`;
+  return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Created Time</th><th>Expected Resolve</th><th>Resolved Time</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span><br>${etaStatus(c)}</td><td>${esc(c.time||c.createdAt||c.date||'-')}</td><td><b>${esc(formatDT(c.resolveBy||c.eta))}</b></td><td>${esc(c.resolvedAt||'-')}</td><td>${adminButtons('complaint',c.id,`<button class="btn btn-s btn-sm" onclick="sendComplaintWA('${c.id}')">WhatsApp</button>${c.status!=='Resolved'?` <button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}`)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function complaintMsg(c){return`*Fire.net.pk Complaint Update*
+Complaint ID: ${c.id}
+Customer: ${c.name}
+Phone: ${c.phone}
+Type: ${c.type}
+Status: ${c.status}
+Assigned To: ${empName(c.assigned)}
+Date: ${c.date}
+Created Time: ${c.time||c.createdAt||'-'}
+Expected Resolve Time: ${formatDT(c.resolveBy||c.eta)}
+Resolved Time: ${c.resolvedAt||'-'}
+
+Details: ${c.det||'-'}
+
+Thank you,
+Fire.net.pk Support`}
+function sendComplaintWA(i){let c=S.complaints.find(x=>x.id===i);if(!c)return toast('Complaint not found','error');if(!c.phone)return toast('Customer phone not available','error');window.open('https://wa.me/'+String(c.phone).replace(/\D/g,'')+'?text='+encodeURIComponent(complaintMsg(c)),'_blank')}
+function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';c.resolvedAt=now();if(typeof fbSet==='function')fbSet('complaints',c)}save();toast('Complaint resolved with resolved time','success');complaints()}
+/* ================= END COMPLAINT TIME / ETA PATCH ================= */
+
 </script>
 <script>
 /* ================= TARGET + REWARD + INVOICE REFERENCE EMPLOYEE FIX ================= */
@@ -513,6 +711,67 @@ function invTable(){let r=myInv().slice().reverse();if(!r.length)return'<div cla
 function targets(){ensureRewardFields();content.innerHTML=`${U.role==='admin'?`<div class="card"><div class="head"><h2>Assign Daily Target & Reward</h2></div><div class="row"><div class="fg"><label>Employee</label><select id="te">${empOpts()}</select></div><div class="fg"><label>Target Amount</label><input id="ta" type="number" value="20000"></div><div class="fg"><label>Target Date</label><input id="td" type="date" value="${today()}"></div></div><div class="row"><div class="fg"><label>Reward Type</label><select id="rt"><option value="fixed">Fixed Amount</option><option value="percent">Percentage of Achieved</option></select></div><div class="fg"><label>Reward Value</label><input id="rv" type="number" value="1000"></div><div class="fg"><label>Reward Label / Note</label><input id="tr" value="Daily Reward"></div></div><button class="btn btn-p" onclick="assignTarget()">Assign Target</button></div>`:''}<div class="card"><div class="head"><h2>Target Progress & Rewards</h2></div>${targetTable()}</div>`}
 function assignTarget(){let target=+ta.value||0;if(target<=0)return toast('Target required','error');let rec={id:id('t'),emp:te.value,target,achieved:0,reward:tr.value.trim()||'Reward',rewardType:rt.value,rewardValue:+rv.value||0,date:td.value||today(),entries:[]};S.targets.push(rec);save();fbSet('targets',rec);targets()}
 function targetTable(){ensureRewardFields();let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Employee</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Reward Rule</th><th>Reward Earned</th><th>Action</th></tr></thead><tbody>${r.map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${esc(t.date||'-')}</td><td>${empName(t.emp)}</td><td>${money(t.target)}</td><td>${money(t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td>${esc(targetRewardLabel(t))}<br><small>${esc(t.reward||'')}</small></td><td><b>${money(targetRewardEarned(t))}</b></td><td>${adminButtons('target',t.id)}</td></tr>`}).join('')}</tbody></table></div>`}
+
+/* ================= COMPLAINT TIME / ETA PATCH ================= */
+function pad2(n){return String(n).padStart(2,'0')}
+function toDateTimeLocalValue(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`}
+function defaultResolveAt(){let d=new Date();d.setHours(d.getHours()+2);return toDateTimeLocalValue(d)}
+function formatDT(v){
+  if(!v)return '-';
+  try{
+    const d=new Date(v);
+    if(!isNaN(d.getTime()))return d.toLocaleString();
+  }catch(e){}
+  return String(v).replace('T',' ');
+}
+function etaStatus(c){
+  if(c.status==='Resolved')return '<span class="badge done">Resolved</span>';
+  if(!c.resolveBy&&!c.eta)return '<span class="badge pending">No ETA</span>';
+  const due=new Date(c.resolveBy||c.eta).getTime();
+  if(!isNaN(due)&&Date.now()>due)return '<span class="badge expense">Overdue</span>';
+  return '<span class="badge online">On Time</span>';
+}
+function complaints(){
+  const dateTitle=(typeof complaintShowAll!=='undefined'&&complaintShowAll)?'(All Dates)':`(${typeof complaintDateFilter!=='undefined'?complaintDateFilter:today()})`;
+  const dateControls=(typeof complaintDateFilter!=='undefined')?`<div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${complaintDateFilter}" onchange="setComplaintDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayComplaintsFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllComplaintsFilter()">Show All</button></div>`:'';
+  content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div>
+  <div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div>
+  <div class="row"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Expected Resolve Time</label><input id="cEta" type="datetime-local" value="${defaultResolveAt()}"></div><div class="fg"><label>Details</label><input id="cDet" placeholder="Issue details"></div></div>
+  <button class="btn btn-p" onclick="addComp()">Add Complaint</button></div>
+  <div class="card"><div class="head"><h2>Complaint List ${dateTitle}</h2>${dateControls}</div>${compTable()}</div>`;
+}
+function addComp(){
+  let assigned=U.role==='employee'?U.id:cAssign.value;
+  if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');
+  let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),createdAt:now(),resolveBy:cEta.value||'',eta:cEta.value||'',resolvedAt:'',by:key()};
+  S.complaints.push(rec);save();if(typeof fbSet==='function')fbSet('complaints',rec);toast('Complaint added with expected resolve time','success');beep();complaints();
+}
+function compTable(){
+  let r=myComp().slice().reverse();
+  if(typeof complaintShowAll!=='undefined' && !complaintShowAll) r=r.filter(c=>(c.date||'')===complaintDateFilter);
+  if(!r.length)return`<div class="empty">No complaints ${typeof complaintShowAll!=='undefined'&&!complaintShowAll?'on '+complaintDateFilter:''}</div>`;
+  return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Created Time</th><th>Expected Resolve</th><th>Resolved Time</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span><br>${etaStatus(c)}</td><td>${esc(c.time||c.createdAt||c.date||'-')}</td><td><b>${esc(formatDT(c.resolveBy||c.eta))}</b></td><td>${esc(c.resolvedAt||'-')}</td><td>${adminButtons('complaint',c.id,`<button class="btn btn-s btn-sm" onclick="sendComplaintWA('${c.id}')">WhatsApp</button>${c.status!=='Resolved'?` <button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}`)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function complaintMsg(c){return`*Fire.net.pk Complaint Update*
+Complaint ID: ${c.id}
+Customer: ${c.name}
+Phone: ${c.phone}
+Type: ${c.type}
+Status: ${c.status}
+Assigned To: ${empName(c.assigned)}
+Date: ${c.date}
+Created Time: ${c.time||c.createdAt||'-'}
+Expected Resolve Time: ${formatDT(c.resolveBy||c.eta)}
+Resolved Time: ${c.resolvedAt||'-'}
+
+Details: ${c.det||'-'}
+
+Thank you,
+Fire.net.pk Support`}
+function sendComplaintWA(i){let c=S.complaints.find(x=>x.id===i);if(!c)return toast('Complaint not found','error');if(!c.phone)return toast('Customer phone not available','error');window.open('https://wa.me/'+String(c.phone).replace(/\D/g,'')+'?text='+encodeURIComponent(complaintMsg(c)),'_blank')}
+function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';c.resolvedAt=now();if(typeof fbSet==='function')fbSet('complaints',c)}save();toast('Complaint resolved with resolved time','success');complaints()}
+/* ================= END COMPLAINT TIME / ETA PATCH ================= */
+
 </script>
 
 <script>
@@ -571,6 +830,67 @@ function saveInv(){
 }
 function invTable(){let r=myInv().slice().reverse();if(!r.length)return'<div class="empty">No invoices</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Source</th><th>Total</th><th>Reward Employee</th><th>By</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${esc(v.rewardSource||'-')}</td><td>${money(v.total)}</td><td>${esc(v.rewardEmpName||'-')}</td><td>${esc(v.byName)}</td><td>${adminButtons('invoice',v.id,`<button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button>`)}</td></tr>`).join('')}</tbody></table></div>`}
 /* ================= END NEW CONNECTION CONDITIONAL REWARD EMPLOYEE PATCH ================= */
+
+/* ================= COMPLAINT TIME / ETA PATCH ================= */
+function pad2(n){return String(n).padStart(2,'0')}
+function toDateTimeLocalValue(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`}
+function defaultResolveAt(){let d=new Date();d.setHours(d.getHours()+2);return toDateTimeLocalValue(d)}
+function formatDT(v){
+  if(!v)return '-';
+  try{
+    const d=new Date(v);
+    if(!isNaN(d.getTime()))return d.toLocaleString();
+  }catch(e){}
+  return String(v).replace('T',' ');
+}
+function etaStatus(c){
+  if(c.status==='Resolved')return '<span class="badge done">Resolved</span>';
+  if(!c.resolveBy&&!c.eta)return '<span class="badge pending">No ETA</span>';
+  const due=new Date(c.resolveBy||c.eta).getTime();
+  if(!isNaN(due)&&Date.now()>due)return '<span class="badge expense">Overdue</span>';
+  return '<span class="badge online">On Time</span>';
+}
+function complaints(){
+  const dateTitle=(typeof complaintShowAll!=='undefined'&&complaintShowAll)?'(All Dates)':`(${typeof complaintDateFilter!=='undefined'?complaintDateFilter:today()})`;
+  const dateControls=(typeof complaintDateFilter!=='undefined')?`<div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${complaintDateFilter}" onchange="setComplaintDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayComplaintsFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllComplaintsFilter()">Show All</button></div>`:'';
+  content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div>
+  <div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div>
+  <div class="row"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Expected Resolve Time</label><input id="cEta" type="datetime-local" value="${defaultResolveAt()}"></div><div class="fg"><label>Details</label><input id="cDet" placeholder="Issue details"></div></div>
+  <button class="btn btn-p" onclick="addComp()">Add Complaint</button></div>
+  <div class="card"><div class="head"><h2>Complaint List ${dateTitle}</h2>${dateControls}</div>${compTable()}</div>`;
+}
+function addComp(){
+  let assigned=U.role==='employee'?U.id:cAssign.value;
+  if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');
+  let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),createdAt:now(),resolveBy:cEta.value||'',eta:cEta.value||'',resolvedAt:'',by:key()};
+  S.complaints.push(rec);save();if(typeof fbSet==='function')fbSet('complaints',rec);toast('Complaint added with expected resolve time','success');beep();complaints();
+}
+function compTable(){
+  let r=myComp().slice().reverse();
+  if(typeof complaintShowAll!=='undefined' && !complaintShowAll) r=r.filter(c=>(c.date||'')===complaintDateFilter);
+  if(!r.length)return`<div class="empty">No complaints ${typeof complaintShowAll!=='undefined'&&!complaintShowAll?'on '+complaintDateFilter:''}</div>`;
+  return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Created Time</th><th>Expected Resolve</th><th>Resolved Time</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span><br>${etaStatus(c)}</td><td>${esc(c.time||c.createdAt||c.date||'-')}</td><td><b>${esc(formatDT(c.resolveBy||c.eta))}</b></td><td>${esc(c.resolvedAt||'-')}</td><td>${adminButtons('complaint',c.id,`<button class="btn btn-s btn-sm" onclick="sendComplaintWA('${c.id}')">WhatsApp</button>${c.status!=='Resolved'?` <button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}`)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function complaintMsg(c){return`*Fire.net.pk Complaint Update*
+Complaint ID: ${c.id}
+Customer: ${c.name}
+Phone: ${c.phone}
+Type: ${c.type}
+Status: ${c.status}
+Assigned To: ${empName(c.assigned)}
+Date: ${c.date}
+Created Time: ${c.time||c.createdAt||'-'}
+Expected Resolve Time: ${formatDT(c.resolveBy||c.eta)}
+Resolved Time: ${c.resolvedAt||'-'}
+
+Details: ${c.det||'-'}
+
+Thank you,
+Fire.net.pk Support`}
+function sendComplaintWA(i){let c=S.complaints.find(x=>x.id===i);if(!c)return toast('Complaint not found','error');if(!c.phone)return toast('Customer phone not available','error');window.open('https://wa.me/'+String(c.phone).replace(/\D/g,'')+'?text='+encodeURIComponent(complaintMsg(c)),'_blank')}
+function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';c.resolvedAt=now();if(typeof fbSet==='function')fbSet('complaints',c)}save();toast('Complaint resolved with resolved time','success');complaints()}
+/* ================= END COMPLAINT TIME / ETA PATCH ================= */
+
 </script>
 
 <style>
@@ -629,6 +949,67 @@ function dailyReport(){
   let p=prompt('Owner WhatsApp number');if(p)window.open('https://wa.me/'+p.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank')
 }
 /* ===== End finance visual income/expense patch ===== */
+
+/* ================= COMPLAINT TIME / ETA PATCH ================= */
+function pad2(n){return String(n).padStart(2,'0')}
+function toDateTimeLocalValue(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`}
+function defaultResolveAt(){let d=new Date();d.setHours(d.getHours()+2);return toDateTimeLocalValue(d)}
+function formatDT(v){
+  if(!v)return '-';
+  try{
+    const d=new Date(v);
+    if(!isNaN(d.getTime()))return d.toLocaleString();
+  }catch(e){}
+  return String(v).replace('T',' ');
+}
+function etaStatus(c){
+  if(c.status==='Resolved')return '<span class="badge done">Resolved</span>';
+  if(!c.resolveBy&&!c.eta)return '<span class="badge pending">No ETA</span>';
+  const due=new Date(c.resolveBy||c.eta).getTime();
+  if(!isNaN(due)&&Date.now()>due)return '<span class="badge expense">Overdue</span>';
+  return '<span class="badge online">On Time</span>';
+}
+function complaints(){
+  const dateTitle=(typeof complaintShowAll!=='undefined'&&complaintShowAll)?'(All Dates)':`(${typeof complaintDateFilter!=='undefined'?complaintDateFilter:today()})`;
+  const dateControls=(typeof complaintDateFilter!=='undefined')?`<div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${complaintDateFilter}" onchange="setComplaintDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayComplaintsFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllComplaintsFilter()">Show All</button></div>`:'';
+  content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div>
+  <div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div>
+  <div class="row"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Expected Resolve Time</label><input id="cEta" type="datetime-local" value="${defaultResolveAt()}"></div><div class="fg"><label>Details</label><input id="cDet" placeholder="Issue details"></div></div>
+  <button class="btn btn-p" onclick="addComp()">Add Complaint</button></div>
+  <div class="card"><div class="head"><h2>Complaint List ${dateTitle}</h2>${dateControls}</div>${compTable()}</div>`;
+}
+function addComp(){
+  let assigned=U.role==='employee'?U.id:cAssign.value;
+  if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');
+  let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),createdAt:now(),resolveBy:cEta.value||'',eta:cEta.value||'',resolvedAt:'',by:key()};
+  S.complaints.push(rec);save();if(typeof fbSet==='function')fbSet('complaints',rec);toast('Complaint added with expected resolve time','success');beep();complaints();
+}
+function compTable(){
+  let r=myComp().slice().reverse();
+  if(typeof complaintShowAll!=='undefined' && !complaintShowAll) r=r.filter(c=>(c.date||'')===complaintDateFilter);
+  if(!r.length)return`<div class="empty">No complaints ${typeof complaintShowAll!=='undefined'&&!complaintShowAll?'on '+complaintDateFilter:''}</div>`;
+  return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Created Time</th><th>Expected Resolve</th><th>Resolved Time</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span><br>${etaStatus(c)}</td><td>${esc(c.time||c.createdAt||c.date||'-')}</td><td><b>${esc(formatDT(c.resolveBy||c.eta))}</b></td><td>${esc(c.resolvedAt||'-')}</td><td>${adminButtons('complaint',c.id,`<button class="btn btn-s btn-sm" onclick="sendComplaintWA('${c.id}')">WhatsApp</button>${c.status!=='Resolved'?` <button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}`)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function complaintMsg(c){return`*Fire.net.pk Complaint Update*
+Complaint ID: ${c.id}
+Customer: ${c.name}
+Phone: ${c.phone}
+Type: ${c.type}
+Status: ${c.status}
+Assigned To: ${empName(c.assigned)}
+Date: ${c.date}
+Created Time: ${c.time||c.createdAt||'-'}
+Expected Resolve Time: ${formatDT(c.resolveBy||c.eta)}
+Resolved Time: ${c.resolvedAt||'-'}
+
+Details: ${c.det||'-'}
+
+Thank you,
+Fire.net.pk Support`}
+function sendComplaintWA(i){let c=S.complaints.find(x=>x.id===i);if(!c)return toast('Complaint not found','error');if(!c.phone)return toast('Customer phone not available','error');window.open('https://wa.me/'+String(c.phone).replace(/\D/g,'')+'?text='+encodeURIComponent(complaintMsg(c)),'_blank')}
+function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';c.resolvedAt=now();if(typeof fbSet==='function')fbSet('complaints',c)}save();toast('Complaint resolved with resolved time','success');complaints()}
+/* ================= END COMPLAINT TIME / ETA PATCH ================= */
+
 </script>
 
 
@@ -732,5 +1113,164 @@ function addInvoicePayment(invId){
 }
 function sendSavedInv(i){let v=S.invoices.find(x=>x.id===i);if(v)window.open('https://wa.me/'+String(v.phone||'').replace(/\D/g,'')+'?text='+encodeURIComponent(invMsg(v)),'_blank')}
 /* ================= END INVOICE RECEIVED / DUE + AUTO FINANCE INCOME PATCH ================= */
+
+/* ================= COMPLAINT TIME / ETA PATCH ================= */
+function pad2(n){return String(n).padStart(2,'0')}
+function toDateTimeLocalValue(d){return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`}
+function defaultResolveAt(){let d=new Date();d.setHours(d.getHours()+2);return toDateTimeLocalValue(d)}
+function formatDT(v){
+  if(!v)return '-';
+  try{
+    const d=new Date(v);
+    if(!isNaN(d.getTime()))return d.toLocaleString();
+  }catch(e){}
+  return String(v).replace('T',' ');
+}
+function etaStatus(c){
+  if(c.status==='Resolved')return '<span class="badge done">Resolved</span>';
+  if(!c.resolveBy&&!c.eta)return '<span class="badge pending">No ETA</span>';
+  const due=new Date(c.resolveBy||c.eta).getTime();
+  if(!isNaN(due)&&Date.now()>due)return '<span class="badge expense">Overdue</span>';
+  return '<span class="badge online">On Time</span>';
+}
+function complaints(){
+  const dateTitle=(typeof complaintShowAll!=='undefined'&&complaintShowAll)?'(All Dates)':`(${typeof complaintDateFilter!=='undefined'?complaintDateFilter:today()})`;
+  const dateControls=(typeof complaintDateFilter!=='undefined')?`<div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${complaintDateFilter}" onchange="setComplaintDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayComplaintsFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllComplaintsFilter()">Show All</button></div>`:'';
+  content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div>
+  <div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div>
+  <div class="row"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Expected Resolve Time</label><input id="cEta" type="datetime-local" value="${defaultResolveAt()}"></div><div class="fg"><label>Details</label><input id="cDet" placeholder="Issue details"></div></div>
+  <button class="btn btn-p" onclick="addComp()">Add Complaint</button></div>
+  <div class="card"><div class="head"><h2>Complaint List ${dateTitle}</h2>${dateControls}</div>${compTable()}</div>`;
+}
+function addComp(){
+  let assigned=U.role==='employee'?U.id:cAssign.value;
+  if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');
+  let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),createdAt:now(),resolveBy:cEta.value||'',eta:cEta.value||'',resolvedAt:'',by:key()};
+  S.complaints.push(rec);save();if(typeof fbSet==='function')fbSet('complaints',rec);toast('Complaint added with expected resolve time','success');beep();complaints();
+}
+function compTable(){
+  let r=myComp().slice().reverse();
+  if(typeof complaintShowAll!=='undefined' && !complaintShowAll) r=r.filter(c=>(c.date||'')===complaintDateFilter);
+  if(!r.length)return`<div class="empty">No complaints ${typeof complaintShowAll!=='undefined'&&!complaintShowAll?'on '+complaintDateFilter:''}</div>`;
+  return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Created Time</th><th>Expected Resolve</th><th>Resolved Time</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span><br>${etaStatus(c)}</td><td>${esc(c.time||c.createdAt||c.date||'-')}</td><td><b>${esc(formatDT(c.resolveBy||c.eta))}</b></td><td>${esc(c.resolvedAt||'-')}</td><td>${adminButtons('complaint',c.id,`<button class="btn btn-s btn-sm" onclick="sendComplaintWA('${c.id}')">WhatsApp</button>${c.status!=='Resolved'?` <button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}`)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function complaintMsg(c){return`*Fire.net.pk Complaint Update*
+Complaint ID: ${c.id}
+Customer: ${c.name}
+Phone: ${c.phone}
+Type: ${c.type}
+Status: ${c.status}
+Assigned To: ${empName(c.assigned)}
+Date: ${c.date}
+Created Time: ${c.time||c.createdAt||'-'}
+Expected Resolve Time: ${formatDT(c.resolveBy||c.eta)}
+Resolved Time: ${c.resolvedAt||'-'}
+
+Details: ${c.det||'-'}
+
+Thank you,
+Fire.net.pk Support`}
+function sendComplaintWA(i){let c=S.complaints.find(x=>x.id===i);if(!c)return toast('Complaint not found','error');if(!c.phone)return toast('Customer phone not available','error');window.open('https://wa.me/'+String(c.phone).replace(/\D/g,'')+'?text='+encodeURIComponent(complaintMsg(c)),'_blank')}
+function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';c.resolvedAt=now();if(typeof fbSet==='function')fbSet('complaints',c)}save();toast('Complaint resolved with resolved time','success');complaints()}
+/* ================= END COMPLAINT TIME / ETA PATCH ================= */
+
+
+
+/* ================= DASHBOARD FULL CARDS PATCH ================= */
+function todayFinanceEntries(){
+  return myFin().filter(e=>(e.date||'')===today());
+}
+function invoiceDueAmount(v){
+  if(typeof getInvoiceDue==='function') return getInvoiceDue(v);
+  return Math.max(0,(Number(v.total)||0)-(Number(v.received)||0));
+}
+function dashboardCard(title,value,sub,color){
+  return `<div class="stat" style="border-left:5px solid ${color||'var(--p)'}"><span>${title}</span><b>${value}</b><small style="color:#64748b;font-weight:800">${sub||''}</small></div>`;
+}
+function dashboardMiniTable(title,rows,empty){
+  return `<div class="card"><div class="head"><h2>${title}</h2></div>${rows.length?`<div class="tbl"><table><thead><tr>${rows[0].head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.cells.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:`<div class="empty">${empty||'No data'}</div>`}</div>`;
+}
+function dashboardComplaintCards(){
+  const rows=myComp();
+  const total=rows.length;
+  const pending=rows.filter(c=>c.status!=='Resolved').length;
+  const resolved=rows.filter(c=>c.status==='Resolved').length;
+  const overdue=rows.filter(c=>c.status!=='Resolved' && (c.resolveBy||c.eta) && !isNaN(new Date(c.resolveBy||c.eta).getTime()) && Date.now()>new Date(c.resolveBy||c.eta).getTime()).length;
+  return `<div class="card"><div class="head"><h2>🛠️ Complaint Summary</h2><button class="btn btn-l btn-sm" onclick="tab('complaints')">Open Complaints</button></div><div class="grid">
+    ${dashboardCard('Total Complaints',total,'All visible complaints','var(--i)')}
+    ${dashboardCard('Pending Complaints',pending,'Need action','var(--w)')}
+    ${dashboardCard('Resolved Complaints',resolved,'Completed','var(--s)')}
+    ${dashboardCard('Overdue Complaints',overdue,'Past expected resolve time','var(--e)')}
+  </div></div>`;
+}
+function dashboardInvoiceCards(){
+  const inv=myInv();
+  const sales=inv.reduce((s,v)=>s+(Number(v.total)||0),0);
+  const received=inv.reduce((s,v)=>s+(Number(v.received)||0),0);
+  const due=inv.reduce((s,v)=>s+invoiceDueAmount(v),0);
+  const paidCount=inv.filter(v=>invoiceDueAmount(v)<=0 && (Number(v.total)||0)>0).length;
+  const dueCount=inv.filter(v=>invoiceDueAmount(v)>0).length;
+  return `<div class="card"><div class="head"><h2>🧾 Invoice Paid / Due</h2><button class="btn btn-l btn-sm" onclick="tab('invoice')">Open Invoice</button></div><div class="grid">
+    ${dashboardCard('Total Sales',money(sales),`${inv.length} invoices`,'var(--i)')}
+    ${dashboardCard('Paid / Received',money(received),`${paidCount} fully paid invoices`,'var(--s)')}
+    ${dashboardCard('Due Amount',money(due),`${dueCount} due invoices`,'var(--e)')}
+    ${dashboardCard('Payment Status',due<=0?'Clear':'Due Pending',due>0?money(due)+' pending':'No pending due','var(--w)')}
+  </div></div>`;
+}
+function dashboardFinanceCards(){
+  const arr=todayFinanceEntries();
+  const f=calc(arr);
+  const incomeEntries=arr.filter(e=>e.type!=='expense').length;
+  const expenseEntries=arr.filter(e=>e.type==='expense').length;
+  return `<div class="card"><div class="head"><h2>💰 Today Income / Expenses</h2><button class="btn btn-l btn-sm" onclick="tab('finance')">Open Finance</button></div><div class="grid">
+    ${dashboardCard('Today Income',money(f.inc),`${incomeEntries} income entries`,'var(--s)')}
+    ${dashboardCard('Today Expenses',money(f.exp),`${expenseEntries} expense entries`,'var(--e)')}
+    ${dashboardCard('Cash Today',money(f.cash),'Cash income received','var(--s)')}
+    ${dashboardCard('Online Today',money(f.online),'Online income received','var(--i)')}
+  </div><div class="summary"><div class="sum">Net Balance<b>${money(f.bal)}</b></div><div class="sum">Total Entries<b>${arr.length}</b></div></div></div>`;
+}
+function dashboardTargetCards(){
+  if(typeof ensureRewardFields==='function') ensureRewardFields();
+  const ts=U.role==='admin'?(S.targets||[]):(S.targets||[]).filter(t=>t.emp===U.id);
+  const todayTs=ts.filter(t=>(t.date||'')===today());
+  const use=todayTs.length?todayTs:ts;
+  const given=use.reduce((s,t)=>s+(Number(t.target)||0),0);
+  const achieved=use.reduce((s,t)=>s+(Number(t.achieved)||0),0);
+  const progress=given?Math.min(100,Math.round(achieved/given*100)):0;
+  const reward=use.reduce((s,t)=>s+(typeof targetRewardEarned==='function'?targetRewardEarned(t):0),0);
+  return `<div class="card"><div class="head"><h2>🎯 Target Given / Achieved</h2><button class="btn btn-l btn-sm" onclick="tab('targets')">Open Targets</button></div><div class="grid">
+    ${dashboardCard('Target Given',money(given),todayTs.length?'Today targets':'All visible targets','var(--i)')}
+    ${dashboardCard('Target Achieved',money(achieved),`${progress}% completed`,'var(--s)')}
+    ${dashboardCard('Reward Earned',money(reward),'Fixed / percentage reward','var(--w)')}
+    ${dashboardCard('Remaining Target',money(Math.max(0,given-achieved)),`${100-progress}% remaining`,'var(--e)')}
+  </div><div class="prog" style="margin-top:12px"><div class="bar" style="width:${progress}%"></div></div><b>${progress}% Achieved</b></div>`;
+}
+function dashboardDetailTables(){
+  const overdue=myComp().filter(c=>c.status!=='Resolved' && (c.resolveBy||c.eta) && !isNaN(new Date(c.resolveBy||c.eta).getTime()) && Date.now()>new Date(c.resolveBy||c.eta).getTime()).slice(-5).reverse();
+  const dueInv=myInv().filter(v=>invoiceDueAmount(v)>0).slice(-5).reverse();
+  const financeRows=todayFinanceEntries().slice(-5).reverse();
+  return dashboardMiniTable('🚨 Overdue / Pending Complaints', overdue.map(c=>({head:['Customer','Type','Assigned','ETA','Status'],cells:[`<b>${esc(c.name)}</b><br>${esc(c.phone)}`,esc(c.type),esc(empName(c.assigned)),esc(typeof formatDT==='function'?formatDT(c.resolveBy||c.eta):(c.resolveBy||c.eta||'-')),etaStatus(c)]})), 'No overdue complaints')+
+    dashboardMiniTable('🧾 Recent Due Invoices', dueInv.map(v=>({head:['Customer','Work','Total','Received','Due'],cells:[`<b>${esc(v.cust)}</b><br>${esc(v.phone)}`,esc(v.work),money(v.total),money(v.received||0),`<b class="money-minus">${money(invoiceDueAmount(v))}</b>`]})), 'No due invoices')+
+    dashboardMiniTable('💰 Today Recent Income / Expense', financeRows.map(e=>({head:['Time','Type','Mode','Customer','Amount'],cells:[esc(e.time||e.createdAt||'-'),`<span class="badge ${e.type==='expense'?'expense':'done'}">${esc((e.type||'income').toUpperCase())}</span>`,`<span class="badge ${e.mode==='online'?'online':'cash'}">${esc((e.mode||'cash').toUpperCase())}</span>`,esc(e.customer||e.paidBy||e.paidByCustomer||e.receiver||'-'),`${e.type==='expense'?'-':'+'} ${money(e.amount)}`]})), 'No finance entries today');
+}
+function stats(){
+  const f=calc(todayFinanceEntries());
+  const comp=myComp();
+  const inv=myInv();
+  const invDue=inv.reduce((s,v)=>s+invoiceDueAmount(v),0);
+  const pending=comp.filter(c=>c.status!=='Resolved').length;
+  const ts=U.role==='admin'?(S.targets||[]):(S.targets||[]).filter(t=>t.emp===U.id);
+  const tar=ts.reduce((s,t)=>s+(+t.target||0),0), ach=ts.reduce((s,t)=>s+(+t.achieved||0),0);
+  return `<div class="grid">
+    ${dashboardCard('Pending Complaints',pending,'Open tasks','var(--w)')}
+    ${dashboardCard('Invoice Due',money(invDue),'Unpaid invoice amount','var(--e)')}
+    ${dashboardCard('Today Income',money(f.inc),'Income received today','var(--s)')}
+    ${dashboardCard('Target Achieved',money(ach),`Given: ${money(tar)}`,'var(--i)')}
+  </div>`;
+}
+function dash(){
+  content.innerHTML=stats()+employeeTargetBanner()+dashboardComplaintCards()+dashboardInvoiceCards()+dashboardFinanceCards()+dashboardTargetCards()+dashboardDetailTables();
+}
+/* ================= END DASHBOARD FULL CARDS PATCH ================= */
 </script>
 </body></html>
