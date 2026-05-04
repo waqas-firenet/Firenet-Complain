@@ -5,7 +5,9 @@
 <title>FireNetPK Single HTML System</title>
 <style>
 :root{--p:#e74c3c;--d:#243447;--s:#16a34a;--e:#dc2626;--b:#f4f7fb;--m:#64748b;--i:#2563eb;--w:#d97706}*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}body{background:linear-gradient(135deg,#eef2ff,#fff1f2);min-height:100vh;color:#1f2937}button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden{display:none!important}.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:15px}.login-card,.card{background:#fff;border-radius:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);border:1px solid #eef2f7}.login-card{max-width:420px;width:100%;overflow:hidden}.login-head{background:linear-gradient(135deg,var(--d),#111827);color:white;text-align:center;padding:32px}.login-body{padding:24px}.app{display:none;padding:12px}.container{max-width:1200px;margin:auto}.header{background:#fff;border-radius:18px;padding:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;box-shadow:0 12px 30px rgba(15,23,42,.08)}.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:14px;background:var(--p);color:white;display:flex;align-items:center;justify-content:center;font-size:23px}.brand h1{font-size:20px;color:var(--d)}.dt{font-weight:800;background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:9px}.profile{position:relative}.profile-btn{display:flex;gap:8px;align-items:center;background:#f8fafc;border:1px solid #e5e7eb;border-radius:999px;padding:6px 10px}.avatar{width:34px;height:34px;border-radius:50%;background:#7c3aed;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900}.menu{display:none;position:absolute;right:0;top:48px;background:white;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.15);min-width:190px;overflow:hidden;z-index:10}.menu.active{display:block}.menu button{display:block;width:100%;background:white;text-align:left;padding:12px}.menu button:hover{background:#f8fafc;color:var(--p)}.nav{display:flex;gap:8px;background:#fff;padding:8px;border-radius:16px;margin-bottom:12px;overflow-x:auto;box-shadow:0 10px 25px rgba(15,23,42,.07)}.nav button{white-space:nowrap;background:#f8fafc;color:#475569;padding:10px 13px;border-radius:12px;font-weight:900}.nav button.active{background:var(--p);color:white}.card{padding:16px;margin-bottom:12px}.head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.head h2{font-size:18px;color:var(--d)}.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.row.two{grid-template-columns:repeat(2,1fr)}.fg{margin-bottom:12px}.fg label{display:block;font-size:13px;font-weight:900;margin-bottom:6px;color:#374151}input,select,textarea{width:100%;padding:11px;border:1px solid #e5e7eb;border-radius:12px;outline:none}textarea{min-height:75px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 13px;border-radius:12px;color:white;background:var(--d);font-weight:900;text-decoration:none}.btn-p{background:var(--p)}.btn-s{background:var(--s)}.btn-e{background:var(--e)}.btn-i{background:var(--i)}.btn-w{background:var(--w)}.btn-l{background:#e5e7eb;color:#111827}.btn-sm{font-size:12px;padding:7px 9px}.actions{display:flex;gap:8px;flex-wrap:wrap}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;background:#fff;border-radius:16px;box-shadow:0 8px 18px rgba(15,23,42,.05);border:1px solid #eef2f7}.stat span{font-size:12px;color:var(--m);font-weight:900}.stat b{display:block;font-size:22px;margin-top:5px}.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:14px;vertical-align:top}th{background:#f8fafc;color:#475569;text-transform:uppercase;font-size:12px}.badge{padding:5px 9px;border-radius:999px;font-size:12px;font-weight:900;display:inline-block;text-transform:uppercase}.cash{background:#dcfce7;color:#166534}.online{background:#dbeafe;color:#1e40af}.income{background:#dcfce7;color:#166534}.expense{background:#fee2e2;color:#991b1b}.pending{background:#fef3c7;color:#92400e}.done{background:#dcfce7;color:#166534}.income-row{background:#f0fdf4}.expense-row{background:#fff1f2}.amount-income{color:#166534;font-weight:900}.amount-expense{color:#991b1b;font-weight:900}.finance-type-box{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.empty{text-align:center;color:var(--m);font-weight:800;padding:25px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.sum{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:13px}.sum b{display:block;font-size:20px;margin-top:4px}.item-line{display:grid;grid-template-columns:2fr .7fr 1fr auto;gap:10px;align-items:end}.toast-wrap{position:fixed;right:14px;top:14px;z-index:99}.toast{background:white;border-left:5px solid var(--i);box-shadow:0 14px 35px rgba(15,23,42,.18);padding:12px 14px;border-radius:14px;margin-bottom:8px;font-weight:800}.toast.success{border-left-color:var(--s)}.toast.error{border-left-color:var(--e)}.toast.warning{border-left-color:var(--w)}.prog{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,var(--s),#84cc16)}.modal-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;align-items:center;justify-content:center;padding:15px}.modal-bg.active{display:flex}.modal{background:white;border-radius:18px;max-width:500px;width:100%;padding:18px}@media(max-width:850px){.grid,.summary{grid-template-columns:repeat(2,1fr)}.row,.row.two{grid-template-columns:1fr}}@media(max-width:560px){.app{padding:8px}.header>*{width:100%}.profile-btn{width:100%}.nav{display:grid;grid-template-columns:1fr 1fr}.grid,.summary{grid-template-columns:1fr}.item-line{grid-template-columns:1fr}.actions .btn{width:100%}}
-.badge.expense{background:#fee2e2;color:#991b1b}.eta-overdue{background:#fef2f2}.eta-ok{background:#f0fdf4}</style></head><body>
+.badge.expense{background:#fee2e2;color:#991b1b}.eta-overdue{background:#fef2f2}.eta-ok{background:#f0fdf4}
+.finance-income-row{background:#f0fdf4!important}.finance-expense-row{background:#fff1f2!important}.money-plus{color:#15803d;font-weight:900}.money-minus{color:#dc2626;font-weight:900}.badge.expense{background:#fee2e2;color:#991b1b}.form-control{padding:10px;border:1px solid #e5e7eb;border-radius:12px}
+</style></head><body>
 <div id="login" class="login"><div class="login-card"><div class="login-head"><h1>🔥 Fire.net.pk</h1><p>ISP Management System</p></div><div class="login-body"><div class="fg"><label>Username / Phone</label><input id="lu" placeholder="admin or ali"></div><div class="fg"><label>Password / PIN</label><input id="lp" type="password" placeholder="admin123 or 1234"></div><button class="btn btn-p" style="width:100%" onclick="login()">Login</button><p style="font-size:12px;color:#64748b;margin-top:12px;line-height:1.5">Default: <b>admin/admin123</b> or employee <b>ali/1234</b>. Admin password can be changed from profile.</p></div></div></div>
 <div id="app" class="app"><div class="container"><div class="header"><div class="brand"><div class="logo">🔥</div><div><h1>Fire.net.pk ISP</h1><small style="color:#64748b;font-weight:800">Complaints • Accounts • Invoice • Targets</small></div></div><div id="dt" class="dt"></div><div id="syncStatus" class="dt" style="font-size:12px">Firebase: starting...</div><div class="profile"><button class="profile-btn" onclick="toggleMenu()"><span id="av" class="avatar">A</span><span><b id="pn">Admin</b><br><small id="pr">Admin</small></span></button><div id="pm" class="menu"><button onclick="openPwd()">Change Password</button><button onclick="logout()">Logout</button></div></div></div><div id="nav" class="nav"></div><div id="content"></div></div></div>
 <div id="tw" class="toast-wrap"></div><div id="pwdModal" class="modal-bg"><div class="modal"><div class="head"><h2>Change Password / PIN</h2><button class="btn btn-l btn-sm" onclick="closePwd()">Close</button></div><div class="fg"><label>New Password / PIN</label><input id="newPwd" type="password"></div><button class="btn btn-p" onclick="savePwd()">Save</button></div></div>
@@ -1272,5 +1274,128 @@ function dash(){
   content.innerHTML=stats()+employeeTargetBanner()+dashboardComplaintCards()+dashboardInvoiceCards()+dashboardFinanceCards()+dashboardTargetCards()+dashboardDetailTables();
 }
 /* ================= END DASHBOARD FULL CARDS PATCH ================= */
+
+
+/* ================= FINANCE EMPLOYEE FILTER + REPORT + EMPLOYEE COMPLAINT WHATSAPP PATCH ================= */
+if (typeof financeEmployeeFilter === 'undefined') var financeEmployeeFilter = 'all';
+
+function financeEntryEmployeeId(e){
+  return e.by || e.createdBy || e.employeeId || e.emp || e.createdById || 'admin';
+}
+function financeEntryEmployeeName(e){
+  const id = financeEntryEmployeeId(e);
+  if(id==='admin') return 'Admin';
+  return (typeof empName==='function' ? empName(id) : id) || e.byName || e.createdByName || 'Unknown';
+}
+function setFinanceEmployeeFilter(v){ financeEmployeeFilter = v || 'all'; finance(); }
+function employeeFinanceOptions(){
+  let opts = `<option value="all" ${financeEmployeeFilter==='all'?'selected':''}>All Employees / Admin</option>`;
+  opts += `<option value="admin" ${financeEmployeeFilter==='admin'?'selected':''}>Admin Entries</option>`;
+  opts += (S.employees||[]).map(e=>`<option value="${e.id}" ${financeEmployeeFilter===e.id?'selected':''}>${esc(e.name)} - ${esc(e.role||'Employee')}</option>`).join('');
+  return opts;
+}
+function filteredFinanceEntries(){
+  let r = (typeof myFin==='function'?myFin():S.finance||[]).slice();
+  if(!financeShowAll) r = r.filter(e => (e.date||'') === financeDateFilter);
+  if(U && U.role==='admin' && financeEmployeeFilter !== 'all') r = r.filter(e => financeEntryEmployeeId(e) === financeEmployeeFilter);
+  return r;
+}
+function employeeFinanceSummary(entries){
+  const map = {};
+  entries.forEach(e=>{
+    const id = financeEntryEmployeeId(e);
+    const name = financeEntryEmployeeName(e);
+    if(!map[id]) map[id] = {id,name,income:0,expense:0,cash:0,online:0,balance:0,count:0};
+    const amt = Number(e.amount)||0;
+    const type = (typeof normalizeFinanceType==='function'?normalizeFinanceType(e):(e.type||'income'));
+    const mode = (typeof normalizeFinanceMode==='function'?normalizeFinanceMode(e):(e.mode||'cash'));
+    map[id].count++;
+    if(type==='expense') map[id].expense += amt; else { map[id].income += amt; if(mode==='online') map[id].online += amt; else map[id].cash += amt; }
+  });
+  Object.values(map).forEach(x=>x.balance=x.income-x.expense);
+  return Object.values(map).sort((a,b)=>b.balance-a.balance);
+}
+function employeeFinanceSummaryHtml(entries){
+  if(U.role!=='admin') return '';
+  const rows = employeeFinanceSummary(entries);
+  if(!rows.length) return '<div class="empty">No employee-wise finance summary</div>';
+  return `<div class="card"><div class="head"><h2>Employee-wise Amount Summary</h2><div class="actions"><button class="btn btn-l btn-sm" onclick="printFinanceReport()">Print Report</button><button class="btn btn-s btn-sm" onclick="sendFinanceReportWhatsApp()">Send Report</button></div></div>
+  <div class="tbl"><table><thead><tr><th>Employee</th><th>Entries</th><th>Income</th><th>Expense</th><th>Cash</th><th>Online</th><th>Balance / Amount With Employee</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr><td><b>${esc(r.name)}</b></td><td>${r.count}</td><td class="money-plus">${money(r.income)}</td><td class="money-minus">${money(r.expense)}</td><td>${money(r.cash)}</td><td>${money(r.online)}</td><td><b>${money(r.balance)}</b></td></tr>`).join('')}
+  </tbody></table></div></div>`;
+}
+function financeReportText(entries=filteredFinanceEntries()){
+  const titleDate = financeShowAll ? 'All Dates' : financeDateFilter;
+  const empTitle = financeEmployeeFilter==='all' ? 'All Employees' : (financeEmployeeFilter==='admin'?'Admin':empName(financeEmployeeFilter));
+  const s = (typeof financeVisualSummary==='function') ? financeVisualSummary(entries) : {income:calc(entries).inc,expense:calc(entries).exp,cashIncome:calc(entries).cash,onlineIncome:calc(entries).online,cashExpense:0,onlineExpense:0,balance:calc(entries).bal};
+  const empRows = employeeFinanceSummary(entries);
+  return `*Fire.net.pk Finance Report*\nDate: ${titleDate}\nEmployee Filter: ${empTitle}\n\n*Summary*\nTotal Income: ${money(s.income)}\nTotal Expense: ${money(s.expense)}\nCash Income: ${money(s.cashIncome)}\nOnline Income: ${money(s.onlineIncome)}\nCash Expense: ${money(s.cashExpense||0)}\nOnline Expense: ${money(s.onlineExpense||0)}\nNet Balance: ${money(s.balance)}\n\n*Employee-wise Amount*\n${empRows.map((r,i)=>`${i+1}. ${r.name}: Balance ${money(r.balance)} | Income ${money(r.income)} | Expense ${money(r.expense)} | Cash ${money(r.cash)} | Online ${money(r.online)}`).join('\n') || 'No data'}\n\n*Entries*\n${entries.map((e,i)=>`${i+1}. ${e.date||''} | ${financeEntryEmployeeName(e)} | ${(typeof normalizeFinanceType==='function'?normalizeFinanceType(e):e.type||'income').toUpperCase()} | ${(typeof normalizeFinanceMode==='function'?normalizeFinanceMode(e):e.mode||'cash').toUpperCase()} | Paid By: ${(typeof getFinanceCustomer==='function'?getFinanceCustomer(e):(e.customer||e.paidBy||'-'))} | ${e.cat||e.category||'-'} | ${((typeof normalizeFinanceType==='function'?normalizeFinanceType(e):e.type)==='expense')?'- ':'+ '}${money(e.amount)} | Receiver: ${e.receiver||'-'}${(e.online||e.onlineAccount)?' | Account: '+(e.online||e.onlineAccount):''}`).join('\n') || 'No entries'}`;
+}
+function printFinanceReport(){
+  const text = financeReportText().replace(/\n/g,'<br>');
+  const w = window.open('', '_blank');
+  w.document.write(`<html><head><title>Finance Report</title><style>body{font-family:Arial;padding:20px;line-height:1.6} h1{color:#e74c3c}</style></head><body><h1>Fire.net.pk Finance Report</h1><div>${text}</div><script>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+function sendFinanceReportWhatsApp(){
+  const p = prompt('WhatsApp number for finance report (923xxxxxxxxx)');
+  if(p) window.open('https://wa.me/'+String(p).replace(/\D/g,'')+'?text='+encodeURIComponent(financeReportText()),'_blank');
+}
+function dailyReport(){ sendFinanceReportWhatsApp(); }
+function finance(){
+  const entries = filteredFinanceEntries();
+  const s = (typeof financeVisualSummary==='function') ? financeVisualSummary(entries) : null;
+  const f = s ? {cash:s.cashIncome,online:s.onlineIncome,inc:s.income,exp:s.expense,bal:s.balance} : calc(entries);
+  content.innerHTML = `${typeof financeSummaryHtml==='function'&&s?financeSummaryHtml(s):`<div class="summary"><div class="sum">Income<b>${money(f.inc)}</b></div><div class="sum">Expenses<b>${money(f.exp)}</b></div><div class="sum">Cash<b>${money(f.cash)}</b></div><div class="sum">Online<b>${money(f.online)}</b></div><div class="sum">Balance<b>${money(f.bal)}</b></div></div>`}
+  ${employeeFinanceSummaryHtml(entries)}
+  <div class="card"><div class="head"><h2>Add Account Entry</h2></div>
+  <div class="row"><div class="fg"><label>Type</label><select id="ft"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="fg"><label>Mode</label><select id="fm" onchange="onBox()"><option value="cash">Cash</option><option value="online">Online</option></select></div><div class="fg"><label>Category</label><select id="fc"><option>Monthly Fee</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Office Expense</option><option>Other</option></select></div></div>
+  <div class="row"><div class="fg"><label>Amount</label><input id="fa" type="number" value="0"></div><div class="fg"><label>Customer Name / Paid By</label><input id="fCustomer" placeholder="Who paid?"></div><div class="fg"><label>Receiver Name</label><input id="fr" placeholder="Receiver"></div></div>
+  <div class="row"><div class="fg" id="ob"><label>Online Account</label><input id="fo" placeholder="JazzCash / Bank"></div><div class="fg"><label>Client WhatsApp</label><input id="fp" placeholder="923xx"></div><div class="fg"><label>Notes</label><input id="fn"></div></div>
+  <button class="btn btn-p" onclick="addFin()">Save Entry</button></div>
+  <div class="card"><div class="head"><h2>Account List ${financeShowAll?'(All Data)':'('+financeDateFilter+')'}</h2><div class="actions">
+  ${U.role==='admin'?`<select class="form-control" style="max-width:230px" onchange="setFinanceEmployeeFilter(this.value)">${employeeFinanceOptions()}</select>`:''}
+  <input type="date" class="form-control" style="max-width:170px" value="${financeDateFilter}" onchange="setFinanceDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayFinanceFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllFinanceFilter()">Show All</button><button class="btn btn-i btn-sm" onclick="fetchAllFinanceData()">Fetch Firebase</button><button class="btn btn-l btn-sm" onclick="printFinanceReport()">Print</button><button class="btn btn-s btn-sm" onclick="sendFinanceReportWhatsApp()">Send Report</button></div></div>${finTable()}</div>`;
+  onBox();
+}
+function finTable(){
+  let r = filteredFinanceEntries().slice().reverse();
+  if(!r.length) return `<div class="empty">No entries ${financeShowAll?'':'on '+financeDateFilter}</div>`;
+  const typeOf = e => (typeof normalizeFinanceType==='function'?normalizeFinanceType(e):(e.type||'income'));
+  const modeOf = e => (typeof normalizeFinanceMode==='function'?normalizeFinanceMode(e):(e.mode||'cash'));
+  let sec=(title,arr)=>`<h3 style="margin:12px 0">${title}</h3>${arr.length?`<div class="tbl"><table><thead><tr><th>Time</th><th>Date</th><th>Employee</th><th>Type</th><th>Mode</th><th>Paid By</th><th>Category</th><th>Receiver</th><th>Account</th><th>Amount</th><th>Action</th></tr></thead><tbody>${arr.map(e=>`<tr class="${typeOf(e)==='expense'?'finance-expense-row':'finance-income-row'}"><td>${e.time||e.createdAt||''}</td><td>${e.date||''}</td><td>${esc(financeEntryEmployeeName(e))}</td><td><span class="badge ${typeOf(e)==='expense'?'expense':'done'}">${typeOf(e).toUpperCase()}</span></td><td><span class="badge ${modeOf(e)==='online'?'online':'cash'}">${modeOf(e).toUpperCase()}</span></td><td>${esc(typeof getFinanceCustomer==='function'?getFinanceCustomer(e):(e.customer||e.paidBy||'-'))}</td><td>${esc(e.cat||e.category||'-')}</td><td>${esc(e.receiver||'-')}</td><td>${esc(e.online||e.onlineAccount||'-')}</td><td class="${typeOf(e)==='expense'?'money-minus':'money-plus'}">${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td><td>${typeof financeActionButtons==='function'?financeActionButtons(e):''}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">None</div>'}`;
+  return sec('Income Entries', r.filter(e=>typeOf(e)!=='expense')) + sec('Expense Entries', r.filter(e=>typeOf(e)==='expense'));
+}
+
+function assignedEmployeePhone(c){
+  const emp=(S.employees||[]).find(e=>e.id===c.assigned);
+  return emp?.phone || '';
+}
+function complaintEmployeeMsg(c){
+  return `🔥 *Fire.net.pk Complaint Update*\nComplaint ID: ${c.id}\nCustomer: ${c.name}\nCustomer Phone: ${c.phone}\nType: ${c.type}\nStatus: ${c.status}\nAssigned To: ${empName(c.assigned)}\nCreated: ${c.time||c.createdAt||c.date||'-'}\nExpected Resolve: ${typeof formatDT==='function'?formatDT(c.resolveBy||c.eta):(c.resolveBy||c.eta||'-')}\nDetails: ${c.det||'-'}\n\nPlease update this complaint in your employee portal.`;
+}
+function sendComplaintEmployeeWA(i){
+  const c=S.complaints.find(x=>x.id===i); if(!c) return toast('Complaint not found','error');
+  const phone=assignedEmployeePhone(c); if(!phone) return toast('Assigned employee phone/login not available','error');
+  window.open('https://wa.me/'+String(phone).replace(/\D/g,'')+'?text='+encodeURIComponent(complaintEmployeeMsg(c)),'_blank');
+}
+function complaints(){
+  content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div><div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div><div class="row"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Expected Resolve Time</label><input id="cEta" type="datetime-local"></div><div class="fg"><label>Details</label><input id="cDet"></div></div><label style="font-weight:900"><input type="checkbox" id="sendEmpWA" checked> Send WhatsApp to assigned employee</label><br><br><button class="btn btn-p" onclick="addComp()">Add Complaint</button></div><div class="card"><div class="head"><h2>Complaint List</h2></div>${compTable()}</div>`;
+}
+function addComp(){
+  let assigned=U.role==='employee'?U.id:cAssign.value;
+  if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');
+  let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),resolveBy:cEta.value||'',by:key()};
+  S.complaints.push(rec);save(); if(typeof fbSet==='function') fbSet('complaints',rec);
+  toast('Complaint added','success');beep();
+  if(document.getElementById('sendEmpWA')?.checked) setTimeout(()=>sendComplaintEmployeeWA(rec.id),200);
+  complaints();
+}
+function compTable(){
+  let r=myComp().slice().reverse();if(!r.length)return'<div class="empty">No complaints</div>';
+  return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Created Time</th><th>Expected Resolve</th><th>Resolved Time</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span><br>${typeof etaStatus==='function'?etaStatus(c):''}</td><td>${esc(c.time||c.createdAt||c.date||'-')}</td><td><b>${esc(typeof formatDT==='function'?formatDT(c.resolveBy||c.eta):(c.resolveBy||c.eta||'-'))}</b></td><td>${esc(c.resolvedAt||'-')}</td><td>${typeof adminButtons==='function'?adminButtons('complaint',c.id,`<button class="btn btn-s btn-sm" onclick="sendComplaintWA('${c.id}')">Customer WA</button> <button class="btn btn-i btn-sm" onclick="sendComplaintEmployeeWA('${c.id}')">Employee WA</button>${c.status!=='Resolved'?` <button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}`):''}</td></tr>`).join('')}</tbody></table></div>`;
+}
+/* ================= END FINANCE EMPLOYEE FILTER + REPORT + EMPLOYEE COMPLAINT WHATSAPP PATCH ================= */
+
 </script>
 </body></html>
