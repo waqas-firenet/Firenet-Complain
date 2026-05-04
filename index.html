@@ -4,7 +4,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>FireNetPK Single HTML System</title>
 <style>
-:root{--p:#e74c3c;--d:#243447;--s:#16a34a;--e:#dc2626;--b:#f4f7fb;--m:#64748b;--i:#2563eb;--w:#d97706}*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}body{background:linear-gradient(135deg,#eef2ff,#fff1f2);min-height:100vh;color:#1f2937}button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden{display:none!important}.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:15px}.login-card,.card{background:#fff;border-radius:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);border:1px solid #eef2f7}.login-card{max-width:420px;width:100%;overflow:hidden}.login-head{background:linear-gradient(135deg,var(--d),#111827);color:white;text-align:center;padding:32px}.login-body{padding:24px}.app{display:none;padding:12px}.container{max-width:1200px;margin:auto}.header{background:#fff;border-radius:18px;padding:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;box-shadow:0 12px 30px rgba(15,23,42,.08)}.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:14px;background:var(--p);color:white;display:flex;align-items:center;justify-content:center;font-size:23px}.brand h1{font-size:20px;color:var(--d)}.dt{font-weight:800;background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:9px}.profile{position:relative}.profile-btn{display:flex;gap:8px;align-items:center;background:#f8fafc;border:1px solid #e5e7eb;border-radius:999px;padding:6px 10px}.avatar{width:34px;height:34px;border-radius:50%;background:#7c3aed;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900}.menu{display:none;position:absolute;right:0;top:48px;background:white;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.15);min-width:190px;overflow:hidden;z-index:10}.menu.active{display:block}.menu button{display:block;width:100%;background:white;text-align:left;padding:12px}.menu button:hover{background:#f8fafc;color:var(--p)}.nav{display:flex;gap:8px;background:#fff;padding:8px;border-radius:16px;margin-bottom:12px;overflow-x:auto;box-shadow:0 10px 25px rgba(15,23,42,.07)}.nav button{white-space:nowrap;background:#f8fafc;color:#475569;padding:10px 13px;border-radius:12px;font-weight:900}.nav button.active{background:var(--p);color:white}.card{padding:16px;margin-bottom:12px}.head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.head h2{font-size:18px;color:var(--d)}.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.row.two{grid-template-columns:repeat(2,1fr)}.fg{margin-bottom:12px}.fg label{display:block;font-size:13px;font-weight:900;margin-bottom:6px;color:#374151}input,select,textarea{width:100%;padding:11px;border:1px solid #e5e7eb;border-radius:12px;outline:none}textarea{min-height:75px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 13px;border-radius:12px;color:white;background:var(--d);font-weight:900;text-decoration:none}.btn-p{background:var(--p)}.btn-s{background:var(--s)}.btn-e{background:var(--e)}.btn-i{background:var(--i)}.btn-w{background:var(--w)}.btn-l{background:#e5e7eb;color:#111827}.btn-sm{font-size:12px;padding:7px 9px}.actions{display:flex;gap:8px;flex-wrap:wrap}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;background:#fff;border-radius:16px;box-shadow:0 8px 18px rgba(15,23,42,.05);border:1px solid #eef2f7}.stat span{font-size:12px;color:var(--m);font-weight:900}.stat b{display:block;font-size:22px;margin-top:5px}.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:14px;vertical-align:top}th{background:#f8fafc;color:#475569;text-transform:uppercase;font-size:12px}.badge{padding:5px 9px;border-radius:999px;font-size:12px;font-weight:900;display:inline-block}.cash{background:#dcfce7;color:#166534}.online{background:#dbeafe;color:#1e40af}.pending{background:#fef3c7;color:#92400e}.done{background:#dcfce7;color:#166534}.empty{text-align:center;color:var(--m);font-weight:800;padding:25px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.sum{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:13px}.sum b{display:block;font-size:20px;margin-top:4px}.item-line{display:grid;grid-template-columns:2fr .7fr 1fr auto;gap:10px;align-items:end}.toast-wrap{position:fixed;right:14px;top:14px;z-index:99}.toast{background:white;border-left:5px solid var(--i);box-shadow:0 14px 35px rgba(15,23,42,.18);padding:12px 14px;border-radius:14px;margin-bottom:8px;font-weight:800}.toast.success{border-left-color:var(--s)}.toast.error{border-left-color:var(--e)}.toast.warning{border-left-color:var(--w)}.prog{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,var(--s),#84cc16)}.modal-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;align-items:center;justify-content:center;padding:15px}.modal-bg.active{display:flex}.modal{background:white;border-radius:18px;max-width:500px;width:100%;padding:18px}@media(max-width:850px){.grid,.summary{grid-template-columns:repeat(2,1fr)}.row,.row.two{grid-template-columns:1fr}}@media(max-width:560px){.app{padding:8px}.header>*{width:100%}.profile-btn{width:100%}.nav{display:grid;grid-template-columns:1fr 1fr}.grid,.summary{grid-template-columns:1fr}.item-line{grid-template-columns:1fr}.actions .btn{width:100%}}
+:root{--p:#e74c3c;--d:#243447;--s:#16a34a;--e:#dc2626;--b:#f4f7fb;--m:#64748b;--i:#2563eb;--w:#d97706}*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}body{background:linear-gradient(135deg,#eef2ff,#fff1f2);min-height:100vh;color:#1f2937}button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden{display:none!important}.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:15px}.login-card,.card{background:#fff;border-radius:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);border:1px solid #eef2f7}.login-card{max-width:420px;width:100%;overflow:hidden}.login-head{background:linear-gradient(135deg,var(--d),#111827);color:white;text-align:center;padding:32px}.login-body{padding:24px}.app{display:none;padding:12px}.container{max-width:1200px;margin:auto}.header{background:#fff;border-radius:18px;padding:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;box-shadow:0 12px 30px rgba(15,23,42,.08)}.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:14px;background:var(--p);color:white;display:flex;align-items:center;justify-content:center;font-size:23px}.brand h1{font-size:20px;color:var(--d)}.dt{font-weight:800;background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:9px}.profile{position:relative}.profile-btn{display:flex;gap:8px;align-items:center;background:#f8fafc;border:1px solid #e5e7eb;border-radius:999px;padding:6px 10px}.avatar{width:34px;height:34px;border-radius:50%;background:#7c3aed;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900}.menu{display:none;position:absolute;right:0;top:48px;background:white;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.15);min-width:190px;overflow:hidden;z-index:10}.menu.active{display:block}.menu button{display:block;width:100%;background:white;text-align:left;padding:12px}.menu button:hover{background:#f8fafc;color:var(--p)}.nav{display:flex;gap:8px;background:#fff;padding:8px;border-radius:16px;margin-bottom:12px;overflow-x:auto;box-shadow:0 10px 25px rgba(15,23,42,.07)}.nav button{white-space:nowrap;background:#f8fafc;color:#475569;padding:10px 13px;border-radius:12px;font-weight:900}.nav button.active{background:var(--p);color:white}.card{padding:16px;margin-bottom:12px}.head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.head h2{font-size:18px;color:var(--d)}.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.row.two{grid-template-columns:repeat(2,1fr)}.fg{margin-bottom:12px}.fg label{display:block;font-size:13px;font-weight:900;margin-bottom:6px;color:#374151}input,select,textarea{width:100%;padding:11px;border:1px solid #e5e7eb;border-radius:12px;outline:none}textarea{min-height:75px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 13px;border-radius:12px;color:white;background:var(--d);font-weight:900;text-decoration:none}.btn-p{background:var(--p)}.btn-s{background:var(--s)}.btn-e{background:var(--e)}.btn-i{background:var(--i)}.btn-w{background:var(--w)}.btn-l{background:#e5e7eb;color:#111827}.btn-sm{font-size:12px;padding:7px 9px}.actions{display:flex;gap:8px;flex-wrap:wrap}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;background:#fff;border-radius:16px;box-shadow:0 8px 18px rgba(15,23,42,.05);border:1px solid #eef2f7}.stat span{font-size:12px;color:var(--m);font-weight:900}.stat b{display:block;font-size:22px;margin-top:5px}.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:14px;vertical-align:top}th{background:#f8fafc;color:#475569;text-transform:uppercase;font-size:12px}.badge{padding:5px 9px;border-radius:999px;font-size:12px;font-weight:900;display:inline-block;text-transform:uppercase}.cash{background:#dcfce7;color:#166534}.online{background:#dbeafe;color:#1e40af}.income{background:#dcfce7;color:#166534}.expense{background:#fee2e2;color:#991b1b}.pending{background:#fef3c7;color:#92400e}.done{background:#dcfce7;color:#166534}.income-row{background:#f0fdf4}.expense-row{background:#fff1f2}.amount-income{color:#166534;font-weight:900}.amount-expense{color:#991b1b;font-weight:900}.finance-type-box{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.empty{text-align:center;color:var(--m);font-weight:800;padding:25px}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.sum{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:13px}.sum b{display:block;font-size:20px;margin-top:4px}.item-line{display:grid;grid-template-columns:2fr .7fr 1fr auto;gap:10px;align-items:end}.toast-wrap{position:fixed;right:14px;top:14px;z-index:99}.toast{background:white;border-left:5px solid var(--i);box-shadow:0 14px 35px rgba(15,23,42,.18);padding:12px 14px;border-radius:14px;margin-bottom:8px;font-weight:800}.toast.success{border-left-color:var(--s)}.toast.error{border-left-color:var(--e)}.toast.warning{border-left-color:var(--w)}.prog{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,var(--s),#84cc16)}.modal-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;align-items:center;justify-content:center;padding:15px}.modal-bg.active{display:flex}.modal{background:white;border-radius:18px;max-width:500px;width:100%;padding:18px}@media(max-width:850px){.grid,.summary{grid-template-columns:repeat(2,1fr)}.row,.row.two{grid-template-columns:1fr}}@media(max-width:560px){.app{padding:8px}.header>*{width:100%}.profile-btn{width:100%}.nav{display:grid;grid-template-columns:1fr 1fr}.grid,.summary{grid-template-columns:1fr}.item-line{grid-template-columns:1fr}.actions .btn{width:100%}}
 </style></head><body>
 <div id="login" class="login"><div class="login-card"><div class="login-head"><h1>🔥 Fire.net.pk</h1><p>ISP Management System</p></div><div class="login-body"><div class="fg"><label>Username / Phone</label><input id="lu" placeholder="admin or ali"></div><div class="fg"><label>Password / PIN</label><input id="lp" type="password" placeholder="admin123 or 1234"></div><button class="btn btn-p" style="width:100%" onclick="login()">Login</button><p style="font-size:12px;color:#64748b;margin-top:12px;line-height:1.5">Default: <b>admin/admin123</b> or employee <b>ali/1234</b>. Admin password can be changed from profile.</p></div></div></div>
 <div id="app" class="app"><div class="container"><div class="header"><div class="brand"><div class="logo">🔥</div><div><h1>Fire.net.pk ISP</h1><small style="color:#64748b;font-weight:800">Complaints • Accounts • Invoice • Targets</small></div></div><div id="dt" class="dt"></div><div id="syncStatus" class="dt" style="font-size:12px">Firebase: starting...</div><div class="profile"><button class="profile-btn" onclick="toggleMenu()"><span id="av" class="avatar">A</span><span><b id="pn">Admin</b><br><small id="pr">Admin</small></span></button><div id="pm" class="menu"><button onclick="openPwd()">Change Password</button><button onclick="logout()">Logout</button></div></div></div><div id="nav" class="nav"></div><div id="content"></div></div></div>
@@ -54,6 +54,7 @@ async function loadFromFirebase(){
     loadCollection('employees'),loadCollection('complaints'),loadCollection('finance'),loadCollection('invoices'),loadCollection('targets'),loadCollection('attendance')
    ]);
    if(employees.length)S.employees=employees;
+   dedupeEmployees();
    S.complaints=complaints;S.finance=finance;S.invoices=invoices;S.targets=targets;S.attendance=attendance;
    save();setSyncStatus('Firebase: loaded','success');
    // first run: push default employees so Firebase shows data
@@ -64,7 +65,7 @@ async function loadFromFirebase(){
 function startRealtimeSync(){
  if(!db)return;unsubscribers.forEach(u=>u&&u());unsubscribers=[];
  const bind=(col,key)=>db.collection(col).onSnapshot(snap=>{
-   if(fbLoading)return;S[key]=snap.docs.map(d=>({id:d.id,...d.data()}));save();
+   if(fbLoading)return;S[key]=snap.docs.map(d=>({id:d.id,...d.data()}));if(key==='employees')dedupeEmployees();save();
    if(U){ if(U.role==='employee'){const latest=S.employees.find(e=>e.id===U.id);if(latest){U={role:'employee',...latest};S.session=U;save()}} navRender();tab(TAB); }
  },err=>{console.error(col+' realtime failed',err);setSyncStatus('Realtime failed','error')});
  unsubscribers.push(bind('employees','employees'),bind('complaints','complaints'),bind('finance','finance'),bind('invoices','invoices'),bind('targets','targets'),bind('attendance','attendance'));
@@ -84,6 +85,7 @@ async function syncAllToFirebase(){
 }
 
 function def(){return{admin:{u:'admin',p:'admin123'},employees:[{id:'e1',name:'Ali',phone:'ali',pin:'1234',role:'Collection',active:true,per:{complaints:1,attendance:1,invoice:1,finance:1,targets:1}},{id:'e2',name:'Usman',phone:'usman',pin:'1234',role:'Technician',active:true,per:{complaints:1,attendance:1,invoice:1,finance:0,targets:1}}],complaints:[],finance:[],invoices:[],targets:[],attendance:[],session:null}}
+function normLogin(v){return String(v||'').trim().toLowerCase()}function findEmployeeDuplicate(phone,name,excludeId=''){const np=normLogin(phone),nn=normLogin(name);return S.employees.find(e=>e.id!==excludeId&&((np&&normLogin(e.phone)===np)||(nn&&normLogin(e.name)===nn)))}function dedupeEmployees(){const seen=new Map(),out=[];for(const e of S.employees){const k=normLogin(e.phone)||normLogin(e.name)||e.id;if(seen.has(k)){const old=seen.get(k);Object.assign(old,{...old,...e,id:old.id});}else{seen.set(k,e);out.push(e)}}S.employees=out}
 function load(){S=JSON.parse(localStorage.getItem(KEY)||'null')||def();save()}function save(){localStorage.setItem(KEY,JSON.stringify(S))}function id(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}function today(){return new Date().toISOString().slice(0,10)}function now(){return new Date().toLocaleString()}function money(n){return'Rs. '+(Number(n)||0).toLocaleString()}function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}function key(){return U.role==='admin'?'admin':U.id}function can(x){return U.role==='admin'||U.per?.[x]}function toast(m,t='info'){let d=document.createElement('div');d.className='toast '+t;d.textContent=m;tw.appendChild(d);setTimeout(()=>d.remove(),3200)}function beep(){try{let C=AudioContext||webkitAudioContext,c=new C,o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.04;o.start();setTimeout(()=>{o.stop();c.close()},150)}catch(e){}}
 function clock(){dt.textContent=new Date().toLocaleString()}setInterval(clock,1000);
 function login(){let u=lu.value.trim(),p=lp.value.trim();if(!u||!p)return toast('Enter username and password','error');if(u.toLowerCase()===S.admin.u&&p===S.admin.p){U={role:'admin',id:'admin',name:'Administrator'};S.session=U;save();return openApp()}let e=S.employees.find(x=>x.active&&(x.phone.toLowerCase()===u.toLowerCase()||x.name.toLowerCase()===u.toLowerCase())&&x.pin===p);if(e){U={role:'employee',...e};S.session=U;save();return openApp()}toast('Invalid login','error')}
@@ -94,12 +96,641 @@ function stats(){let f=calc(),pend=myComp().filter(c=>c.status!=='Resolved').len
 function dash(){content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Welcome, ${esc(U.name)}</h2></div><p style="color:#64748b;font-weight:700;line-height:1.6">${U.role==='admin'?'Admin can view all entries and manage employees.':'Employee can only see own entries.'}</p></div>`}
 function complaints(){content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div><div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div><div class="row two"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Details</label><input id="cDet"></div></div><button class="btn btn-p" onclick="addComp()">Add Complaint</button></div><div class="card"><div class="head"><h2>Complaint List</h2></div>${compTable()}</div>`}
 function addComp(){let assigned=U.role==='employee'?U.id:cAssign.value;if(!cName.value.trim()||!cPhone.value.trim())return toast('Customer and phone required','error');let rec={id:id('c'),name:cName.value.trim(),phone:cPhone.value.trim(),type:cType.value,assigned,det:cDet.value.trim(),status:'Pending',date:today(),time:now(),by:key()};S.complaints.push(rec);save();fbSet('complaints',rec);toast('Complaint added','success');beep();complaints()}function compTable(){let r=myComp().slice().reverse();if(!r.length)return'<div class="empty">No complaints</div>';return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span></td><td>${c.date}</td><td>${c.status!=='Resolved'?`<button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:''}</td></tr>`).join('')}</tbody></table></div>`}function resComp(i){let c=S.complaints.find(x=>x.id===i);if(c){c.status='Resolved';fbSet('complaints',c)}save();complaints()}
-function employees(){if(U.role!=='admin')return dash();content.innerHTML=`<div class="card"><div class="head"><h2>Add Employee</h2></div><div class="row"><div class="fg"><label>Name</label><input id="eName"></div><div class="fg"><label>Phone/Login</label><input id="ePhone"></div><div class="fg"><label>PIN</label><input id="ePin" value="1234"></div></div><div class="row two"><div class="fg"><label>Role</label><input id="eRole" placeholder="Collection"></div><div class="fg"><label>Permissions</label><div class="actions">${['complaints','attendance','invoice','finance','targets'].map(p=>`<label><input type="checkbox" class="perm" value="${p}" checked> ${p}</label>`).join('')}</div></div></div><button class="btn btn-p" onclick="addEmp()">Add Employee</button></div><div class="card"><div class="head"><h2>Employees</h2></div>${empTable()}</div>`}function addEmp(){let per={};document.querySelectorAll('.perm').forEach(x=>per[x.value]=x.checked);if(!eName.value.trim()||!ePhone.value.trim())return toast('Name and phone required','error');let rec={id:id('e'),name:eName.value.trim(),phone:ePhone.value.trim(),pin:ePin.value.trim()||'1234',role:eRole.value.trim()||'Employee',active:true,per};S.employees.push(rec);save();fbSet('employees',rec);employees()}function empTable(){return`<div class="tbl"><table><thead><tr><th>Name</th><th>Login</th><th>Role</th><th>PIN</th><th>Status</th><th>Action</th></tr></thead><tbody>${S.employees.map(e=>`<tr><td>${esc(e.name)}</td><td>${esc(e.phone)}</td><td>${esc(e.role)}</td><td>${esc(e.pin)}</td><td>${e.active?'Active':'Inactive'}</td><td><button class="btn btn-w btn-sm" onclick="togEmp('${e.id}')">${e.active?'Disable':'Enable'}</button></td></tr>`).join('')}</tbody></table></div>`}function togEmp(i){let e=S.employees.find(x=>x.id===i);if(e){e.active=!e.active;fbSet('employees',e)}save();employees()}
+function employees(){if(U.role!=='admin')return dash();content.innerHTML=`<div class="card"><div class="head"><h2>Add Employee</h2></div><div class="row"><div class="fg"><label>Name</label><input id="eName"></div><div class="fg"><label>Phone/Login</label><input id="ePhone"></div><div class="fg"><label>PIN</label><input id="ePin" value="1234"></div></div><div class="row two"><div class="fg"><label>Role</label><input id="eRole" placeholder="Collection"></div><div class="fg"><label>Permissions</label><div class="actions">${['complaints','attendance','invoice','finance','targets'].map(p=>`<label><input type="checkbox" class="perm" value="${p}" checked> ${p}</label>`).join('')}</div></div></div><button class="btn btn-p" onclick="addEmp()">Add Employee</button></div><div class="card"><div class="head"><h2>Employees</h2></div>${empTable()}</div>`}function addEmp(){let per={};document.querySelectorAll('.perm').forEach(x=>per[x.value]=x.checked);let name=eName.value.trim(),phone=ePhone.value.trim();if(!name||!phone)return toast('Name and phone required','error');let dup=findEmployeeDuplicate(phone,name);if(dup){if(!confirm('This employee/login already exists. Update existing user instead of adding duplicate?'))return toast('User already exists in database','error');dup.name=name;dup.phone=phone;dup.pin=ePin.value.trim()||dup.pin||'1234';dup.role=eRole.value.trim()||dup.role||'Employee';dup.active=true;dup.per=per;save();fbSet('employees',dup);toast('Existing employee updated','success');employees();return}let rec={id:id('e'),name,phone,pin:ePin.value.trim()||'1234',role:eRole.value.trim()||'Employee',active:true,per};S.employees.push(rec);save();fbSet('employees',rec);toast('Employee added','success');employees()}function empTable(){return`<div class="tbl"><table><thead><tr><th>ID</th><th>Name</th><th>Login</th><th>Role</th><th>PIN</th><th>Status</th><th>Action</th></tr></thead><tbody>${S.employees.map(e=>`<tr><td>${e.id}</td><td>${esc(e.name)}</td><td>${esc(e.phone)}</td><td>${esc(e.role)}</td><td>${esc(e.pin)}</td><td>${e.active?'Active':'Inactive'}</td><td><button class="btn btn-w btn-sm" onclick="togEmp('${e.id}')">${e.active?'Disable':'Enable'}</button></td></tr>`).join('')}</tbody></table></div>`}function togEmp(i){let e=S.employees.find(x=>x.id===i);if(e){e.active=!e.active;fbSet('employees',e)}save();employees()}
 function attendance(){content.innerHTML=`<div class="card"><div class="head"><h2>Mark Attendance</h2></div><div class="row"><div class="fg"><label>Employee</label><select id="aEmp">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Status</label><select id="aStatus"><option>Present</option><option>Absent</option><option>Leave</option><option>Half Day</option></select></div><div class="fg"><label>Date</label><input id="aDate" type="date" value="${today()}"></div></div><button class="btn btn-p" onclick="markAtt()">Save Attendance</button></div><div class="card"><div class="head"><h2>Attendance List</h2></div>${attTable()}</div>`}function markAtt(){let emp=U.role==='employee'?U.id:aEmp.value,old=S.attendance.find(a=>a.emp===emp&&a.date===aDate.value);if(old)old.status=aStatus.value;else {old={id:id('a'),emp,date:aDate.value,status:aStatus.value,by:key(),time:now()};S.attendance.push(old)};fbSet('attendance',old);save();attendance()}function attTable(){let r=U.role==='admin'?S.attendance:S.attendance.filter(a=>a.emp===U.id);if(!r.length)return'<div class="empty">No attendance</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Employee</th><th>Status</th><th>Time</th></tr></thead><tbody>${r.slice().reverse().map(a=>`<tr><td>${a.date}</td><td>${empName(a.emp)}</td><td>${a.status}</td><td>${a.time}</td></tr>`).join('')}</tbody></table></div>`}
 function invoice(){content.innerHTML=`<div class="card"><div class="head"><h2>Create Invoice</h2><button class="btn btn-l btn-sm" onclick="draft=[];invoice()">Clear</button></div><div class="row"><div class="fg"><label>Customer</label><input id="invCust"></div><div class="fg"><label>WhatsApp</label><input id="invPhone" placeholder="923xx"></div><div class="fg"><label>Work Type</label><select id="invWork"><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Repair</option><option>Other Work</option></select></div></div><div class="item-line"><div class="fg"><label>Product / Service</label><input id="itName"></div><div class="fg"><label>Qty</label><input id="itQty" type="number" value="1"></div><div class="fg"><label>Rate</label><input id="itRate" type="number" value="0"></div><button class="btn btn-i" onclick="addItem()">Add</button></div><div id="itemsArea"></div><div class="row two"><div class="fg"><label>Discount</label><input id="disc" type="number" value="0" oninput="drawItems()"></div><div class="fg"><label>Notes</label><input id="invNotes"></div></div><div class="actions"><button class="btn btn-p" onclick="saveInv()">Save Invoice</button><button class="btn btn-s" onclick="sendDraftInv()">Send WhatsApp</button></div></div><div class="card"><div class="head"><h2>Invoice History</h2></div>${invTable()}</div>`;drawItems()}function addItem(){if(!itName.value.trim())return toast('Item name required','error');draft.push({name:itName.value.trim(),qty:+itQty.value||1,rate:+itRate.value||0});itName.value='';itQty.value=1;itRate.value=0;drawItems()}function remItem(i){draft.splice(i,1);drawItems()}function totals(){let sub=draft.reduce((s,x)=>s+x.qty*x.rate,0),d=+document.getElementById('disc')?.value||0;return{sub,disc:d,total:Math.max(0,sub-d)}}function drawItems(){let a=document.getElementById('itemsArea');if(!a)return;let t=totals();a.innerHTML=draft.length?`<div class="tbl"><table><thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Total</th><th></th></tr></thead><tbody>${draft.map((x,i)=>`<tr><td>${esc(x.name)}</td><td>${x.qty}</td><td>${money(x.rate)}</td><td>${money(x.qty*x.rate)}</td><td><button class="btn btn-e btn-sm" onclick="remItem(${i})">X</button></td></tr>`).join('')}</tbody></table></div><div class="summary"><div class="sum">Subtotal<b>${money(t.sub)}</b></div><div class="sum">Discount<b>${money(t.disc)}</b></div><div class="sum">Total<b>${money(t.total)}</b></div></div>`:'<div class="empty">No items added</div>'}function invObj(){let t=totals();return{id:id('inv'),cust:invCust.value.trim(),phone:invPhone.value.trim(),work:invWork.value,items:[...draft],sub:t.sub,disc:t.disc,total:t.total,notes:invNotes.value.trim(),date:today(),time:now(),by:key(),byName:U.name}}function invMsg(v){return`*Fire.net.pk Invoice*\nID: ${v.id}\nCustomer: ${v.cust}\nWork: ${v.work}\nDate: ${v.date}\n\n*Items*\n${v.items.map((x,i)=>`${i+1}. ${x.name} | Qty ${x.qty} | Rate ${money(x.rate)} | Total ${money(x.qty*x.rate)}`).join('\n')}\n\nSubtotal: ${money(v.sub)}\nDiscount: ${money(v.disc)}\n*Final Total: ${money(v.total)}*\nNotes: ${v.notes||'-'}\nBy: ${v.byName}`}function saveInv(){if(!draft.length)return toast('Add item','error');let v=invObj();if(!v.cust)return toast('Customer required','error');S.invoices.push(v);save();fbSet('invoices',v);draft=[];toast('Invoice saved','success');invoice()}function sendDraftInv(){if(!draft.length)return toast('Add item','error');let v=invObj();if(!v.phone)return toast('WhatsApp number required','error');window.open('https://wa.me/'+v.phone.replace(/\D/g,'')+'?text='+encodeURIComponent(invMsg(v)),'_blank')}function invTable(){let r=myInv().slice().reverse();if(!r.length)return'<div class="empty">No invoices</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Total</th><th>By</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td>${esc(v.byName)}</td><td><button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button></td></tr>`).join('')}</tbody></table></div>`}function sendSavedInv(i){let v=S.invoices.find(x=>x.id===i);if(v)window.open('https://wa.me/'+v.phone.replace(/\D/g,'')+'?text='+encodeURIComponent(invMsg(v)),'_blank')}
-function finance(){let f=calc();content.innerHTML=`<div class="summary"><div class="sum">Cash<b>${money(f.cash)}</b></div><div class="sum">Online<b>${money(f.online)}</b></div><div class="sum">Income<b>${money(f.inc)}</b></div><div class="sum">Balance<b>${money(f.bal)}</b></div></div><div class="card"><div class="head"><h2>Add Account Entry</h2></div><div class="row"><div class="fg"><label>Type</label><select id="ft"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="fg"><label>Mode</label><select id="fm" onchange="onBox()"><option value="cash">Cash</option><option value="online">Online</option></select></div><div class="fg"><label>Category</label><select id="fc"><option>Monthly Fee</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Office Expense</option><option>Other</option></select></div></div><div class="row"><div class="fg"><label>Amount</label><input id="fa" type="number" value="0"></div><div class="fg"><label>Receiver Name</label><input id="fr" placeholder="Receiver"></div><div class="fg" id="ob"><label>Online Account</label><input id="fo" placeholder="JazzCash / Bank"></div></div><div class="row two"><div class="fg"><label>Client WhatsApp</label><input id="fp" placeholder="923xx"></div><div class="fg"><label>Notes</label><input id="fn"></div></div><button class="btn btn-p" onclick="addFin()">Save Entry</button></div><div class="card"><div class="head"><h2>Daily Account List</h2><button class="btn btn-s btn-sm" onclick="dailyReport()">WhatsApp Daily Report</button></div>${finTable()}</div>`;onBox()}function onBox(){let b=document.getElementById('ob');if(b)b.style.display=fm.value==='online'?'block':'none'}function addFin(){let amount=+fa.value||0;if(amount<=0)return toast('Amount required','error');let e={id:id('fin'),type:ft.value,mode:fm.value,cat:fc.value,amount,receiver:fr.value.trim()||U.name,online:fm.value==='online'?fo.value.trim():'',phone:fp.value.trim(),notes:fn.value.trim(),date:today(),time:now(),by:key(),byName:U.name};S.finance.push(e);applyTarget(e);save();fbSet('finance',e);toast('Entry saved','success');beep();finance()}function finTable(){let r=myFin().filter(e=>e.date===today()).slice().reverse();if(!r.length)return'<div class="empty">No entries today</div>';let sec=(title,arr)=>`<h3 style="margin:12px 0">${title}</h3>${arr.length?`<div class="tbl"><table><thead><tr><th>Time</th><th>Tag</th><th>Category</th><th>Receiver</th><th>Account</th><th>Amount</th><th>Action</th></tr></thead><tbody>${arr.map(e=>`<tr><td>${e.time}</td><td><span class="badge ${e.mode==='online'?'online':'cash'}">${e.mode}</span></td><td>${e.cat}</td><td>${esc(e.receiver)}</td><td>${esc(e.online||'-')}</td><td>${money(e.amount)}</td><td><button class="btn btn-s btn-sm" onclick="sendSlip('${e.id}')">Slip</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">None</div>'}`;return sec('Online Payments',r.filter(e=>e.mode==='online'))+sec('Cash / Other Payments',r.filter(e=>e.mode!=='online'))}function slipMsg(e){return`*Fire.net.pk Payment Slip*\nDate: ${e.time}\nType: ${e.type}\nMode: ${e.mode.toUpperCase()}\nCategory: ${e.cat}\nAmount: ${money(e.amount)}\nReceiver: ${e.receiver}\n${e.online?'Account: '+e.online+'\n':''}Notes: ${e.notes||'-'}\nBy: ${e.byName}`}function sendSlip(i){let e=S.finance.find(x=>x.id===i);if(!e?.phone)return toast('Client WhatsApp not saved','error');window.open('https://wa.me/'+e.phone.replace(/\D/g,'')+'?text='+encodeURIComponent(slipMsg(e)),'_blank')}function dailyReport(){let r=myFin().filter(e=>e.date===today()),f=calc(r),msg=`*Fire.net.pk Daily Report*\nDate: ${today()}\nCash: ${money(f.cash)}\nOnline: ${money(f.online)}\nIncome: ${money(f.inc)}\nExpense: ${money(f.exp)}\nBalance: ${money(f.bal)}\n\nEntries:\n${r.map((e,i)=>`${i+1}. ${e.mode.toUpperCase()} | ${e.cat} | ${money(e.amount)} | Receiver: ${e.receiver}${e.online?' | Account: '+e.online:''}`).join('\n')}`;let p=prompt('Owner WhatsApp number');if(p)window.open('https://wa.me/'+p.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank')}
+function finance(){let f=calc();content.innerHTML=`<div class="summary"><div class="sum">Cash<b>${money(f.cash)}</b></div><div class="sum">Online<b>${money(f.online)}</b></div><div class="sum">Income<b class="amount-income">${money(f.inc)}</b></div><div class="sum">Expenses<b class="amount-expense">${money(f.exp)}</b></div><div class="sum">Balance<b>${money(f.bal)}</b></div></div><div class="card"><div class="head"><h2>Add Account Entry</h2></div><div class="row"><div class="fg"><label>Type</label><select id="ft"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="fg"><label>Mode</label><select id="fm" onchange="onBox()"><option value="cash">Cash</option><option value="online">Online</option></select></div><div class="fg"><label>Category</label><select id="fc"><option>Monthly Fee</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Office Expense</option><option>Other</option></select></div></div><div class="row"><div class="fg"><label>Amount</label><input id="fa" type="number" value="0"></div><div class="fg"><label>Customer Name / Paid By</label><input id="fcust" placeholder="Customer who paid / expense person"></div><div class="fg"><label>Receiver Name</label><input id="fr" placeholder="Receiver"></div></div><div class="row"><div class="fg" id="ob"><label>Online Account</label><input id="fo" placeholder="JazzCash / Bank"></div><div class="fg"><label>Client WhatsApp</label><input id="fp" placeholder="923xx"></div><div class="fg"><label>Notes</label><input id="fn"></div></div><button class="btn btn-p" onclick="addFin()">Save Entry</button></div><div class="card"><div class="head"><h2>Daily Account List</h2><button class="btn btn-s btn-sm" onclick="dailyReport()">WhatsApp Daily Report</button></div>${finTable()}</div>`;onBox()}
+function onBox(){let b=document.getElementById('ob');if(b)b.style.display=fm.value==='online'?'block':'none'}
+function addFin(){let amount=+fa.value||0;if(amount<=0)return toast('Amount required','error');let e={id:id('fin'),type:ft.value,mode:fm.value,cat:fc.value,amount,customer:fcust.value.trim(),receiver:fr.value.trim()||U.name,online:fm.value==='online'?fo.value.trim():'',phone:fp.value.trim(),notes:fn.value.trim(),date:today(),time:now(),by:key(),byName:U.name};S.finance.push(e);applyTarget(e);save();fbSet('finance',e);toast((e.type==='income'?'Income':'Expense')+' entry saved','success');beep();finance()}
+function finTypeTag(e){return `<span class="badge ${e.type==='expense'?'expense':'income'}">${e.type==='expense'?'Expense':'Income'}</span>`}
+function payModeTag(e){return `<span class="badge ${e.mode==='online'?'online':'cash'}">${e.mode==='online'?'Online':'Cash'}</span>`}
+function finTable(){let r=myFin().filter(e=>e.date===today()).slice().reverse();if(!r.length)return'<div class="empty">No entries today</div>';let sec=(title,arr)=>`<h3 style="margin:12px 0">${title}</h3>${arr.length?`<div class="tbl"><table><thead><tr><th>Time</th><th>Type</th><th>Payment</th><th>Customer / Paid By</th><th>Category</th><th>Receiver</th><th>Account</th><th>Amount</th><th>Action</th></tr></thead><tbody>${arr.map(e=>`<tr class="${e.type==='expense'?'expense-row':'income-row'}"><td>${e.time}</td><td>${finTypeTag(e)}</td><td>${payModeTag(e)}</td><td>${esc(e.customer||'-')}</td><td>${e.cat}</td><td>${esc(e.receiver)}</td><td>${esc(e.online||'-')}</td><td class="${e.type==='expense'?'amount-expense':'amount-income'}">${e.type==='expense'?'- ':'+ '}${money(e.amount)}</td><td><button class="btn btn-s btn-sm" onclick="sendSlip('${e.id}')">Slip</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">None</div>'}`;return sec('Income Entries',r.filter(e=>e.type!=='expense'))+sec('Expense Entries',r.filter(e=>e.type==='expense'))}
+function slipMsg(e){return`*Fire.net.pk Payment Slip*\nDate: ${e.time}\nType: ${String(e.type||'income').toUpperCase()}\nMode: ${String(e.mode||'cash').toUpperCase()}\nCustomer / Paid By: ${e.customer||'-'}\nCategory: ${e.cat}\nAmount: ${money(e.amount)}\nReceiver: ${e.receiver}\n${e.online?'Account: '+e.online+'\n':''}Notes: ${e.notes||'-'}\nBy: ${e.byName}`}
+function sendSlip(i){let e=S.finance.find(x=>x.id===i);if(!e?.phone)return toast('Client WhatsApp not saved','error');window.open('https://wa.me/'+e.phone.replace(/\D/g,'')+'?text='+encodeURIComponent(slipMsg(e)),'_blank')}
+function dailyReport(){let r=myFin().filter(e=>e.date===today()),f=calc(r),msg=`*Fire.net.pk Daily Report*\nDate: ${today()}\nCash: ${money(f.cash)}\nOnline: ${money(f.online)}\nIncome: ${money(f.inc)}\nExpense: ${money(f.exp)}\nBalance: ${money(f.bal)}\n\nEntries:\n${r.map((e,i)=>`${i+1}. ${String(e.type||'income').toUpperCase()} | ${String(e.mode||'cash').toUpperCase()} | ${e.cat} | ${money(e.amount)} | Customer: ${e.customer||'-'} | Receiver: ${e.receiver}${e.online?' | Account: '+e.online:''}`).join('\n')}`;let p=prompt('Owner WhatsApp number');if(p)window.open('https://wa.me/'+p.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank')}
 function targets(){content.innerHTML=`${U.role==='admin'?`<div class="card"><div class="head"><h2>Assign Target</h2></div><div class="row"><div class="fg"><label>Employee</label><select id="te">${empOpts()}</select></div><div class="fg"><label>Target Amount</label><input id="ta" type="number" value="20000"></div><div class="fg"><label>Reward</label><input id="tr" value="1 Reward"></div></div><button class="btn btn-p" onclick="assignTarget()">Assign Target</button></div>`:''}<div class="card"><div class="head"><h2>Target Progress</h2></div>${targetTable()}</div>`}function assignTarget(){let target=+ta.value||0;if(target<=0)return toast('Target required','error');let rec={id:id('t'),emp:te.value,target,achieved:0,reward:tr.value.trim()||'Reward',date:today()};S.targets.push(rec);save();fbSet('targets',rec);targets()}function applyTarget(e){if(e.type!=='income')return;let t=S.targets.find(x=>x.emp===e.by&&(+x.achieved)<(+x.target));if(t){t.achieved=(+t.achieved)+(+e.amount);fbSet('targets',t);if(t.achieved>=t.target){toast('Target completed! Reward unlocked','success');beep()}}}function targetTable(){let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Employee</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Reward</th></tr></thead><tbody>${r.map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${empName(t.emp)}</td><td>${money(t.target)}</td><td>${money(t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td>${p>=100?'✅ ':''}${esc(t.reward)}</td></tr>`}).join('')}</tbody></table></div>`}
+
+
+/* ================= ADMIN FULL ACCESS: EDIT / DELETE CONTROLS ================= */
+function isAdmin(){return U&&U.role==='admin'}
+function adminButtons(type,id,extra=''){
+  if(!isAdmin())return extra;
+  return `${extra} <button class="btn btn-i btn-sm" onclick="editRecord('${type}','${id}')">Edit</button> <button class="btn btn-e btn-sm" onclick="deleteRecord('${type}','${id}')">Delete</button>`;
+}
+function collectionMap(type){return {employee:'employees',complaint:'complaints',attendance:'attendance',invoice:'invoices',finance:'finance',target:'targets'}[type]}
+function listMap(type){return {employee:S.employees,complaint:S.complaints,attendance:S.attendance,invoice:S.invoices,finance:S.finance,target:S.targets}[type]}
+function findRecord(type,id){return (listMap(type)||[]).find(x=>x.id===id)}
+function refreshCurrent(){save();tab(TAB)}
+function deleteRecord(type,id){
+  if(!isAdmin())return toast('Admin access required','error');
+  if(!confirm('Delete this record permanently?'))return;
+  const list=listMap(type); const idx=list.findIndex(x=>x.id===id);
+  if(idx>=0)list.splice(idx,1);
+  const col=collectionMap(type); if(col)fbDelete(col,id);
+  refreshCurrent(); toast('Deleted','success');
+}
+function askVal(label,val,required=false){let v=prompt(label,val??'');if(v===null)return null;v=v.trim();if(required&&!v){toast(label+' required','error');return null}return v}
+function editRecord(type,id){
+  if(!isAdmin())return toast('Admin access required','error');
+  const r=findRecord(type,id); if(!r)return toast('Record not found','error');
+
+  if(type==='employee'){
+    const name=askVal('Employee name',r.name,true); if(name===null)return;
+    const phone=askVal('Login / Phone',r.phone,true); if(phone===null)return;
+    const dup=findEmployeeDuplicate(phone,name,r.id);
+    if(dup)return toast('Another employee already uses this name/login','error');
+    const pin=askVal('PIN',r.pin,true); if(pin===null)return;
+    const role=askVal('Role',r.role||'Employee'); if(role===null)return;
+    const active=askVal('Active? yes/no',r.active?'yes':'no'); if(active===null)return;
+    const perms=askVal('Permissions comma separated: complaints,attendance,invoice,finance,targets',Object.keys(r.per||{}).filter(k=>r.per[k]).join(',')); if(perms===null)return;
+    r.name=name; r.phone=phone; r.pin=pin; r.role=role||'Employee'; r.active=!/^no|false|0$/i.test(active);
+    const p={};perms.split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>p[x]=1);r.per=p;
+    fbSet('employees',r);
+  }
+
+  if(type==='complaint'){
+    const name=askVal('Customer name',r.name,true); if(name===null)return;
+    const phone=askVal('Phone',r.phone,true); if(phone===null)return;
+    const ctype=askVal('Complaint type',r.type||'Other'); if(ctype===null)return;
+    const assigned=askVal('Assigned employee ID (example e1). Current: '+empName(r.assigned),r.assigned); if(assigned===null)return;
+    const det=askVal('Details',r.det||''); if(det===null)return;
+    const status=askVal('Status: Pending / In Progress / Resolved',r.status||'Pending'); if(status===null)return;
+    const date=askVal('Date YYYY-MM-DD',r.date||today()); if(date===null)return;
+    r.name=name; r.phone=phone; r.type=ctype||r.type; r.assigned=assigned||r.assigned; r.det=det; r.status=status||r.status; r.date=date||r.date; r.time=now();
+    fbSet('complaints',r);
+  }
+
+  if(type==='attendance'){
+    const emp=askVal('Employee ID (example e1). Current: '+empName(r.emp),r.emp); if(emp===null)return;
+    const status=askVal('Status: Present / Absent / Leave / Half Day',r.status||'Present'); if(status===null)return;
+    const date=askVal('Date YYYY-MM-DD',r.date||today()); if(date===null)return;
+    r.emp=emp||r.emp; r.status=status||r.status; r.date=date||r.date; r.time=now();
+    fbSet('attendance',r);
+  }
+
+  if(type==='invoice'){
+    const cust=askVal('Customer name',r.cust,true); if(cust===null)return;
+    const phone=askVal('WhatsApp number',r.phone||''); if(phone===null)return;
+    const work=askVal('Work type',r.work||''); if(work===null)return;
+    const items=askVal('Items JSON. Example: [{"name":"Router","qty":1,"rate":3000}]',JSON.stringify(r.items||[])); if(items===null)return;
+    let parsed;try{parsed=JSON.parse(items);if(!Array.isArray(parsed))throw new Error('not array')}catch(e){return toast('Invalid items JSON','error')}
+    const disc=askVal('Discount',r.disc||0); if(disc===null)return;
+    const notes=askVal('Notes',r.notes||''); if(notes===null)return;
+    const date=askVal('Date YYYY-MM-DD',r.date||today()); if(date===null)return;
+    r.cust=cust; r.phone=phone; r.work=work||r.work; r.items=parsed.map(x=>({name:x.name||'Item',qty:Number(x.qty)||1,rate:Number(x.rate)||0})); r.disc=Number(disc)||0; r.notes=notes; r.date=date||r.date;
+    r.sub=(r.items||[]).reduce((a,x)=>a+(Number(x.qty)||0)*(Number(x.rate)||0),0); r.total=Math.max(0,r.sub-r.disc); r.time=now();
+    fbSet('invoices',r);
+  }
+
+  if(type==='finance'){
+    const ftype=askVal('Type: income / expense',r.type||'income'); if(ftype===null)return;
+    const mode=askVal('Mode: cash / online',r.mode||'cash'); if(mode===null)return;
+    const cat=askVal('Category',r.cat||'Other'); if(cat===null)return;
+    const amount=askVal('Amount',r.amount||0,true); if(amount===null)return;
+    const receiver=askVal('Receiver name',r.receiver||''); if(receiver===null)return;
+    const online=askVal('Online account / bank',r.online||''); if(online===null)return;
+    const phone=askVal('Client WhatsApp',r.phone||''); if(phone===null)return;
+    const notes=askVal('Notes',r.notes||''); if(notes===null)return;
+    const date=askVal('Date YYYY-MM-DD',r.date||today()); if(date===null)return;
+    r.type=(ftype.trim().toLowerCase()==='expense')?'expense':'income'; r.mode=(mode.trim().toLowerCase()==='online')?'online':'cash'; r.cat=cat||r.cat; r.amount=Number(amount)||0; r.receiver=receiver||r.receiver; r.online=r.mode==='online'?online:''; r.phone=phone; r.notes=notes; r.date=date||r.date; r.time=now();
+    fbSet('finance',r);
+  }
+
+  if(type==='target'){
+    const emp=askVal('Employee ID (example e1). Current: '+empName(r.emp),r.emp); if(emp===null)return;
+    const target=askVal('Target amount',r.target||0,true); if(target===null)return;
+    const achieved=askVal('Achieved amount',r.achieved||0); if(achieved===null)return;
+    const reward=askVal('Reward',r.reward||'Reward'); if(reward===null)return;
+    const date=askVal('Date YYYY-MM-DD',r.date||today()); if(date===null)return;
+    r.emp=emp||r.emp; r.target=Number(target)||0; r.achieved=Number(achieved)||0; r.reward=reward||r.reward; r.date=date||r.date;
+    fbSet('targets',r);
+  }
+  refreshCurrent(); toast('Updated','success');
+}
+function compTable(){let r=myComp().slice().reverse();if(!r.length)return'<div class="empty">No complaints</div>';return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span></td><td>${c.date}</td><td>${adminButtons('complaint',c.id,c.status!=='Resolved'?`<button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:'')}</td></tr>`).join('')}</tbody></table></div>`}
+function empTable(){return`<div class="tbl"><table><thead><tr><th>ID</th><th>Name</th><th>Login</th><th>Role</th><th>PIN</th><th>Status</th><th>Action</th></tr></thead><tbody>${S.employees.map(e=>`<tr><td>${e.id}</td><td>${esc(e.name)}</td><td>${esc(e.phone)}</td><td>${esc(e.role)}</td><td>${esc(e.pin)}</td><td>${e.active?'Active':'Inactive'}</td><td><button class="btn btn-w btn-sm" onclick="togEmp('${e.id}')">${e.active?'Disable':'Enable'}</button> ${adminButtons('employee',e.id)}</td></tr>`).join('')}</tbody></table></div>`}
+function attTable(){let r=U.role==='admin'?S.attendance:S.attendance.filter(a=>a.emp===U.id);if(!r.length)return'<div class="empty">No attendance</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Employee</th><th>Status</th><th>Time</th><th>Action</th></tr></thead><tbody>${r.slice().reverse().map(a=>`<tr><td>${a.date}</td><td>${empName(a.emp)}</td><td>${a.status}</td><td>${a.time}</td><td>${adminButtons('attendance',a.id)}</td></tr>`).join('')}</tbody></table></div>`}
+function invTable(){let r=myInv().slice().reverse();if(!r.length)return'<div class="empty">No invoices</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Total</th><th>By</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td>${esc(v.byName)}</td><td><button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button> ${adminButtons('invoice',v.id)}</td></tr>`).join('')}</tbody></table></div>`}
+function financeActionButtons(e){return `<button class="btn btn-s btn-sm" onclick="sendSlip('${e.id}')">Slip</button> ${adminButtons('finance',e.id)}`}
+function finTable(){let r=myFin().filter(e=>e.date===today()).slice().reverse();if(!r.length)return'<div class="empty">No entries today</div>';let sec=(title,arr)=>`<h3 style="margin:12px 0">${title}</h3>${arr.length?`<div class="tbl"><table><thead><tr><th>Time</th><th>Tag</th><th>Category</th><th>Receiver</th><th>Account</th><th>Amount</th><th>Action</th></tr></thead><tbody>${arr.map(e=>`<tr><td>${e.time}</td><td><span class="badge ${e.mode==='online'?'online':'cash'}">${e.mode}</span></td><td>${e.cat}</td><td>${esc(e.receiver)}</td><td>${esc(e.online||'-')}</td><td>${money(e.amount)}</td><td>${financeActionButtons(e)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">None</div>'}`;return sec('Online Payments',r.filter(e=>e.mode==='online'))+sec('Cash / Other Payments',r.filter(e=>e.mode!=='online'))}
+function targetTable(){let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Employee</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Reward</th><th>Action</th></tr></thead><tbody>${r.map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${empName(t.emp)}</td><td>${money(t.target)}</td><td>${money(t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td>${p>=100?'✅ ':''}${esc(t.reward)}</td><td>${adminButtons('target',t.id)}</td></tr>`}).join('')}</tbody></table></div>`}
+
 function backup(){content.innerHTML=`<div class="card"><div class="head"><h2>Backup & Restore</h2></div><div class="actions"><button class="btn btn-s" onclick="syncAllToFirebase()">Sync All to Firebase</button><button class="btn btn-i" onclick="loadFromFirebase().then(()=>{toast('Loaded from Firebase','success');tab(TAB)})">Load from Firebase</button><button class="btn btn-s" onclick="downloadBackup()">Download Backup</button><button class="btn btn-i" onclick="restoreFile.click()">Restore Backup</button><button class="btn btn-e" onclick="clearAll()">Clear All</button></div><input class="hidden" type="file" id="restoreFile" accept=".json" onchange="restoreBackup(event)"></div>`}function downloadBackup(){let blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='firenet-backup-'+today()+'.json';a.click()}function restoreBackup(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{S=JSON.parse(r.result);save();toast('Restored','success');setTimeout(()=>location.reload(),700)}catch(x){toast('Invalid backup','error')}};r.readAsText(f)}function clearAll(){if(confirm('Clear all data?')){localStorage.removeItem(KEY);location.reload()}}
 function notify(){let p=myComp().filter(c=>c.status!=='Resolved').length;if(U.role==='employee'&&p){toast(`You have ${p} pending task(s)`,'warning');beep()}}
 load();window.addEventListener('load',async()=>{await initFirebase();if(S.session){U=S.session;openApp()}});
-</script></body></html>
+
+
+/* ===== FULL EDIT MODAL PATCH v2: fixes prompt-only/name-only editing ===== */
+function ensureEditModal(){
+  if(document.getElementById('editModalPatch')) return;
+  const css=document.createElement('style');
+  css.textContent=`
+  #editModalPatch{display:none;position:fixed;inset:0;background:rgba(15,23,42,.62);z-index:9999;align-items:center;justify-content:center;padding:14px}
+  #editModalPatch.active{display:flex}
+  #editModalPatch .edit-box{background:#fff;width:100%;max-width:760px;max-height:92vh;overflow:auto;border-radius:18px;padding:18px;box-shadow:0 25px 70px rgba(0,0,0,.30)}
+  #editModalPatch .edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #editModalPatch .edit-fg{margin-bottom:10px}
+  #editModalPatch label{display:block;font-size:13px;font-weight:900;margin-bottom:6px;color:#374151}
+  #editModalPatch input,#editModalPatch select,#editModalPatch textarea{width:100%;padding:11px;border:1px solid #e5e7eb;border-radius:12px;outline:none}
+  #editModalPatch textarea{min-height:110px;font-family:monospace;font-size:12px}
+  #editModalPatch .edit-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:12px}
+  #editModalPatch .edit-checks{display:flex;gap:10px;flex-wrap:wrap;background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:10px}
+  #editModalPatch .edit-checks label{display:flex;align-items:center;gap:6px;margin:0}
+  @media(max-width:600px){#editModalPatch .edit-grid{grid-template-columns:1fr}#editModalPatch .edit-actions .btn{width:100%}}
+  `;
+  document.head.appendChild(css);
+  const modal=document.createElement('div');
+  modal.id='editModalPatch';
+  modal.innerHTML=`<div class="edit-box"><div class="head"><h2 id="editPatchTitle">Edit</h2><button class="btn btn-l btn-sm" onclick="closeEditModalPatch()">Close</button></div><form id="editPatchForm" onsubmit="saveEditModalPatch(event)"></form></div>`;
+  document.body.appendChild(modal);
+}
+function closeEditModalPatch(){const m=document.getElementById('editModalPatch');if(m)m.classList.remove('active')}
+function editInput(name,label,value='',type='text',extra=''){
+  return `<div class="edit-fg"><label>${label}</label><input name="${name}" type="${type}" value="${esc(value)}" ${extra}></div>`;
+}
+function editSelect(name,label,value,opts){
+  return `<div class="edit-fg"><label>${label}</label><select name="${name}">${opts.map(o=>`<option value="${esc(o)}" ${String(value)===String(o)?'selected':''}>${esc(o)}</option>`).join('')}</select></div>`;
+}
+function employeeSelectForEdit(value){
+  return `<div class="edit-fg"><label>Employee</label><select name="emp">${S.employees.map(e=>`<option value="${e.id}" ${value===e.id?'selected':''}>${esc(e.name)} (${esc(e.id)})</option>`).join('')}</select></div>`;
+}
+function editRecord(type,id){
+  if(!isAdmin())return toast('Admin access required','error');
+  ensureEditModal();
+  const r=findRecord(type,id); if(!r)return toast('Record not found','error');
+  const form=document.getElementById('editPatchForm');
+  form.dataset.type=type; form.dataset.id=id;
+  document.getElementById('editPatchTitle').textContent='Edit '+type.charAt(0).toUpperCase()+type.slice(1);
+  let html='';
+  if(type==='employee'){
+    const per=r.per||{};
+    html=`<div class="edit-grid">
+      ${editInput('name','Employee Name',r.name,'text','required')}
+      ${editInput('phone','Login / Phone',r.phone,'text','required')}
+      ${editInput('pin','PIN / Password',r.pin,'text','required')}
+      ${editInput('role','Role',r.role||'Employee')}
+      ${editSelect('active','Status',r.active?'Active':'Inactive',['Active','Inactive'])}
+    </div>
+    <div class="edit-fg"><label>Permissions</label><div class="edit-checks">
+      ${['complaints','attendance','invoice','finance','targets'].map(p=>`<label><input type="checkbox" name="perm_${p}" ${per[p]?'checked':''}> ${p}</label>`).join('')}
+    </div></div>`;
+  } else if(type==='complaint'){
+    html=`<div class="edit-grid">
+      ${editInput('name','Customer Name',r.name,'text','required')}
+      ${editInput('phone','Phone',r.phone,'text','required')}
+      ${editSelect('ctype','Complaint Type',r.type||'Other',['Internet Down','Slow Speed','New Connection','Wire Change','Device Change','Package Change','Other'])}
+      ${employeeSelectForEdit(r.assigned)}
+      ${editSelect('status','Status',r.status||'Pending',['Pending','In Progress','Resolved','Closed'])}
+      ${editInput('date','Date',r.date||today(),'date')}
+    </div>
+    <div class="edit-fg"><label>Details</label><textarea name="det">${esc(r.det||'')}</textarea></div>`;
+  } else if(type==='attendance'){
+    html=`<div class="edit-grid">
+      ${employeeSelectForEdit(r.emp)}
+      ${editSelect('status','Status',r.status||'Present',['Present','Absent','Leave','Half Day'])}
+      ${editInput('date','Date',r.date||today(),'date')}
+    </div>`;
+  } else if(type==='finance'){
+    html=`<div class="edit-grid">
+      ${editSelect('ftype','Type',r.type||'income',['income','expense'])}
+      ${editSelect('mode','Payment Mode',r.mode||'cash',['cash','online'])}
+      ${editSelect('cat','Category',r.cat||'Other',['Monthly Fee','New Connection','Wire Change','Device Change','Package Change','Office Expense','Repair','Other'])}
+      ${editInput('amount','Amount',r.amount||0,'number','required')}
+      ${editInput('customer','Customer Name / Paid By',r.customer||r.customerName||r.payer||'')}
+      ${editInput('receiver','Receiver Name',r.receiver||'')}
+      ${editInput('online','Online Account / Bank',r.online||'')}
+      ${editInput('phone','Client WhatsApp',r.phone||'')}
+      ${editInput('date','Date',r.date||today(),'date')}
+    </div>
+    <div class="edit-fg"><label>Notes</label><textarea name="notes">${esc(r.notes||'')}</textarea></div>`;
+  } else if(type==='invoice'){
+    html=`<div class="edit-grid">
+      ${editInput('cust','Customer Name',r.cust||'','text','required')}
+      ${editInput('phone','WhatsApp Number',r.phone||'')}
+      ${editSelect('work','Work Type',r.work||'Other Work',['New Connection','Wire Change','Device Change','Package Change','Repair','Other Work'])}
+      ${editInput('disc','Discount',r.disc||0,'number')}
+      ${editInput('date','Date',r.date||today(),'date')}
+    </div>
+    <div class="edit-fg"><label>Items JSON</label><textarea name="items">${esc(JSON.stringify(r.items||[],null,2))}</textarea></div>
+    <div class="edit-fg"><label>Notes</label><textarea name="notes">${esc(r.notes||'')}</textarea></div>`;
+  } else if(type==='target'){
+    html=`<div class="edit-grid">
+      ${employeeSelectForEdit(r.emp)}
+      ${editInput('target','Target Amount',r.target||0,'number','required')}
+      ${editInput('achieved','Achieved Amount',r.achieved||0,'number')}
+      ${editInput('reward','Reward',r.reward||'Reward')}
+      ${editInput('date','Date',r.date||today(),'date')}
+    </div>`;
+  }
+  html+=`<div class="edit-actions"><button type="button" class="btn btn-l" onclick="closeEditModalPatch()">Cancel</button><button type="submit" class="btn btn-p">Save Changes</button></div>`;
+  form.innerHTML=html;
+  document.getElementById('editModalPatch').classList.add('active');
+}
+function saveEditModalPatch(ev){
+  ev.preventDefault();
+  const form=ev.target; const type=form.dataset.type; const id=form.dataset.id;
+  const r=findRecord(type,id); if(!r)return toast('Record not found','error');
+  const fd=new FormData(form); const val=n=>String(fd.get(n)||'').trim();
+  try{
+    if(type==='employee'){
+      const name=val('name'), phone=val('phone');
+      const dup=findEmployeeDuplicate(phone,name,r.id);
+      if(dup)return toast('Another employee already uses this name/login','error');
+      r.name=name; r.phone=phone; r.pin=val('pin'); r.role=val('role')||'Employee'; r.active=val('active')==='Active';
+      r.per={}; ['complaints','attendance','invoice','finance','targets'].forEach(p=>r.per[p]=fd.has('perm_'+p));
+      fbSet('employees',r);
+    }
+    if(type==='complaint'){
+      r.name=val('name'); r.phone=val('phone'); r.type=val('ctype'); r.assigned=val('emp'); r.status=val('status'); r.date=val('date')||today(); r.det=val('det'); r.time=now();
+      fbSet('complaints',r);
+    }
+    if(type==='attendance'){
+      r.emp=val('emp'); r.status=val('status'); r.date=val('date')||today(); r.time=now();
+      fbSet('attendance',r);
+    }
+    if(type==='finance'){
+      r.type=val('ftype')==='expense'?'expense':'income'; r.mode=val('mode')==='online'?'online':'cash'; r.cat=val('cat')||'Other'; r.amount=Number(val('amount'))||0; r.customer=val('customer')||''; r.customerName=r.customer; r.receiver=val('receiver')||r.receiver||''; r.online=r.mode==='online'?val('online'):''; r.phone=val('phone'); r.notes=val('notes'); r.date=val('date')||today(); r.time=now();
+      fbSet('finance',r);
+    }
+    if(type==='invoice'){
+      let items=JSON.parse(val('items')||'[]'); if(!Array.isArray(items))throw new Error('Items must be JSON array');
+      r.cust=val('cust'); r.phone=val('phone'); r.work=val('work'); r.items=items.map(x=>({name:x.name||'Item',qty:Number(x.qty)||1,rate:Number(x.rate)||0})); r.disc=Number(val('disc'))||0; r.notes=val('notes'); r.date=val('date')||today(); r.sub=r.items.reduce((a,x)=>a+(Number(x.qty)||0)*(Number(x.rate)||0),0); r.total=Math.max(0,r.sub-r.disc); r.time=now();
+      fbSet('invoices',r);
+    }
+    if(type==='target'){
+      r.emp=val('emp'); r.target=Number(val('target'))||0; r.achieved=Number(val('achieved'))||0; r.reward=val('reward')||'Reward'; r.date=val('date')||today();
+      fbSet('targets',r);
+    }
+    save(); closeEditModalPatch(); refreshCurrent(); toast('All fields updated','success');
+  }catch(e){toast('Edit failed: '+e.message,'error')}
+}
+
+
+/* ================= DATE FILTER PATCH: Complaints + Finance ================= */
+var complaintDateFilter = (typeof complaintDateFilter !== 'undefined') ? complaintDateFilter : today();
+var complaintShowAll = (typeof complaintShowAll !== 'undefined') ? complaintShowAll : false;
+var financeDateFilter = (typeof financeDateFilter !== 'undefined') ? financeDateFilter : today();
+var financeShowAll = (typeof financeShowAll !== 'undefined') ? financeShowAll : false;
+
+function setComplaintDateFilter(v){ complaintDateFilter = v || today(); complaintShowAll = false; complaints(); }
+function showAllComplaintsFilter(){ complaintShowAll = true; complaints(); }
+function showTodayComplaintsFilter(){ complaintDateFilter = today(); complaintShowAll = false; complaints(); }
+function setFinanceDateFilter(v){ financeDateFilter = v || today(); financeShowAll = false; finance(); }
+function showAllFinanceFilter(){ financeShowAll = true; finance(); }
+function showTodayFinanceFilter(){ financeDateFilter = today(); financeShowAll = false; finance(); }
+
+function complaints(){content.innerHTML=stats()+`<div class="card"><div class="head"><h2>Add Complaint / Task</h2></div><div class="row"><div class="fg"><label>Customer</label><input id="cName"></div><div class="fg"><label>Phone</label><input id="cPhone"></div><div class="fg"><label>Type</label><select id="cType"><option>Internet Down</option><option>Slow Speed</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Other</option></select></div></div><div class="row two"><div class="fg"><label>Assign To</label><select id="cAssign">${empOpts(U.role==='employee'?U.id:'')}</select></div><div class="fg"><label>Details</label><input id="cDet"></div></div><button class="btn btn-p" onclick="addComp()">Add Complaint</button></div><div class="card"><div class="head"><h2>Complaint List ${complaintShowAll?'(All Dates)':'('+complaintDateFilter+')'}</h2><div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${complaintDateFilter}" onchange="setComplaintDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayComplaintsFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllComplaintsFilter()">Show All</button></div></div>${compTable()}</div>`}
+
+function compTable(){let r=myComp().slice().reverse(); if(!complaintShowAll) r=r.filter(c=>(c.date||'')===complaintDateFilter); if(!r.length)return`<div class="empty">No complaints ${complaintShowAll?'':'on '+complaintDateFilter}</div>`;return`<div class="tbl"><table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Assigned</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td>${c.id}</td><td><b>${esc(c.name)}</b><br>${esc(c.phone)}<br><small>${esc(c.det)}</small></td><td>${esc(c.type)}</td><td>${esc(empName(c.assigned))}</td><td><span class="badge ${c.status==='Resolved'?'done':'pending'}">${c.status}</span></td><td>${c.date}</td><td>${adminButtons('complaint',c.id,c.status!=='Resolved'?`<button class="btn btn-s btn-sm" onclick="resComp('${c.id}')">Resolve</button>`:'')}</td></tr>`).join('')}</tbody></table></div>`}
+
+function filteredFinanceEntries(){ let r=myFin().slice(); if(!financeShowAll) r=r.filter(e=>(e.date||'')===financeDateFilter); return r; }
+function finance(){let entries=filteredFinanceEntries(), f=calc(entries);content.innerHTML=`<div class="summary"><div class="sum">Cash<b>${money(f.cash)}</b></div><div class="sum">Online<b>${money(f.online)}</b></div><div class="sum">Income<b>${money(f.inc)}</b></div><div class="sum">Balance<b>${money(f.bal)}</b></div></div><div class="card"><div class="head"><h2>Add Account Entry</h2></div><div class="row"><div class="fg"><label>Type</label><select id="ft"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="fg"><label>Mode</label><select id="fm" onchange="onBox()"><option value="cash">Cash</option><option value="online">Online</option></select></div><div class="fg"><label>Category</label><select id="fc"><option>Monthly Fee</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Office Expense</option><option>Other</option></select></div></div><div class="row"><div class="fg"><label>Amount</label><input id="fa" type="number" value="0"></div><div class="fg"><label>Receiver Name</label><input id="fr" placeholder="Receiver"></div><div class="fg" id="ob"><label>Online Account</label><input id="fo" placeholder="JazzCash / Bank"></div></div><div class="row two"><div class="fg"><label>Client WhatsApp</label><input id="fp" placeholder="923xx"></div><div class="fg"><label>Notes</label><input id="fn"></div></div><button class="btn btn-p" onclick="addFin()">Save Entry</button></div><div class="card"><div class="head"><h2>Account List ${financeShowAll?'(All Dates)':'('+financeDateFilter+')'}</h2><div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${financeDateFilter}" onchange="setFinanceDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayFinanceFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllFinanceFilter()">Show All</button><button class="btn btn-s btn-sm" onclick="dailyReport()">WhatsApp Daily Report</button></div></div>${finTable()}</div>`;onBox()}
+
+function finTable(){let r=filteredFinanceEntries().slice().reverse();if(!r.length)return`<div class="empty">No entries ${financeShowAll?'':'on '+financeDateFilter}</div>`;let sec=(title,arr)=>`<h3 style="margin:12px 0">${title}</h3>${arr.length?`<div class="tbl"><table><thead><tr><th>Time</th><th>Date</th><th>Tag</th><th>Category</th><th>Receiver</th><th>Account</th><th>Amount</th><th>Action</th></tr></thead><tbody>${arr.map(e=>`<tr><td>${e.time}</td><td>${e.date}</td><td><span class="badge ${e.mode==='online'?'online':'cash'}">${e.mode}</span></td><td>${e.cat}</td><td>${esc(e.receiver)}</td><td>${esc(e.online||'-')}</td><td>${money(e.amount)}</td><td>${financeActionButtons(e)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">None</div>'}`;return sec('Online Payments',r.filter(e=>e.mode==='online'))+sec('Cash / Other Payments',r.filter(e=>e.mode!=='online'))}
+
+function dailyReport(){let r=financeShowAll?myFin():myFin().filter(e=>(e.date||'')===financeDateFilter), f=calc(r), msg=`*Fire.net.pk Daily Report*\nDate: ${financeShowAll?'All Dates':financeDateFilter}\nCash: ${money(f.cash)}\nOnline: ${money(f.online)}\nIncome: ${money(f.inc)}\nExpense: ${money(f.exp)}\nBalance: ${money(f.bal)}\n\nEntries:\n${r.map((e,i)=>`${i+1}. ${e.date} | ${e.mode.toUpperCase()} | ${e.cat} | ${money(e.amount)} | Receiver: ${e.receiver}${e.online?' | Account: '+e.online:''}`).join('\n')}`;let p=prompt('Owner WhatsApp number');if(p)window.open('https://wa.me/'+p.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank')}
+
+
+/* ================= FINANCE CUSTOMER + FETCH ALL PATCH ================= */
+financeShowAll = true;
+function getFinanceCustomer(e){ return e.customer || e.customerName || e.payer || e.clientName || ''; }
+function fetchAllFinanceData(){
+  financeShowAll = true;
+  if (typeof loadFromFirebase === 'function') {
+    loadFromFirebase().then(()=>{ toast('All Firebase finance data loaded','success'); finance(); }).catch(err=>{ toast('Firebase load failed: '+(err.message||err),'error'); finance(); });
+  } else {
+    finance();
+  }
+}
+function finance(){
+  let entries=filteredFinanceEntries(), f=calc(entries);
+  content.innerHTML=`<div class="summary"><div class="sum">Cash<b>${money(f.cash)}</b></div><div class="sum">Online<b>${money(f.online)}</b></div><div class="sum">Income<b>${money(f.inc)}</b></div><div class="sum">Balance<b>${money(f.bal)}</b></div></div>
+  <div class="card"><div class="head"><h2>Add Account Entry</h2></div>
+  <div class="row"><div class="fg"><label>Type</label><select id="ft"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="fg"><label>Mode</label><select id="fm" onchange="onBox()"><option value="cash">Cash</option><option value="online">Online</option></select></div><div class="fg"><label>Category</label><select id="fc"><option>Monthly Fee</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Office Expense</option><option>Other</option></select></div></div>
+  <div class="row"><div class="fg"><label>Customer Name / Paid By</label><input id="fcu" placeholder="Who paid? Customer name"></div><div class="fg"><label>Amount</label><input id="fa" type="number" value="0"></div><div class="fg"><label>Receiver Name</label><input id="fr" placeholder="Receiver / Collector"></div></div>
+  <div class="row"><div class="fg" id="ob"><label>Online Account</label><input id="fo" placeholder="JazzCash / Bank"></div><div class="fg"><label>Client WhatsApp</label><input id="fp" placeholder="923xx"></div><div class="fg"><label>Notes</label><input id="fn"></div></div>
+  <button class="btn btn-p" onclick="addFin()">Save Entry</button></div>
+  <div class="card"><div class="head"><h2>Account List ${financeShowAll?'(All Firebase/Local Data)':'('+financeDateFilter+')'}</h2><div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${financeDateFilter}" onchange="setFinanceDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayFinanceFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllFinanceFilter()">Show All</button><button class="btn btn-i btn-sm" onclick="fetchAllFinanceData()">Fetch Firebase</button><button class="btn btn-s btn-sm" onclick="dailyReport()">WhatsApp Report</button></div></div>${finTable()}</div>`;
+  onBox();
+}
+function addFin(){
+  let amount=+fa.value||0;if(amount<=0)return toast('Amount required','error');
+  let customer=(document.getElementById('fcu')?.value||'').trim();
+  let e={id:id('fin'),type:ft.value,mode:fm.value,cat:fc.value,amount,customer:customer,customerName:customer,receiver:fr.value.trim()||U.name,online:fm.value==='online'?fo.value.trim():'',phone:fp.value.trim(),notes:fn.value.trim(),date:today(),time:now(),by:key(),byName:U.name};
+  S.finance.push(e);applyTarget(e);save();fbSet('finance',e);toast('Entry saved','success');beep();finance();
+}
+function finTable(){
+  let r=filteredFinanceEntries().slice().reverse();
+  if(!r.length)return`<div class="empty">No entries ${financeShowAll?'':'on '+financeDateFilter}</div>`;
+  let sec=(title,arr)=>`<h3 style="margin:12px 0">${title}</h3>${arr.length?`<div class="tbl"><table><thead><tr><th>Time</th><th>Date</th><th>Tag</th><th>Paid By / Customer</th><th>Category</th><th>Receiver</th><th>Account</th><th>Amount</th><th>Action</th></tr></thead><tbody>${arr.map(e=>`<tr><td>${e.time||''}</td><td>${e.date||''}</td><td><span class="badge ${e.mode==='online'?'online':'cash'}">${e.mode||''}</span></td><td><b>${esc(getFinanceCustomer(e)||'-')}</b></td><td>${esc(e.cat||'')}</td><td>${esc(e.receiver||'')}</td><td>${esc(e.online||'-')}</td><td>${money(e.amount)}</td><td>${financeActionButtons(e)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">None</div>'}`;
+  return sec('Online Payments',r.filter(e=>e.mode==='online'))+sec('Cash / Other Payments',r.filter(e=>e.mode!=='online'));
+}
+function slipMsg(e){return`*Fire.net.pk Payment Slip*\nDate: ${e.time}\nPaid By: ${getFinanceCustomer(e)||'-'}\nType: ${e.type}\nMode: ${(e.mode||'').toUpperCase()}\nCategory: ${e.cat}\nAmount: ${money(e.amount)}\nReceiver: ${e.receiver}\n${e.online?'Account: '+e.online+'\n':''}Notes: ${e.notes||'-'}\nBy: ${e.byName}`}
+function dailyReport(){let r=financeShowAll?myFin():myFin().filter(e=>(e.date||'')===financeDateFilter),f=calc(r),msg=`*Fire.net.pk Finance Report*\nDate: ${financeShowAll?'All Dates':financeDateFilter}\nCash: ${money(f.cash)}\nOnline: ${money(f.online)}\nIncome: ${money(f.inc)}\nExpense: ${money(f.exp)}\nBalance: ${money(f.bal)}\n\nEntries:\n${r.map((e,i)=>`${i+1}. ${e.date||''} | ${e.mode.toUpperCase()} | Paid By: ${getFinanceCustomer(e)||'-'} | ${e.cat} | ${money(e.amount)} | Receiver: ${e.receiver}${e.online?' | Account: '+e.online:''}`).join('\n')}`;let p=prompt('Owner WhatsApp number');if(p)window.open('https://wa.me/'+p.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank')}
+/* ================= END FINANCE CUSTOMER + FETCH ALL PATCH ================= */
+
+/* ================= END DATE FILTER PATCH ================= */
+</script>
+<script>
+/* ================= TARGET + REWARD + INVOICE REFERENCE EMPLOYEE FIX ================= */
+function ensureRewardFields(){
+  S.targets=(S.targets||[]).map(t=>{
+    if(!t.rewardType) t.rewardType='fixed';
+    if(t.rewardValue===undefined){
+      const m=String(t.reward||'').match(/[0-9]+(\.[0-9]+)?/);
+      t.rewardValue=m?Number(m[0]):0;
+    }
+    if(!t.entries) t.entries=[];
+    if(!t.date) t.date=today();
+    return t;
+  });
+  save();
+}
+function targetRewardEarned(t){
+  const achieved=Number(t.achieved)||0, target=Number(t.target)||0, val=Number(t.rewardValue)||0;
+  if((t.rewardType||'fixed')==='percent') return Math.round(achieved*val/100);
+  return achieved>=target ? val : 0;
+}
+function targetRewardLabel(t){
+  return (t.rewardType||'fixed')==='percent' ? `${Number(t.rewardValue)||0}% of achieved` : money(Number(t.rewardValue)||0);
+}
+function employeeTodayReward(empId){
+  ensureRewardFields();
+  return (S.targets||[])
+    .filter(t=>t.emp===empId && (t.date||today())===today())
+    .reduce((s,t)=>s+targetRewardEarned(t),0);
+}
+function employeeTotalPendingReward(empId){
+  ensureRewardFields();
+  return (S.targets||[])
+    .filter(t=>t.emp===empId)
+    .reduce((s,t)=>s+targetRewardEarned(t),0);
+}
+function employeeTargetBanner(){
+  if(!U || U.role!=='employee') return '';
+  ensureRewardFields();
+  const todayTargets=(S.targets||[]).filter(t=>t.emp===U.id && (t.date||today())===today());
+  const allTargets=(S.targets||[]).filter(t=>t.emp===U.id);
+  const list=todayTargets.length?todayTargets:allTargets.slice(-1);
+  if(!list.length) return `<div class="card"><div class="head"><h2>🎯 Today Target & Reward</h2></div><div class="empty">No target assigned yet</div></div>`;
+  return `<div class="card" style="border-left:6px solid var(--s)"><div class="head"><h2>🎯 Today Target & Reward</h2><span class="badge done">Reward: ${money(employeeTodayReward(U.id))}</span></div>
+    <div class="tbl"><table><thead><tr><th>Date</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Reward Rule</th><th>Reward Earned</th></tr></thead><tbody>
+    ${list.map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return `<tr><td>${esc(t.date||'-')}</td><td>${money(t.target)}</td><td>${money(t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td>${esc(targetRewardLabel(t))}</td><td><b>${money(targetRewardEarned(t))}</b></td></tr>`}).join('')}
+    </tbody></table></div></div>`;
+}
+function stats(){
+  ensureRewardFields();
+  let f=calc(), pend=myComp().filter(c=>c.status!=='Resolved').length;
+  let ts=(U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id));
+  let tar=ts.reduce((s,t)=>s+(+t.target||0),0), ach=ts.reduce((s,t)=>s+(+t.achieved||0),0);
+  let rew=U.role==='admin'?ts.reduce((s,t)=>s+targetRewardEarned(t),0):employeeTodayReward(U.id);
+  return `<div class="grid"><div class="stat"><span>Cash Payment</span><b>${money(f.cash)}</b></div><div class="stat"><span>Online Payment</span><b>${money(f.online)}</b></div><div class="stat"><span>Pending Tasks</span><b>${pend}</b></div><div class="stat"><span>${U.role==='admin'?'Total Reward':'Today Reward'}</span><b>${money(rew)}</b></div></div>`;
+}
+function dash(){content.innerHTML=stats()+employeeTargetBanner()+`<div class="card"><div class="head"><h2>Welcome, ${esc(U.name)}</h2></div><p style="color:#64748b;font-weight:700;line-height:1.6">${U.role==='admin'?'Admin can assign fixed/percentage reward targets and select reward employee on invoices.':'Your target/reward banner shows daily reward from finance income and assigned invoices.'}</p></div>`}
+function applyTargetCredit(empId,amount,source,category,entryDate){
+  ensureRewardFields();
+  amount=Number(amount)||0; if(!empId||amount<=0) return;
+  let date=entryDate||today();
+  let t=(S.targets||[]).find(x=>x.emp===empId && (x.date||date)===date && (+x.achieved||0)<(+x.target||0));
+  if(!t) t=(S.targets||[]).find(x=>x.emp===empId && (+x.achieved||0)<(+x.target||0));
+  if(!t) return;
+  t.achieved=(+t.achieved||0)+amount;
+  t.entries=t.entries||[];
+  t.entries.push({source,category,amount,date,time:now()});
+  fbSet('targets',t);
+  save();
+  if((+t.achieved)>= (+t.target||0)){toast(`Target completed for ${empName(empId)}. Reward: ${money(targetRewardEarned(t))}`,'success');beep()}
+}
+function applyTarget(e){
+  if(!e || e.type!=='income')return;
+  applyTargetCredit(e.by, e.amount, 'Finance', e.cat||e.category||'Income', e.date||today());
+}
+function invoice(){content.innerHTML=`<div class="card"><div class="head"><h2>Create Invoice</h2><button class="btn btn-l btn-sm" onclick="draft=[];invoice()">Clear</button></div><div class="row"><div class="fg"><label>Customer</label><input id="invCust"></div><div class="fg"><label>WhatsApp</label><input id="invPhone" placeholder="923xx"></div><div class="fg"><label>Work Type</label><select id="invWork"><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Repair</option><option>Other Work</option></select></div></div><div class="row two"><div class="fg"><label>Reference / Reward Employee</label><select id="invRewardEmp"><option value="">No Reward Employee</option>${empOpts()}</select></div><div class="fg"><label>Reward Note</label><input id="invRewardNote" placeholder="Example: new connection reward"></div></div><div class="item-line"><div class="fg"><label>Product / Service</label><input id="itName"></div><div class="fg"><label>Qty</label><input id="itQty" type="number" value="1"></div><div class="fg"><label>Rate</label><input id="itRate" type="number" value="0"></div><button class="btn btn-i" onclick="addItem()">Add</button></div><div id="itemsArea"></div><div class="row two"><div class="fg"><label>Discount</label><input id="disc" type="number" value="0" oninput="drawItems()"></div><div class="fg"><label>Notes</label><input id="invNotes"></div></div><div class="actions"><button class="btn btn-p" onclick="saveInv()">Save Invoice</button><button class="btn btn-s" onclick="sendDraftInv()">Send WhatsApp</button></div></div><div class="card"><div class="head"><h2>Invoice History</h2></div>${invTable()}</div>`;drawItems()}
+function invObj(){let t=totals();let empId=document.getElementById('invRewardEmp')?.value||'';return{id:id('inv'),cust:invCust.value.trim(),phone:invPhone.value.trim(),work:invWork.value,rewardEmp:empId,rewardEmpName:empId?empName(empId):'',rewardNote:document.getElementById('invRewardNote')?.value.trim()||'',items:[...draft],sub:t.sub,disc:t.disc,total:t.total,notes:invNotes.value.trim(),date:today(),time:now(),by:key(),byName:U.name}}
+function invMsg(v){return`*Fire.net.pk Invoice*\nID: ${v.id}\nCustomer: ${v.cust}\nWork: ${v.work}\nDate: ${v.date}\n${v.rewardEmpName?'Reference Employee: '+v.rewardEmpName+'\n':''}\n*Items*\n${v.items.map((x,i)=>`${i+1}. ${x.name} | Qty ${x.qty} | Rate ${money(x.rate)} | Total ${money(x.qty*x.rate)}`).join('\n')}\n\nSubtotal: ${money(v.sub)}\nDiscount: ${money(v.disc)}\n*Final Total: ${money(v.total)}*\nNotes: ${v.notes||'-'}\nBy: ${v.byName}`}
+function saveInv(){if(!draft.length)return toast('Add item','error');let v=invObj();if(!v.cust)return toast('Customer required','error');S.invoices.push(v);save();fbSet('invoices',v);if(v.rewardEmp){applyTargetCredit(v.rewardEmp,v.total,'Invoice',v.work,v.date);toast(`${v.work} invoice reward assigned to ${v.rewardEmpName}`,'success')}draft=[];toast('Invoice saved','success');invoice()}
+function invTable(){let r=myInv().slice().reverse();if(!r.length)return'<div class="empty">No invoices</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Total</th><th>Reward Employee</th><th>By</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td>${esc(v.rewardEmpName||'-')}</td><td>${esc(v.byName)}</td><td>${adminButtons('invoice',v.id,`<button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button>`)}</td></tr>`).join('')}</tbody></table></div>`}
+function targets(){ensureRewardFields();content.innerHTML=`${U.role==='admin'?`<div class="card"><div class="head"><h2>Assign Daily Target & Reward</h2></div><div class="row"><div class="fg"><label>Employee</label><select id="te">${empOpts()}</select></div><div class="fg"><label>Target Amount</label><input id="ta" type="number" value="20000"></div><div class="fg"><label>Target Date</label><input id="td" type="date" value="${today()}"></div></div><div class="row"><div class="fg"><label>Reward Type</label><select id="rt"><option value="fixed">Fixed Amount</option><option value="percent">Percentage of Achieved</option></select></div><div class="fg"><label>Reward Value</label><input id="rv" type="number" value="1000"></div><div class="fg"><label>Reward Label / Note</label><input id="tr" value="Daily Reward"></div></div><button class="btn btn-p" onclick="assignTarget()">Assign Target</button></div>`:''}<div class="card"><div class="head"><h2>Target Progress & Rewards</h2></div>${targetTable()}</div>`}
+function assignTarget(){let target=+ta.value||0;if(target<=0)return toast('Target required','error');let rec={id:id('t'),emp:te.value,target,achieved:0,reward:tr.value.trim()||'Reward',rewardType:rt.value,rewardValue:+rv.value||0,date:td.value||today(),entries:[]};S.targets.push(rec);save();fbSet('targets',rec);targets()}
+function targetTable(){ensureRewardFields();let r=U.role==='admin'?S.targets:S.targets.filter(t=>t.emp===U.id);if(!r.length)return'<div class="empty">No targets</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Employee</th><th>Target</th><th>Achieved</th><th>Progress</th><th>Reward Rule</th><th>Reward Earned</th><th>Action</th></tr></thead><tbody>${r.map(t=>{let p=Math.min(100,Math.round((+t.achieved||0)/(+t.target||1)*100));return`<tr><td>${esc(t.date||'-')}</td><td>${empName(t.emp)}</td><td>${money(t.target)}</td><td>${money(t.achieved)}</td><td><div class="prog"><div class="bar" style="width:${p}%"></div></div><b>${p}%</b></td><td>${esc(targetRewardLabel(t))}<br><small>${esc(t.reward||'')}</small></td><td><b>${money(targetRewardEarned(t))}</b></td><td>${adminButtons('target',t.id)}</td></tr>`}).join('')}</tbody></table></div>`}
+</script>
+
+<script>
+/* ================= NEW CONNECTION CONDITIONAL REWARD EMPLOYEE PATCH ================= */
+function toggleInvoiceRewardBox(){
+  const work=document.getElementById('invWork')?.value||'';
+  const box=document.getElementById('newConnectionRewardBox');
+  const source=document.getElementById('invRewardSource');
+  if(!box) return;
+  if(work==='New Connection'){
+    box.style.display='grid';
+    if(source) source.value='New Connection';
+  }else{
+    box.style.display='none';
+    const emp=document.getElementById('invRewardEmp');
+    if(emp) emp.value='';
+    if(source) source.value='Invoice';
+  }
+}
+function invoice(){
+  content.innerHTML=`<div class="card"><div class="head"><h2>Create Invoice</h2><button class="btn btn-l btn-sm" onclick="draft=[];invoice()">Clear</button></div>
+  <div class="row">
+    <div class="fg"><label>Customer</label><input id="invCust"></div>
+    <div class="fg"><label>WhatsApp</label><input id="invPhone" placeholder="923xx"></div>
+    <div class="fg"><label>Work Type</label><select id="invWork" onchange="toggleInvoiceRewardBox()"><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Repair</option><option>Other Work</option></select></div>
+  </div>
+  <div class="row" id="newConnectionRewardBox" style="border:1px solid #e5e7eb;border-radius:14px;padding:10px;margin-bottom:10px;background:#f8fafc">
+    <div class="fg"><label>Reward Source</label><select id="invRewardSource"><option value="New Connection">1 New Connection</option><option value="Invoice">2 Invoice</option></select></div>
+    <div class="fg"><label>Reference / Reward Employee</label><select id="invRewardEmp"><option value="">Select Employee</option>${empOpts()}</select></div>
+    <div class="fg"><label>Reward Note</label><input id="invRewardNote" value="New connection reward"></div>
+  </div>
+  <div class="item-line"><div class="fg"><label>Product / Service</label><input id="itName"></div><div class="fg"><label>Qty</label><input id="itQty" type="number" value="1"></div><div class="fg"><label>Rate</label><input id="itRate" type="number" value="0"></div><button class="btn btn-i" onclick="addItem()">Add</button></div>
+  <div id="itemsArea"></div>
+  <div class="row two"><div class="fg"><label>Discount</label><input id="disc" type="number" value="0" oninput="drawItems()"></div><div class="fg"><label>Notes</label><input id="invNotes"></div></div>
+  <div class="actions"><button class="btn btn-p" onclick="saveInv()">Save Invoice</button><button class="btn btn-s" onclick="sendDraftInv()">Send WhatsApp</button></div></div>
+  <div class="card"><div class="head"><h2>Invoice History</h2></div>${invTable()}</div>`;
+  drawItems();
+  toggleInvoiceRewardBox();
+}
+function invObj(){
+  let t=totals();
+  let work=document.getElementById('invWork')?.value||'Other Work';
+  let empId=(work==='New Connection')?(document.getElementById('invRewardEmp')?.value||''):'';
+  let rewardSource=(work==='New Connection')?(document.getElementById('invRewardSource')?.value||'New Connection'):'Invoice';
+  return {id:id('inv'),cust:invCust.value.trim(),phone:invPhone.value.trim(),work,rewardSource,rewardEmp:empId,rewardEmpName:empId?empName(empId):'',rewardNote:document.getElementById('invRewardNote')?.value.trim()||'',items:[...draft],sub:t.sub,disc:t.disc,total:t.total,notes:invNotes.value.trim(),date:today(),time:now(),by:key(),byName:U.name}
+}
+function invMsg(v){return`*Fire.net.pk Invoice*\nID: ${v.id}\nCustomer: ${v.cust}\nWork: ${v.work}\nDate: ${v.date}\n${v.rewardEmpName?'Reference Employee: '+v.rewardEmpName+'\nReward Source: '+(v.rewardSource||v.work)+'\n':''}\n*Items*\n${v.items.map((x,i)=>`${i+1}. ${x.name} | Qty ${x.qty} | Rate ${money(x.rate)} | Total ${money(x.qty*x.rate)}`).join('\n')}\n\nSubtotal: ${money(v.sub)}\nDiscount: ${money(v.disc)}\n*Final Total: ${money(v.total)}*\nNotes: ${v.notes||'-'}\nBy: ${v.byName}`}
+function saveInv(){
+  if(!draft.length)return toast('Add item','error');
+  let v=invObj();
+  if(!v.cust)return toast('Customer required','error');
+  if(v.work==='New Connection' && !v.rewardEmp)return toast('Select Reference / Reward Employee for New Connection','error');
+  S.invoices.push(v);save();fbSet('invoices',v);
+  if(v.rewardEmp){applyTargetCredit(v.rewardEmp,v.total,v.rewardSource||'New Connection',v.work,v.date);toast(`${v.work} reward assigned to ${v.rewardEmpName}`,'success')}
+  draft=[];toast('Invoice saved','success');invoice();
+}
+function invTable(){let r=myInv().slice().reverse();if(!r.length)return'<div class="empty">No invoices</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Source</th><th>Total</th><th>Reward Employee</th><th>By</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${esc(v.rewardSource||'-')}</td><td>${money(v.total)}</td><td>${esc(v.rewardEmpName||'-')}</td><td>${esc(v.byName)}</td><td>${adminButtons('invoice',v.id,`<button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button>`)}</td></tr>`).join('')}</tbody></table></div>`}
+/* ================= END NEW CONNECTION CONDITIONAL REWARD EMPLOYEE PATCH ================= */
+</script>
+
+<style>
+/* ===== Finance visual income/expense patch ===== */
+.finance-summary-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:12px}.finance-card{border-radius:16px;padding:14px;border:1px solid #e5e7eb;background:#fff;box-shadow:0 8px 18px rgba(15,23,42,.05)}.finance-card span{display:block;font-size:12px;font-weight:900;color:#64748b;text-transform:uppercase}.finance-card b{display:block;font-size:20px;margin-top:5px}.finance-card.income-card{border-left:6px solid #16a34a;background:#f0fdf4}.finance-card.expense-card{border-left:6px solid #dc2626;background:#fff1f2}.finance-card.cash-card{border-left:6px solid #22c55e}.finance-card.online-card{border-left:6px solid #2563eb}.finance-card.balance-card{border-left:6px solid #7c3aed}.tag-type-income{background:#dcfce7;color:#166534}.tag-type-expense{background:#fee2e2;color:#991b1b}.tag-mode-cash{background:#bbf7d0;color:#166534}.tag-mode-online{background:#dbeafe;color:#1e40af}.finance-section-title{display:flex;align-items:center;gap:8px;margin:18px 0 10px;font-size:24px;color:#111827}.finance-section-title.income-title:before{content:'';width:10px;height:28px;border-radius:99px;background:#16a34a}.finance-section-title.expense-title:before{content:'';width:10px;height:28px;border-radius:99px;background:#dc2626}.finance-table.income-table tbody tr{background:#f0fdf4}.finance-table.expense-table tbody tr{background:#fff1f2}.finance-table tbody tr:hover{filter:brightness(.98)}.money-plus{color:#166534;font-weight:900}.money-minus{color:#991b1b;font-weight:900}.finance-mobile-card{display:none}@media(max-width:650px){.finance-summary-grid{grid-template-columns:1fr}.finance-table table{min-width:820px}.finance-section-title{font-size:22px}}
+</style>
+
+<script>
+/* ===== Finance visual income/expense + summary patch ===== */
+function normalizeFinanceType(e){ return (e.type || e.entryType || 'income').toLowerCase()==='expense' ? 'expense' : 'income'; }
+function normalizeFinanceMode(e){ return (e.mode || e.paymentMode || 'cash').toLowerCase()==='online' ? 'online' : 'cash'; }
+function financeVisualSummary(entries){
+  let income=0, expense=0, cashIncome=0, onlineIncome=0, cashExpense=0, onlineExpense=0;
+  entries.forEach(e=>{
+    const amount=Number(e.amount)||0, type=normalizeFinanceType(e), mode=normalizeFinanceMode(e);
+    if(type==='expense'){
+      expense+=amount;
+      if(mode==='online') onlineExpense+=amount; else cashExpense+=amount;
+    }else{
+      income+=amount;
+      if(mode==='online') onlineIncome+=amount; else cashIncome+=amount;
+    }
+  });
+  return {income, expense, cashIncome, onlineIncome, cashExpense, onlineExpense, balance:income-expense};
+}
+function typeTag(e){ const t=normalizeFinanceType(e); return `<span class="badge ${t==='expense'?'tag-type-expense':'tag-type-income'}">${t==='expense'?'EXPENSE':'INCOME'}</span>`; }
+function modeTag(e){ const m=normalizeFinanceMode(e); return `<span class="badge ${m==='online'?'tag-mode-online':'tag-mode-cash'}">${m==='online'?'ONLINE':'CASH'}</span>`; }
+function financeSummaryHtml(s){return `<div class="finance-summary-grid">
+  <div class="finance-card income-card"><span>Total Income</span><b class="money-plus">+ ${money(s.income)}</b></div>
+  <div class="finance-card expense-card"><span>Total Expense</span><b class="money-minus">- ${money(s.expense)}</b></div>
+  <div class="finance-card cash-card"><span>Cash Income</span><b>${money(s.cashIncome)}</b><small>Cash Expense: ${money(s.cashExpense)}</small></div>
+  <div class="finance-card online-card"><span>Online Income</span><b>${money(s.onlineIncome)}</b><small>Online Expense: ${money(s.onlineExpense)}</small></div>
+  <div class="finance-card balance-card"><span>Net Balance</span><b>${money(s.balance)}</b></div>
+</div>`}
+function finance(){
+  let entries=filteredFinanceEntries(), s=financeVisualSummary(entries);
+  content.innerHTML=`${financeSummaryHtml(s)}
+  <div class="card"><div class="head"><h2>Add Account Entry</h2></div>
+  <div class="row"><div class="fg"><label>Type</label><select id="ft"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="fg"><label>Mode</label><select id="fm" onchange="onBox()"><option value="cash">Cash</option><option value="online">Online</option></select></div><div class="fg"><label>Category</label><select id="fc"><option>Monthly Fee</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Office Expense</option><option>Other</option></select></div></div>
+  <div class="row"><div class="fg"><label>Customer Name / Paid By</label><input id="fcu" placeholder="Who paid? Customer name"></div><div class="fg"><label>Amount</label><input id="fa" type="number" value="0"></div><div class="fg"><label>Receiver Name</label><input id="fr" placeholder="Receiver / Collector"></div></div>
+  <div class="row"><div class="fg" id="ob"><label>Online Account</label><input id="fo" placeholder="JazzCash / Bank"></div><div class="fg"><label>Client WhatsApp</label><input id="fp" placeholder="923xx"></div><div class="fg"><label>Notes</label><input id="fn"></div></div>
+  <button class="btn btn-p" onclick="addFin()">Save Entry</button></div>
+  <div class="card"><div class="head"><h2>Account List ${financeShowAll?'(All Firebase/Local Data)':'('+financeDateFilter+')'}</h2><div class="actions"><input type="date" class="form-control" style="max-width:170px" value="${financeDateFilter}" onchange="setFinanceDateFilter(this.value)"><button class="btn btn-l btn-sm" onclick="showTodayFinanceFilter()">Today</button><button class="btn btn-i btn-sm" onclick="showAllFinanceFilter()">Show All</button><button class="btn btn-i btn-sm" onclick="fetchAllFinanceData()">Fetch Firebase</button><button class="btn btn-s btn-sm" onclick="dailyReport()">WhatsApp Report</button></div></div>${finTable()}</div>`;
+  onBox();
+}
+function finTable(){
+  let r=filteredFinanceEntries().slice().reverse();
+  if(!r.length)return`<div class="empty">No entries ${financeShowAll?'':'on '+financeDateFilter}</div>`;
+  const renderSection=(title, cls, arr)=>`<h3 class="finance-section-title ${cls==='income'?'income-title':'expense-title'}">${title} <span class="badge ${cls==='income'?'tag-type-income':'tag-type-expense'}">${arr.length}</span></h3>${arr.length?`<div class="tbl finance-table ${cls==='income'?'income-table':'expense-table'}"><table><thead><tr><th>Time</th><th>Date</th><th>Type</th><th>Payment</th><th>Paid By / Customer</th><th>Category</th><th>Receiver</th><th>Account</th><th>Amount</th><th>Action</th></tr></thead><tbody>${arr.map(e=>`<tr><td>${esc(e.time||'')}</td><td>${esc(e.date||'')}</td><td>${typeTag(e)}</td><td>${modeTag(e)}</td><td><b>${esc(getFinanceCustomer(e)||'-')}</b></td><td>${esc(e.cat||e.category||'')}</td><td>${esc(e.receiver||'')}</td><td>${esc(e.online||e.onlineAccount||'-')}</td><td class="${normalizeFinanceType(e)==='expense'?'money-minus':'money-plus'}">${normalizeFinanceType(e)==='expense'?'- ':'+ '}${money(e.amount)}</td><td>${financeActionButtons(e)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">None</div>'}`;
+  return renderSection('Income Entries', 'income', r.filter(e=>normalizeFinanceType(e)!=='expense')) + renderSection('Expense Entries', 'expense', r.filter(e=>normalizeFinanceType(e)==='expense'));
+}
+function slipMsg(e){return`*Fire.net.pk Payment Slip*\nDate: ${e.time}\nPaid By: ${getFinanceCustomer(e)||'-'}\nType: ${normalizeFinanceType(e).toUpperCase()}\nMode: ${normalizeFinanceMode(e).toUpperCase()}\nCategory: ${e.cat||e.category||'-'}\nAmount: ${normalizeFinanceType(e)==='expense'?'- ':'+ '}${money(e.amount)}\nReceiver: ${e.receiver||'-'}\n${(e.online||e.onlineAccount)?'Account: '+(e.online||e.onlineAccount)+'\n':''}Notes: ${e.notes||'-'}\nBy: ${e.byName||'-'}`}
+function dailyReport(){
+  let r=financeShowAll?myFin():myFin().filter(e=>(e.date||'')===financeDateFilter), s=financeVisualSummary(r);
+  let msg=`*Fire.net.pk Finance Report*\nDate: ${financeShowAll?'All Dates':financeDateFilter}\n\n*Summary*\nTotal Income: ${money(s.income)}\nTotal Expense: ${money(s.expense)}\nCash Income: ${money(s.cashIncome)}\nOnline Income: ${money(s.onlineIncome)}\nCash Expense: ${money(s.cashExpense)}\nOnline Expense: ${money(s.onlineExpense)}\nNet Balance: ${money(s.balance)}\n\n*Entries*\n${r.map((e,i)=>`${i+1}. ${e.date||''} | ${normalizeFinanceType(e).toUpperCase()} | ${normalizeFinanceMode(e).toUpperCase()} | Paid By: ${getFinanceCustomer(e)||'-'} | ${e.cat||e.category||'-'} | ${normalizeFinanceType(e)==='expense'?'- ':'+ '}${money(e.amount)} | Receiver: ${e.receiver||'-'}${(e.online||e.onlineAccount)?' | Account: '+(e.online||e.onlineAccount):''}`).join('\n')}`;
+  let p=prompt('Owner WhatsApp number');if(p)window.open('https://wa.me/'+p.replace(/\D/g,'')+'?text='+encodeURIComponent(msg),'_blank')
+}
+/* ===== End finance visual income/expense patch ===== */
+</script>
+
+
+<script>
+/* ================= INVOICE RECEIVED / DUE + AUTO FINANCE INCOME PATCH ================= */
+function invPaymentStatus(v){
+  const total=Number(v.total)||0, rec=Number(v.received)||0, due=Math.max(0,total-rec);
+  if(due<=0) return 'Paid';
+  if(rec>0) return 'Partial';
+  return 'Due';
+}
+function invoicePaymentTag(v){
+  const st=invPaymentStatus(v);
+  return `<span class="badge ${st==='Paid'?'done':st==='Partial'?'pending':'tag-type-expense'}">${st}</span>`;
+}
+function getInvoiceDue(v){ return Math.max(0,(Number(v.total)||0)-(Number(v.received)||0)); }
+function invoicePaymentModeOptions(selected='cash'){
+  return `<option value="cash" ${selected==='cash'?'selected':''}>Cash</option><option value="online" ${selected==='online'?'selected':''}>Online</option>`;
+}
+function toggleInvoiceOnlineBox(){
+  const box=document.getElementById('invOnlineBox');
+  const mode=document.getElementById('invPayMode')?.value || 'cash';
+  if(box) box.style.display = mode==='online' ? 'block' : 'none';
+}
+function invoice(){
+  content.innerHTML=`<div class="card"><div class="head"><h2>Create Invoice</h2><button class="btn btn-l btn-sm" onclick="draft=[];invoice()">Clear</button></div>
+  <div class="row"><div class="fg"><label>Customer</label><input id="invCust" placeholder="Customer name"></div><div class="fg"><label>WhatsApp</label><input id="invPhone" placeholder="923xx"></div><div class="fg"><label>Work Type</label><select id="invWork" onchange="toggleInvoiceRewardBox()"><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Repair</option><option>Other Work</option></select></div></div>
+  <div class="row two" id="newConnectionRewardBox"><div class="fg"><label>Reward Source</label><select id="invRewardSource"><option value="New Connection">1. New Connection</option><option value="Invoice">2. Invoice</option></select></div><div class="fg"><label>Reference / Reward Employee</label><select id="invRewardEmp"><option value="">Select Employee</option>${empOpts()}</select></div></div>
+  <div class="item-line"><div class="fg"><label>Product / Service</label><input id="itName" placeholder="Router / Wire / Installation"></div><div class="fg"><label>Qty</label><input id="itQty" type="number" value="1"></div><div class="fg"><label>Rate</label><input id="itRate" type="number" value="0"></div><button class="btn btn-i" onclick="addItem()">Add</button></div>
+  <div id="itemsArea"></div>
+  <div class="row"><div class="fg"><label>Discount</label><input id="disc" type="number" value="0" oninput="drawItems()"></div><div class="fg"><label>Amount Received</label><input id="invReceived" type="number" value="0" oninput="drawItems()"></div><div class="fg"><label>Payment Mode</label><select id="invPayMode" onchange="toggleInvoiceOnlineBox()">${invoicePaymentModeOptions('cash')}</select></div></div>
+  <div class="row"><div class="fg" id="invOnlineBox"><label>Online Account</label><input id="invOnline" placeholder="JazzCash / Easypaisa / Bank"></div><div class="fg"><label>Receiver Name</label><input id="invReceiver" placeholder="Receiver / Collector" value="${esc(U?.name||'')}"></div><div class="fg"><label>Notes</label><input id="invNotes"></div></div>
+  <div id="invoiceDueBox"></div>
+  <div class="actions"><button class="btn btn-p" onclick="saveInv()">Save Invoice</button><button class="btn btn-s" onclick="sendDraftInv()">Send WhatsApp</button></div></div>
+  <div class="card"><div class="head"><h2>Invoice Summary</h2></div>${invoiceSummaryHtml()}</div>
+  <div class="card"><div class="head"><h2>Invoice History</h2></div>${invTable()}</div>
+  <div class="card"><div class="head"><h2>Due Invoices</h2></div>${dueInvoiceTable()}</div>`;
+  drawItems();toggleInvoiceRewardBox();toggleInvoiceOnlineBox();
+}
+function drawItems(){
+  let a=document.getElementById('itemsArea'); if(!a)return;
+  let t=totals();
+  let received=Number(document.getElementById('invReceived')?.value)||0;
+  if(received>t.total){ received=t.total; const el=document.getElementById('invReceived'); if(el)el.value=t.total; }
+  const due=Math.max(0,t.total-received);
+  a.innerHTML=draft.length?`<div class="tbl"><table><thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Total</th><th></th></tr></thead><tbody>${draft.map((x,i)=>`<tr><td>${esc(x.name)}</td><td>${x.qty}</td><td>${money(x.rate)}</td><td>${money(x.qty*x.rate)}</td><td><button class="btn btn-e btn-sm" onclick="remItem(${i})">X</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No items added</div>';
+  const dueBox=document.getElementById('invoiceDueBox');
+  if(dueBox){dueBox.innerHTML=`<div class="summary"><div class="sum">Subtotal<b>${money(t.sub)}</b></div><div class="sum">Discount<b>${money(t.disc)}</b></div><div class="sum">Invoice Total<b>${money(t.total)}</b></div><div class="sum">Received<b class="money-plus">${money(received)}</b></div><div class="sum">Due<b class="money-minus">${money(due)}</b></div></div>`;}
+}
+function invObj(){
+  let t=totals();
+  let empId=document.getElementById('invRewardEmp')?.value||'';
+  let received=Math.min(Number(document.getElementById('invReceived')?.value)||0,t.total);
+  let due=Math.max(0,t.total-received);
+  return {id:id('inv'),cust:invCust.value.trim(),phone:invPhone.value.trim(),work:invWork.value,rewardSource:document.getElementById('invRewardSource')?.value||'',rewardEmp:empId,rewardEmpName:empId?empName(empId):'',items:[...draft],sub:t.sub,disc:t.disc,total:t.total,received,due,payMode:document.getElementById('invPayMode')?.value||'cash',online:document.getElementById('invOnline')?.value.trim()||'',receiver:document.getElementById('invReceiver')?.value.trim()||U.name,notes:invNotes.value.trim(),date:today(),time:now(),by:key(),byName:U.name,status:due<=0?'Paid':received>0?'Partial':'Due'};
+}
+function invMsg(v){return`*Fire.net.pk Invoice*\nID: ${v.id}\nCustomer: ${v.cust}\nWork: ${v.work}\nDate: ${v.date}\n${v.rewardEmpName?'Reference Employee: '+v.rewardEmpName+'\n':''}\n*Items*\n${v.items.map((x,i)=>`${i+1}. ${x.name} | Qty ${x.qty} | Rate ${money(x.rate)} | Total ${money(x.qty*x.rate)}`).join('\n')}\n\nSubtotal: ${money(v.sub)}\nDiscount: ${money(v.disc)}\nInvoice Total: ${money(v.total)}\nReceived: ${money(v.received||0)}\nDue: ${money(getInvoiceDue(v))}\nStatus: ${invPaymentStatus(v)}\nPayment Mode: ${(v.payMode||'-').toUpperCase()}${v.online?'\nOnline Account: '+v.online:''}\nReceiver: ${v.receiver||'-'}\nNotes: ${v.notes||'-'}\nBy: ${v.byName}`}
+function createInvoiceFinanceEntry(v, amount, note='Invoice amount received'){
+  amount=Number(amount)||0; if(amount<=0) return null;
+  let e={id:id('fin'),type:'income',mode:v.payMode||'cash',cat:v.work||'Invoice Sale',category:v.work||'Invoice Sale',amount,customer:v.cust,receiver:v.receiver||v.byName||U.name,online:(v.payMode==='online'?v.online:''),phone:v.phone||'',notes:`${note}: ${v.id}`,date:v.date||today(),time:now(),by:v.rewardEmp||v.by||key(),byName:v.rewardEmpName||v.byName||U.name,invoiceId:v.id,source:'invoice'};
+  S.finance.push(e);applyTarget(e);fbSet('finance',e);return e;
+}
+function saveInv(){
+  if(!draft.length)return toast('Add item','error');
+  let v=invObj(); if(!v.cust)return toast('Customer required','error');
+  if(v.work==='New Connection' && !v.rewardEmp) return toast('Select reward/reference employee for New Connection','error');
+  S.invoices.push(v);fbSet('invoices',v);
+  if(v.received>0){createInvoiceFinanceEntry(v,v.received,'Invoice sale income received');toast('Invoice saved and received amount added to Finance income','success')}
+  else toast('Invoice saved as due. No income added because received amount is 0','warning');
+  if(v.rewardEmp){applyTargetCredit(v.rewardEmp,v.total,v.rewardSource||'Invoice',v.work,v.date);toast(`${v.work} reward assigned to ${v.rewardEmpName}`,'success')}
+  save();draft=[];invoice();
+}
+function invoiceSummaryHtml(){
+  const rows=myInv();
+  const sale=rows.reduce((s,v)=>s+(Number(v.total)||0),0);
+  const rec=rows.reduce((s,v)=>s+(Number(v.received)||0),0);
+  const due=rows.reduce((s,v)=>s+getInvoiceDue(v),0);
+  return `<div class="summary"><div class="sum">Total Sales<b>${money(sale)}</b></div><div class="sum">Amount Received<b class="money-plus">${money(rec)}</b></div><div class="sum">Due Amount<b class="money-minus">${money(due)}</b></div><div class="sum">Due Invoices<b>${rows.filter(v=>getInvoiceDue(v)>0).length}</b></div></div>`;
+}
+function invTable(){
+  let r=myInv().slice().reverse();if(!r.length)return'<div class="empty">No invoices</div>';
+  return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Total</th><th>Received</th><th>Due</th><th>Status</th><th>Reward Employee</th><th>By</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td class="money-plus">${money(v.received||0)}</td><td class="money-minus">${money(getInvoiceDue(v))}</td><td>${invoicePaymentTag(v)}</td><td>${esc(v.rewardEmpName||'-')}</td><td>${esc(v.byName)}</td><td>${adminButtons('invoice',v.id,`<button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button>${getInvoiceDue(v)>0?` <button class="btn btn-i btn-sm" onclick="addInvoicePayment('${v.id}')">Receive</button>`:''}`)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function dueInvoiceTable(){
+  let r=myInv().filter(v=>getInvoiceDue(v)>0).slice().reverse();
+  if(!r.length)return'<div class="empty">No due invoices</div>';
+  return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Total</th><th>Received</th><th>Due</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td>${money(v.received||0)}</td><td class="money-minus"><b>${money(getInvoiceDue(v))}</b></td><td><button class="btn btn-i btn-sm" onclick="addInvoicePayment('${v.id}')">Receive Payment</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+function addInvoicePayment(invId){
+  const v=S.invoices.find(x=>x.id===invId); if(!v)return;
+  const due=getInvoiceDue(v); if(due<=0)return toast('Invoice already paid','info');
+  let amt=Number(prompt(`Due amount is ${money(due)}. Enter received amount:`, due));
+  if(!amt||amt<=0)return;
+  if(amt>due)amt=due;
+  let mode=prompt('Payment mode: cash or online', v.payMode||'cash')||'cash'; mode=mode.toLowerCase().includes('online')?'online':'cash';
+  let online=''; if(mode==='online') online=prompt('Online account / bank:', v.online||'')||'';
+  let receiver=prompt('Receiver name:', v.receiver||U.name)||v.receiver||U.name;
+  v.received=(Number(v.received)||0)+amt; v.due=getInvoiceDue(v); v.status=invPaymentStatus(v); v.payMode=mode; v.online=online||v.online||''; v.receiver=receiver;
+  createInvoiceFinanceEntry(v,amt,'Due invoice payment received');
+  fbSet('invoices',v);save();toast('Payment received and added to Finance income','success');invoice();
+}
+function sendSavedInv(i){let v=S.invoices.find(x=>x.id===i);if(v)window.open('https://wa.me/'+String(v.phone||'').replace(/\D/g,'')+'?text='+encodeURIComponent(invMsg(v)),'_blank')}
+/* ================= END INVOICE RECEIVED / DUE + AUTO FINANCE INCOME PATCH ================= */
+</script>
+</body></html>
