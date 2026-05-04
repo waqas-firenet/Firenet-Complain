@@ -585,7 +585,6 @@
         .badge-resolved { background: #d4edda; color: #155724; }
         .badge-escalated { background: #f8d7da; color: #721c24; }
         .badge-closed { background: #e2e3e5; color: #383d41; }
-        .badge-missed { background: #f8d7da; color: #721c24; border: 1px solid #f5c2c7; }
         .badge-active { background: #d4edda; color: #155724; }
         .badge-inactive { background: #f8d7da; color: #721c24; }
         .badge-admin { background: #e74c3c; color: white; }
@@ -1082,67 +1081,6 @@
         .task-card.resolved {
             border-left-color: var(--success);
             opacity: 0.85;
-        }
-
-
-        /* Technical SLA Countdown + Performance */
-        .sla-box {
-            margin: 12px 0;
-            padding: 12px 14px;
-            border-radius: 12px;
-            background: #f8f9fa;
-            border-left: 4px solid var(--info);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 10px;
-            align-items: center;
-        }
-        .sla-box.warning { border-left-color: var(--warning); background: #fff8e1; }
-        .sla-box.danger { border-left-color: var(--danger); background: #fff1f1; }
-        .sla-item strong {
-            display: block;
-            color: #7f8c8d;
-            font-size: 0.78rem;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: .3px;
-        }
-        .sla-item span {
-            font-weight: 800;
-            color: var(--secondary);
-            font-size: 0.98rem;
-        }
-        .sla-countdown {
-            font-size: 1.15rem !important;
-            color: var(--success) !important;
-        }
-        .sla-countdown.sla-warning { color: var(--warning) !important; }
-        .sla-countdown.sla-danger { color: var(--danger) !important; }
-        .sla-performance-card {
-            background: linear-gradient(135deg, #2c3e50, #3498db);
-            color: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 0 0 18px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 12px;
-        }
-        .sla-performance-card .perf-mini {
-            background: rgba(255,255,255,.12);
-            border: 1px solid rgba(255,255,255,.22);
-            border-radius: 10px;
-            padding: 12px;
-        }
-        .sla-performance-card .perf-mini strong {
-            display:block;
-            font-size:.78rem;
-            opacity:.85;
-            margin-bottom:5px;
-        }
-        .sla-performance-card .perf-mini span {
-            font-size:1.25rem;
-            font-weight:900;
         }
 
         .task-header {
@@ -2058,179 +1996,23 @@
         }
 
 
-        /* Live banner + profile dropdown + target module */
-        .live-banner {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-        }
-        .live-pill {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            color: var(--secondary);
-            padding: 9px 14px;
-            border-radius: 999px;
-            font-weight: 800;
-            font-size: 0.88rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        .live-pill.banner-progress {
-            background: #fff7ed;
-            border-color: #fed7aa;
-            color: #9a3412;
-        }
-        .live-pill.banner-timer {
-            background: #eff6ff;
-            border-color: #bfdbfe;
-            color: #1d4ed8;
-        }
-        .live-pill.banner-danger {
-            background: #fff1f1;
-            border-color: #fecaca;
-            color: #991b1b;
-            animation: softPulse 1.4s infinite;
-        }
-        .live-pill.banner-success {
-            background: #f0fff4;
-            border-color: #bbf7d0;
-            color: #166534;
-        }
-        @keyframes softPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
-        .profile-dropdown { position: relative; }
-        .profile-menu-btn {
-            background: #f8f9fa;
-            color: var(--secondary);
-            border: 1px solid #e9ecef;
-            padding: 10px 15px;
-            border-radius: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-        }
-        .profile-dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 52px;
-            min-width: 245px;
-            background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 18px 45px rgba(0,0,0,.22);
-            padding: 8px;
-            z-index: 999;
-            border: 1px solid #e9ecef;
-        }
-        .profile-dropdown-menu.active { display: block; }
-        .profile-dropdown-menu button {
-            width: 100%;
-            border: none;
-            background: transparent;
-            text-align: left;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 700;
-            color: var(--secondary);
-            cursor: pointer;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .profile-dropdown-menu button:hover { background: #f8f9fa; }
-        .target-progress-box {
-            width: 170px;
-            height: 10px;
-            border-radius: 999px;
-            background: #e9ecef;
-            overflow: hidden;
-            margin-top: 6px;
-        }
-        .target-progress-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--primary), var(--success));
-        }
-        .target-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-            border-left: 5px solid var(--employee);
-            margin-bottom: 14px;
-        }
-        .target-card.accounts { border-left-color: var(--finance); }
-        .target-card.technical { border-left-color: var(--info); }
-
-        @media (max-width: 992px) {
-            .live-banner { width: 100%; justify-content: stretch; }
-            .live-pill { flex: 1; justify-content: center; }
-            .profile-dropdown { width: 100%; }
-            .profile-menu-btn { width: 100%; justify-content: center; }
-            .profile-dropdown-menu { left: 0; right: 0; width: 100%; }
-        }
-
-        /* New Complaint Employee Notification */
-        .complaint-alert-popup {
-            position: fixed;
-            top: 22px;
-            right: 22px;
-            width: min(390px, calc(100vw - 28px));
-            background: #ffffff;
-            color: var(--secondary);
-            border-radius: 18px;
-            box-shadow: 0 22px 70px rgba(0,0,0,0.28);
-            border-left: 6px solid var(--primary);
-            z-index: 3000;
-            overflow: hidden;
-            animation: complaintAlertIn .32s ease;
-        }
-        .complaint-alert-head {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #fff;
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            font-weight: 800;
-        }
-        .complaint-alert-body {
-            padding: 16px;
-            line-height: 1.55;
-            font-size: .92rem;
-        }
-        .complaint-alert-body strong { color: var(--primary); }
-        .complaint-alert-actions {
-            display: flex;
-            gap: 10px;
-            padding: 0 16px 16px;
-            flex-wrap: wrap;
-        }
-        .complaint-alert-close {
-            background: rgba(255,255,255,.18);
-            color: #fff;
-            border: 0;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: grid;
-            place-items: center;
-        }
-        @keyframes complaintAlertIn {
-            from { opacity: 0; transform: translateX(35px) translateY(-10px); }
-            to { opacity: 1; transform: translateX(0) translateY(0); }
-        }
-        @media (max-width: 520px) {
-            .complaint-alert-popup { top: 10px; right: 10px; left: 10px; width: auto; }
-        }
+        /* Daily Target + Missed/Overdue Performance Patch */
+        .target-manager-card { background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); overflow: hidden; margin-bottom: 25px; }
+        .target-dashboard-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; padding: 16px; }
+        .target-mini-card { background:#f8f9fa; border-left:4px solid var(--primary); border-radius:12px; padding:14px; }
+        .target-mini-card h4 { color:#7f8c8d; font-size:.85rem; margin-bottom:8px; }
+        .target-mini-card strong { color:var(--secondary); font-size:1.25rem; }
+        .daily-target-banner { margin-top:18px; display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; width:100%; }
+        .daily-target-banner .target-chip { background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.28); border-radius:14px; padding:12px; }
+        .daily-target-banner .target-chip span { display:block; font-size:.78rem; opacity:.88; margin-bottom:5px; }
+        .daily-target-banner .target-chip b { font-size:1.05rem; }
+        .target-progress-track { height:10px; background:rgba(255,255,255,.25); border-radius:999px; overflow:hidden; margin-top:8px; }
+        .target-progress-fill { height:100%; background:#fff; border-radius:999px; width:0%; transition:width .3s; }
+        .missed-task-card { border-left-color: var(--danger) !important; background:#fff7f7; }
+        .overdue-timer { color:var(--danger); font-weight:800; }
+        .sla-timer { color:var(--success); font-weight:800; }
+        .badge-missed, .badge-overdue { background:#f8d7da; color:#721c24; }
+        .badge-Overdue, .badge-Missed { background:#f8d7da; color:#721c24; }
 
     </style>
 </head>
@@ -2305,22 +2087,19 @@
                     </div>
                 </div>
                 <div class="user-section">
-                    <div class="live-banner">
-                        <div class="live-pill"><i class="fas fa-calendar-day"></i> <span id="adminLiveDate">Today</span></div>
-                        <div class="live-pill"><i class="fas fa-clock"></i> <span id="adminLiveTime">--:--</span></div>
-                    </div>
-                    <div class="profile-dropdown">
-                        <button class="profile-menu-btn" onclick="toggleProfileDropdown('adminProfileMenu')">
-                            <div class="user-avatar" style="background: var(--danger); width: 30px; height: 30px;">A</div>
-                            Administrator <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="profile-dropdown-menu" id="adminProfileMenu">
-                            <button onclick="openUserSummaryModal('admin')"><i class="fas fa-chart-pie"></i> Sum Up</button>
-                            <button onclick="showAdminProfileView()"><i class="fas fa-id-card"></i> Profile View</button>
-                            <button onclick="openAdminPasswordModal()"><i class="fas fa-key"></i> Change Password</button>
-                            <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    <button class="settings-btn" onclick="openAdminPasswordModal()">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                    <div class="user-badge">
+                        <div class="user-avatar" style="background: var(--danger);">A</div>
+                        <div class="user-info">
+                            <div class="name">Administrator</div>
+                            <div class="role"><span class="badge badge-admin">ADMIN</span></div>
                         </div>
                     </div>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
                 </div>
             </header>
 
@@ -2330,9 +2109,6 @@
                 </button>
                 <button class="nav-tab" onclick="switchAdminTab('employees')">
                     <i class="fas fa-users"></i> Employees
-                </button>
-                <button class="nav-tab" onclick="switchAdminTab('targets')">
-                    <i class="fas fa-bullseye"></i> Targets
                 </button>
                 <button class="nav-tab" onclick="switchAdminTab('payroll')">
                     <i class="fas fa-money-bill-wave"></i> Payroll
@@ -2345,6 +2121,9 @@
                 </button>
                 <button class="nav-tab" onclick="switchAdminTab('finance')">
                     <i class="fas fa-wallet"></i> Daily Income & Expenses
+                </button>
+                <button class="nav-tab" onclick="switchAdminTab('dayend')">
+                    <i class="fas fa-flag-checkered"></i> Day End
                 </button>
                 <button class="nav-tab" onclick="switchAdminTab('backup')">
                     <i class="fas fa-database"></i> Backup & Restore
@@ -2526,32 +2305,6 @@
                             <tbody id="adminEmployeesTableBody"></tbody>
                         </table>
                     </div>
-                </div>
-            </div>
-
-
-            <!-- Admin Targets Tab -->
-            <div id="adminTargetsTab" class="tab-content">
-                <div class="stats-bar">
-                    <div class="stat-card"><div class="stat-icon employees"><i class="fas fa-bullseye"></i></div><div class="stat-info"><h3 id="targetTotalCount">0</h3><p>Total Targets</p></div></div>
-                    <div class="stat-card"><div class="stat-icon payroll"><i class="fas fa-percent"></i></div><div class="stat-info"><h3 id="targetAccountsCount">0</h3><p>Accounts Targets</p></div></div>
-                    <div class="stat-card"><div class="stat-icon in-progress"><i class="fas fa-ticket-alt"></i></div><div class="stat-info"><h3 id="targetTechnicalCount">0</h3><p>Technical Targets</p></div></div>
-                    <div class="stat-card"><div class="stat-icon resolved"><i class="fas fa-chart-line"></i></div><div class="stat-info"><h3 id="targetAvgProgress">0%</h3><p>Average Progress</p></div></div>
-                </div>
-                <div class="main-card">
-                    <div class="card-header"><h2><i class="fas fa-bullseye"></i> Assign Employee Target</h2><div style="font-size:0.9rem;opacity:.9;">Accounts = percentage target, Technical = ticket target</div></div>
-                    <div class="quick-finance-form">
-                        <div class="form-row">
-                            <div class="form-group"><label>Employee</label><select id="targetEmployeeSelect" class="form-control"></select></div>
-                            <div class="form-group"><label>Department / Target Type</label><select id="targetDepartment" class="form-control" onchange="syncTargetDepartmentUI()"><option value="Accounts">Accounts - Percentage</option><option value="Technical">Technical - Ticket Based</option></select></div>
-                            <div class="form-group"><label>Target Percentage / Tickets</label><input type="number" step="0.01" id="targetValue" class="form-control" placeholder="Accounts: 0.2%, Technical: 20 tickets"></div>
-                            <div class="form-group" id="targetBaseAmountGroup"><label>Matching Amount / Base Amount (PKR)</label><input type="number" step="0.01" id="targetBaseAmount" class="form-control" placeholder="Example: 2000"></div>
-                            <div class="form-group"><label>Target Month</label><input type="month" id="targetMonth" class="form-control"></div>
-                            <div class="form-group full-width"><label>Target Note</label><input type="text" id="targetNote" class="form-control" placeholder="Example: Complete monthly collection target / Resolve assigned technical complaints"></div>
-                        </div>
-                        <button class="btn btn-primary" onclick="assignEmployeeTarget()"><i class="fas fa-save"></i> Assign Target</button>
-                    </div>
-                    <div style="overflow-x:auto;"><table><thead><tr><th>Employee</th><th>Department</th><th>Target</th><th>Progress</th><th>Month</th><th>Note</th><th>Action</th></tr></thead><tbody id="adminTargetsTableBody"></tbody></table></div>
                 </div>
             </div>
 
@@ -2962,6 +2715,21 @@
                 </div>
             </div>
 
+            <!-- Admin Day End Tab -->
+            <div id="adminDayendTab" class="tab-content">
+                <div class="target-manager-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-flag-checkered"></i> Day End Summary</h2>
+                        <div style="font-size:0.9rem;opacity:0.9;">Today data, target achievement and missed complaints.</div>
+                    </div>
+                    <div class="target-dashboard-grid" id="dayEndSummaryBox"></div>
+                    <div style="padding:0 20px 20px; display:flex; gap:10px; flex-wrap:wrap;">
+                        <button class="btn btn-success" onclick="renderDayEndSummary()"><i class="fas fa-rotate"></i> Refresh Day End</button>
+                        <button class="btn btn-whatsapp" onclick="sendDayEndTargetReport()"><i class="fab fa-whatsapp"></i> Send Day End Report</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Admin Backup Tab -->
             <div id="adminBackupTab" class="tab-content">
                 <div class="backup-section">
@@ -3046,26 +2814,19 @@
                     </div>
                 </div>
                 <div class="user-section">
-                    <div class="live-banner">
-                        <div class="live-pill"><i class="fas fa-calendar-day"></i> <span id="empLiveDate">Today</span></div>
-                        <div class="live-pill"><i class="fas fa-clock"></i> <span id="empLiveTime">--:--</span></div>
-                        <div class="live-pill banner-progress"><i class="fas fa-bullseye"></i> <span id="empBannerTargetProgress">Target: 0%</span></div>
-                        <div class="live-pill banner-success"><i class="fas fa-rupee-sign"></i> <span id="empBannerTargetCalculation">PKR: -</span></div>
-                        <div class="live-pill banner-timer" id="empBannerTimerPill"><i class="fas fa-stopwatch"></i> <span id="empBannerTimer">Timer: --</span></div>
-                        <div class="live-pill banner-progress"><i class="fas fa-chart-line"></i> <span id="empBannerPerformance">Performance: 0%</span></div>
-                    </div>
-                    <div class="profile-dropdown">
-                        <button class="profile-menu-btn" onclick="toggleProfileDropdown('empProfileMenu')">
-                            <div class="user-avatar" id="empPortalAvatar" style="width: 30px; height: 30px;">E</div>
-                            <span id="empPortalName">Employee</span> <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="profile-dropdown-menu" id="empProfileMenu">
-                            <button onclick="openUserSummaryModal('employee')"><i class="fas fa-chart-pie"></i> Sum Up</button>
-                            <button onclick="switchEmployeeTab('profile')"><i class="fas fa-id-card"></i> Profile View</button>
-                            <button onclick="openEmployeePasswordModal()"><i class="fas fa-key"></i> Change Password</button>
-                            <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    <button class="settings-btn" onclick="openEmployeePasswordModal()">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                    <div class="user-badge">
+                        <div class="user-avatar" id="empPortalAvatar">E</div>
+                        <div class="user-info">
+                            <div class="name" id="empPortalName">Employee</div>
+                            <div class="role"><span class="badge badge-employee" id="empPortalRole">STAFF</span></div>
                         </div>
                     </div>
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
                 </div>
             </header>
 
@@ -3084,9 +2845,6 @@
                 <button class="nav-tab active" onclick="switchEmployeeTab('mytasks')">
                     <i class="fas fa-tasks"></i> My Tasks
                 </button>
-                <button class="nav-tab" onclick="switchEmployeeTab('targets')">
-                    <i class="fas fa-bullseye"></i> My Targets
-                </button>
                 <button class="nav-tab" onclick="switchEmployeeTab('invoice')">
                     <i class="fas fa-file-invoice"></i> Invoice
                 </button>
@@ -3101,6 +2859,9 @@
                 </button>
                 <button class="nav-tab" onclick="switchEmployeeTab('resolved')">
                     <i class="fas fa-check-circle"></i> Resolved
+                </button>
+                <button class="nav-tab" onclick="switchEmployeeTab('missed')">
+                    <i class="fas fa-triangle-exclamation"></i> Missed / Overdue
                 </button>
                 <button class="nav-tab" onclick="switchEmployeeTab('profile')">
                     <i class="fas fa-id-card"></i> My Profile
@@ -3126,10 +2887,6 @@
                         <div class="stat-icon resolved"><i class="fas fa-check-circle"></i></div>
                         <div class="stat-info"><h3 id="empResolvedCount">0</h3><p>Resolved</p></div>
                     </div>
-                    <div class="stat-card" id="empSlaStatCard">
-                        <div class="stat-icon attendance"><i class="fas fa-stopwatch"></i></div>
-                        <div class="stat-info"><h3 id="empSlaScore">0%</h3><p>Time Performance</p></div>
-                    </div>
                 </div>
 
                 <div class="main-card">
@@ -3141,21 +2898,6 @@
                 </div>
             </div>
 
-
-
-            <!-- Employee Targets Tab -->
-            <div id="empTargetsTab" class="tab-content">
-                <div class="stats-bar">
-                    <div class="stat-card"><div class="stat-icon employees"><i class="fas fa-bullseye"></i></div><div class="stat-info"><h3 id="empTargetTotal">0</h3><p>Assigned Targets</p></div></div>
-                    <div class="stat-card"><div class="stat-icon resolved"><i class="fas fa-chart-line"></i></div><div class="stat-info"><h3 id="empTargetProgress">0%</h3><p>Latest Progress</p></div></div>
-                    <div class="stat-card"><div class="stat-icon in-progress"><i class="fas fa-ticket-alt"></i></div><div class="stat-info"><h3 id="empTargetTickets">0</h3><p>Resolved Tickets</p></div></div>
-                    <div class="stat-card"><div class="stat-icon payroll"><i class="fas fa-percent"></i></div><div class="stat-info"><h3 id="empTargetType">-</h3><p>Target Type</p></div></div>
-                </div>
-                <div class="main-card">
-                    <div class="card-header"><h2><i class="fas fa-bullseye"></i> My Assigned Targets</h2><div style="font-size:.9rem;opacity:.9;">Set by admin</div></div>
-                    <div style="padding:20px;" id="empTargetsList"></div>
-                </div>
-            </div>
 
             <!-- Employee Invoice Tab -->
             <div id="empInvoiceTab" class="tab-content">
@@ -3327,6 +3069,20 @@
                         <h2><i class="fas fa-history"></i> Resolved & Closed Complaints</h2>
                     </div>
                     <div id="empResolvedList" style="padding: 20px;"></div>
+                </div>
+            </div>
+
+            <!-- Missed / Overdue Tab -->
+            <div id="empMissedTab" class="tab-content">
+                <div class="main-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-triangle-exclamation"></i> Missed / Overdue Complaints</h2>
+                        <div class="missed-header-actions">
+                            <span style="font-size:0.9rem;opacity:0.9;">These complaints reduce technical performance.</span>
+                            <button type="button" class="btn btn-warning" onclick="manualRefreshEmployeeMissed(event)"><i class="fas fa-rotate"></i> Refresh</button>
+                        </div>
+                    </div>
+                    <div id="empMissedList" style="padding: 20px;"></div>
                 </div>
             </div>
 
@@ -3566,7 +3322,6 @@
                             <label><i class="fas fa-user-lock"></i> Employee Portal Permissions</label>
                             <div class="permission-grid">
                                 <label><input type="checkbox" id="permMytasks"> My Tasks / Complaints</label>
-                                <label><input type="checkbox" id="permTargets"> Targets</label>
                                 <label><input type="checkbox" id="permInvoice"> Invoice</label>
                                 <label><input type="checkbox" id="permAttendance"> Attendance</label>
                                 <label><input type="checkbox" id="permPayroll"> Payroll</label>
@@ -3810,21 +3565,6 @@
         </div>
     </div>
 
-
-    <!-- Profile Summary Modal -->
-    <div class="modal-overlay" id="userSummaryModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2><i class="fas fa-chart-pie"></i> Profile Sum Up</h2>
-                <button class="close-btn" onclick="closeUserSummaryModal()"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body" id="userSummaryContent"></div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeUserSummaryModal()">Close</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -3835,18 +3575,15 @@
         // ==================== DATA & STATE ====================
         let complaints = [];
         let employees = [];
-        let employeeComplaintAudioUnlocked = false;
-        let lastEmployeeComplaintPopupId = null;
         let attendance = [];
         let payroll = [];
         let currentUser = null;
         let dailyFinance = [];
-        let employeeTargets = JSON.parse(localStorage.getItem('firenet_employee_targets') || '[]');
         let db = null;
         let viewingId = null;
         let financeEditId = null;
         let complaintOpenedByEmployee = false;
-        const DEFAULT_EMPLOYEE_PERMISSIONS = { mytasks: true, targets: true, invoice: true, attendance: true, payroll: true, accounts: false, resolved: true, profile: true };
+        const DEFAULT_EMPLOYEE_PERMISSIONS = { mytasks: true, invoice: true, attendance: true, payroll: true, accounts: false, resolved: true, profile: true };
         
         const firebaseConfig = {
             apiKey: "AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E",
@@ -3881,7 +3618,7 @@
             initDefaultComplaintDateFilter();
             initInvoiceProductTables();
             console.log('App ready with Firebase + Firestore');
-            restoreExistingSession();
+            forceFreshLogin();
         });
 
         async function initializeFirebase() {
@@ -3906,12 +3643,7 @@
 
         async function loadAllData() {
             try {
-                // Keep saved login session on refresh. Do NOT reset currentUser here.
-                // The previous version set currentUser = null during every reload,
-                // which caused the login screen to appear after refresh.
-                const savedSession = localStorage.getItem('firenet_user');
-                currentUser = savedSession ? JSON.parse(savedSession) : null;
-
+                currentUser = null;
                 complaints = await loadCollection('complaints');
                 employees = await loadCollection('employees');
                 attendance = await loadCollection('attendance');
@@ -3921,14 +3653,14 @@
                 console.log('Firebase data loaded:', { complaints: complaints.length, employees: employees.length, attendance: attendance.length, payroll: payroll,
                 dailyFinance: dailyFinance.length, finance: dailyFinance.length, user: currentUser });
             } catch (e) {
-                console.error('Error loading data:', e);
+                console.error('Error loading Firebase data:', e);
                 complaints = [];
                 employees = [];
                 attendance = [];
                 payroll = [];
                 dailyFinance = [];
-                try { currentUser = JSON.parse(localStorage.getItem('firenet_user') || 'null'); } catch (_) { currentUser = null; }
-                showToast('Could not load Firebase data. Saved login session was kept if available.', 'warning');
+                currentUser = null;
+                showToast('Could not load Firebase data. Using empty state.', 'warning');
             }
         }
 
@@ -3936,17 +3668,9 @@
             if (!db) return;
 
             db.collection('complaints').onSnapshot(snapshot => {
-                const previousComplaints = complaints || [];
-                const latestComplaints = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                const employeeAppActive = document.getElementById('employeeApp').classList.contains('active') && currentUser?.type === 'employee';
-
-                if (employeeAppActive) {
-                    detectNewAssignedComplaint(previousComplaints, latestComplaints);
-                }
-
-                complaints = latestComplaints;
+                complaints = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 if (document.getElementById('adminApp').classList.contains('active')) refreshAdmin();
-                if (employeeAppActive) refreshEmployee();
+                if (document.getElementById('employeeApp').classList.contains('active') && currentUser?.type === 'employee') refreshEmployee();
             }, error => console.error('Realtime complaints error:', error));
 
             db.collection('employees').onSnapshot(snapshot => {
@@ -3986,9 +3710,9 @@
             }, error => console.error('Realtime finance error:', error));
         }
 
-        function showLoginScreen(clearSavedSession = false) {
+        function forceFreshLogin() {
             currentUser = null;
-            if (clearSavedSession) localStorage.removeItem('firenet_user');
+            localStorage.removeItem('firenet_user');
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('adminApp').classList.remove('active');
             document.getElementById('employeeApp').classList.remove('active');
@@ -3996,50 +3720,10 @@
             document.getElementById('employeeLoginForm')?.reset();
         }
 
-        function forceFreshLogin() {
-            showLoginScreen(true);
-        }
-
-        function restoreExistingSession() {
-            const savedUser = localStorage.getItem('firenet_user');
-            if (!savedUser) {
-                showLoginScreen(false);
-                return;
-            }
-
-            try {
-                currentUser = JSON.parse(savedUser);
-            } catch (e) {
-                showLoginScreen(true);
-                return;
-            }
-
-            if (!validateCurrentSession()) {
-                showLoginScreen(true);
-                return;
-            }
-
-            if (currentUser.type === 'admin') {
-                showAdminApp();
-            } else if (currentUser.type === 'employee') {
-                showEmployeeApp();
-            } else {
-                showLoginScreen(true);
-            }
-        }
-
         function checkExistingSession() {
-            restoreExistingSession();
+            // Auto-login is intentionally disabled. Saved field values or old sessions cannot open the app.
+            forceFreshLogin();
         }
-
-        // Extra safety: after browser refresh, retry session restore once after Firebase snapshots finish.
-        window.addEventListener('load', function() {
-            setTimeout(function(){
-                const saved = localStorage.getItem('firenet_user');
-                const loginVisible = document.getElementById('loginScreen') && document.getElementById('loginScreen').style.display !== 'none';
-                if (saved && loginVisible) restoreExistingSession();
-            }, 800);
-        });
 
         // ==================== DEFAULT DATA ====================
         async function loadDefaultEmployees() {
@@ -4075,29 +3759,19 @@
         }
 
         function validateCurrentSession() {
-            // Persistent login fix:
-            // Keep user logged in after page refresh until they press Logout.
-            // Password/PIN changes still update the saved session elsewhere.
-            if (!currentUser || !currentUser.type) return false;
+            if (!currentUser) return false;
 
             if (currentUser.type === 'admin') {
-                currentUser = {
-                    ...currentUser,
-                    type: 'admin',
-                    name: currentUser.name || 'Administrator',
-                    id: 'ADMIN',
-                    sessionToken: currentUser.sessionToken || createSessionToken('admin', 'ADMIN', ADMIN_CREDENTIALS.password)
-                };
-                localStorage.setItem('firenet_user', JSON.stringify(currentUser));
-                return true;
+                const expected = createSessionToken('admin', 'ADMIN', ADMIN_CREDENTIALS.password);
+                return currentUser.id === 'ADMIN' && currentUser.sessionToken === expected;
             }
 
             if (currentUser.type === 'employee') {
                 const emp = employees.find(e => e.id === currentUser.id);
-                // If Firebase/list is temporarily unavailable, do not force logout on refresh.
-                if (!emp) return true;
-                if (emp.status === 'inactive') return false;
-                currentUser = { ...buildEmployeeSession(emp), loginAt: currentUser.loginAt || new Date().toISOString(), impersonatedByAdmin: currentUser.impersonatedByAdmin || false };
+                if (!emp || emp.status !== 'active') return false;
+                const expected = createSessionToken('employee', emp.id, emp.pin);
+                if (currentUser.sessionToken !== expected) return false;
+                currentUser = { ...buildEmployeeSession(emp), loginAt: currentUser.loginAt || new Date().toISOString() };
                 localStorage.setItem('firenet_user', JSON.stringify(currentUser));
                 return true;
             }
@@ -4166,7 +3840,6 @@
         }
 
         function logout() {
-            closeAllProfileMenus();
             currentUser = null;
             localStorage.removeItem('firenet_user');
             document.getElementById('loginScreen').style.display = 'flex';
@@ -4177,28 +3850,6 @@
             document.getElementById('employeeLoginForm').reset();
             
             showToast('Logged out successfully!', 'info');
-        }
-
-        function adminLoginAsEmployee(employeeId) {
-            if (!currentUser || currentUser.type !== 'admin') {
-                showToast('Only admin can use Login as Employee.', 'error');
-                return;
-            }
-
-            const employee = employees.find(e => e.id === employeeId);
-            if (!employee) {
-                showToast('Employee not found.', 'error');
-                return;
-            }
-            if (employee.status !== 'active') {
-                showToast('This employee account is inactive.', 'warning');
-                return;
-            }
-
-            currentUser = { ...buildEmployeeSession(employee), impersonatedByAdmin: true };
-            localStorage.setItem('firenet_user', JSON.stringify(currentUser));
-            showEmployeeApp();
-            showToast('Logged in as ' + employee.name + ' from admin portal.', 'success');
         }
 
         // ==================== APP DISPLAY ====================
@@ -4217,10 +3868,9 @@
             
             document.getElementById('empPortalName').textContent = currentUser.name;
             document.getElementById('empWelcomeName').textContent = currentUser.name;
-            const empRoleEl = document.getElementById('empPortalRole'); if (empRoleEl) empRoleEl.textContent = currentUser.role.toUpperCase();
+            document.getElementById('empPortalRole').textContent = currentUser.role.toUpperCase();
             document.getElementById('empPortalAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
             applyEmployeePermissions();
-            unlockEmployeeComplaintSound();
             refreshEmployee();
         }
 
@@ -4228,8 +3878,8 @@
             if (!currentUser || currentUser.type !== 'employee') return;
             const permissions = { ...DEFAULT_EMPLOYEE_PERMISSIONS, ...(currentUser.permissions || {}) };
             const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
-            const tabMap = { mytasks: 0, targets: 1, invoice: 2, attendance: 3, payroll: 4, accounts: 5, resolved: 6, profile: 7 };
-            const tabIdMap = { mytasks: 'empMyTasksTab', targets: 'empTargetsTab', invoice: 'empInvoiceTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
+            const tabMap = { mytasks: 0, invoice: 1, attendance: 2, payroll: 3, accounts: 4, resolved: 5, profile: 6 };
+            const tabIdMap = { mytasks: 'empMyTasksTab', invoice: 'empInvoiceTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', missed: 'empMissedTab', profile: 'empProfileTab' };
 
             Object.entries(tabMap).forEach(([key, index]) => {
                 if (tabButtons[index]) tabButtons[index].classList.toggle('hidden', !permissions[key]);
@@ -4250,13 +3900,12 @@
             document.querySelectorAll('#adminApp .tab-content').forEach(t => t.classList.remove('active'));
             
             const tabButtons = document.querySelectorAll('#adminApp .nav-tabs .nav-tab');
-            const tabMap = { complaints: 0, employees: 1, targets: 2, payroll: 3, attendance: 4, invoice: 5, finance: 6, backup: 7 };
+            const tabMap = { complaints: 0, employees: 1, payroll: 2, attendance: 3, invoice: 4, finance: 5, dayend: 6, backup: 7 };
             const btn = tabButtons[tabMap[tab]];
             if (btn) btn.classList.add('active');
             const tabEl = document.getElementById('admin' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Tab');
             if (tabEl) tabEl.classList.add('active');
             
-            if (tab === 'targets') renderAdminTargets();
             if (tab === 'payroll') renderAdminPayroll();
             if (tab === 'attendance') renderAdminAttendance();
             if (tab === 'invoice') calculateInvoiceTotals('admin');
@@ -4266,7 +3915,6 @@
         function refreshAdmin() {
             renderAdminComplaints();
             renderAdminEmployees();
-            renderAdminTargets();
             updateAdminStats();
             updateHandlerDropdown();
             updateHandlerFilter();
@@ -4289,7 +3937,7 @@
             document.getElementById('adminTotalEmployees').textContent = employees.length;
             document.getElementById('adminActiveEmployees').textContent = employees.filter(e => e.status === 'active').length;
             document.getElementById('adminInactiveEmployees').textContent = employees.filter(e => e.status === 'inactive').length;
-            document.getElementById('adminAssignedTasks').textContent = complaints.filter(c => c.status !== 'Closed' && c.status !== 'Resolved').length;
+            document.getElementById('adminAssignedTasks').textContent = complaints.filter(c => c.status !== 'Closed' && c.status !== 'Resolved' && c.status !== 'Missed' && c.status !== 'Overdue').length;
             
             // Payroll stats
             document.getElementById('adminPayrollTotal').textContent = payroll.length;
@@ -4494,245 +4142,6 @@
             `).join('');
         }
 
-
-        // ==================== LIVE DATE/TIME + PROFILE DROPDOWN + TARGETS ====================
-        function updateLiveBannerDateTime() {
-            const now = new Date();
-            const dateText = now.toLocaleDateString('en-PK', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
-            const timeText = now.toLocaleTimeString('en-PK');
-            ['adminLiveDate','empLiveDate'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = dateText; });
-            ['adminLiveTime','empLiveTime'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = timeText; });
-        }
-        setInterval(updateLiveBannerDateTime, 1000);
-        updateLiveBannerDateTime();
-
-        function toggleProfileDropdown(menuId) {
-            document.querySelectorAll('.profile-dropdown-menu').forEach(m => { if (m.id !== menuId) m.classList.remove('active'); });
-            const menu = document.getElementById(menuId);
-            if (menu) menu.classList.toggle('active');
-        }
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.profile-dropdown')) {
-                document.querySelectorAll('.profile-dropdown-menu').forEach(m => m.classList.remove('active'));
-            }
-        });
-
-        function closeAllProfileMenus() {
-            document.querySelectorAll('.profile-dropdown-menu').forEach(m => m.classList.remove('active'));
-        }
-
-        function showAdminProfileView() {
-            closeAllProfileMenus();
-            openUserSummaryModal('admin');
-        }
-
-        function openUserSummaryModal(type) {
-            closeAllProfileMenus();
-            const box = document.getElementById('userSummaryContent');
-            if (!box) return;
-            if (type === 'admin') {
-                box.innerHTML = `<div class="attendance-detail-grid">
-                    <div class="attendance-detail-card"><strong>User</strong><span>Administrator</span></div>
-                    <div class="attendance-detail-card"><strong>Role</strong><span>Admin</span></div>
-                    <div class="attendance-detail-card"><strong>Total Complaints</strong><span>${complaints.length}</span></div>
-                    <div class="attendance-detail-card"><strong>Total Employees</strong><span>${employees.length}</span></div>
-                    <div class="attendance-detail-card"><strong>Targets Assigned</strong><span>${employeeTargets.length}</span></div>
-                    <div class="attendance-detail-card"><strong>Open Complaints</strong><span>${complaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed').length}</span></div>
-                </div>`;
-            } else {
-                const myComplaints = complaints.filter(c => c.handlerId === currentUser.id);
-                const myTargets = employeeTargets.filter(t => t.employeeId === currentUser.id);
-                const latest = myTargets[myTargets.length - 1];
-                box.innerHTML = `<div class="attendance-detail-grid">
-                    <div class="attendance-detail-card"><strong>Name</strong><span>${currentUser.name}</span></div>
-                    <div class="attendance-detail-card"><strong>Role</strong><span>${currentUser.role}</span></div>
-                    <div class="attendance-detail-card"><strong>Department</strong><span>${currentUser.department || '-'}</span></div>
-                    <div class="attendance-detail-card"><strong>Phone</strong><span>${currentUser.phone || '-'}</span></div>
-                    <div class="attendance-detail-card"><strong>Assigned Complaints</strong><span>${myComplaints.length}</span></div>
-                    <div class="attendance-detail-card"><strong>Resolved</strong><span>${myComplaints.filter(c => c.status === 'Resolved' || c.status === 'Closed').length}</span></div>
-                    <div class="attendance-detail-card"><strong>Targets</strong><span>${myTargets.length}</span></div>
-                    <div class="attendance-detail-card"><strong>Latest Target</strong><span>${latest ? formatEmployeeTargetValue(latest) : 'None'}</span></div>
-                </div>`;
-            }
-            document.getElementById('userSummaryModal').classList.add('active');
-        }
-
-        function closeUserSummaryModal() {
-            document.getElementById('userSummaryModal')?.classList.remove('active');
-        }
-
-        function saveEmployeeTargetsLocal() {
-            localStorage.setItem('firenet_employee_targets', JSON.stringify(employeeTargets));
-        }
-
-        function getTargetEmployeeOptions() {
-            return employees.filter(e => e.status === 'active').map(e => `<option value="${e.id}">${e.name} - ${e.department || e.role}</option>`).join('');
-        }
-
-        function syncTargetDepartmentUI() {
-            const dept = document.getElementById('targetDepartment')?.value;
-            const val = document.getElementById('targetValue');
-            const baseGroup = document.getElementById('targetBaseAmountGroup');
-            if (val) val.placeholder = dept === 'Accounts' ? 'Example: 0.2 for 0.2%' : 'Example: 20 tickets';
-            if (baseGroup) baseGroup.style.display = dept === 'Accounts' ? 'block' : 'none';
-        }
-
-        function updateTargetSelectors() {
-            const select = document.getElementById('targetEmployeeSelect');
-            if (select) select.innerHTML = getTargetEmployeeOptions();
-            const month = document.getElementById('targetMonth');
-            if (month && !month.value) month.value = new Date().toISOString().slice(0,7);
-            syncTargetDepartmentUI();
-        }
-
-        function getTargetMonthRange(monthValue) {
-            const fallback = new Date().toISOString().slice(0, 7);
-            const value = monthValue || fallback;
-            const [year, month] = value.split('-').map(Number);
-            const start = new Date(year, (month || 1) - 1, 1, 0, 0, 0, 0);
-            const end = new Date(year, month || 1, 0, 23, 59, 59, 999);
-            return { start, end };
-        }
-
-        function getMonthRemainingMs(monthValue) {
-            const { end } = getTargetMonthRange(monthValue);
-            return end.getTime() - Date.now();
-        }
-
-        function getAccountsAchievedAmount(t) {
-            if (!t || t.department !== 'Accounts') return 0;
-            const { start, end } = getTargetMonthRange(t.month);
-            const empId = t.employeeId;
-            return (dailyFinance || [])
-                .filter(item => {
-                    const d = new Date(item.date || item.createdAt || 0);
-                    return item.type === 'income' &&
-                        item.createdById === empId &&
-                        !isOnlineFinanceEntry(item) &&
-                        d >= start && d <= end;
-                })
-                .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-        }
-
-        function calculateAccountsCommissionPKR(t) {
-            if (!t || t.department !== 'Accounts') return 0;
-            return (getAccountsAchievedAmount(t) * Number(t.value || 0)) / 100;
-        }
-
-        function calculateAccountsTargetPKR(t) {
-            if (!t || t.department !== 'Accounts') return 0;
-            const baseAmount = Number(t.baseAmount || t.matchingAmount || 0);
-            const percent = Number(t.value || 0);
-            return (baseAmount * percent) / 100;
-        }
-
-        function formatAccountsTargetCalculation(t) {
-            if (!t || t.department !== 'Accounts') return '';
-            const baseAmount = Number(t.baseAmount || t.matchingAmount || 0);
-            const percent = Number(t.value || 0);
-            const calculated = calculateAccountsTargetPKR(t);
-            if (!baseAmount) return `${percent}% collection target`;
-            return `${formatPKR(baseAmount)} × ${percent}% = ${formatPKR(calculated)}`;
-        }
-
-        function formatEmployeeTargetValue(t) {
-            return t.department === 'Accounts' ? `${t.value}% target${Number(t.baseAmount || t.matchingAmount || 0) ? ' | ' + formatAccountsTargetCalculation(t) : ''}` : `${t.value} tickets target`;
-        }
-
-        function calculateTargetProgress(t) {
-            if (!t) return 0;
-            if (t.department === 'Technical') {
-                const completed = complaints.filter(c => c.handlerId === t.employeeId && (c.status === 'Resolved' || c.status === 'Closed')).length;
-                return Math.min(100, Math.round((completed / Math.max(Number(t.value) || 1, 1)) * 100));
-            }
-            const targetAmount = Number(t.baseAmount || t.matchingAmount || 0);
-            const achievedAmount = getAccountsAchievedAmount(t);
-            return targetAmount ? Math.min(100, Math.round((achievedAmount / targetAmount) * 100)) : 0;
-        }
-
-        function assignEmployeeTarget() {
-            const employeeId = document.getElementById('targetEmployeeSelect')?.value;
-            const emp = employees.find(e => e.id === employeeId);
-            const department = document.getElementById('targetDepartment')?.value || 'Accounts';
-            const value = Number(document.getElementById('targetValue')?.value) || 0;
-            const baseAmount = Number(document.getElementById('targetBaseAmount')?.value) || 0;
-            const month = document.getElementById('targetMonth')?.value || new Date().toISOString().slice(0,7);
-            const note = document.getElementById('targetNote')?.value.trim() || '';
-            if (!emp || value <= 0) { showToast('Please select employee and enter valid target value.', 'error'); return; }
-            if (department === 'Accounts' && baseAmount <= 0) { showToast('Please enter matching/base amount in PKR for accounts target.', 'error'); return; }
-            employeeTargets.push({ id: 'TGT-' + Date.now().toString(36).toUpperCase(), employeeId, employeeName: emp.name, department, value, baseAmount, month, note, progress: 0, createdAt: new Date().toISOString() });
-            saveEmployeeTargetsLocal();
-            document.getElementById('targetValue').value = '';
-            const baseAmountInput = document.getElementById('targetBaseAmount'); if (baseAmountInput) baseAmountInput.value = '';
-            document.getElementById('targetNote').value = '';
-            renderAdminTargets();
-            showToast('Target assigned successfully!', 'success');
-        }
-
-        function deleteEmployeeTarget(id) {
-            if (!confirm('Delete this target?')) return;
-            employeeTargets = employeeTargets.filter(t => t.id !== id);
-            saveEmployeeTargetsLocal();
-            renderAdminTargets();
-            renderEmployeeTargets();
-            showToast('Target deleted.', 'info');
-        }
-
-        function renderAdminTargets() {
-            updateTargetSelectors();
-            const tbody = document.getElementById('adminTargetsTableBody');
-            if (!tbody) return;
-            const total = employeeTargets.length;
-            const accounts = employeeTargets.filter(t => t.department === 'Accounts').length;
-            const technical = employeeTargets.filter(t => t.department === 'Technical').length;
-            const avg = total ? Math.round(employeeTargets.reduce((sum,t)=>sum+calculateTargetProgress(t),0)/total) : 0;
-            document.getElementById('targetTotalCount').textContent = total;
-            document.getElementById('targetAccountsCount').textContent = accounts;
-            document.getElementById('targetTechnicalCount').textContent = technical;
-            document.getElementById('targetAvgProgress').textContent = avg + '%';
-            tbody.innerHTML = employeeTargets.map(t => {
-                const progress = calculateTargetProgress(t);
-                return `<tr>
-                    <td>${t.employeeName || (employees.find(e=>e.id===t.employeeId)?.name || 'Employee')}</td>
-                    <td><span class="badge ${t.department === 'Accounts' ? 'badge-paid' : 'badge-in-progress'}">${t.department}</span></td>
-                    <td>${formatEmployeeTargetValue(t)}</td>
-                    <td><strong>${progress}%</strong><div class="target-progress-box"><div class="target-progress-fill" style="width:${progress}%"></div></div></td>
-                    <td>${t.month || '-'}</td>
-                    <td>${t.note || '-'}</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteEmployeeTarget('${t.id}')"><i class="fas fa-trash"></i> Delete</button></td>
-                </tr>`;
-            }).join('') || `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-bullseye"></i><h3>No targets assigned yet</h3></div></td></tr>`;
-        }
-
-        function renderEmployeeTargets() {
-            const myTargets = employeeTargets.filter(t => t.employeeId === currentUser?.id);
-            const list = document.getElementById('empTargetsList');
-            if (!list) return;
-            const latest = myTargets[myTargets.length - 1];
-            const resolvedTickets = complaints.filter(c => c.handlerId === currentUser?.id && (c.status === 'Resolved' || c.status === 'Closed')).length;
-            document.getElementById('empTargetTotal').textContent = myTargets.length;
-            document.getElementById('empTargetTickets').textContent = resolvedTickets;
-            document.getElementById('empTargetProgress').textContent = latest ? calculateTargetProgress(latest) + '%' : '0%';
-            document.getElementById('empTargetType').textContent = latest ? latest.department : '-';
-            updateEmployeeDashboardBanner();
-            if (!myTargets.length) {
-                list.innerHTML = `<div class="empty-state"><i class="fas fa-bullseye"></i><h3>No target assigned yet</h3><p>Admin can assign percentage target for accounts or ticket-based target for technical department.</p></div>`;
-                return;
-            }
-            list.innerHTML = myTargets.slice().reverse().map(t => {
-                const progress = calculateTargetProgress(t);
-                const isAccounts = t.department === 'Accounts';
-                return `<div class="target-card ${isAccounts ? 'accounts' : 'technical'}">
-                    <div class="task-header"><div><div class="task-title"><i class="fas fa-bullseye"></i> ${formatEmployeeTargetValue(t)}</div><div class="task-meta"><span><i class="fas fa-calendar"></i> ${t.month || '-'}</span><span><i class="fas fa-building"></i> ${t.department}</span></div></div><span class="badge ${isAccounts ? 'badge-paid' : 'badge-in-progress'}">${progress}%</span></div>
-                    <p style="color:#7f8c8d;margin:10px 0;">${t.note || 'No note added by admin.'}</p>
-                    ${isAccounts ? `<div class="notice" style="margin:12px 0;background:#f0fff4;border-left:4px solid var(--finance);"><strong>PKR Calculation:</strong> ${formatAccountsTargetCalculation(t)}<br><small>Example: 2000 ka 0.2% = Rs. 4</small></div>` : ''}
-                    <div class="target-progress-box" style="width:100%;height:14px;"><div class="target-progress-fill" style="width:${progress}%"></div></div>
-                    ${isAccounts ? `<div class="notice" style="margin-top:12px;">Progress auto updates from your OFFLINE income entries only. Online payments are not included in target. Collected: <strong>${formatPKR(getAccountsAchievedAmount(t))}</strong> / Target Amount: <strong>${formatPKR(Number(t.baseAmount || t.matchingAmount || 0))}</strong>. Commission/Reward: <strong>${formatPKR(calculateAccountsCommissionPKR(t))}</strong></div>` : `<div class="notice" style="margin-top:12px;">Ticket progress auto updates from your Resolved / Closed complaints. Resolved tickets: <strong>${resolvedTickets}</strong></div>`}
-                </div>`;
-            }).join('');
-        }
-
         function renderAdminEmployees() {
             const tbody = document.getElementById('adminEmployeesTableBody');
             const search = document.getElementById('adminEmployeeSearch').value.toLowerCase();
@@ -4783,7 +4192,6 @@
                     <td><span style="font-weight: 700; color: var(--info);">${assignedCount}</span> active</td>
                     <td>
                         <div class="action-btns">
-                            <button class="btn btn-success btn-sm" onclick="adminLoginAsEmployee('${e.id}')" title="Login as Employee"><i class="fas fa-right-to-bracket"></i> Login</button>
                             <button class="btn btn-primary btn-sm" onclick="openEmployeeModal('${e.id}')" title="Edit"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-whatsapp btn-sm" onclick="whatsappEmployee('${e.id}')" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
                             <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${e.id}')" title="Delete"><i class="fas fa-trash"></i></button>
@@ -5322,11 +4730,9 @@
             const daysInMonth = new Date(year, month, 0).getDate();
             const attendanceScore = Math.min(100, Math.round(((present + (halfDays * 0.5) + (leave * 0.25)) / daysInMonth) * 100));
             const completionScore = records.length ? Math.round((completed / records.length) * 100) : 0;
-            const timelyResolved = complaints.filter(c => c.handlerId === employeeId && (c.status === 'Resolved' || c.status === 'Closed') && c.resolvedWithinSla !== false && new Date(c.updatedAt || c.createdAt).getMonth() + 1 === month && new Date(c.updatedAt || c.createdAt).getFullYear() === year).length;
             const workScore = Math.min(100, resolved * 10);
-            const timeScore = resolved ? Math.round((timelyResolved / resolved) * 100) : 0;
-            const score = Math.round((attendanceScore * 0.45) + (completionScore * 0.20) + (workScore * 0.20) + (timeScore * 0.15));
-            return { score, present, halfDays, leave, completed, resolved, timelyResolved };
+            const score = Math.round((attendanceScore * 0.55) + (completionScore * 0.25) + (workScore * 0.20));
+            return { score, present, halfDays, leave, completed, resolved };
         }
 
         function renderMonthlyProgressGraph(year = new Date().getFullYear()) {
@@ -5537,10 +4943,6 @@
             
             ADMIN_CREDENTIALS.password = newPassword;
             localStorage.setItem('firenet_admin_creds', JSON.stringify(ADMIN_CREDENTIALS));
-            if (currentUser && currentUser.type === 'admin') {
-                currentUser.sessionToken = createSessionToken('admin', 'ADMIN', ADMIN_CREDENTIALS.password);
-                localStorage.setItem('firenet_user', JSON.stringify(currentUser));
-            }
             
             closeAdminPasswordModal();
             showToast('Admin password changed successfully!', 'success');
@@ -5595,15 +4997,14 @@
             document.querySelectorAll('#employeeApp .tab-content').forEach(t => t.classList.remove('active'));
             
             const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
-            const tabMap = { mytasks: 0, targets: 1, invoice: 2, attendance: 3, payroll: 4, accounts: 5, resolved: 6, profile: 7 };
-            const tabIdMap = { mytasks: 'empMyTasksTab', targets: 'empTargetsTab', invoice: 'empInvoiceTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', profile: 'empProfileTab' };
+            const tabMap = { mytasks: 0, invoice: 1, attendance: 2, payroll: 3, accounts: 4, resolved: 5, profile: 6 };
+            const tabIdMap = { mytasks: 'empMyTasksTab', invoice: 'empInvoiceTab', attendance: 'empAttendanceTab', payroll: 'empPayrollTab', accounts: 'empAccountsTab', resolved: 'empResolvedTab', missed: 'empMissedTab', profile: 'empProfileTab' };
             const btn = tabButtons[tabMap[tab]];
             if (btn) btn.classList.add('active');
             const tabEl = document.getElementById(tabIdMap[tab]);
             if (tabEl) tabEl.classList.add('active');
             
             if (tab === 'mytasks') refreshEmployeeTasks();
-            if (tab === 'targets') renderEmployeeTargets();
             if (tab === 'invoice') calculateInvoiceTotals('emp');
             if (tab === 'attendance') renderEmployeeAttendance();
             if (tab === 'payroll') renderEmployeePayroll();
@@ -5614,249 +5015,35 @@
 
         function refreshEmployee() {
             refreshEmployeeTasks();
-            renderEmployeeTargets();
             refreshEmployeeResolved();
             refreshEmployeeProfile();
             renderEmployeeAttendance();
             renderEmployeePayroll();
         }
 
-
-        function getTodayAttendanceForEmployee(employeeId) {
-            const today = new Date().toISOString().split('T')[0];
-            return attendance.find(a => a.employeeId === employeeId && a.date === today);
-        }
-
-        function combineDateAndTime(dateStr, timeStr) {
-            if (!dateStr || !timeStr) return null;
-            const [h, m] = String(timeStr).split(':').map(Number);
-            if (Number.isNaN(h) || Number.isNaN(m)) return null;
-            const d = new Date(dateStr + 'T00:00:00');
-            d.setHours(h, m, 0, 0);
-            return d;
-        }
-
-        function getTechnicalSlaMinutes(activeCount) {
-            const count = Math.max(1, Number(activeCount) || 1);
-            const todayAtt = currentUser ? getTodayAttendanceForEmployee(currentUser.id) : null;
-            const punchStart = todayAtt ? combineDateAndTime(todayAtt.date, todayAtt.checkIn) : null;
-            const shiftMinutes = 8 * 60;
-            const base = punchStart ? Math.floor(shiftMinutes / count) : 120;
-            return Math.max(30, base);
-        }
-
-        function getComplaintSlaInfo(complaint, index, activeCount) {
-            const todayAtt = currentUser ? getTodayAttendanceForEmployee(currentUser.id) : null;
-            const punchStart = todayAtt ? combineDateAndTime(todayAtt.date, todayAtt.checkIn) : null;
-            const created = new Date(complaint.createdAt || complaint.assignedAt || Date.now());
-            const start = punchStart && punchStart > created ? punchStart : created;
-            const perComplaintMinutes = getTechnicalSlaMinutes(activeCount);
-            const deadline = new Date(start.getTime() + perComplaintMinutes * 60 * 1000);
-            const remainingMs = deadline.getTime() - Date.now();
-            const totalMs = perComplaintMinutes * 60 * 1000;
-            const usedPercent = Math.max(0, Math.min(100, Math.round(((totalMs - remainingMs) / totalMs) * 100)));
-            return { start, deadline, remainingMs, perComplaintMinutes, usedPercent };
-        }
-
-        function formatRemaining(ms) {
-            const overdue = ms < 0;
-            const total = Math.abs(Math.floor(ms / 1000));
-            const h = Math.floor(total / 3600);
-            const m = Math.floor((total % 3600) / 60);
-            const s = total % 60;
-            const text = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-            return overdue ? `Overdue ${text}` : text;
-        }
-
-
-        function getEmployeeBannerTargetInfo(employeeId = currentUser?.id) {
-            const myTargets = employeeTargets.filter(t => t.employeeId === employeeId);
-            const latest = myTargets[myTargets.length - 1];
-            if (!latest) return { latest: null, progress: 0, calc: 'PKR: -', targetText: 'Target: 0%' };
-            const progress = calculateTargetProgress(latest);
-            if (latest.department === 'Accounts') {
-                const baseAmount = Number(latest.baseAmount || latest.matchingAmount || 0);
-                const commissionPercent = Number(latest.value || 0);
-                const achievedAmount = getAccountsAchievedAmount(latest);
-                const commissionPKR = calculateAccountsCommissionPKR(latest);
-                const targetPKR = calculateAccountsTargetPKR(latest);
-                return {
-                    latest,
-                    progress,
-                    calc: baseAmount ? `Offline: ${formatPKR(achievedAmount)} / ${formatPKR(baseAmount)} | ${commissionPercent}% = ${formatPKR(commissionPKR)} of ${formatPKR(targetPKR)}` : 'PKR: -',
-                    targetText: `Target Progress: ${progress}%`
-                };
-            }
-            return {
-                latest,
-                progress,
-                calc: `Resolved: ${complaints.filter(c => c.handlerId === employeeId && (c.status === 'Resolved' || c.status === 'Closed')).length}/${latest.value || 0}`,
-                targetText: `Ticket Progress: ${progress}%`
-            };
-        }
-
-        function updateEmployeeDashboardBanner() {
-            if (!currentUser || currentUser.type !== 'employee') return;
-            const targetInfo = getEmployeeBannerTargetInfo(currentUser.id);
-            const targetEl = document.getElementById('empBannerTargetProgress');
-            const calcEl = document.getElementById('empBannerTargetCalculation');
-            const timerEl = document.getElementById('empBannerTimer');
-            const perfEl = document.getElementById('empBannerPerformance');
-            const timerPill = document.getElementById('empBannerTimerPill');
-            if (targetEl) targetEl.textContent = targetInfo.targetText;
-            if (calcEl) calcEl.textContent = targetInfo.calc;
-
-            const isTechnical = String(currentUser.department || currentUser.role || '').toLowerCase().includes('tech');
-            if (isTechnical) {
-                const activeComplaints = complaints.filter(c => c.handlerId === currentUser.id && c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed')
-                    .sort((a,b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
-                if (activeComplaints.length) {
-                    const times = activeComplaints.map((c, index) => getComplaintSlaInfo(c, index, activeComplaints.length));
-                    const nearest = times.sort((a,b) => a.remainingMs - b.remainingMs)[0];
-                    if (timerEl) timerEl.textContent = `Next Timer: ${formatRemaining(nearest.remainingMs)}`;
-                    if (timerPill) {
-                        timerPill.classList.toggle('banner-danger', nearest.remainingMs < 0);
-                        timerPill.classList.toggle('banner-timer', nearest.remainingMs >= 0);
-                    }
-                } else {
-                    if (timerEl) timerEl.textContent = 'Timer: No active complaint';
-                    if (timerPill) {
-                        timerPill.classList.remove('banner-danger');
-                        timerPill.classList.add('banner-timer');
-                    }
-                }
-                const perf = calculateTechnicalTimePerformance(currentUser.id);
-                if (perfEl) perfEl.textContent = `Performance: ${perf.score}%`;
-            } else {
-                // Accounts staff: no monthly countdown in banner. Timer is only for active technical complaints.
-                if (timerEl) timerEl.textContent = 'Timer: Only active complaint';
-                if (timerPill) {
-                    timerPill.classList.remove('banner-danger');
-                    timerPill.classList.add('banner-timer');
-                }
-                if (perfEl) perfEl.textContent = `Performance: ${targetInfo.progress}%`;
-            }
-        }
-
-        function markComplaintMissed(complaint, reason = 'SLA expired') {
-            if (!complaint || complaint.status === 'Resolved' || complaint.status === 'Closed' || complaint.status === 'Missed') return false;
-            complaint.status = 'Missed';
-            complaint.missedAt = new Date().toISOString();
-            complaint.updatedAt = new Date().toISOString();
-            complaint.missReason = reason;
-            complaint.resolvedWithinSla = false;
-            complaint.history = complaint.history || [];
-            complaint.history.push({
-                time: new Date().toISOString(),
-                action: `Complaint marked Missed/Overdue automatically because SLA countdown expired`,
-                status: 'Missed',
-                updatedBy: currentUser?.id || 'system'
-            });
-            return true;
-        }
-
-        async function autoMarkExpiredTechnicalComplaints(employeeId = currentUser?.id) {
-            if (!employeeId) return 0;
-            const activeComplaints = complaints.filter(c => c.handlerId === employeeId && c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed')
-                .sort((a,b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
-            let changed = 0;
-            activeComplaints.forEach((c, index) => {
-                const info = getComplaintSlaInfo(c, index, activeComplaints.length || 1);
-                if (info.remainingMs < 0 && markComplaintMissed(c)) changed++;
-            });
-            if (changed) {
-                await saveComplaints();
-                showToast(`${changed} complaint${changed > 1 ? 's' : ''} marked Missed/Overdue due to expired countdown.`, 'warning');
-            }
-            return changed;
-        }
-
-        function calculateTechnicalTimePerformance(employeeId = currentUser?.id) {
-            if (!employeeId) return { score: 0, active: 0, overdue: 0, resolvedToday: 0, onTime: 0 };
-            const today = new Date().toISOString().split('T')[0];
-            const myActive = complaints.filter(c => c.handlerId === employeeId && c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed');
-            const myResolvedToday = complaints.filter(c => c.handlerId === employeeId && (c.status === 'Resolved' || c.status === 'Closed') && String(c.resolvedAt || c.updatedAt || '').startsWith(today));
-            const myMissedToday = complaints.filter(c => c.handlerId === employeeId && c.status === 'Missed' && String(c.missedAt || c.updatedAt || '').startsWith(today));
-            const activeCount = myActive.length;
-            const overdue = myActive.filter((c, i) => getComplaintSlaInfo(c, i, activeCount).remainingMs < 0).length + myMissedToday.length;
-            const onTime = myResolvedToday.filter(c => c.resolvedWithinSla !== false).length;
-            const totalToday = myResolvedToday.length + activeCount + myMissedToday.length;
-            const resolveScore = totalToday ? Math.round((myResolvedToday.length / totalToday) * 60) : 0;
-            const onTimeScore = myResolvedToday.length ? Math.round((onTime / myResolvedToday.length) * 30) : 0;
-            const overduePenalty = overdue * 10;
-            const score = Math.max(0, Math.min(100, resolveScore + onTimeScore + 10 - overduePenalty));
-            return { score, active: activeCount, overdue, missedToday: myMissedToday.length, resolvedToday: myResolvedToday.length, onTime };
-        }
-
-        function renderLiveSlaCountdowns() {
-            document.querySelectorAll('[data-sla-complaint]').forEach(el => {
-                const id = el.getAttribute('data-sla-complaint');
-                const index = Number(el.getAttribute('data-sla-index') || 0);
-                const activeCount = Number(el.getAttribute('data-sla-active') || 1);
-                const c = complaints.find(x => x.id === id);
-                if (!c) return;
-                const info = getComplaintSlaInfo(c, index, activeCount);
-                el.textContent = formatRemaining(info.remainingMs);
-                el.classList.toggle('sla-danger', info.remainingMs < 0);
-                el.classList.toggle('sla-warning', info.remainingMs >= 0 && info.remainingMs < 30 * 60 * 1000);
-                const box = el.closest('.sla-box');
-                if (box) {
-                    box.classList.toggle('danger', info.remainingMs < 0);
-                    box.classList.toggle('warning', info.remainingMs >= 0 && info.remainingMs < 30 * 60 * 1000);
-                }
-            });
-            const scoreEl = document.getElementById('empSlaScore');
-            if (scoreEl && currentUser?.type === 'employee') {
-                scoreEl.textContent = calculateTechnicalTimePerformance().score + '%';
-            }
-            updateEmployeeDashboardBanner();
-        }
-
         function refreshEmployeeTasks() {
             const myComplaints = complaints.filter(c => c.handlerId === currentUser.id);
-            const activeComplaints = myComplaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed')
-                .sort((a,b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
-            const perf = calculateTechnicalTimePerformance(currentUser.id);
-            const isTechnical = String(currentUser.department || currentUser.role || '').toLowerCase().includes('tech');
-            const slaMinutes = getTechnicalSlaMinutes(activeComplaints.length);
-            const todayAtt = getTodayAttendanceForEmployee(currentUser.id);
-            const punchText = todayAtt?.checkIn ? todayAtt.checkIn : 'Not punched today';
+            const activeComplaints = myComplaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed' && c.status !== 'Overdue');
             
             document.getElementById('empTotalAssigned').textContent = myComplaints.length;
             document.getElementById('empPendingCount').textContent = activeComplaints.filter(c => c.status === 'Pending').length;
             document.getElementById('empInProgressCount').textContent = activeComplaints.filter(c => c.status === 'In Progress').length;
             document.getElementById('empResolvedCount').textContent = myComplaints.filter(c => c.status === 'Resolved').length;
             document.getElementById('empTaskCount').textContent = activeComplaints.length;
-            const scoreEl = document.getElementById('empSlaScore');
-            if (scoreEl) scoreEl.textContent = perf.score + '%';
-            updateEmployeeDashboardBanner();
 
             const container = document.getElementById('empTasksList');
-            const perfCard = isTechnical ? `
-                <div class="sla-performance-card">
-                    <div class="perf-mini"><strong>Punched Time</strong><span>${punchText}</span></div>
-                    <div class="perf-mini"><strong>Active Complaints</strong><span>${activeComplaints.length}</span></div>
-                    <div class="perf-mini"><strong>Allowed Time / Complaint</strong><span>${slaMinutes} min</span></div>
-                    <div class="perf-mini"><strong>Overdue</strong><span>${perf.overdue}</span></div>
-                    <div class="perf-mini"><strong>Today Resolved</strong><span>${perf.resolvedToday}</span></div>
-                    <div class="perf-mini"><strong>Performance</strong><span>${perf.score}%</span></div>
-                </div>` : '';
             
             if (activeComplaints.length === 0) {
-                container.innerHTML = perfCard + `
+                container.innerHTML = `
                     <div class="empty-state" style="background: white; border-radius: 15px; padding: 60px;">
                         <i class="fas fa-clipboard-check"></i>
                         <h3>All Caught Up!</h3>
                         <p>You have no active tasks. Great job!</p>
                     </div>`;
-                renderLiveSlaCountdowns();
                 return;
             }
 
-            container.innerHTML = perfCard + activeComplaints.map((c, index) => {
-                const sla = getComplaintSlaInfo(c, index, activeComplaints.length);
-                const dangerClass = sla.remainingMs < 0 ? 'danger' : (sla.remainingMs < 30 * 60 * 1000 ? 'warning' : '');
-                return `
+            container.innerHTML = activeComplaints.map(c => `
                 <div class="task-card">
                     <div class="task-header">
                         <div>
@@ -5872,14 +5059,6 @@
                             <i class="fab fa-whatsapp"></i>
                         </button>
                     </div>
-
-                    ${isTechnical ? `
-                    <div class="sla-box ${dangerClass}">
-                        <div class="sla-item"><strong>Countdown</strong><span class="sla-countdown" data-sla-complaint="${c.id}" data-sla-index="${index}" data-sla-active="${activeComplaints.length}">${formatRemaining(sla.remainingMs)}</span></div>
-                        <div class="sla-item"><strong>Time Per Complaint</strong><span>${sla.perComplaintMinutes} min</span></div>
-                        <div class="sla-item"><strong>Deadline</strong><span>${sla.deadline.toLocaleTimeString('en-PK', {hour:'2-digit', minute:'2-digit'})}</span></div>
-                        <div class="sla-item"><strong>Used Time</strong><span>${sla.usedPercent}%</span></div>
-                    </div>` : ''}
                     
                     <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                         <div style="font-weight: 600; color: var(--secondary); margin-bottom: 8px;">
@@ -5905,9 +5084,8 @@
                         <button class="btn btn-info btn-sm" onclick="viewComplaint('${c.id}')"><i class="fas fa-eye"></i> Details</button>
                         <button class="btn btn-whatsapp btn-sm" onclick="sendClientUpdate('${c.id}')"><i class="fab fa-whatsapp"></i> Client</button>
                     </div>
-                </div>`;
-            }).join('');
-            renderLiveSlaCountdowns();
+                </div>
+            `).join('');
         }
 
         function refreshEmployeeResolved() {
@@ -5957,18 +5135,8 @@
             if (!complaint) return;
             
             const oldStatus = complaint.status;
-            const activeComplaints = complaints.filter(c => c.handlerId === currentUser.id && c.status !== 'Resolved' && c.status !== 'Closed' && c.status !== 'Missed')
-                .sort((a,b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
-            const complaintIndex = Math.max(0, activeComplaints.findIndex(c => c.id === complaintId));
-            const slaInfo = getComplaintSlaInfo(complaint, complaintIndex, activeComplaints.length || 1);
             complaint.status = newStatus;
             complaint.updatedAt = new Date().toISOString();
-            if (newStatus === 'Resolved' || newStatus === 'Closed') {
-                complaint.resolvedAt = new Date().toISOString();
-                complaint.slaDeadlineAt = slaInfo.deadline.toISOString();
-                complaint.resolvedWithinSla = new Date(complaint.resolvedAt).getTime() <= slaInfo.deadline.getTime();
-                complaint.resolveMinutes = Math.max(0, Math.round((new Date(complaint.resolvedAt).getTime() - new Date(complaint.assignedAt || complaint.createdAt).getTime()) / 60000));
-            }
             complaint.history.push({
                 time: new Date().toISOString(),
                 action: `Status updated by ${currentUser.name} from ${oldStatus} to ${newStatus}`,
@@ -6169,7 +5337,6 @@ Please update status promptly via CMS.`;
                 preferredDate: prefDate,
                 preferredTime: prefTime,
                 createdAt: id ? (complaints.find(c => c.id === id)?.createdAt || now.toISOString()) : now.toISOString(),
-                assignedAt: id ? (complaints.find(c => c.id === id)?.assignedAt || complaints.find(c => c.id === id)?.createdAt || now.toISOString()) : now.toISOString(),
                 updatedAt: now.toISOString(),
                 history: id ? complaints.find(c => c.id === id)?.history || [] : [],
                 source: complaintOpenedByEmployee ? 'Employee Portal' : (id ? (complaints.find(c => c.id === id)?.source || 'Admin') : 'Admin'),
@@ -6252,7 +5419,6 @@ Please update status promptly via CMS.`;
                     document.getElementById('empNotes').value = emp.notes || '';
                     const perms = getEmployeePermissions(emp);
                     document.getElementById('permMytasks').checked = !!perms.mytasks;
-                    document.getElementById('permTargets').checked = perms.targets !== false;
                     document.getElementById('permInvoice').checked = !!perms.invoice;
                     document.getElementById('permAttendance').checked = !!perms.attendance;
                     document.getElementById('permPayroll').checked = !!perms.payroll;
@@ -6264,7 +5430,6 @@ Please update status promptly via CMS.`;
                 title.textContent = 'Add Employee';
                 document.getElementById('employeeId').value = '';
                 document.getElementById('permMytasks').checked = true;
-                document.getElementById('permTargets').checked = true;
                 document.getElementById('permInvoice').checked = true;
                 document.getElementById('permAttendance').checked = true;
                 document.getElementById('permPayroll').checked = false;
@@ -6293,7 +5458,6 @@ Please update status promptly via CMS.`;
             const notes = document.getElementById('empNotes').value.trim();
             const permissions = {
                 mytasks: document.getElementById('permMytasks').checked,
-                targets: document.getElementById('permTargets').checked,
                 invoice: document.getElementById('permInvoice').checked,
                 attendance: document.getElementById('permAttendance').checked,
                 payroll: document.getElementById('permPayroll').checked,
@@ -6338,7 +5502,7 @@ Please update status promptly via CMS.`;
         }
 
         async function deleteEmployee(id) {
-            const assigned = complaints.filter(c => c.handlerId === id && c.status !== 'Closed' && c.status !== 'Resolved').length;
+            const assigned = complaints.filter(c => c.handlerId === id && c.status !== 'Closed' && c.status !== 'Resolved' && c.status !== 'Missed' && c.status !== 'Overdue').length;
             if (assigned > 0) {
                 if (!confirm(`This employee has ${assigned} active complaint(s). Mark as inactive instead?`)) return;
                 const idx = employees.findIndex(e => e.id === id);
@@ -6803,96 +5967,6 @@ Please take necessary action and update status in CMS.`;
                 console.error('Error saving finance:', e);
                 showToast('Could not save finance to Firebase: ' + (e.message || 'unknown error'), 'error');
             }
-        }
-
-
-        // ==================== EMPLOYEE NEW COMPLAINT SOUND + POPUP ====================
-        function unlockEmployeeComplaintSound() {
-            // Browser allows sound after user interaction/login. This prepares audio context quietly.
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                if (!window.employeeComplaintAudioCtx) {
-                    window.employeeComplaintAudioCtx = new AudioCtx();
-                }
-                if (window.employeeComplaintAudioCtx.state === 'suspended') {
-                    window.employeeComplaintAudioCtx.resume().catch(() => {});
-                }
-                employeeComplaintAudioUnlocked = true;
-            } catch (e) {
-                employeeComplaintAudioUnlocked = false;
-            }
-        }
-
-        function playNewComplaintSound() {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = window.employeeComplaintAudioCtx || new AudioCtx();
-                window.employeeComplaintAudioCtx = ctx;
-                if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-
-                const now = ctx.currentTime;
-                const notes = [880, 1175, 1480];
-                notes.forEach((freq, i) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, now + i * 0.13);
-                    gain.gain.setValueAtTime(0.0001, now + i * 0.13);
-                    gain.gain.exponentialRampToValueAtTime(0.22, now + i * 0.13 + 0.02);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.13 + 0.12);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(now + i * 0.13);
-                    osc.stop(now + i * 0.13 + 0.14);
-                });
-            } catch (e) {
-                console.warn('Complaint sound blocked or unavailable:', e);
-            }
-        }
-
-        function detectNewAssignedComplaint(previousList, latestList) {
-            if (!currentUser || currentUser.type !== 'employee') return;
-            const previousIds = new Set((previousList || []).map(c => c.id));
-            const newAssigned = (latestList || [])
-                .filter(c => c.handlerId === currentUser.id && !previousIds.has(c.id))
-                .sort((a, b) => new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0));
-
-            if (!newAssigned.length) return;
-            const complaint = newAssigned[0];
-            if (lastEmployeeComplaintPopupId === complaint.id) return;
-            lastEmployeeComplaintPopupId = complaint.id;
-            playNewComplaintSound();
-            showNewComplaintPopup(complaint);
-            showToast('New complaint assigned to you!', 'info');
-        }
-
-        function showNewComplaintPopup(complaint) {
-            document.querySelectorAll('.complaint-alert-popup').forEach(el => el.remove());
-            const popup = document.createElement('div');
-            popup.className = 'complaint-alert-popup';
-            popup.innerHTML = `
-                <div class="complaint-alert-head">
-                    <span><i class="fas fa-bell"></i> New Complaint Assigned</span>
-                    <button class="complaint-alert-close" onclick="this.closest('.complaint-alert-popup').remove()"><i class="fas fa-times"></i></button>
-                </div>
-                <div class="complaint-alert-body">
-                    <div><strong>${complaint.type || 'Complaint'}</strong> - ${complaint.id || ''}</div>
-                    <div><i class="fas fa-user"></i> ${complaint.complainantName || 'Customer'}</div>
-                    <div><i class="fas fa-phone"></i> ${complaint.phone || 'No phone'}</div>
-                    ${complaint.address ? `<div><i class="fas fa-map-marker-alt"></i> ${complaint.address}</div>` : ''}
-                    ${complaint.details ? `<div style="margin-top:8px;color:#566573;">${complaint.details}</div>` : ''}
-                </div>
-                <div class="complaint-alert-actions">
-                    <button class="btn btn-primary btn-sm" onclick="switchEmployeeTab('mytasks'); this.closest('.complaint-alert-popup').remove();"><i class="fas fa-tasks"></i> Open My Tasks</button>
-                    <button class="btn btn-info btn-sm" onclick="viewComplaint('${complaint.id}'); this.closest('.complaint-alert-popup').remove();"><i class="fas fa-eye"></i> View</button>
-                </div>
-            `;
-            document.body.appendChild(popup);
-            setTimeout(() => {
-                if (popup && popup.parentNode) popup.remove();
-            }, 12000);
         }
 
         function showToast(message, type = 'success') {
@@ -7833,15 +6907,1103 @@ ${dailyRows}
         }
 
 
-        setInterval(() => {
-            try {
-                if (document.getElementById('employeeApp')?.classList.contains('active') && currentUser?.type === 'employee') {
-                    renderLiveSlaCountdowns();
-                    autoMarkExpiredTechnicalComplaints();
-                    updateEmployeeDashboardBanner();
+        /* ==================== DAILY TARGET + OVERDUE PATCH ==================== */
+        const DAILY_TARGET_KEY = 'firenet_daily_account_targets_v2';
+        const TARGET_PROGRESS_KEY = 'firenet_target_manual_progress_v2';
+        const DEFAULT_COMPLAINT_SLA_MINUTES = 120;
+
+        function localTodayISO() {
+            const d = new Date();
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            return d.toISOString().split('T')[0];
+        }
+
+        function readDailyTargets() {
+            try { return JSON.parse(localStorage.getItem(DAILY_TARGET_KEY) || '[]'); } catch(e) { return []; }
+        }
+        function writeDailyTargets(list) { localStorage.setItem(DAILY_TARGET_KEY, JSON.stringify(list || [])); }
+        function readManualProgress() {
+            try { return JSON.parse(localStorage.getItem(TARGET_PROGRESS_KEY) || '{}'); } catch(e) { return {}; }
+        }
+        function writeManualProgress(obj) { localStorage.setItem(TARGET_PROGRESS_KEY, JSON.stringify(obj || {})); }
+
+        function nonOnlineIncomeEntries(employeeId, date) {
+            return (dailyFinance || []).filter(item =>
+                item.date === date &&
+                item.type === 'income' &&
+                String(item.createdById || '') === String(employeeId || '') &&
+                String(item.subCategory || '').toLowerCase() !== 'online'
+            );
+        }
+        function getEmployeeCashAchievement(employeeId, date) {
+            return nonOnlineIncomeEntries(employeeId, date).reduce((sum, item) => sum + Number(item.amount || 0), 0);
+        }
+        function getTodayTarget(employeeId, date = localTodayISO()) {
+            return readDailyTargets().filter(t => String(t.employeeId) === String(employeeId) && t.date === date).slice(-1)[0] || null;
+        }
+        function calculateTargetResult(target) {
+            if (!target) return { achieved:0, progress:0, reward:0, remaining:0, manualPercent:'' };
+            const achieved = getEmployeeCashAchievement(target.employeeId, target.date);
+            const targetAmount = Number(target.amount || 0);
+            const rewardPercent = Number(target.rewardPercent || 0);
+            const progress = targetAmount ? Math.min(100, Math.round((achieved / targetAmount) * 100)) : 0;
+            const reward = achieved >= targetAmount ? (targetAmount * rewardPercent / 100) : 0;
+            const remaining = Math.max(0, targetAmount - achieved);
+            const manual = readManualProgress()[target.id];
+            return { achieved, progress, reward, remaining, manualPercent: manual === undefined ? '' : manual };
+        }
+
+        function installDailyTargetUI() {
+            if (document.getElementById('adminDailyTargetManager')) return;
+            const financeTab = document.getElementById('adminFinanceTab');
+            if (financeTab) {
+                const html = `
+                <div class="target-manager-card" id="adminDailyTargetManager">
+                    <div class="card-header">
+                        <h2><i class="fas fa-bullseye"></i> Daily Accounts Target</h2>
+                        <div style="font-size:0.9rem;opacity:0.9;">Online payments are not counted in target achievement.</div>
+                    </div>
+                    <div class="quick-finance-form">
+                        <div class="form-row">
+                            <div class="form-group"><label>Employee</label><select id="dailyTargetEmployee" class="form-control"></select></div>
+                            <div class="form-group"><label>Date</label><input type="date" id="dailyTargetDate" class="form-control"></div>
+                            <div class="form-group"><label>Target Amount (PKR)</label><input type="number" id="dailyTargetAmount" class="form-control" placeholder="Example: 50000"></div>
+                            <div class="form-group"><label>Reward Percentage</label><input type="number" id="dailyTargetRewardPercent" class="form-control" value="0.2" step="0.01" placeholder="Example: 0.2"></div>
+                            <div class="form-group full-width"><label>Target Note</label><input type="text" id="dailyTargetNote" class="form-control" placeholder="Example: Today cash collection target"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="assignDailyAccountTarget()"><i class="fas fa-save"></i> Assign Daily Target</button>
+                    </div>
+                    <div class="target-dashboard-grid" id="dailyTargetList"></div>
+                </div>`;
+                financeTab.insertAdjacentHTML('afterbegin', html);
+            }
+            const welcome = document.querySelector('#employeeApp .portal-welcome');
+            if (welcome && !document.getElementById('employeeDailyTargetBanner')) {
+                welcome.insertAdjacentHTML('beforeend', `
+                    <div class="daily-target-banner" id="employeeDailyTargetBanner">
+                        <div class="target-chip"><span>Today Target</span><b id="empTargetAmountText">No target</b></div>
+                        <div class="target-chip"><span>Cash Achieved</span><b id="empTargetAchievedText">Rs. 0</b></div>
+                        <div class="target-chip"><span>Auto Progress</span><b id="empTargetProgressText">0%</b><div class="target-progress-track"><div class="target-progress-fill" id="empTargetProgressFill"></div></div></div>
+                        <div class="target-chip"><span>Reward</span><b id="empTargetRewardText">Rs. 0</b></div>
+                        <div class="target-chip"><span>Day Remaining</span><b id="empDayCountdownText">--:--:--</b></div>
+                        <div class="target-chip"><span>Active SLA</span><b id="empActiveSlaText">No active complaint</b></div>
+                    </div>`);
+            }
+            const accountsTab = document.getElementById('empAccountsTab');
+            if (accountsTab && !document.getElementById('empTargetManualBox')) {
+                accountsTab.insertAdjacentHTML('afterbegin', `
+                    <div class="target-manager-card" id="empTargetManualBox">
+                        <div class="card-header">
+                            <h2><i class="fas fa-bullseye"></i> My Daily Target</h2>
+                            <div style="font-size:0.9rem;opacity:0.9;">Manual percentage is optional; auto calculation uses cash/non-online income only.</div>
+                        </div>
+                        <div class="target-dashboard-grid" id="empDailyTargetDetails"></div>
+                        <div class="quick-finance-form">
+                            <div class="form-row">
+                                <div class="form-group"><label>Manual Percentage Cell</label><input type="number" id="empManualTargetPercent" class="form-control" step="0.01" placeholder="Example: 35"></div>
+                                <div class="form-group" style="align-self:end;"><button class="btn btn-primary" onclick="saveEmployeeManualTargetPercent()"><i class="fas fa-save"></i> Update Percentage</button></div>
+                            </div>
+                        </div>
+                    </div>`);
+            }
+            populateDailyTargetEmployees();
+            const dt = document.getElementById('dailyTargetDate');
+            if (dt && !dt.value) dt.value = localTodayISO();
+        }
+
+        function populateDailyTargetEmployees() {
+            const select = document.getElementById('dailyTargetEmployee');
+            if (!select) return;
+            const old = select.value;
+            const accountEmployees = (employees || []).filter(e => e.status === 'active');
+            select.innerHTML = '<option value="">Select Employee</option>' + accountEmployees.map(e => `<option value="${e.id}">${e.name} - ${e.role || 'Staff'}</option>`).join('');
+            if (old) select.value = old;
+        }
+
+        function assignDailyAccountTarget() {
+            const employeeId = document.getElementById('dailyTargetEmployee')?.value || '';
+            const date = document.getElementById('dailyTargetDate')?.value || localTodayISO();
+            const amount = Number(document.getElementById('dailyTargetAmount')?.value || 0);
+            const rewardPercent = Number(document.getElementById('dailyTargetRewardPercent')?.value || 0);
+            const note = document.getElementById('dailyTargetNote')?.value.trim() || '';
+            if (!employeeId || !amount) { showToast('Select employee and enter target amount.', 'error'); return; }
+            const emp = (employees || []).find(e => String(e.id) === String(employeeId));
+            const list = readDailyTargets().filter(t => !(String(t.employeeId) === String(employeeId) && t.date === date));
+            list.push({ id:'TGT-' + Date.now().toString(36).toUpperCase(), employeeId, employeeName: emp?.name || '', date, amount, rewardPercent, note, createdAt:new Date().toISOString(), createdBy:'Admin' });
+            writeDailyTargets(list);
+            document.getElementById('dailyTargetAmount').value = '';
+            document.getElementById('dailyTargetNote').value = '';
+            showToast('Daily target assigned successfully.', 'success');
+            renderDailyTargetList();
+            renderEmployeeTargetBanner();
+        }
+
+        function renderDailyTargetList() {
+            const box = document.getElementById('dailyTargetList');
+            if (!box) return;
+            const today = document.getElementById('dailyTargetDate')?.value || localTodayISO();
+            const list = readDailyTargets().filter(t => t.date === today);
+            if (!list.length) { box.innerHTML = '<div class="empty-state" style="grid-column:1/-1;padding:30px;"><i class="fas fa-bullseye"></i><h3>No daily targets for this date</h3></div>'; return; }
+            box.innerHTML = list.map(t => {
+                const r = calculateTargetResult(t);
+                return `<div class="target-mini-card">
+                    <h4>${t.employeeName || 'Employee'} • ${t.date}</h4>
+                    <strong>${formatPKR(t.amount)}</strong>
+                    <div style="margin-top:8px;color:#566573;font-size:.9rem;line-height:1.6;">
+                        Cash Achieved: <b>${formatPKR(r.achieved)}</b><br>
+                        Auto Progress: <b>${r.progress}%</b><br>
+                        Reward ${t.rewardPercent}%: <b>${formatPKR(r.reward)}</b><br>
+                        Remaining: <b>${formatPKR(r.remaining)}</b>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function saveEmployeeManualTargetPercent() {
+            const target = getTodayTarget(currentUser?.id);
+            if (!target) { showToast('No daily target assigned for today.', 'warning'); return; }
+            const val = Number(document.getElementById('empManualTargetPercent')?.value || 0);
+            const data = readManualProgress();
+            data[target.id] = val;
+            writeManualProgress(data);
+            showToast('Manual percentage updated.', 'success');
+            renderEmployeeTargetBanner();
+        }
+
+        function renderEmployeeTargetBanner() {
+            if (!currentUser || currentUser.type !== 'employee') return;
+            installDailyTargetUI();
+            const target = getTodayTarget(currentUser.id);
+            const detail = document.getElementById('empDailyTargetDetails');
+            if (!target) {
+                ['empTargetAmountText','empTargetAchievedText','empTargetProgressText','empTargetRewardText'].forEach((id,i)=>{ const el=document.getElementById(id); if(el) el.textContent = i===0?'No target':(i===2?'0%':'Rs. 0'); });
+                const fill = document.getElementById('empTargetProgressFill'); if (fill) fill.style.width = '0%';
+                if (detail) detail.innerHTML = '<div class="empty-state" style="grid-column:1/-1;padding:25px;"><i class="fas fa-bullseye"></i><h3>No target assigned today</h3><p>Admin will assign your daily target. Online entries will not be counted.</p></div>';
+                return;
+            }
+            const r = calculateTargetResult(target);
+            const percentInput = document.getElementById('empManualTargetPercent');
+            if (percentInput && r.manualPercent !== '') percentInput.value = r.manualPercent;
+            const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+            set('empTargetAmountText', formatPKR(target.amount));
+            set('empTargetAchievedText', formatPKR(r.achieved));
+            set('empTargetProgressText', `${r.progress}%${r.manualPercent !== '' ? ' / Manual ' + r.manualPercent + '%' : ''}`);
+            set('empTargetRewardText', `${formatPKR(r.reward)} (${target.rewardPercent}%)`);
+            const fill = document.getElementById('empTargetProgressFill'); if (fill) fill.style.width = Math.min(100, r.progress) + '%';
+            if (detail) detail.innerHTML = `
+                <div class="target-mini-card"><h4>Admin Assigned Target</h4><strong>${formatPKR(target.amount)}</strong></div>
+                <div class="target-mini-card"><h4>Reward Percentage</h4><strong>${target.rewardPercent}%</strong></div>
+                <div class="target-mini-card"><h4>Cash / Non-Online Achieved</h4><strong>${formatPKR(r.achieved)}</strong></div>
+                <div class="target-mini-card"><h4>Remaining</h4><strong>${formatPKR(r.remaining)}</strong></div>
+                <div class="target-mini-card"><h4>Reward if Target Completed</h4><strong>${formatPKR(Number(target.amount||0)*Number(target.rewardPercent||0)/100)}</strong></div>
+                <div class="target-mini-card"><h4>Current Reward</h4><strong>${formatPKR(r.reward)}</strong></div>`;
+        }
+
+        function updateDayCountdown() {
+            const el = document.getElementById('empDayCountdownText');
+            if (!el) return;
+            const now = new Date();
+            const end = new Date(now); end.setHours(23,59,59,999);
+            const diff = Math.max(0, end - now);
+            const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+            const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+            const sec = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+            el.textContent = `${h}:${m}:${sec}`;
+        }
+
+        function getComplaintDueAt(c) {
+            if (c.dueAt) return new Date(c.dueAt);
+            const base = new Date(c.assignedAt || c.createdAt || Date.now());
+            return new Date(base.getTime() + DEFAULT_COMPLAINT_SLA_MINUTES * 60000);
+        }
+        function isComplaintActive(c) { return !['Resolved','Closed','Missed','Overdue'].includes(c.status); }
+        function getComplaintRemainingText(c) {
+            const ms = getComplaintDueAt(c) - new Date();
+            if (ms <= 0) return 'OVERDUE';
+            const h = String(Math.floor(ms/3600000)).padStart(2,'0');
+            const m = String(Math.floor((ms%3600000)/60000)).padStart(2,'0');
+            const sec = String(Math.floor((ms%60000)/1000)).padStart(2,'0');
+            return `${h}:${m}:${sec}`;
+        }
+        async function markExpiredComplaints() {
+            let changed = false;
+            (complaints || []).forEach(c => {
+                if (isComplaintActive(c) && getComplaintDueAt(c) < new Date()) {
+                    c.status = 'Missed';
+                    c.missedAt = new Date().toISOString();
+                    c.updatedAt = new Date().toISOString();
+                    c.performancePenalty = Number(c.performancePenalty || 10);
+                    c.history = c.history || [];
+                    c.history.push({ time:new Date().toISOString(), action:'Complaint SLA expired. Marked as Missed/Overdue.', status:'Missed' });
+                    changed = true;
                 }
-            } catch (e) {}
+            });
+            if (changed) {
+                await saveComplaints();
+                if (currentUser?.type === 'employee') refreshEmployeeTasks();
+                if (currentUser?.type === 'admin') refreshAdmin();
+            }
+        }
+        function updateActiveSlaBanner() {
+            if (!currentUser || currentUser.type !== 'employee') return;
+            const active = (complaints || []).filter(c => c.handlerId === currentUser.id && isComplaintActive(c)).sort((a,b)=>getComplaintDueAt(a)-getComplaintDueAt(b));
+            const el = document.getElementById('empActiveSlaText');
+            if (!el) return;
+            el.textContent = active.length ? `${active[0].id}: ${getComplaintRemainingText(active[0])}` : 'No active complaint';
+        }
+
+        function refreshEmployeeMissed() {
+            const box = document.getElementById('empMissedList');
+            if (!box || !currentUser) return;
+            const list = (complaints || []).filter(c => c.handlerId === currentUser.id && ['Missed','Overdue'].includes(c.status));
+            if (!list.length) { box.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><h3>No missed complaints</h3><p>Good job. No overdue complaint found.</p></div>'; return; }
+            box.innerHTML = list.map(c => `<div class="task-card missed-task-card">
+                <div class="task-header"><div><div class="task-title">${c.type} - ${c.id}</div><div style="margin-top:5px;"><span class="badge badge-missed">${c.status}</span> <span style="color:#7f8c8d;font-size:.85rem;margin-left:10px;">Penalty: -${c.performancePenalty || 10}%</span></div></div></div>
+                <div style="margin-top:10px;color:#566573;"><i class="fas fa-user"></i> ${c.complainantName} | <i class="fas fa-phone"></i> ${c.phone}</div>
+                <div style="margin-top:8px;color:var(--danger);font-weight:700;"><i class="fas fa-clock"></i> Due: ${getComplaintDueAt(c).toLocaleString('en-PK')}</div>
+            </div>`).join('');
+        }
+
+        const oldRefreshEmployeeTasksPatch = refreshEmployeeTasks;
+        refreshEmployeeTasks = function() {
+            markExpiredComplaints();
+            oldRefreshEmployeeTasksPatch();
+            const container = document.getElementById('empTasksList');
+            if (container) {
+                container.querySelectorAll('.task-card').forEach(card => {
+                    const title = card.querySelector('.task-title')?.textContent || '';
+                    const id = (title.match(/CMP-[A-Z0-9]+/) || [])[0];
+                    const c = (complaints || []).find(x => x.id === id);
+                    if (c && isComplaintActive(c)) {
+                        const meta = document.createElement('div');
+                        const rem = getComplaintRemainingText(c);
+                        meta.innerHTML = `<div style="margin:10px 0;padding:10px 12px;background:#fff;border-radius:8px;border-left:4px solid ${rem==='OVERDUE'?'var(--danger)':'var(--success)'};"><i class="fas fa-hourglass-half"></i> Resolve Countdown: <span class="${rem==='OVERDUE'?'overdue-timer':'sla-timer'}">${rem}</span> <small style="color:#7f8c8d;">(SLA ${DEFAULT_COMPLAINT_SLA_MINUTES} min from assigned time)</small></div>`;
+                        const actions = card.querySelector('.task-actions');
+                        if (actions && !card.querySelector('.sla-timer, .overdue-timer')) actions.before(meta);
+                    }
+                });
+            }
+            refreshEmployeeMissed();
+            renderEmployeeTargetBanner();
+            updateActiveSlaBanner();
+        };
+
+        const oldRefreshEmployeePatch = refreshEmployee;
+        refreshEmployee = function() {
+            installDailyTargetUI();
+            oldRefreshEmployeePatch();
+            renderEmployeeFinance();
+            renderEmployeeTargetBanner();
+            refreshEmployeeMissed();
+        };
+
+        const oldSwitchEmployeeTabPatch = switchEmployeeTab;
+        switchEmployeeTab = function(tab) {
+            oldSwitchEmployeeTabPatch(tab);
+            if (tab === 'missed') refreshEmployeeMissed();
+            if (tab === 'accounts') renderEmployeeTargetBanner();
+        };
+
+        const oldRefreshAdminPatch = refreshAdmin;
+        refreshAdmin = function() {
+            installDailyTargetUI();
+            oldRefreshAdminPatch();
+            populateDailyTargetEmployees();
+            renderDailyTargetList();
+            renderDayEndSummary();
+        };
+
+        const oldSwitchAdminTabPatch = switchAdminTab;
+        switchAdminTab = function(tab) {
+            oldSwitchAdminTabPatch(tab);
+            if (tab === 'finance') { installDailyTargetUI(); renderDailyTargetList(); }
+            if (tab === 'dayend') renderDayEndSummary();
+        };
+
+        const oldAddEmployeeFinanceEntryPatch = addEmployeeFinanceEntry;
+        addEmployeeFinanceEntry = async function() {
+            await oldAddEmployeeFinanceEntryPatch();
+            renderEmployeeTargetBanner();
+            renderDailyTargetList();
+        };
+
+        function renderDayEndSummary() {
+            const box = document.getElementById('dayEndSummaryBox');
+            if (!box) return;
+            const today = localTodayISO();
+            const entries = (dailyFinance || []).filter(x => x.date === today);
+            const cashIncome = entries.filter(x => x.type === 'income' && String(x.subCategory || '').toLowerCase() !== 'online').reduce((s,x)=>s+Number(x.amount||0),0);
+            const onlineIncome = entries.filter(x => x.type === 'income' && String(x.subCategory || '').toLowerCase() === 'online').reduce((s,x)=>s+Number(x.amount||0),0);
+            const expense = entries.filter(x => x.type === 'expense').reduce((s,x)=>s+Number(x.amount||0),0);
+            const missed = (complaints || []).filter(c => ['Missed','Overdue'].includes(c.status) && (c.missedAt || c.updatedAt || '').startsWith(today)).length;
+            const active = (complaints || []).filter(c => isComplaintActive(c)).length;
+            const targetsToday = readDailyTargets().filter(t => t.date === today);
+            const targetCards = targetsToday.map(t => { const r=calculateTargetResult(t); return `<div class="target-mini-card"><h4>${t.employeeName}</h4><strong>${r.progress}%</strong><div style="font-size:.9rem;color:#566573;margin-top:8px;">Target: ${formatPKR(t.amount)}<br>Cash: ${formatPKR(r.achieved)}<br>Reward: ${formatPKR(r.reward)}</div></div>`; }).join('');
+            box.innerHTML = `
+                <div class="target-mini-card"><h4>Today Cash Income</h4><strong>${formatPKR(cashIncome)}</strong></div>
+                <div class="target-mini-card"><h4>Today Online Income</h4><strong>${formatPKR(onlineIncome)}</strong></div>
+                <div class="target-mini-card"><h4>Today Expenses</h4><strong>${formatPKR(expense)}</strong></div>
+                <div class="target-mini-card"><h4>Active Complaints</h4><strong>${active}</strong></div>
+                <div class="target-mini-card"><h4>Missed / Overdue Today</h4><strong>${missed}</strong></div>
+                ${targetCards || '<div class="target-mini-card"><h4>Daily Targets</h4><strong>None</strong></div>'}`;
+        }
+        function sendDayEndTargetReport() {
+            renderDayEndSummary();
+            const today = localTodayISO();
+            const targetsToday = readDailyTargets().filter(t => t.date === today).map(t => { const r=calculateTargetResult(t); return `${t.employeeName}: Target ${formatPKR(t.amount)}, Cash ${formatPKR(r.achieved)}, Progress ${r.progress}%, Reward ${formatPKR(r.reward)}`; }).join('\n') || 'No targets assigned';
+            const report = `🔥 Fire.net.pk Day End Report\n📅 Date: ${today}\n\n🎯 Daily Targets\n${targetsToday}\n\nNote: Online payments are excluded from target achievement.`;
+            window.open('https://wa.me/?text=' + encodeURIComponent(report), '_blank');
+        }
+
+        const oldCalculateMonthlyPerformancePatch = calculateMonthlyPerformance;
+        calculateMonthlyPerformance = function(employeeId, month, year) {
+            const base = oldCalculateMonthlyPerformancePatch(employeeId, month, year);
+            const missed = (complaints || []).filter(c => c.handlerId === employeeId && ['Missed','Overdue'].includes(c.status) && new Date(c.missedAt || c.updatedAt || c.createdAt).getMonth()+1 === month && new Date(c.missedAt || c.updatedAt || c.createdAt).getFullYear() === year).length;
+            const penalty = missed * 10;
+            return { ...base, missed, penalty, score: Math.max(0, Number(base.score || 0) - penalty) };
+        };
+
+        const oldInitDefaultComplaintDateFilterPatch = initDefaultComplaintDateFilter;
+        initDefaultComplaintDateFilter = function() {
+            const el = document.getElementById('adminComplaintDateFilter');
+            if (el && !el.value) el.value = localTodayISO();
+        };
+
+        setInterval(() => {
+            updateDayCountdown();
+            updateActiveSlaBanner();
+            if (currentUser?.type === 'employee') {
+                const visibleTasks = document.getElementById('empMyTasksTab')?.classList.contains('active');
+                if (visibleTasks) refreshEmployeeTasks();
+                renderEmployeeTargetBanner();
+            }
+            markExpiredComplaints();
         }, 1000);
-    </script>
+
+        setTimeout(() => {
+            installDailyTargetUI();
+            initDefaultComplaintDateFilter();
+            const empDate = document.getElementById('empFinanceDateFilter'); if (empDate && !empDate.value) empDate.value = localTodayISO();
+            const adminDate = document.getElementById('financeDateFilter'); if (adminDate && !adminDate.value) adminDate.value = localTodayISO();
+            renderDailyTargetList();
+            renderEmployeeTargetBanner();
+            renderDayEndSummary();
+        }, 500);
+
+    
+
+        /* ==================== PRO DAILY BONUS + SALES COMMISSION PATCH ==================== */
+        const PRO_SALES_TARGET_KEY = 'firenet_daily_sales_targets_pro_v1';
+
+        function proReadSalesTargets(){ try { return JSON.parse(localStorage.getItem(PRO_SALES_TARGET_KEY) || '[]'); } catch(e){ return []; } }
+        function proWriteSalesTargets(list){ localStorage.setItem(PRO_SALES_TARGET_KEY, JSON.stringify(list || [])); }
+        function proIsOnlineEntry(item){ return String(item?.subCategory || '').trim().toLowerCase() === 'online'; }
+        function proIsSalesEntry(item){
+            const cat = String(item?.category || '').toLowerCase();
+            const note = String(item?.note || '').toLowerCase();
+            return item?.type === 'income' && (cat.includes('sale') || cat.includes('installation') || cat.includes('device') || note.includes('[sale]'));
+        }
+        function proEmployeeEntries(employeeId, date){
+            return (dailyFinance || []).filter(item => item.date === date && String(item.createdById || '') === String(employeeId || ''));
+        }
+        function proCashCollection(employeeId, date){
+            return proEmployeeEntries(employeeId, date).filter(item => item.type === 'income' && !proIsOnlineEntry(item)).reduce((s,item)=>s+Number(item.amount||0),0);
+        }
+        function proSalesAmount(employeeId, date){
+            return proEmployeeEntries(employeeId, date).filter(proIsSalesEntry).reduce((s,item)=>s+Number(item.amount||0),0);
+        }
+        function proFormatPKR(n){
+            if (typeof formatPKR === 'function') return formatPKR(Number(n||0));
+            return 'Rs. ' + Number(n||0).toLocaleString('en-PK', {maximumFractionDigits:2});
+        }
+        function proGetTodaySalesTarget(employeeId, date = localTodayISO()){
+            return proReadSalesTargets().filter(t => String(t.employeeId) === String(employeeId) && t.date === date).slice(-1)[0] || null;
+        }
+        function proCalculateAccountTarget(target){
+            if (!target) return {achieved:0, progress:0, reward:0, remaining:0, status:'No Target'};
+            const achieved = proCashCollection(target.employeeId, target.date);
+            const amount = Number(target.amount || 0);
+            const pct = Number(target.rewardPercent || 0);
+            const progress = amount ? Math.min(100, Math.round((achieved / amount) * 100)) : 0;
+            const hit = amount > 0 && achieved >= amount;
+            return {achieved, progress, reward: hit ? (achieved * pct / 100) : 0, remaining: Math.max(0, amount-achieved), status: hit ? 'Achieved' : 'Missed / Pending'};
+        }
+        function proCalculateSalesTarget(target){
+            if (!target) return {sales:0, progress:0, commission:0, remaining:0, status:'No Target'};
+            const sales = proSalesAmount(target.employeeId, target.date);
+            const amount = Number(target.amount || 0);
+            const pct = Number(target.commissionPercent || 0);
+            const progress = amount ? Math.min(100, Math.round((sales / amount) * 100)) : 0;
+            const hit = amount > 0 && sales >= amount;
+            return {sales, progress, commission: hit ? (sales * pct / 100) : 0, remaining: Math.max(0, amount-sales), status: hit ? 'Achieved' : 'Missed / Pending'};
+        }
+
+        // Override old reward formula: no target hit = no reward, hit = achieved cash x percentage.
+        calculateTargetResult = function(target) {
+            const r = proCalculateAccountTarget(target);
+            const manual = target ? readManualProgress()[target.id] : '';
+            return { achieved:r.achieved, progress:r.progress, reward:r.reward, remaining:r.remaining, manualPercent: manual === undefined ? '' : manual, status:r.status };
+        };
+
+        function proEnsureStyle(){
+            if (document.getElementById('proTargetStyles')) return;
+            document.head.insertAdjacentHTML('beforeend', `<style id="proTargetStyles">
+                .pro-section-card{background:#fff;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,.12);overflow:hidden;margin-bottom:25px;border-top:4px solid var(--primary)}
+                .pro-target-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;padding:18px}
+                .pro-kpi{background:#f8f9fa;border:1px solid #e9ecef;border-radius:12px;padding:14px;border-left:4px solid var(--primary)}
+                .pro-kpi.success{border-left-color:var(--success)} .pro-kpi.warning{border-left-color:var(--warning)} .pro-kpi.danger{border-left-color:var(--danger)} .pro-kpi.info{border-left-color:var(--info)}
+                .pro-kpi span{display:block;color:#7f8c8d;font-size:.82rem;font-weight:700;margin-bottom:6px}.pro-kpi strong{font-size:1.25rem;color:var(--secondary)}
+                .pro-progress-track{height:9px;background:#e9ecef;border-radius:99px;overflow:hidden;margin-top:9px}.pro-progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--success));width:0%}
+                .pro-red{color:var(--danger);font-weight:800}.pro-green{color:var(--success);font-weight:800}.pro-note{padding:12px 18px;color:#566573;background:#fff8e1;border-top:1px solid #f3e5ab;font-size:.9rem;line-height:1.45}
+                .daily-target-banner{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;text-align:left!important}
+                .missed-task-card{border-left-color:var(--danger)!important;background:#fff5f5!important}
+            </style>`);
+        }
+
+        function proInstallSalesTargetUI(){
+            proEnsureStyle();
+            installDailyTargetUI();
+            const financeTab = document.getElementById('adminFinanceTab');
+            if (financeTab && !document.getElementById('adminDailySalesTargetManager')) {
+                const afterAccount = document.getElementById('adminDailyTargetManager');
+                const html = `
+                <div class="pro-section-card" id="adminDailySalesTargetManager">
+                    <div class="card-header">
+                        <h2><i class="fas fa-chart-line"></i> Daily Sales Bonus / Commission</h2>
+                        <div style="font-size:.9rem;opacity:.9;">Missed sales target = no bonus / no commission.</div>
+                    </div>
+                    <div class="quick-finance-form">
+                        <div class="form-row">
+                            <div class="form-group"><label>Employee</label><select id="dailySalesTargetEmployee" class="form-control"></select></div>
+                            <div class="form-group"><label>Date</label><input type="date" id="dailySalesTargetDate" class="form-control"></div>
+                            <div class="form-group"><label>Sales Target Amount (PKR)</label><input type="number" id="dailySalesTargetAmount" class="form-control" placeholder="Example: 20000"></div>
+                            <div class="form-group"><label>Commission Percentage</label><input type="number" id="dailySalesCommissionPercent" class="form-control" value="1" step="0.01" placeholder="Example: 1"></div>
+                            <div class="form-group full-width"><label>Note</label><input type="text" id="dailySalesTargetNote" class="form-control" placeholder="Example: Device sale / installation sales target"></div>
+                        </div>
+                        <button class="btn btn-primary" onclick="proAssignDailySalesTarget()"><i class="fas fa-save"></i> Assign Sales Target</button>
+                    </div>
+                    <div class="pro-target-grid" id="dailySalesTargetList"></div>
+                    <div class="pro-note"><b>Sales Entry Rule:</b> Entries with category <b>Device Sale</b> or <b>Installation</b> count as sales. Missed target means commission stays <b>Rs. 0</b>.</div>
+                </div>`;
+                if (afterAccount) afterAccount.insertAdjacentHTML('afterend', html); else financeTab.insertAdjacentHTML('afterbegin', html);
+            }
+            populateProSalesTargetEmployees();
+            const d = document.getElementById('dailySalesTargetDate'); if (d && !d.value) d.value = localTodayISO();
+            proRenderSalesTargetList();
+        }
+
+        function populateProSalesTargetEmployees(){
+            const select = document.getElementById('dailySalesTargetEmployee');
+            if (!select) return;
+            const old = select.value;
+            const active = (employees || []).filter(e => e.status === 'active');
+            select.innerHTML = '<option value="">Select Employee</option>' + active.map(e => `<option value="${e.id}">${e.name} - ${e.role || 'Staff'}</option>`).join('');
+            if (old) select.value = old;
+        }
+        function proAssignDailySalesTarget(){
+            const employeeId = document.getElementById('dailySalesTargetEmployee')?.value || '';
+            const date = document.getElementById('dailySalesTargetDate')?.value || localTodayISO();
+            const amount = Number(document.getElementById('dailySalesTargetAmount')?.value || 0);
+            const commissionPercent = Number(document.getElementById('dailySalesCommissionPercent')?.value || 0);
+            const note = document.getElementById('dailySalesTargetNote')?.value.trim() || '';
+            if (!employeeId || !amount) { showToast('Select employee and enter sales target amount.', 'error'); return; }
+            const emp = (employees || []).find(e => String(e.id) === String(employeeId));
+            const list = proReadSalesTargets().filter(t => !(String(t.employeeId) === String(employeeId) && t.date === date));
+            list.push({id:'SALE-' + Date.now().toString(36).toUpperCase(), employeeId, employeeName:emp?.name || '', date, amount, commissionPercent, note, createdAt:new Date().toISOString()});
+            proWriteSalesTargets(list);
+            document.getElementById('dailySalesTargetAmount').value = '';
+            document.getElementById('dailySalesTargetNote').value = '';
+            showToast('Sales target assigned successfully.', 'success');
+            proRenderSalesTargetList(); proRenderEmployeeProBanner(); renderDayEndSummary();
+        }
+        function proRenderSalesTargetList(){
+            const box = document.getElementById('dailySalesTargetList');
+            if (!box) return;
+            const date = document.getElementById('dailySalesTargetDate')?.value || localTodayISO();
+            const list = proReadSalesTargets().filter(t => t.date === date);
+            if (!list.length) { box.innerHTML = '<div class="empty-state" style="grid-column:1/-1;padding:25px;"><i class="fas fa-chart-line"></i><h3>No sales target for this date</h3></div>'; return; }
+            box.innerHTML = list.map(t => {
+                const r = proCalculateSalesTarget(t);
+                return `<div class="pro-kpi ${r.status==='Achieved'?'success':'warning'}"><span>${t.employeeName}</span><strong>${r.progress}%</strong><div class="pro-progress-track"><div class="pro-progress-fill" style="width:${r.progress}%"></div></div><div style="font-size:.86rem;color:#566573;margin-top:8px;line-height:1.55;">Target: ${proFormatPKR(t.amount)}<br>Sales: ${proFormatPKR(r.sales)}<br>Commission: <b>${proFormatPKR(r.commission)}</b><br>Status: ${r.status}</div></div>`;
+            }).join('');
+        }
+
+        function proRenderEmployeeProBanner(){
+            if (!currentUser || currentUser.type !== 'employee') return;
+            const banner = document.getElementById('employeeDailyTargetBanner');
+            if (!banner) return;
+            if (!document.getElementById('empSalesTargetText')) {
+                banner.insertAdjacentHTML('beforeend', `
+                    <div class="target-chip"><span>Sales Target</span><b id="empSalesTargetText">No target</b></div>
+                    <div class="target-chip"><span>Sales Done</span><b id="empSalesDoneText">Rs. 0</b></div>
+                    <div class="target-chip"><span>Sales Commission</span><b id="empSalesCommissionText">Rs. 0</b></div>
+                    <div class="target-chip"><span>Bonus Status</span><b id="empBonusStatusText">Pending</b></div>`);
+            }
+            const accountTarget = getTodayTarget(currentUser.id, localTodayISO());
+            const account = proCalculateAccountTarget(accountTarget);
+            const salesTarget = proGetTodaySalesTarget(currentUser.id, localTodayISO());
+            const sales = proCalculateSalesTarget(salesTarget);
+            const bonusStatus = accountTarget ? (account.status === 'Achieved' ? 'Account Target Achieved' : 'No Bonus Until Target Hit') : 'No Account Target';
+            const e = id => document.getElementById(id);
+            if (e('empTargetRewardText')) e('empTargetRewardText').textContent = proFormatPKR(account.reward);
+            if (e('empBonusStatusText')) e('empBonusStatusText').textContent = bonusStatus;
+            if (e('empSalesTargetText')) e('empSalesTargetText').textContent = salesTarget ? proFormatPKR(salesTarget.amount) : 'No target';
+            if (e('empSalesDoneText')) e('empSalesDoneText').textContent = proFormatPKR(sales.sales);
+            if (e('empSalesCommissionText')) e('empSalesCommissionText').textContent = proFormatPKR(sales.commission);
+            const detail = document.getElementById('empDailyTargetDetails');
+            if (detail && !detail.querySelector('#proSalesDetailCard')) {
+                detail.insertAdjacentHTML('beforeend', `
+                    <div class="target-mini-card" id="proSalesDetailCard"><h4>Sales Target</h4><strong id="proSalesDetailTarget">No target</strong></div>
+                    <div class="target-mini-card"><h4>Sales Done</h4><strong id="proSalesDetailDone">Rs. 0</strong></div>
+                    <div class="target-mini-card"><h4>Sales Commission</h4><strong id="proSalesDetailCommission">Rs. 0</strong></div>
+                    <div class="target-mini-card"><h4>Bonus Rule</h4><strong id="proBonusRuleText">No target miss bonus</strong></div>`);
+            }
+            if (e('proSalesDetailTarget')) e('proSalesDetailTarget').textContent = salesTarget ? proFormatPKR(salesTarget.amount) : 'No target';
+            if (e('proSalesDetailDone')) e('proSalesDetailDone').textContent = proFormatPKR(sales.sales);
+            if (e('proSalesDetailCommission')) e('proSalesDetailCommission').textContent = proFormatPKR(sales.commission);
+            if (e('proBonusRuleText')) e('proBonusRuleText').textContent = (account.status==='Achieved' || sales.status==='Achieved') ? 'Eligible after target hit' : 'Missed = Rs. 0 bonus';
+        }
+
+        function proEnhanceMissedTab(){
+            refreshEmployeeMissed = (function(oldFn){
+                return function(){
+                    oldFn();
+                    const box = document.getElementById('empMissedList');
+                    if (!box || !currentUser) return;
+                    const missed = (complaints || []).filter(c => c.handlerId === currentUser.id && ['Missed','Overdue'].includes(c.status));
+                    const totalPenalty = missed.reduce((s,c)=>s+Number(c.performancePenalty || 10),0);
+                    if (missed.length) box.insertAdjacentHTML('afterbegin', `<div class="pro-kpi danger" style="margin-bottom:15px;"><span>Performance Impact</span><strong>-${totalPenalty}%</strong><div style="font-size:.9rem;color:#566573;margin-top:8px;">${missed.length} missed/overdue complaint(s). These reduce technical performance and are not counted as resolved.</div></div>`);
+                }
+            })(refreshEmployeeMissed);
+        }
+
+        function proForceTodayDates(){
+            const ids = ['adminComplaintDateFilter','financeDateFilter','empFinanceDateFilter','dailyTargetDate','dailySalesTargetDate'];
+            ids.forEach(id => { const el = document.getElementById(id); if (el && !el.dataset.proTouched) el.value = localTodayISO(); });
+            ids.forEach(id => { const el = document.getElementById(id); if (el && !el.dataset.proListener) { el.addEventListener('change', ()=>{ el.dataset.proTouched='1'; }); el.dataset.proListener='1'; } });
+        }
+
+        const proOldRenderEmployeeTargetBanner = renderEmployeeTargetBanner;
+        renderEmployeeTargetBanner = function(){ proOldRenderEmployeeTargetBanner(); proRenderEmployeeProBanner(); };
+        const proOldRefreshAdmin = refreshAdmin;
+        refreshAdmin = function(){ proOldRefreshAdmin(); proInstallSalesTargetUI(); proForceTodayDates(); proRenderSalesTargetList(); };
+        const proOldRefreshEmployee = refreshEmployee;
+        refreshEmployee = function(){ proOldRefreshEmployee(); proInstallSalesTargetUI(); proForceTodayDates(); proRenderEmployeeProBanner(); };
+        const proOldSwitchAdminTab = switchAdminTab;
+        switchAdminTab = function(tab){ proOldSwitchAdminTab(tab); proForceTodayDates(); if(tab==='finance'){proInstallSalesTargetUI(); proRenderSalesTargetList();} if(tab==='dayend'){renderDayEndSummary();} };
+        const proOldSwitchEmployeeTab = switchEmployeeTab;
+        switchEmployeeTab = function(tab){ proOldSwitchEmployeeTab(tab); proForceTodayDates(); proRenderEmployeeProBanner(); };
+        const proOldRenderDayEndSummary = renderDayEndSummary;
+        renderDayEndSummary = function(){
+            proOldRenderDayEndSummary();
+            const box = document.getElementById('dayEndSummaryBox');
+            if (!box) return;
+            const today = localTodayISO();
+            const salesCards = proReadSalesTargets().filter(t=>t.date===today).map(t=>{ const r=proCalculateSalesTarget(t); return `<div class="target-mini-card"><h4>Sales: ${t.employeeName}</h4><strong>${r.progress}%</strong><div style="font-size:.9rem;color:#566573;margin-top:8px;">Target: ${proFormatPKR(t.amount)}<br>Sales: ${proFormatPKR(r.sales)}<br>Commission: ${proFormatPKR(r.commission)}<br>${r.status}</div></div>`; }).join('');
+            if (salesCards) box.insertAdjacentHTML('beforeend', salesCards);
+        };
+        const proOldSendDayEndTargetReport = sendDayEndTargetReport;
+        sendDayEndTargetReport = function(){
+            const today = localTodayISO();
+            const acc = readDailyTargets().filter(t=>t.date===today).map(t=>{ const r=proCalculateAccountTarget(t); return `${t.employeeName}: Account Target ${proFormatPKR(t.amount)}, Cash ${proFormatPKR(r.achieved)}, Bonus ${proFormatPKR(r.reward)}, ${r.status}`; }).join('\n') || 'No account targets';
+            const sales = proReadSalesTargets().filter(t=>t.date===today).map(t=>{ const r=proCalculateSalesTarget(t); return `${t.employeeName}: Sales Target ${proFormatPKR(t.amount)}, Sales ${proFormatPKR(r.sales)}, Commission ${proFormatPKR(r.commission)}, ${r.status}`; }).join('\n') || 'No sales targets';
+            const missed = (complaints || []).filter(c => ['Missed','Overdue'].includes(c.status) && (c.missedAt || c.updatedAt || '').startsWith(today)).length;
+            const report = `🔥 Fire.net.pk PRO Day End Report\n📅 Date: ${today}\n\n🎯 Account Targets\n${acc}\n\n💰 Sales Commission\n${sales}\n\n⚠️ Missed / Overdue Complaints Today: ${missed}\n\nRules: Online entries excluded from account target. Target missed = Rs. 0 bonus/commission.`;
+            window.open('https://wa.me/?text=' + encodeURIComponent(report), '_blank');
+        };
+
+        setTimeout(()=>{ proEnsureStyle(); proInstallSalesTargetUI(); proForceTodayDates(); proRenderEmployeeProBanner(); proRenderSalesTargetList(); proEnhanceMissedTab(); renderDayEndSummary(); }, 900);
+</script>
+
+<script>
+/* ==================== ADMIN FULL CONTROL PATCH ==================== */
+(function(){
+    function acIsAdmin(){ return currentUser && currentUser.type === 'admin'; }
+    function acToast(msg,type){ if(typeof showToast==='function') showToast(msg,type||'success'); else alert(msg); }
+    function acMoney(n){ return 'Rs. ' + Number(n||0).toLocaleString('en-PK'); }
+    function acEscape(s){ return String(s ?? '').replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+    function acShort(obj){
+        if(!obj) return '';
+        return acEscape(obj.complainantName || obj.name || obj.employeeName || obj.receiverName || obj.title || obj.category || obj.id || 'Record');
+    }
+    function acReadTargets(){ try{return typeof readDailyTargets==='function'?readDailyTargets():JSON.parse(localStorage.getItem('fire_daily_targets_v1')||'[]')}catch(e){return[]} }
+    function acWriteTargets(list){ if(typeof writeDailyTargets==='function') writeDailyTargets(list); else localStorage.setItem('fire_daily_targets_v1',JSON.stringify(list||[])); }
+    function acReadSales(){ try{return typeof proReadSalesTargets==='function'?proReadSalesTargets():JSON.parse(localStorage.getItem('fire_pro_sales_targets_v1')||'[]')}catch(e){return[]} }
+    function acWriteSales(list){ if(typeof proWriteSalesTargets==='function') proWriteSalesTargets(list); else localStorage.setItem('fire_pro_sales_targets_v1',JSON.stringify(list||[])); }
+    function acRefreshAll(){
+        try{ if(typeof refreshAdmin==='function') refreshAdmin(); }catch(e){}
+        try{ if(typeof refreshEmployee==='function') refreshEmployee(); }catch(e){}
+        try{ if(typeof renderAdminFullControl==='function') renderAdminFullControl(); }catch(e){}
+    }
+    async function acSave(type){
+        if(type==='complaints' && typeof saveComplaints==='function') await saveComplaints();
+        if(type==='employees' && typeof saveEmployees==='function') await saveEmployees();
+        if(type==='attendance' && typeof saveAttendanceData==='function') await saveAttendanceData();
+        if(type==='payroll' && typeof savePayrollData==='function') await savePayrollData();
+        if(type==='finance' && typeof saveFinanceData==='function') await saveFinanceData();
+    }
+    window.adminEditRecord = async function(type,id){
+        if(!acIsAdmin()){ acToast('Only admin can edit records.','error'); return; }
+        let list, writer=null, saver=null;
+        if(type==='complaints'){ list=complaints; saver=()=>acSave('complaints'); }
+        else if(type==='employees'){ list=employees; saver=()=>acSave('employees'); }
+        else if(type==='attendance'){ list=attendance; saver=()=>acSave('attendance'); }
+        else if(type==='payroll'){ list=payroll; saver=()=>acSave('payroll'); }
+        else if(type==='finance'){ list=dailyFinance; saver=()=>acSave('finance'); }
+        else if(type==='targets'){ list=acReadTargets(); writer=acWriteTargets; }
+        else if(type==='salesTargets'){ list=acReadSales(); writer=acWriteSales; }
+        else { acToast('Unknown record type.','error'); return; }
+        const idx = list.findIndex(x => String(x.id) === String(id));
+        if(idx < 0){ acToast('Record not found.','error'); return; }
+        const updated = prompt('Edit this record as JSON. Change only what you need, then press OK.', JSON.stringify(list[idx], null, 2));
+        if(updated === null) return;
+        try{
+            const obj = JSON.parse(updated);
+            if(!obj.id) obj.id = id;
+            list[idx] = obj;
+            if(writer) writer(list);
+            if(saver) await saver();
+            acToast('Record updated successfully.','success');
+            acRefreshAll();
+        }catch(e){ acToast('Invalid JSON. Edit cancelled.','error'); }
+    };
+    window.adminDeleteRecord = async function(type,id){
+        if(!acIsAdmin()){ acToast('Only admin can delete records.','error'); return; }
+        if(!confirm('Admin delete: this will permanently remove this record. Continue?')) return;
+        if(type==='complaints'){ complaints = complaints.filter(x=>String(x.id)!==String(id)); await acSave('complaints'); }
+        else if(type==='employees'){
+            const emp = employees.find(x=>String(x.id)===String(id));
+            employees = employees.filter(x=>String(x.id)!==String(id));
+            if(emp){ complaints = complaints.map(c => String(c.handlerId)===String(emp.id) ? {...c, handlerId:'', handlerName:'Unassigned'} : c); await acSave('complaints'); }
+            await acSave('employees');
+        }
+        else if(type==='attendance'){ attendance = attendance.filter(x=>String(x.id)!==String(id)); await acSave('attendance'); }
+        else if(type==='payroll'){ payroll = payroll.filter(x=>String(x.id)!==String(id)); await acSave('payroll'); }
+        else if(type==='finance'){ dailyFinance = dailyFinance.filter(x=>String(x.id)!==String(id)); await acSave('finance'); }
+        else if(type==='targets'){ acWriteTargets(acReadTargets().filter(x=>String(x.id)!==String(id))); }
+        else if(type==='salesTargets'){ acWriteSales(acReadSales().filter(x=>String(x.id)!==String(id))); }
+        else { acToast('Unknown record type.','error'); return; }
+        acToast('Record deleted successfully.','success');
+        acRefreshAll();
+    };
+    window.adminDuplicateRecord = async function(type,id){
+        if(!acIsAdmin()){ acToast('Only admin can duplicate records.','error'); return; }
+        let list, writer=null, saver=null;
+        if(type==='complaints'){ list=complaints; saver=()=>acSave('complaints'); }
+        else if(type==='employees'){ list=employees; saver=()=>acSave('employees'); }
+        else if(type==='attendance'){ list=attendance; saver=()=>acSave('attendance'); }
+        else if(type==='payroll'){ list=payroll; saver=()=>acSave('payroll'); }
+        else if(type==='finance'){ list=dailyFinance; saver=()=>acSave('finance'); }
+        else if(type==='targets'){ list=acReadTargets(); writer=acWriteTargets; }
+        else if(type==='salesTargets'){ list=acReadSales(); writer=acWriteSales; }
+        const original = list.find(x=>String(x.id)===String(id));
+        if(!original){ acToast('Record not found.','error'); return; }
+        const copy = {...original, id:'COPY-' + Date.now().toString(36).toUpperCase(), createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()};
+        list.push(copy);
+        if(writer) writer(list);
+        if(saver) await saver();
+        acToast('Record duplicated successfully.','success');
+        acRefreshAll();
+    };
+    function acRows(type,list,fields){
+        if(!list || !list.length) return '<tr><td colspan="5"><div class="empty-state" style="padding:25px;"><i class="fas fa-folder-open"></i><h3>No records</h3></div></td></tr>';
+        return list.slice().reverse().map(item=>`<tr>
+            <td><b>${acShort(item)}</b><br><small>${acEscape(item.id||'')}</small></td>
+            <td>${fields.map(f=>`<div><b>${acEscape(f.label)}:</b> ${acEscape(typeof f.value==='function'?f.value(item):item[f.key])}</div>`).join('')}</td>
+            <td>${acEscape(item.date || item.createdAt || item.updatedAt || '')}</td>
+            <td>${acEscape(item.status || item.type || item.department || '')}</td>
+            <td class="action-btns">
+                <button class="btn btn-info btn-sm" onclick="adminEditRecord('${type}','${String(item.id).replace(/'/g,"\\'")}')"><i class="fas fa-edit"></i> Edit</button>
+                <button class="btn btn-warning btn-sm" onclick="adminDuplicateRecord('${type}','${String(item.id).replace(/'/g,"\\'")}')"><i class="fas fa-copy"></i> Copy</button>
+                <button class="btn btn-danger btn-sm" onclick="adminDeleteRecord('${type}','${String(item.id).replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i> Delete</button>
+            </td>
+        </tr>`).join('');
+    }
+    window.renderAdminFullControl = function(){
+        const body = document.getElementById('adminFullControlBody');
+        if(!body || !acIsAdmin()) return;
+        const today = (typeof localTodayISO==='function') ? localTodayISO() : new Date().toISOString().slice(0,10);
+        const targetList = acReadTargets();
+        const salesTargetList = acReadSales();
+        const missedList = (complaints||[]).filter(c=>['Missed','Overdue'].includes(c.status));
+        body.innerHTML = `
+            <div class="stats-bar">
+                <div class="stat-card"><div class="stat-icon total"><i class="fas fa-database"></i></div><div class="stat-info"><h3>${complaints.length}</h3><p>Complaints</p></div></div>
+                <div class="stat-card"><div class="stat-icon employees"><i class="fas fa-users"></i></div><div class="stat-info"><h3>${employees.length}</h3><p>Employees</p></div></div>
+                <div class="stat-card"><div class="stat-icon payroll"><i class="fas fa-wallet"></i></div><div class="stat-info"><h3>${dailyFinance.length}</h3><p>Finance Entries</p></div></div>
+                <div class="stat-card"><div class="stat-icon absent"><i class="fas fa-triangle-exclamation"></i></div><div class="stat-info"><h3>${missedList.length}</h3><p>Missed / Overdue</p></div></div>
+            </div>
+            ${acSection('Complaints', 'complaints', complaints, [{label:'Customer', key:'complainantName'},{label:'Handler', key:'handlerName'},{label:'Type', key:'type'}])}
+            ${acSection('Employees', 'employees', employees, [{label:'Name', key:'name'},{label:'Phone', key:'phone'},{label:'Role', key:'role'}])}
+            ${acSection('Daily Account Targets', 'targets', targetList, [{label:'Employee', key:'employeeName'},{label:'Target', value:x=>acMoney(x.amount)},{label:'Reward %', key:'rewardPercent'}])}
+            ${acSection('Sales Targets / Commission', 'salesTargets', salesTargetList, [{label:'Employee', key:'employeeName'},{label:'Target', value:x=>acMoney(x.amount)},{label:'Commission %', key:'commissionPercent'}])}
+            ${acSection('Missed / Overdue Complaints', 'complaints', missedList, [{label:'Customer', key:'complainantName'},{label:'Handler', key:'handlerName'},{label:'Penalty', value:x=>(x.performancePenalty||10)+'%'}])}
+            ${acSection('Finance / Sales / Income / Expense', 'finance', dailyFinance, [{label:'Type', key:'type'},{label:'Category', key:'category'},{label:'Amount', value:x=>acMoney(x.amount)}])}
+            ${acSection('Attendance', 'attendance', attendance, [{label:'Employee', key:'employeeName'},{label:'Status', key:'status'},{label:'Time', key:'time'}])}
+            ${acSection('Payroll', 'payroll', payroll, [{label:'Employee', key:'employeeName'},{label:'Net Salary', value:x=>acMoney(x.netSalary||x.netPay||x.amount)},{label:'Status', key:'status'}])}
+            <div class="main-card"><div class="card-header"><h2><i class="fas fa-shield-alt"></i> Admin Rule</h2></div><div style="padding:20px;line-height:1.7;color:#566573;">Admin can edit, copy, or delete all records from this page. Employee deletion will unassign that employee from complaints instead of breaking old records. Use JSON edit carefully for advanced changes.</div></div>
+        `;
+    };
+    function acSection(title,type,list,fields){
+        return `<div class="main-card admin-control-section"><div class="card-header"><h2><i class="fas fa-pen-to-square"></i> ${title}</h2><div>${list.length} record(s)</div></div><div style="overflow-x:auto;"><table><thead><tr><th>Record</th><th>Details</th><th>Date</th><th>Status / Type</th><th>Admin Actions</th></tr></thead><tbody>${acRows(type,list,fields)}</tbody></table></div></div>`;
+    }
+    window.installAdminFullControl = function(){
+        const nav = document.querySelector('#adminApp .nav-tabs');
+        const container = document.querySelector('#adminApp .container');
+        if(!nav || !container || document.getElementById('adminControlTab')) return;
+        nav.insertAdjacentHTML('beforeend', `<button class="nav-tab" onclick="switchAdminTab('control')"><i class="fas fa-user-shield"></i> Admin Control</button>`);
+        container.insertAdjacentHTML('beforeend', `<div id="adminControlTab" class="tab-content"><div class="main-card"><div class="card-header"><h2><i class="fas fa-user-shield"></i> Admin Full Control Center</h2><button class="btn btn-success" onclick="renderAdminFullControl()"><i class="fas fa-rotate"></i> Refresh</button></div><div id="adminFullControlBody" style="padding:20px;"></div></div></div>`);
+        const oldSwitch = window.switchAdminTab;
+        if(!window.__adminFullControlSwitchPatched){
+            window.switchAdminTab = function(tab){
+                oldSwitch(tab);
+                if(tab==='control'){
+                    document.querySelectorAll('#adminApp .nav-tab').forEach(t=>t.classList.remove('active'));
+                    const btns=[...document.querySelectorAll('#adminApp .nav-tabs .nav-tab')];
+                    const controlBtn=btns.find(b=>b.textContent.includes('Admin Control'));
+                    if(controlBtn) controlBtn.classList.add('active');
+                    document.querySelectorAll('#adminApp .tab-content').forEach(t=>t.classList.remove('active'));
+                    document.getElementById('adminControlTab')?.classList.add('active');
+                    renderAdminFullControl();
+                }
+            };
+            window.__adminFullControlSwitchPatched = true;
+        }
+    };
+    const style=document.createElement('style');
+    style.textContent=`.admin-control-section .card-header{background:linear-gradient(135deg,var(--secondary),#1f2d3d)} .admin-control-section td:nth-child(2){line-height:1.65}.admin-control-section small{color:#7f8c8d}`;
+    document.head.appendChild(style);
+    setTimeout(()=>{ try{ installAdminFullControl(); }catch(e){ console.warn('Admin control install failed',e); } }, 900);
+})();
+
+
+/* ==================== PRO TABLE PAGE SIZE + OVERDUE DASHBOARD PATCH ==================== */
+(function(){
+    if (window.__proTablePagingAndOverduePatch) return;
+    window.__proTablePagingAndOverduePatch = true;
+
+    const PAGE_OPTIONS = [10, 25, 50, 'all'];
+    const tableState = JSON.parse(localStorage.getItem('fire_table_page_sizes') || '{}');
+    let applyingPaging = false;
+
+    function saveTableState(){
+        localStorage.setItem('fire_table_page_sizes', JSON.stringify(tableState));
+    }
+
+    function getTableKey(table){
+        if (table.dataset.pageKey) return table.dataset.pageKey;
+        const tab = table.closest('.tab-content')?.id || table.closest('.main-card')?.querySelector('.card-header h2')?.textContent?.trim() || 'global';
+        const allTables = Array.from(document.querySelectorAll('table'));
+        const index = allTables.indexOf(table);
+        const head = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim()).join('|').slice(0,120);
+        const key = `${tab}_${index}_${head}`.replace(/[^a-zA-Z0-9_\-|]/g,'_');
+        table.dataset.pageKey = key;
+        return key;
+    }
+
+    function buildControl(table){
+        const key = getTableKey(table);
+        let control = table.parentElement?.previousElementSibling;
+        if (control && control.classList?.contains('table-page-size-control') && control.dataset.forKey === key) return control;
+
+        control = document.createElement('div');
+        control.className = 'table-page-size-control';
+        control.dataset.forKey = key;
+        control.innerHTML = `
+            <div class="table-page-size-left">
+                <i class="fas fa-list-ol"></i>
+                <strong>Show</strong>
+                <select class="table-page-size-select">
+                    ${PAGE_OPTIONS.map(v=>`<option value="${v}">${v === 'all' ? 'All' : v}</option>`).join('')}
+                </select>
+                <span>entries</span>
+            </div>
+            <div class="table-page-size-info"></div>
+        `;
+
+        const wrap = table.parentElement || table;
+        wrap.parentElement.insertBefore(control, wrap);
+        const select = control.querySelector('select');
+        select.value = tableState[key] || '10';
+        select.addEventListener('change', () => {
+            tableState[key] = select.value;
+            saveTableState();
+            applyTablePaging(table);
+        });
+        return control;
+    }
+
+    function isControlTable(table){
+        return table.closest('.modal-overlay') && !table.closest('.tab-content');
+    }
+
+    function applyTablePaging(table){
+        if (!table || !table.tBodies || !table.tBodies[0]) return;
+        if (isControlTable(table)) return;
+        const tbody = table.tBodies[0];
+        const rows = Array.from(tbody.rows);
+        if (!rows.length) return;
+
+        const key = getTableKey(table);
+        const control = buildControl(table);
+        const select = control.querySelector('select');
+        const value = tableState[key] || select.value || '10';
+        select.value = value;
+
+        const limit = value === 'all' ? rows.length : Number(value);
+        rows.forEach((row, index) => {
+            row.style.display = index < limit ? '' : 'none';
+        });
+        const info = control.querySelector('.table-page-size-info');
+        info.textContent = rows.length <= limit ? `Showing all ${rows.length}` : `Showing ${Math.min(limit, rows.length)} of ${rows.length}`;
+    }
+
+    function applyAllTablePaging(){
+        if (applyingPaging) return;
+        applyingPaging = true;
+        try {
+            document.querySelectorAll('#adminApp table, #employeeApp table').forEach(table => applyTablePaging(table));
+        } catch(err) { console.warn('Table paging failed', err); }
+        applyingPaging = false;
+    }
+
+    function getOverdueComplaints(){
+        try {
+            if (typeof markExpiredComplaints === 'function') markExpiredComplaints();
+        } catch(e) {}
+        const list = (typeof complaints !== 'undefined' && Array.isArray(complaints)) ? complaints : [];
+        return list.filter(c => ['Missed','Overdue'].includes(c.status));
+    }
+
+    function moneySafe(v){
+        const n = Number(v || 0);
+        return 'Rs. ' + n.toLocaleString('en-PK');
+    }
+
+    function renderOverdueDashboard(){
+        const tab = document.getElementById('adminComplaintsTab');
+        if (!tab) return;
+        const stats = tab.querySelector('.stats-bar');
+        if (!stats) return;
+        const overdue = getOverdueComplaints();
+        const today = new Date().toISOString().slice(0,10);
+        const overdueToday = overdue.filter(c => String(c.missedAt || c.updatedAt || c.createdAt || '').slice(0,10) === today);
+
+        let card = document.getElementById('adminOverdueDashboardCard');
+        if (!card) {
+            card = document.createElement('div');
+            card.id = 'adminOverdueDashboardCard';
+            card.className = 'stat-card overdue-dashboard-card';
+            stats.appendChild(card);
+        }
+        card.innerHTML = `
+            <div class="stat-icon absent"><i class="fas fa-triangle-exclamation"></i></div>
+            <div class="stat-info"><h3>${overdue.length}</h3><p>Overdue / Missed</p><small>${overdueToday.length} today</small></div>
+        `;
+
+        let panel = document.getElementById('adminOverdueDashboardPanel');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'adminOverdueDashboardPanel';
+            panel.className = 'main-card overdue-dashboard-panel';
+            stats.insertAdjacentElement('afterend', panel);
+        }
+
+        const rows = overdue.slice().reverse().map(c => `
+            <tr>
+                <td><strong>#${c.id || '-'}</strong></td>
+                <td>${c.complainantName || c.customerName || c.name || '-'}</td>
+                <td>${c.handlerName || c.assignedToName || c.employeeName || '-'}</td>
+                <td><span class="badge badge-missed">${c.status || 'Missed'}</span></td>
+                <td>${c.missedAt ? new Date(c.missedAt).toLocaleString('en-PK') : (c.updatedAt || c.createdAt || '-')}</td>
+                <td>${c.performancePenalty || 10}% minus</td>
+            </tr>
+        `).join('');
+
+        panel.innerHTML = `
+            <div class="card-header overdue-header">
+                <h2><i class="fas fa-triangle-exclamation"></i> Overdue / Missed Complaints Dashboard</h2>
+                <button class="btn btn-warning" onclick="try{markExpiredComplaints();renderOverdueDashboard();applyAllTablePaging();}catch(e){}"><i class="fas fa-rotate"></i> Refresh</button>
+            </div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead><tr><th>ID</th><th>Complainant</th><th>Assigned Employee</th><th>Status</th><th>Missed Time</th><th>Performance Effect</th></tr></thead>
+                    <tbody>${rows || '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-check-circle"></i><h3>No overdue complaints</h3><p>All active complaints are within time.</p></div></td></tr>'}</tbody>
+                </table>
+            </div>
+        `;
+        applyAllTablePaging();
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+        .table-page-size-control{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#f8f9fa;border-bottom:1px solid #e9ecef;padding:12px 18px;color:var(--secondary)}
+        .table-page-size-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.92rem}
+        .table-page-size-left select{min-width:92px;padding:8px 12px;border:2px solid #e9ecef;border-radius:8px;background:#fff;font-weight:800;color:var(--secondary);cursor:pointer}
+        .table-page-size-info{font-size:.85rem;color:#7f8c8d;font-weight:700}
+        .overdue-dashboard-card{border-left:5px solid var(--danger)}
+        .overdue-dashboard-card small{color:#7f8c8d;font-weight:700}
+        .overdue-dashboard-panel{border:2px solid rgba(231,76,60,.18)}
+        .overdue-header{background:linear-gradient(135deg,var(--danger),#b91c1c)!important}
+        @media(max-width:640px){.table-page-size-control{align-items:flex-start}.table-page-size-left,.table-page-size-info{width:100%}.table-page-size-left select{flex:1}}
+    `;
+    document.head.appendChild(style);
+
+    const oldRenderAdminComplaints = window.renderAdminComplaints;
+    if (typeof oldRenderAdminComplaints === 'function' && !window.__renderAdminComplaintsPagingPatched) {
+        window.renderAdminComplaints = function(){
+            const result = oldRenderAdminComplaints.apply(this, arguments);
+            setTimeout(()=>{ applyAllTablePaging(); renderOverdueDashboard(); }, 50);
+            return result;
+        };
+        window.__renderAdminComplaintsPagingPatched = true;
+    }
+
+    const oldRefreshAdmin = window.refreshAdmin;
+    if (typeof oldRefreshAdmin === 'function' && !window.__refreshAdminOverduePatched) {
+        window.refreshAdmin = function(){
+            const result = oldRefreshAdmin.apply(this, arguments);
+            setTimeout(()=>{ applyAllTablePaging(); renderOverdueDashboard(); }, 80);
+            return result;
+        };
+        window.__refreshAdminOverduePatched = true;
+    }
+
+    const observer = new MutationObserver(() => {
+        clearTimeout(window.__tablePageSizeTimer);
+        window.__tablePageSizeTimer = setTimeout(() => {
+            applyAllTablePaging();
+            renderOverdueDashboard();
+        }, 160);
+    });
+    observer.observe(document.body, {childList:true, subtree:true});
+
+    window.applyAllTablePaging = applyAllTablePaging;
+    window.renderOverdueDashboard = renderOverdueDashboard;
+
+    setTimeout(()=>{ applyAllTablePaging(); renderOverdueDashboard(); }, 700);
+    setInterval(()=>{ renderOverdueDashboard(); }, 30000);
+})();
+</script>
+
+
+
+<script>
+/* ==================== UI FIX: MISSED REFRESH + EMPLOYEE GHOST CLICK ==================== */
+(function(){
+    if (window.__uiMissedRefreshGhostFix) return;
+    window.__uiMissedRefreshGhostFix = true;
+
+    function injectUiFixStyle(){
+        if (document.getElementById('uiMissedRefreshGhostFixStyle')) return;
+        const style = document.createElement('style');
+        style.id = 'uiMissedRefreshGhostFixStyle';
+        style.textContent = `
+            .missed-header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+            .missed-header-actions .btn{min-height:40px;white-space:nowrap}
+            #employeeApp .tab-content:not(.active), #adminApp .tab-content:not(.active){display:none!important;pointer-events:none!important;visibility:hidden!important;position:relative;z-index:0!important}
+            #employeeApp .tab-content.active, #adminApp .tab-content.active{display:block!important;pointer-events:auto!important;visibility:visible!important;position:relative;z-index:1!important}
+            .app-container:not(.active){display:none!important;pointer-events:none!important;visibility:hidden!important}
+            .app-container.active{display:block!important;pointer-events:auto!important;visibility:visible!important}
+            #employeeApp .nav-tab{position:relative;z-index:3;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+            #employeeApp .nav-tabs{position:relative;z-index:4}
+            #employeeApp .main-card, #employeeApp .portal-welcome{position:relative;z-index:1}
+            #employeeApp .nav-tab.hidden{display:none!important;pointer-events:none!important}
+            @media(max-width:640px){.missed-header-actions{width:100%;align-items:stretch}.missed-header-actions .btn{width:100%;justify-content:center}}
+        `;
+        document.head.appendChild(style);
+    }
+
+    window.manualRefreshEmployeeMissed = function(event){
+        if (event) { event.preventDefault(); event.stopPropagation(); }
+        try { if (typeof markExpiredComplaints === 'function') markExpiredComplaints(); } catch(e) {}
+        try { if (typeof refreshEmployeeMissed === 'function') refreshEmployeeMissed(); } catch(e) {}
+        try { if (typeof refreshEmployeeTasks === 'function') refreshEmployeeTasks(); } catch(e) {}
+        try { if (typeof renderEmployeeTargetBanner === 'function') renderEmployeeTargetBanner(); } catch(e) {}
+        try { if (typeof showToast === 'function') showToast('Missed / overdue complaints refreshed', 'success'); } catch(e) {}
+        return false;
+    };
+
+    function fixedSwitchEmployeeTab(tab){
+        const permissions = { ...(window.DEFAULT_EMPLOYEE_PERMISSIONS || {}), ...((window.currentUser && window.currentUser.permissions) || {}) };
+        if (permissions[tab] === false) {
+            if (typeof showToast === 'function') showToast('You do not have permission to open this module.', 'warning');
+            return;
+        }
+        const tabButtons = Array.from(document.querySelectorAll('#employeeApp .nav-tabs .nav-tab'));
+        const tabMap = { mytasks:0, invoice:1, attendance:2, payroll:3, accounts:4, resolved:5, missed:6, profile:7 };
+        const tabIdMap = { mytasks:'empMyTasksTab', invoice:'empInvoiceTab', attendance:'empAttendanceTab', payroll:'empPayrollTab', accounts:'empAccountsTab', resolved:'empResolvedTab', missed:'empMissedTab', profile:'empProfileTab' };
+
+        document.querySelectorAll('#employeeApp .nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('#employeeApp .tab-content').forEach(t => {
+            t.classList.remove('active');
+            t.style.pointerEvents = 'none';
+            t.style.visibility = 'hidden';
+            t.style.display = 'none';
+        });
+
+        const btn = tabButtons[tabMap[tab]];
+        if (btn) btn.classList.add('active');
+        const tabEl = document.getElementById(tabIdMap[tab]);
+        if (tabEl) {
+            tabEl.classList.add('active');
+            tabEl.style.pointerEvents = 'auto';
+            tabEl.style.visibility = 'visible';
+            tabEl.style.display = 'block';
+        }
+
+        setTimeout(() => {
+            try { if (tab === 'mytasks' && typeof refreshEmployeeTasks === 'function') refreshEmployeeTasks(); } catch(e) {}
+            try { if (tab === 'invoice' && typeof calculateInvoiceTotals === 'function') calculateInvoiceTotals('emp'); } catch(e) {}
+            try { if (tab === 'attendance' && typeof renderEmployeeAttendance === 'function') renderEmployeeAttendance(); } catch(e) {}
+            try { if (tab === 'payroll' && typeof renderEmployeePayroll === 'function') renderEmployeePayroll(); } catch(e) {}
+            try { if (tab === 'accounts' && typeof renderEmployeeFinance === 'function') renderEmployeeFinance(); } catch(e) {}
+            try { if (tab === 'resolved' && typeof refreshEmployeeResolved === 'function') refreshEmployeeResolved(); } catch(e) {}
+            try { if (tab === 'missed') window.manualRefreshEmployeeMissed(); } catch(e) {}
+            try { if (tab === 'profile' && typeof refreshEmployeeProfile === 'function') refreshEmployeeProfile(); } catch(e) {}
+        }, 20);
+    }
+
+    function fixedApplyEmployeePermissions(){
+        if (!window.currentUser || window.currentUser.type !== 'employee') return;
+        const permissions = { ...(window.DEFAULT_EMPLOYEE_PERMISSIONS || {}), ...(window.currentUser.permissions || {}) };
+        const tabButtons = document.querySelectorAll('#employeeApp .nav-tabs .nav-tab');
+        const tabMap = { mytasks:0, invoice:1, attendance:2, payroll:3, accounts:4, resolved:5, missed:6, profile:7 };
+        const tabIdMap = { mytasks:'empMyTasksTab', invoice:'empInvoiceTab', attendance:'empAttendanceTab', payroll:'empPayrollTab', accounts:'empAccountsTab', resolved:'empResolvedTab', missed:'empMissedTab', profile:'empProfileTab' };
+        Object.entries(tabMap).forEach(([key,index]) => {
+            const allowed = permissions[key] !== false;
+            if (tabButtons[index]) tabButtons[index].classList.toggle('hidden', !allowed);
+            const tabEl = document.getElementById(tabIdMap[key]);
+            if (tabEl) tabEl.classList.toggle('hidden', !allowed);
+        });
+        const active = document.querySelector('#employeeApp .nav-tabs .nav-tab.active:not(.hidden)');
+        if (!active) {
+            const firstAllowed = Object.keys(tabMap).find(key => permissions[key] !== false);
+            if (firstAllowed) fixedSwitchEmployeeTab(firstAllowed);
+        }
+    }
+
+    function install(){
+        injectUiFixStyle();
+        window.switchEmployeeTab = fixedSwitchEmployeeTab;
+        window.applyEmployeePermissions = fixedApplyEmployeePermissions;
+        const missedHeader = document.querySelector('#empMissedTab .card-header');
+        if (missedHeader && !missedHeader.querySelector('button[onclick*="manualRefreshEmployeeMissed"]')) {
+            const holder = document.createElement('div');
+            holder.className = 'missed-header-actions';
+            holder.innerHTML = '<span style="font-size:0.9rem;opacity:0.9;">These complaints reduce technical performance.</span><button type="button" class="btn btn-warning" onclick="manualRefreshEmployeeMissed(event)"><i class="fas fa-rotate"></i> Refresh</button>';
+            const existing = missedHeader.querySelector('div:not(.employee-card)');
+            if (existing) existing.replaceWith(holder); else missedHeader.appendChild(holder);
+        }
+        document.querySelectorAll('#employeeApp .tab-content:not(.active)').forEach(t => {t.style.display='none';t.style.pointerEvents='none';t.style.visibility='hidden';});
+        document.querySelectorAll('#employeeApp .tab-content.active').forEach(t => {t.style.display='block';t.style.pointerEvents='auto';t.style.visibility='visible';});
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
+    setTimeout(install, 500);
+    setTimeout(install, 1500);
+})();
+</script>
+
 </body>
 </html>
