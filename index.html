@@ -3392,7 +3392,7 @@ function fixAllEmployeePermissions(){
 function normalizeEmployeePermissionsSafe(e){
   if(!e)return e;
   e.per=e.per||{};
-  ['clients','billing','invoice','finance','complaints','targets','attendance','advance'].forEach(k=>{
+  ['clients','items','packages','billing','invoice','finance','complaints','targets','attendance','advance'].forEach(k=>{
     if(e.per[k]===undefined)e.per[k]=1;
   });
   return e;
@@ -4424,6 +4424,576 @@ function employeeHasAccess(tabName){
   const per=normalizeEmpPermObject(U.per||{});
   return tabName==='dashboard' || per[tabName]===1 || per[tabName]===true;
 }
+
+
+
+/* ===== STABILITY PATCH: STOP HANGING + MAX STACK ===== */
+let __isRenderingStable=false;
+let __renderQueuedStable=false;
+let __lastRenderKeyStable='';
+let __tableEnhanceTimerStable=null;
+let __firebaseRenderTimerStable=null;
+
+function safeRunRender(fn){
+  if(__isRenderingStable){
+    __renderQueuedStable=true;
+    return;
+  }
+  __isRenderingStable=true;
+  try{ fn(); }
+  catch(err){
+    console.error('Render error:',err);
+    const c=document.getElementById('content');
+    if(c)c.innerHTML=`<div class="card"><div class="head"><h2>App Error</h2></div><p style="color:#dc2626;font-weight:900">${esc(err.message||err)}</p><button class="btn btn-w" onclick="location.reload()">Reload</button><button class="btn btn-e" onclick="localStorage.removeItem(KEY);location.reload()">Clear Local Cache</button></div>`;
+  }
+  finally{
+    __isRenderingStable=false;
+    if(__renderQueuedStable){
+      __renderQueuedStable=false;
+      setTimeout(()=>renderCurrent(),80);
+    }
+  }
+}
+function scheduleRenderFast(){
+  if(!U||!TAB)return;
+  clearTimeout(__firebaseRenderTimerStable);
+  __firebaseRenderTimerStable=setTimeout(()=>{try{renderCurrent()}catch(e){console.warn(e)}},700);
+}
+function renderCurrent(){
+  safeRunRender(()=>{
+    const key=(U?.role||'')+'|'+TAB+'|'+(window.billingPageNo||'')+'|'+(window.billingFilter||'')+'|'+(window.billingSearch||'')+'|'+(window.billingLimit||'');
+    __lastRenderKeyStable=key;
+    const map={
+      dashboard:dash,
+      complaints:complaints,
+      clients:clientsPage,
+      billing:billingPage,
+      employees:employees,
+      attendance:attendance,
+      invoice:invoice,
+      finance:finance,
+      items:itemsPage,
+      packages:packagesPage,
+      advance:advancePage,
+      targets:targets,
+      news:openNewsPage,
+      settings:openSettingsPage,
+      backup:backup
+    };
+    if(U&&U.role==='employee'&&typeof employeeHasAccess==='function'&&!employeeHasAccess(TAB)){
+      content.innerHTML=`<div class="card"><div class="head"><h2>Access Denied</h2></div><p style="font-weight:900;color:#64748b">You do not have permission for this module.</p></div>`;
+      return;
+    }
+    (map[TAB]||dash)();
+    clearTimeout(__tableEnhanceTimerStable);
+    __tableEnhanceTimerStable=setTimeout(()=>{
+      try{ if(TAB!=='billing' && typeof enhanceAllTables==='function') enhanceAllTables(); }catch(e){}
+      try{ if(typeof renderGlobalNewsTicker==='function') renderGlobalNewsTicker(); }catch(e){}
+      try{ if(typeof updateNotificationBell==='function') updateNotificationBell(); }catch(e){}
+    },120);
+  });
+}
+function tab(t){
+  if(TAB===t && !__isRenderingStable)return;
+  TAB=t;
+  try{
+    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+    let n=document.getElementById('n-'+t);
+    if(n)n.classList.add('active');
+  }catch(e){}
+  try{closeSideMenu&&closeSideMenu()}catch(e){}
+  renderCurrent();
+}
+
+/* Safer local save: no huge data, no recursive save/render */
+function saveLocal(){
+  try{
+    const small={
+      admin:S.admin,
+      employees:S.employees||[],
+      items:S.items||[],
+      packages:S.packages||[],
+      news:S.news,
+      clientNews:S.clientNews,
+      appSettings:S.appSettings,
+      notificationSettings:S.notificationSettings,
+      ownerWhatsApp:S.ownerWhatsApp,
+      session:S.session,
+      clients:(S.clients||[]).slice(-150),
+      finance:(S.finance||[]).slice(-250),
+      invoices:(S.invoices||[]).slice(-250),
+      complaints:(S.complaints||[]).slice(-180),
+      targets:(S.targets||[]).slice(-150),
+      attendance:(S.attendance||[]).slice(-150),
+      advances:(S.advances||[]).slice(-150),
+      notifications:(S.notifications||[]).slice(-120)
+    };
+    localStorage.setItem(KEY,JSON.stringify(small));
+  }catch(e){
+    try{localStorage.setItem(KEY,JSON.stringify({admin:S.admin,employees:S.employees||[],session:S.session,news:S.news,clientNews:S.clientNews,appSettings:S.appSettings,clients:[],finance:[],invoices:[],complaints:[],notifications:[]}));}catch(_){}
+  }
+}
+
+/* Prevent table enhancer from enhancing same table repeatedly */
+function enhanceAllTables(){
+  if(TAB==='billing')return;
+  document.querySelectorAll('.tbl').forEach((w,wi)=>{
+    if(w.dataset.enhancedStable==='1')return;
+    w.dataset.enhancedStable='1';
+    let rows=[...w.querySelectorAll('tbody tr')];
+    if(rows.length<11)return;
+    let page=1,limit=10,sortIdx=null,sortDir='asc';
+    const ths=[...w.querySelectorAll('thead th')];
+    ths.forEach((th,idx)=>{
+      th.style.cursor='pointer';
+      th.onclick=()=>{
+        if(sortIdx===idx)sortDir=sortDir==='asc'?'desc':'asc';else{sortIdx=idx;sortDir='asc'}
+        page=1;apply();
+      };
+    });
+    const div=document.createElement('div');
+    div.className='table-controls';
+    div.innerHTML='<div class="left"><input placeholder="Search table"><span class="table-info"></span></div><div class="right"><label style="font-weight:900">Show</label><select><option>10</option><option>35</option><option>50</option><option>100</option><option value="all">all</option></select></div><div class="actions table-pages" style="width:100%;justify-content:center"></div>';
+    w.parentNode.insertBefore(div,w);
+    const inp=div.querySelector('input'),sel=div.querySelector('select'),info=div.querySelector('.table-info'),pagesEl=div.querySelector('.table-pages');
+    function val(s){const n=Number(String(s).replace(/[^\d.-]/g,''));return isNaN(n)?String(s).toLowerCase():n}
+    function apply(){
+      const q=inp.value.toLowerCase();limit=sel.value;
+      let filtered=rows.filter(r=>r.innerText.toLowerCase().includes(q));
+      if(sortIdx!==null){
+        filtered=filtered.sort((a,b)=>{
+          const av=val(a.children[sortIdx]?.innerText||''),bv=val(b.children[sortIdx]?.innerText||'');
+          if(typeof av==='number'&&typeof bv==='number')return sortDir==='asc'?av-bv:bv-av;
+          return sortDir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+        });
+      }
+      const total=filtered.length,pages=limit==='all'?1:Math.max(1,Math.ceil(total/(+limit||10)));
+      if(page>pages)page=pages;
+      const start=limit==='all'?0:(page-1)*(+limit||10);
+      const shown=limit==='all'?filtered:filtered.slice(start,start+(+limit||10));
+      rows.forEach(r=>r.style.display='none');
+      shown.forEach(r=>r.style.display='');
+      info.textContent=` ${shown.length}/${total} rows • Page ${page}/${pages}`;
+      pagesEl.innerHTML='';
+      if(limit!=='all'&&pages>1){
+        if(page>1)pagesEl.innerHTML+=`<button class="btn btn-l btn-sm" data-p="${page-1}">Prev</button>`;
+        for(let p=Math.max(1,page-2);p<=Math.min(pages,page+2);p++)pagesEl.innerHTML+=`<button class="btn ${p===page?'btn-p':'btn-l'} btn-sm" data-p="${p}">${p}</button>`;
+        if(page<pages)pagesEl.innerHTML+=`<button class="btn btn-l btn-sm" data-p="${page+1}">Next</button>`;
+        pagesEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{page=+b.dataset.p;apply()});
+      }
+    }
+    inp.oninput=()=>{page=1;apply()};
+    sel.onchange=()=>{page=1;apply()};
+    apply();
+  });
+}
+function setupTableEnhancer(){clearTimeout(__tableEnhanceTimerStable);__tableEnhanceTimerStable=setTimeout(()=>enhanceAllTables(),150);}
+
+/* Realtime: debounce and avoid rendering while user is typing in inputs/textareas */
+function startRealtime(){
+ if(!db)return;
+ try{unsubs.forEach(u=>u&&u());unsubs=[];}catch(e){}
+ ['employees','complaints','clients','finance','invoices','targets','attendance','items','packages','advances','notifications'].forEach(col=>{
+   unsubs.push(db.collection(col).onSnapshot(snap=>{
+     if(fbLoading)return;
+     S[col]=snap.docs.map(d=>({id:d.id,...d.data()}));
+     try{saveLocal()}catch(e){}
+     const active=document.activeElement;
+     const typing=active&&(active.tagName==='INPUT'||active.tagName==='TEXTAREA'||active.tagName==='SELECT');
+     if(U&&TAB&&!typing){
+       try{updateNotificationBell()}catch(e){}
+       scheduleRenderFast();
+     }
+   },e=>{try{setSync('Firebase realtime failed',false)}catch(_){}}));
+ });
+}
+
+/* Emergency performance tools */
+function clearOnlyCache(){
+  try{localStorage.removeItem(KEY)}catch(e){}
+  location.reload();
+}
+
+
+
+/* ===== UNIFIED CLIENTS ITEMS PACKAGES UI FINAL ===== */
+
+function openClientAddUi(){
+  if(typeof openAddClientModal==='function')return openAddClientModal();
+  if(typeof addClient==='function')return addClient();
+  alert('Add client modal unavailable');
+}
+
+function uiHero(title,subtitle,icon){
+  return `<div class="stable-hero"><div class="stable-hero-row"><div><h1>${icon} ${title}</h1><p>${subtitle}</p></div><div class="stable-pill">👤 ${esc(U?.name||'User')} • ${new Date().toLocaleDateString()}</div></div></div>`;
+}
+function canUseModuleFinal(tabName){
+  if(!U)return false;
+  if(U.role==='admin')return true;
+  if(U.role==='client')return tabName==='dashboard'||tabName==='complaints';
+  const per=U.per||{};
+  if(per[tabName]===undefined && ['clients','items','packages','billing'].includes(tabName))return true;
+  return tabName==='dashboard'||per[tabName]===1||per[tabName]===true;
+}
+function compactAction(items){
+  if(typeof actionMenu==='function')return actionMenu(items);
+  return `<button class="btn btn-i btn-sm" onclick="${items[0]?.fn||''}">Action</button>`;
+}
+
+/* Clients same interface */
+function clientsPage(){
+  if(!canUseModuleFinal('clients'))return content.innerHTML=`<div class="card"><div class="head"><h2>Access Denied</h2></div><p>You do not have Clients permission.</p></div>`;
+  S.clients=Array.isArray(S.clients)?S.clients:[];
+  const total=S.clients.length;
+  const active=S.clients.filter(c=>c.active!==false).length;
+  const inactive=total-active;
+  const bill=S.clients.reduce((s,c)=>s+(+(c.bill||c.monthlyFee||0)),0);
+  content.innerHTML=uiHero('Clients','Manage customers, C.Code, PPPoE, package and area details','🌐')+
+  `<div class="stable-kpi-grid">
+    <div class="stable-kpi stable-blue"><div class="icon">🌐</div><span>Total Clients</span><b>${total}</b><small>Registered users</small></div>
+    <div class="stable-kpi stable-green"><div class="icon">✅</div><span>Active Clients</span><b>${active}</b><small>Enabled users</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">⛔</div><span>Inactive Clients</span><b>${inactive}</b><small>Disabled users</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">💳</div><span>Monthly Value</span><b>${money(bill)}</b><small>Total billing</small></div>
+  </div>
+  <div class="card">
+    <div class="head"><h2>Client Actions</h2></div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="openClientAddUi()">Add Client</button>
+      <button class="btn btn-i" onclick="document.getElementById('clientImportUnified').click()">Import CSV/Excel</button>
+      <button class="btn btn-s" onclick="tab('billing')">Open Billing</button>
+      <input class="hidden" type="file" id="clientImportUnified" accept=".csv,.xlsx,.xls" onchange="if(typeof importClientsFile==='function')importClientsFile(event);else if(typeof importClients==='function')importClients(event);">
+    </div>
+  </div>
+  <div class="card">
+    <div class="head"><h2>Client List</h2></div>
+    <div class="tbl"><table><thead><tr><th>Name</th><th>Mobile</th><th>C.Code</th><th>PPPoE</th><th>Package</th><th>Bill</th><th>Area</th><th>Status</th><th>Action</th></tr></thead><tbody>
+      ${S.clients.map(c=>{
+        const actions=compactAction([
+          {label:'Edit Client',fn:`${typeof openEditClientModal==='function'?'openEditClientModal':'editClient'}('${c.id}')`},
+          {label:'WhatsApp Bill',fn:`${typeof sendClientBillForMonth==='function'?'sendClientBillForMonth':'sendClientBill'}('${c.id}')`},
+          {label:c.active===false?'Activate':'Inactive',fn:`toggleClientUi('${c.id}')`},
+          {label:'Delete',fn:`deleteClientUi('${c.id}')`}
+        ]);
+        return `<tr><td><b>${esc(c.name||'-')}</b><br><small>${esc(c.address||'')}</small></td><td>${esc(c.mobile||'-')}</td><td>${esc(c.ccode||c.pin||'-')}</td><td>${esc(c.pppoe||'-')}</td><td>${esc(c.package||'-')}</td><td>${money(c.bill||c.monthlyFee||0)}</td><td>${esc(c.area||c.zone||'-')}</td><td>${c.active===false?'<span class="badge bad">Inactive</span>':'<span class="badge done">Active</span>'}</td><td>${actions}</td></tr>`;
+      }).join('')}
+    </tbody></table></div>
+  </div>`;
+  setTimeout(()=>{try{enhanceAllTables()}catch(e){}},80);
+}
+function toggleClientUi(idv){
+  const c=(S.clients||[]).find(x=>x.id===idv); if(!c)return;
+  c.active=c.active===false; saveAndSync('clients',c); clientsPage();
+}
+function deleteClientUi(idv){
+  if(!confirm('Delete client?'))return;
+  S.clients=(S.clients||[]).filter(c=>c.id!==idv); delAndSync('clients',idv); clientsPage();
+}
+
+/* Items same interface */
+function itemsPage(){
+  if(!canUseModuleFinal('items'))return content.innerHTML=`<div class="card"><div class="head"><h2>Access Denied</h2></div><p>You do not have Items permission.</p></div>`;
+  S.items=Array.isArray(S.items)?S.items:[];
+  const stockValue=S.items.reduce((s,i)=>s+((+i.purchase||0)*(+i.stock||0)),0);
+  const saleValue=S.items.reduce((s,i)=>s+((+i.sale||0)*(+i.stock||0)),0);
+  content.innerHTML=uiHero('Items / Inventory','Manage installation items, purchase price, sale price and stock','📦')+
+  `<div class="stable-kpi-grid">
+    <div class="stable-kpi stable-blue"><div class="icon">📦</div><span>Total Items</span><b>${S.items.length}</b><small>Inventory records</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">🏷️</div><span>Stock Value</span><b>${money(stockValue)}</b><small>Purchase value</small></div>
+    <div class="stable-kpi stable-green"><div class="icon">💵</div><span>Sale Value</span><b>${money(saleValue)}</b><small>Expected sale</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">📈</div><span>Profit Value</span><b>${money(saleValue-stockValue)}</b><small>Expected profit</small></div>
+  </div>
+  <div class="card">
+    <div class="head"><h2>Add Item</h2></div>
+    <div class="row">
+      <div class="fg"><label>Item Name</label><input id="uiItemName"></div>
+      <div class="fg"><label>Purchase Price</label><input id="uiItemPurchase" type="number"></div>
+      <div class="fg"><label>Sale Price</label><input id="uiItemSale" type="number"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Stock Qty</label><input id="uiItemStock" type="number"></div>
+      <div class="fg"><label>Unit</label><input id="uiItemUnit" placeholder="pcs / meter"></div>
+      <div class="fg"><label>&nbsp;</label><button class="btn btn-p" onclick="addUiItem()">Add Item</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="head"><h2>Items List</h2></div>
+    <div class="tbl"><table><thead><tr><th>Item</th><th>Purchase</th><th>Sale</th><th>Stock</th><th>Unit</th><th>Profit/Unit</th><th>Action</th></tr></thead><tbody>
+      ${S.items.map(i=>{
+        const actions=compactAction([{label:'Edit',fn:`editUiItem('${i.id}')`},{label:'Delete',fn:`deleteUiItem('${i.id}')`}]);
+        return `<tr><td><b>${esc(i.name||'-')}</b><br><small>${esc(i.notes||'')}</small></td><td>${money(i.purchase)}</td><td>${money(i.sale)}</td><td>${esc(i.stock||0)}</td><td>${esc(i.unit||'-')}</td><td>${money((+i.sale||0)-(+i.purchase||0))}</td><td>${actions}</td></tr>`;
+      }).join('')}
+    </tbody></table></div>
+  </div>`;
+  setTimeout(()=>{try{enhanceAllTables()}catch(e){}},80);
+}
+function addUiItem(){
+  const it={id:id('it'),name:uiItemName.value.trim(),purchase:+uiItemPurchase.value||0,sale:+uiItemSale.value||0,stock:+uiItemStock.value||0,unit:uiItemUnit.value||'',notes:''};
+  if(!it.name)return toast('Item name required','error');
+  S.items.push(it); saveAndSync('items',it); toast('Item added','success'); itemsPage();
+}
+function editUiItem(itemId){
+  const i=S.items.find(x=>x.id===itemId); if(!i)return;
+  const html=`<div class="head"><h2>Edit Item</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+  <div class="row"><div class="fg"><label>Item Name</label><input id="eItemName" value="${esc(i.name||'')}"></div><div class="fg"><label>Purchase</label><input id="eItemPurchase" type="number" value="${+i.purchase||0}"></div><div class="fg"><label>Sale</label><input id="eItemSale" type="number" value="${+i.sale||0}"></div></div>
+  <div class="row"><div class="fg"><label>Stock</label><input id="eItemStock" type="number" value="${+i.stock||0}"></div><div class="fg"><label>Unit</label><input id="eItemUnit" value="${esc(i.unit||'')}"></div><div class="fg"><label>Notes</label><input id="eItemNotes" value="${esc(i.notes||'')}"></div></div>
+  <button class="btn btn-p" onclick="saveUiItem('${itemId}')">Save Item</button>`;
+  if(typeof openBillingModal==='function')openBillingModal(html); else alert('Modal not available');
+}
+function saveUiItem(itemId){
+  const i=S.items.find(x=>x.id===itemId); if(!i)return;
+  i.name=eItemName.value.trim(); i.purchase=+eItemPurchase.value||0; i.sale=+eItemSale.value||0; i.stock=+eItemStock.value||0; i.unit=eItemUnit.value||''; i.notes=eItemNotes.value||'';
+  saveAndSync('items',i); closeBillingModal(); toast('Item updated','success'); itemsPage();
+}
+function deleteUiItem(itemId){
+  if(!confirm('Delete item?'))return;
+  S.items=S.items.filter(i=>i.id!==itemId); delAndSync('items',itemId); itemsPage();
+}
+
+/* Packages same interface */
+function packagesPage(){
+  if(!canUseModuleFinal('packages'))return content.innerHTML=`<div class="card"><div class="head"><h2>Access Denied</h2></div><p>You do not have Packages permission.</p></div>`;
+  S.packages=Array.isArray(S.packages)?S.packages:[];
+  const avg=S.packages.length?Math.round(S.packages.reduce((s,p)=>s+(+p.fee||0),0)/S.packages.length):0;
+  const assigned=(S.clients||[]).filter(c=>c.package).length;
+  content.innerHTML=uiHero('Packages','Manage internet packages and monthly fee plans','📶')+
+  `<div class="stable-kpi-grid">
+    <div class="stable-kpi stable-blue"><div class="icon">📶</div><span>Total Packages</span><b>${S.packages.length}</b><small>Available plans</small></div>
+    <div class="stable-kpi stable-green"><div class="icon">💳</div><span>Average Fee</span><b>${money(avg)}</b><small>Average monthly fee</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">🌐</div><span>Assigned Clients</span><b>${assigned}</b><small>Clients with package</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">⚡</div><span>Manager</span><b>Active</b><small>Package control</small></div>
+  </div>
+  <div class="card">
+    <div class="head"><h2>Add Package</h2></div>
+    <div class="row">
+      <div class="fg"><label>Package Name</label><input id="uiPkgName" placeholder="20 Mbps"></div>
+      <div class="fg"><label>Monthly Fee</label><input id="uiPkgFee" type="number"></div>
+      <div class="fg"><label>Details / Speed</label><input id="uiPkgDetails" placeholder="20 Mbps unlimited"></div>
+    </div>
+    <button class="btn btn-p" onclick="addUiPackage()">Add Package</button>
+  </div>
+  <div class="card">
+    <div class="head"><h2>Package List</h2></div>
+    <div class="tbl"><table><thead><tr><th>Package</th><th>Monthly Fee</th><th>Details</th><th>Clients</th><th>Action</th></tr></thead><tbody>
+      ${S.packages.map(p=>{
+        const count=(S.clients||[]).filter(c=>String(c.package||'')===String(p.name||'')).length;
+        const actions=compactAction([{label:'Edit',fn:`editUiPackage('${p.id}')`},{label:'Delete',fn:`deleteUiPackage('${p.id}')`}]);
+        return `<tr><td><b>${esc(p.name||'-')}</b></td><td>${money(p.fee||p.price||0)}</td><td>${esc(p.details||p.speed||'-')}</td><td>${count}</td><td>${actions}</td></tr>`;
+      }).join('')}
+    </tbody></table></div>
+  </div>`;
+  setTimeout(()=>{try{enhanceAllTables()}catch(e){}},80);
+}
+function addUiPackage(){
+  const p={id:id('pk'),name:uiPkgName.value.trim(),fee:+uiPkgFee.value||0,details:uiPkgDetails.value.trim()};
+  if(!p.name)return toast('Package name required','error');
+  S.packages.push(p); saveAndSync('packages',p); toast('Package added','success'); packagesPage();
+}
+function editUiPackage(pkgId){
+  const p=S.packages.find(x=>x.id===pkgId); if(!p)return;
+  const html=`<div class="head"><h2>Edit Package</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+  <div class="row"><div class="fg"><label>Package Name</label><input id="ePkgName" value="${esc(p.name||'')}"></div><div class="fg"><label>Monthly Fee</label><input id="ePkgFee" type="number" value="${+(p.fee||p.price||0)}"></div><div class="fg"><label>Details</label><input id="ePkgDetails" value="${esc(p.details||p.speed||'')}"></div></div>
+  <button class="btn btn-p" onclick="saveUiPackage('${pkgId}')">Save Package</button>`;
+  if(typeof openBillingModal==='function')openBillingModal(html); else alert('Modal not available');
+}
+function saveUiPackage(pkgId){
+  const p=S.packages.find(x=>x.id===pkgId); if(!p)return;
+  p.name=ePkgName.value.trim(); p.fee=+ePkgFee.value||0; p.details=ePkgDetails.value.trim();
+  saveAndSync('packages',p); closeBillingModal(); toast('Package updated','success'); packagesPage();
+}
+function deleteUiPackage(pkgId){
+  if(!confirm('Delete package?'))return;
+  S.packages=S.packages.filter(p=>p.id!==pkgId); delAndSync('packages',pkgId); packagesPage();
+}
+
+
+
+
+/* ===== QR RELIABILITY FIX: ENSURE RECEIPT + FIREBASE VERIFY ===== */
+function ensureReceiptForClientMonth(clientId, month=billMonthNow()){
+  ensureBillingState();
+  const c=(S.clients||[]).find(x=>x.id===clientId);
+  if(!c)return null;
+  let inv=(S.invoices||[]).find(i=>i.clientId===clientId && i.billMonth===month);
+  if(!inv){
+    const total=clientMonthlyBillAmount(c);
+    inv={id:id('inv'),clientId:c.id,cust:c.name,phone:c.mobile,ccode:c.ccode||c.pin||'',pppoe:c.pppoe||'',package:c.package||'',work:'Monthly Bill',billMonth:month,total,discount:0,received:0,due:total,dueDate:billDueDateForMonth(month),date:today(),time:now(),by:U?.id||'admin',status:'Unpaid'};
+    S.invoices.push(inv);
+  }
+  let fin=(S.finance||[]).slice().reverse().find(f=>f.clientId===clientId && f.billMonth===month && (f.type||'income')!=='expense');
+  const rid=(fin&&fin.receiptId)||inv.receiptId||generateReceiptId();
+  inv.receiptId=rid;
+  inv.verifyUrl=getVerifyUrl(rid);
+  if(fin && !fin.receiptId){
+    fin.receiptId=rid;
+    fin.verifyUrl=inv.verifyUrl;
+    try{saveAndSync('finance',fin)}catch(e){}
+  }
+  try{saveAndSync('invoices',inv)}catch(e){}
+  try{saveLocal()}catch(e){}
+  return rid;
+}
+function getQRImageUrl(text){
+  /* Primary QR image service. Needs internet. If it fails, image onerror switches to backup. */
+  return 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data='+encodeURIComponent(text||'');
+}
+function getQRBackupImageUrl(text){
+  return 'https://quickchart.io/qr?size=180&text='+encodeURIComponent(text||'');
+}
+function feeSlipDisplayData(clientId){
+  const d=feeSlipData(clientId);
+  if(!d)return null;
+  const c=d.c,row=d.row,pay=d.pay||latestPaymentForClient(clientId,d.month);
+  const rid=ensureReceiptForClientMonth(clientId,d.month);
+  const receiptId=(pay&&pay.receiptId)||(row&&row.receiptId)||rid||'';
+  const verifyUrl=receiptId?getVerifyUrl(receiptId):'';
+  const paidNow=pay?money(pay.amount):'-';
+  const mode=pay?(pay.mode||'cash').toUpperCase():'-';
+  return {
+    c,row,pay,month:d.month,receiptId,verifyUrl,
+    qrUrl:verifyUrl?getQRImageUrl(verifyUrl):'',
+    qrBackupUrl:verifyUrl?getQRBackupImageUrl(verifyUrl):'',
+    clientName:c.name||'-',
+    mobile:c.mobile||'-',
+    ccode:c.ccode||c.pin||'-',
+    pppoe:c.pppoe||c.userId||'-',
+    package:c.package||'-',
+    paidNow,
+    paymentMode:mode,
+    receivedBy:(pay&&(pay.receivedBy||pay.receiver||pay.employeeName))||(row&&row.receivedBy)||(U?.name||'Admin'),
+    totalBill:money(row.total),
+    discount:money(row.discount||0),
+    totalPaid:money(row.received),
+    remainingDue:money(row.due),
+    date:(pay&&pay.time)||(row&&row.paidAt)||now(),
+    status:row.status
+  };
+}
+function printFeeSlip(clientId){
+  const data=feeSlipDisplayData(clientId);
+  if(!data)return toast('Client not found','error');
+  const html=`<html><head><title>Fee Slip</title>
+  <style>
+    body{font-family:Arial,sans-serif;padding:14px;color:#111}
+    .slip{max-width:340px;margin:auto;border:1px solid #222;border-radius:10px;padding:12px}
+    .brand{text-align:center;font-weight:900;font-size:22px;margin-bottom:2px}
+    .sub{text-align:center;font-size:12px;margin-bottom:10px;color:#444}
+    .receipt{text-align:center;font-weight:800;font-size:13px;margin-bottom:8px}
+    table{width:100%;border-collapse:collapse}
+    td{padding:6px 0;border-bottom:1px dashed #bbb;font-size:13px;vertical-align:top}
+    td:last-child{text-align:right;font-weight:700;padding-left:8px}
+    .status{margin-top:10px;text-align:center;border:1px solid #111;border-radius:8px;padding:7px;font-weight:900}
+    .qr{text-align:center;margin-top:10px}
+    .qr img{width:132px;height:132px}
+    .verify{word-break:break-all;font-size:10px;text-align:center;color:#555;margin-top:6px}
+    .foot{font-size:11px;color:#555;text-align:center;margin-top:10px;line-height:1.45}
+    @media print{body{padding:0}.slip{border:1px solid #000;max-width:100%}}
+  </style></head><body>
+  <div class="slip">
+    <div class="brand">${esc(S?.appSettings?.companyName||'Fire.net.pk')}</div>
+    <div class="sub">Internet Fee Payment Slip</div>
+    <div class="receipt">Receipt ID: ${esc(data.receiptId||'-')}</div>
+    <table>
+      <tr><td>Client Name</td><td>${esc(data.clientName)}</td></tr>
+      <tr><td>Mobile</td><td>${esc(data.mobile)}</td></tr>
+      <tr><td>C.Code</td><td>${esc(data.ccode)}</td></tr>
+      <tr><td>User ID / PPPoE</td><td>${esc(data.pppoe)}</td></tr>
+      <tr><td>Package</td><td>${esc(data.package)}</td></tr>
+      <tr><td>Month</td><td>${esc(data.month)}</td></tr>
+      <tr><td>Paid Now</td><td>${esc(data.paidNow)}</td></tr>
+      <tr><td>Payment Mode</td><td>${esc(data.paymentMode)}</td></tr>
+      <tr><td>Received By</td><td>${esc(data.receivedBy)}</td></tr>
+      <tr><td>Total Bill</td><td>${esc(data.totalBill)}</td></tr>
+      <tr><td>Discount</td><td>${esc(data.discount)}</td></tr>
+      <tr><td>Total Paid</td><td>${esc(data.totalPaid)}</td></tr>
+      <tr><td>Remaining Due</td><td>${esc(data.remainingDue)}</td></tr>
+      <tr><td>Date</td><td>${esc(data.date)}</td></tr>
+    </table>
+    <div class="status">Status: ${esc(data.status)}</div>
+    ${data.qrUrl?`<div class="qr"><img src="${data.qrUrl}" onerror="this.onerror=null;this.src='${data.qrBackupUrl}'" alt="QR Code"><div style="font-size:11px;font-weight:700">Scan to Verify Payment</div><div class="verify">${esc(data.verifyUrl)}</div></div>`:''}
+    <div class="foot">Please keep this slip for record.<br>Scan QR code to verify payment status.</div>
+  </div></body></html>`;
+  const w=window.open('','_blank'); w.document.write(html); w.document.close(); setTimeout(()=>w.print(),900);
+}
+async function findReceiptByFirebase(receiptId){
+  try{
+    if(typeof firebase==='undefined')return null;
+    if(!firebase.apps || !firebase.apps.length){
+      if(typeof firebaseConfig==='undefined' || !firebaseConfig.apiKey)return null;
+      firebase.initializeApp(firebaseConfig);
+    }
+    const firestore=firebase.firestore();
+    const finSnap=await firestore.collection('finance').where('receiptId','==',receiptId).limit(1).get();
+    if(!finSnap.empty){
+      const fin={id:finSnap.docs[0].id,...finSnap.docs[0].data()};
+      let client={},inv={};
+      if(fin.clientId){
+        try{const cdoc=await firestore.collection('clients').doc(fin.clientId).get(); if(cdoc.exists)client={id:cdoc.id,...cdoc.data()};}catch(e){}
+        try{
+          const isnap=await firestore.collection('invoices').where('clientId','==',fin.clientId).where('billMonth','==',fin.billMonth||'').limit(1).get();
+          if(!isnap.empty)inv={id:isnap.docs[0].id,...isnap.docs[0].data()};
+        }catch(e){}
+      }
+      return {fin,client,inv};
+    }
+    const invSnap=await firestore.collection('invoices').where('receiptId','==',receiptId).limit(1).get();
+    if(!invSnap.empty){
+      const inv={id:invSnap.docs[0].id,...invSnap.docs[0].data()};
+      let client={};
+      if(inv.clientId){
+        try{const cdoc=await firestore.collection('clients').doc(inv.clientId).get(); if(cdoc.exists)client={id:cdoc.id,...cdoc.data()};}catch(e){}
+      }
+      return {fin:null,client,inv};
+    }
+  }catch(e){console.warn('Firebase verify failed',e)}
+  return null;
+}
+async function renderPublicReceiptVerification(receiptId){
+  document.body.innerHTML='';
+  document.body.style.margin='0';
+  document.body.style.fontFamily='Arial, sans-serif';
+  const wrap=document.createElement('div');
+  wrap.style.cssText='min-height:100vh;background:#f8fafc;padding:22px;display:flex;align-items:center;justify-content:center';
+  wrap.innerHTML=`<div style="background:#fff;max-width:520px;width:100%;border-radius:18px;box-shadow:0 14px 40px rgba(15,23,42,.08);padding:22px;border:1px solid #e5e7eb;text-align:center"><div style="font-size:26px;font-weight:900">Checking receipt...</div><div style="color:#64748b;margin-top:8px">${esc(receiptId)}</div></div>`;
+  document.body.appendChild(wrap);
+  let data=findReceiptById(receiptId);
+  if(!data)data=await findReceiptByFirebase(receiptId);
+  const ok=!!data;
+  wrap.innerHTML = ok ? `
+    <div style="background:#fff;max-width:520px;width:100%;border-radius:18px;box-shadow:0 14px 40px rgba(15,23,42,.08);padding:22px;border:1px solid #e5e7eb">
+      <div style="font-size:28px;font-weight:900;color:#111827;text-align:center">${esc(S?.appSettings?.companyName||'Fire.net.pk')}</div>
+      <div style="text-align:center;color:#16a34a;font-weight:900;font-size:20px;margin-top:8px">✅ Payment Verified</div>
+      <div style="text-align:center;color:#64748b;margin-top:6px">Receipt ID: <b>${esc(receiptId)}</b></div>
+      <div style="margin-top:16px;border-top:1px solid #e5e7eb;padding-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px">
+        <div><b>Client</b><br>${esc(data.client?.name||data.fin?.customer||data.inv?.cust||'-')}</div>
+        <div><b>Mobile</b><br>${esc(data.client?.mobile||data.fin?.phone||data.inv?.phone||'-')}</div>
+        <div><b>C.Code</b><br>${esc(data.client?.ccode||data.client?.pin||data.inv?.ccode||'-')}</div>
+        <div><b>User ID / PPPoE</b><br>${esc(data.client?.pppoe||data.inv?.pppoe||'-')}</div>
+        <div><b>Month</b><br>${esc(data.fin?.billMonth||data.inv?.billMonth||'-')}</div>
+        <div><b>Status</b><br><span style="color:#16a34a;font-weight:900">${esc(data.inv?.status||'Paid')}</span></div>
+        <div><b>Amount Received</b><br>${money(data.fin?.amount||data.inv?.received||0)}</div>
+        <div><b>Received By</b><br>${esc(data.fin?.receivedBy||data.fin?.receiver||data.fin?.employeeName||data.inv?.receivedBy||'-')}</div>
+        <div style="grid-column:1/-1"><b>Date</b><br>${esc(data.fin?.time||data.inv?.paidAt||'-')}</div>
+      </div>
+    </div>` : `
+    <div style="background:#fff;max-width:520px;width:100%;border-radius:18px;box-shadow:0 14px 40px rgba(15,23,42,.08);padding:22px;border:1px solid #e5e7eb;text-align:center">
+      <div style="font-size:28px;font-weight:900;color:#111827">${esc(S?.appSettings?.companyName||'Fire.net.pk')}</div>
+      <div style="color:#dc2626;font-weight:900;font-size:20px;margin-top:8px">❌ Receipt Not Found</div>
+      <div style="color:#64748b;margin-top:6px">Receipt ID: <b>${esc(receiptId)}</b></div>
+      <p style="margin-top:14px;color:#475569">This receipt could not be verified. Make sure Firebase is connected and the receipt was saved online.</p>
+    </div>`;
+}
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    try{
+      const qp=new URLSearchParams(location.search);
+      const verify=qp.get('verify')||qp.get('receipt');
+      if(verify){
+        try{ load(); }catch(e){}
+        renderPublicReceiptVerification(verify);
+      }
+    }catch(e){console.warn(e)}
+  },100);
+});
 
 </script>
 </body>
