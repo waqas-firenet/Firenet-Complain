@@ -342,6 +342,17 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
 #clientEditModal .modal{max-width:900px}
 #clientEditModal input[readonly]{background:#f8fafc;color:#64748b;font-weight:900}
 
+
+.perm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0}
+.perm-box{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:10px;font-weight:900;color:#374151;display:flex;align-items:center;gap:8px}
+.perm-box input{width:18px;height:18px;accent-color:#2563eb}
+.action-menu{position:relative;display:inline-block}
+.action-menu-list{display:none;position:absolute;right:0;top:36px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px rgba(15,23,42,.18);z-index:100;min-width:150px;overflow:hidden}
+.action-menu-list.open{display:block}
+.action-menu-list button{display:block;width:100%;text-align:left;background:#fff;color:#111827;padding:10px 12px;border-bottom:1px solid #eef2f7;font-weight:800}
+.action-menu-list button:hover{background:#f8fafc}
+@media(max-width:700px){.perm-grid{grid-template-columns:repeat(2,1fr)}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -414,7 +425,7 @@ const firebaseConfig={apiKey:'AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E',authDomai
 let S,U,TAB='dashboard',draft=[],db=null,fbReady=false,fbLoading=false,unsubs=[];
 let financeDate=today(), financeAll=true, financeEmp='all', complaintDate=today(), complaintAll=false;
 
-function def(){return{admin:{u:'admin',p:'admin123',recovery:'1122'},employees:[{id:'e1',name:'Ali',phone:'ali',mobile:'03001234561',pin:'1234',role:'Collection',active:true,per:{complaints:1,attendance:1,invoice:1,finance:1,targets:1,advance:1}},{id:'e2',name:'Usman',phone:'usman',mobile:'03001234562',pin:'1234',role:'Technician',active:true,per:{complaints:1,attendance:1,invoice:1,finance:0,targets:1,advance:1}}],complaints:[],finance:[],invoices:[],targets:[],attendance:[],clients:[],advances:[],news:{text:'Welcome to Fire.net.pk employee portal. Complete your tasks on time.',active:true},clientNews:{text:'Welcome to Fire.net.pk client portal. Pay your bill on time to avoid interruption.',active:true},notificationSettings:{sound:true,toast:true,bell:true},notifications:[],appSettings:{companyName:'Fire.net.pk',supportWhatsApp:'03001234561',billingWhatsApp:'03001234561',adminWhatsApp:'03001234561',currency:'Rs.',invoiceFooter:'Thank you for choosing Fire.net.pk',clientSupportText:'For support, contact Fire.net.pk WhatsApp support.',defaultDueDay:'10',officeAddress:'',portalNote:'Pay your bill on time to avoid service interruption.'},
+function def(){return{admin:{u:'admin',p:'admin123',recovery:'1122'},employees:[{id:'e1',name:'Ali',phone:'ali',mobile:'03001234561',pin:'1234',role:'Collection',active:true,per:{complaints:1,attendance:1,invoice:1,finance:1,clients:1,billing:1,targets:1,advance:1}},{id:'e2',name:'Usman',phone:'usman',mobile:'03001234562',pin:'1234',role:'Technician',active:true,per:{complaints:1,attendance:1,invoice:1,finance:0,clients:1,billing:1,targets:1,advance:1}}],complaints:[],finance:[],invoices:[],targets:[],attendance:[],clients:[],advances:[],news:{text:'Welcome to Fire.net.pk employee portal. Complete your tasks on time.',active:true},clientNews:{text:'Welcome to Fire.net.pk client portal. Pay your bill on time to avoid interruption.',active:true},notificationSettings:{sound:true,toast:true,bell:true},notifications:[],appSettings:{companyName:'Fire.net.pk',supportWhatsApp:'03001234561',billingWhatsApp:'03001234561',adminWhatsApp:'03001234561',currency:'Rs.',invoiceFooter:'Thank you for choosing Fire.net.pk',clientSupportText:'For support, contact Fire.net.pk WhatsApp support.',defaultDueDay:'10',officeAddress:'',portalNote:'Pay your bill on time to avoid service interruption.'},
 items:[
  {id:'it1',name:'ONU Router',category:'Device',purchase:4000,sale:5000,stock:10,notes:'Default device'},
  {id:'it2',name:'Fiber Wire Per Meter',category:'Wire',purchase:25,sale:40,stock:1000,notes:'Default wire'}
@@ -2866,12 +2877,7 @@ function billingPage(){
         <td>${money(r.received)}</td>
         <td>${money(r.due)}</td>
         <td>${status}</td>
-        <td><div class="actions">
-          <button class="btn btn-s btn-sm" onclick="receiveClientBill('${c.id}')">Receive</button>
-          <button class="btn btn-i btn-sm" onclick="whatsappFeeSlip('${c.id}')">Fee Slip WA</button>
-          <button class="btn btn-l btn-sm" onclick="printFeeSlip('${c.id}')">Print Slip</button>
-          <button class="btn btn-w btn-sm" onclick="openEditBillModal('${c.id}')">Edit Bill</button>
-        </div></td>
+        <td>${compactBillingActionMenu(c.id)}</td>
       </tr>`;
     }).join('')}</tbody></table></div>
   </div>`;
@@ -3230,6 +3236,335 @@ function deleteClientFromModal(clientId){
 }
 /* Legacy editClient prompt override */
 function editClient(i){openEditClientModal(i)}
+
+
+
+/* ===== EMPLOYEE CLIENTS + BILLING ACCESS FIX ===== */
+function employeeHasAccess(tabName){
+  if(!U)return false;
+  if(U.role==='admin')return true;
+  if(U.role==='client')return tabName==='dashboard'||tabName==='complaints';
+  const per=U.per||{};
+  // Backward compatibility: if employee has invoice/finance, allow billing unless explicitly false
+  if(tabName==='billing') return per.billing!==false && (per.billing || per.invoice || per.finance || true);
+  if(tabName==='clients') return per.clients!==false && (per.clients || per.invoice || per.finance || true);
+  return tabName==='dashboard' || per[tabName] || false;
+}
+function items(){
+  if(U&&U.role==='client') return [['dashboard','My Portal','🏠'],['complaints','Support','🛠️']];
+  const all=[
+    ['dashboard','Dashboard','📊'],
+    ['complaints','Complaints','🛠️'],
+    ['clients','Clients','🌐'],
+    ['billing','Billing','💳'],
+    ['employees','Employees','👥'],
+    ['attendance','Attendance','🗓️'],
+    ['invoice','Invoice','🧾'],
+    ['finance','Finance','💰'],
+    ['items','Items','📦'],
+    ['packages','Packages','📶'],
+    ['advance','Advance','💸'],
+    ['targets','Targets','🎯'],
+    ['news','News','📢'],
+    ['settings','Settings','⚙️'],
+    ['backup','Backup','💾']
+  ];
+  if(!U||U.role==='admin')return all;
+  return all.filter(x=>employeeHasAccess(x[0]));
+}
+function navRender(){
+  const el=document.getElementById('nav');
+  if(!el)return;
+  el.innerHTML=items().map(x=>`<button id="n-${x[0]}" onclick="${x[0]==='news'?'openNewsPage()':x[0]==='settings'?'openSettingsPage()':`tab('${x[0]}')`}">${x[2]} ${x[1]}</button>`).join('');
+}
+function renderCurrent(){
+  try{
+    const map={
+      dashboard:dash,
+      complaints:complaints,
+      clients:clientsPage,
+      billing:billingPage,
+      employees:employees,
+      attendance:attendance,
+      invoice:invoice,
+      finance:finance,
+      items:itemsPage,
+      packages:packagesPage,
+      advance:advancePage,
+      targets:targets,
+      news:openNewsPage,
+      settings:openSettingsPage,
+      backup:backup
+    };
+    if(U&&U.role==='employee'&&!employeeHasAccess(TAB)){
+      content.innerHTML=`<div class="card"><div class="head"><h2>Access Denied</h2></div><p style="font-weight:900;color:#64748b">You do not have permission for this module.</p></div>`;
+      return;
+    }
+    (map[TAB]||dash)();
+    setTimeout(()=>{try{renderGlobalNewsTicker()}catch(e){} try{setupTableEnhancer&&setupTableEnhancer();enhanceAllTables&&enhanceAllTables()}catch(e){}},50);
+  }catch(err){
+    console.error(err);
+    content.innerHTML=`<div class="card"><div class="head"><h2>App Error</h2></div><p style="color:#dc2626;font-weight:900">${esc(err.message||err)}</p></div>`;
+  }
+}
+/* Ensure new employees get clients + billing permission */
+const __oldAddEmployeeAccessFix = (typeof addEmployee==='function') ? addEmployee : null;
+function normalizeEmployeePermissions(e){
+  e.per=e.per||{};
+  if(e.per.clients===undefined)e.per.clients=1;
+  if(e.per.billing===undefined)e.per.billing=1;
+  if(e.per.invoice===undefined)e.per.invoice=1;
+  if(e.per.finance===undefined)e.per.finance=1;
+  if(e.per.complaints===undefined)e.per.complaints=1;
+  if(e.per.targets===undefined)e.per.targets=1;
+  return e;
+}
+function fixAllEmployeePermissions(){
+  (S.employees||[]).forEach(e=>normalizeEmployeePermissions(e));
+  try{saveLocal()}catch(e){}
+  toast('Employee Clients/Billing permissions enabled','success');
+  if(TAB==='employees')employees();
+}
+
+
+
+
+/* ===== SAFE EMPLOYEE ACCESS LOGIN FIX ===== */
+function normalizeEmployeePermissionsSafe(e){
+  if(!e)return e;
+  e.per=e.per||{};
+  ['clients','billing','invoice','finance','complaints','targets','attendance','advance'].forEach(k=>{
+    if(e.per[k]===undefined)e.per[k]=1;
+  });
+  return e;
+}
+function normalizeSessionPermissions(){
+  try{
+    if(U&&U.role==='employee')normalizeEmployeePermissionsSafe(U);
+    if(S&&S.session&&S.session.role==='employee')normalizeEmployeePermissionsSafe(S.session);
+    (S.employees||[]).forEach(e=>normalizeEmployeePermissionsSafe(e));
+  }catch(e){}
+}
+/* Patch login button safely without touching openApp */
+const __oldLoginUserSafeAccess = (typeof loginUser==='function') ? loginUser : null;
+function loginUser(){
+  try{
+    if(__oldLoginUserSafeAccess){
+      const beforeSession = S ? S.session : null;
+      const result = __oldLoginUserSafeAccess();
+      setTimeout(()=>{normalizeSessionPermissions();try{saveLocal()}catch(e){}},50);
+      return result;
+    }
+  }catch(err){
+    console.error('old login failed',err);
+  }
+  // Fallback login
+  const u=(document.getElementById('lu')?.value||'').trim();
+  const p=(document.getElementById('lp')?.value||'').trim();
+  if(!u||!p)return toast('Login details required','error');
+  if(u.toLowerCase()===(S.admin?.u||'admin').toLowerCase() && p===(S.admin?.p||'admin123')){
+    U={role:'admin',id:'admin',name:'Administrator'};S.session=U;saveLocal();return openApp();
+  }
+  const mobile=pkMobile(u);
+  const emp=(S.employees||[]).find(x=>x.active!==false&&(String(x.phone||'').toLowerCase()===u.toLowerCase()||String(x.name||'').toLowerCase()===u.toLowerCase()||String(x.mobile||'')===mobile)&&String(x.pin||'')===p);
+  if(emp){U={role:'employee',...normalizeEmployeePermissionsSafe(emp)};S.session=U;saveLocal();return openApp();}
+  const client=(S.clients||[]).find(x=>(String(x.mobile||'')===mobile||String(x.pppoe||'').toLowerCase()===u.toLowerCase())&&String(x.ccode||x.pin||'')===p);
+  if(client){if(client.active===false)return toast('Pending approval','warning');U={role:'client',id:client.id,name:client.name,clientId:client.id,mobile:client.mobile};S.session=U;saveLocal();return openApp();}
+  toast('Invalid login','error');
+}
+window.addEventListener('load',()=>{try{normalizeSessionPermissions();}catch(e){}});
+
+
+
+/* ===== EMPLOYEE PERMISSIONS + ACTION DROPDOWN FIX ===== */
+function actionMenu(items){
+  const idv='am'+Math.random().toString(36).slice(2,8);
+  return `<div class="action-menu">
+    <button class="btn btn-i btn-sm" onclick="toggleActionMenu('${idv}',event)">Actions ▾</button>
+    <div id="${idv}" class="action-menu-list">
+      ${items.map(it=>`<button onclick="${it.fn};closeActionMenus()">${it.label}</button>`).join('')}
+    </div>
+  </div>`;
+}
+function toggleActionMenu(idv,ev){
+  if(ev)ev.stopPropagation();
+  document.querySelectorAll('.action-menu-list').forEach(x=>{if(x.id!==idv)x.classList.remove('open')});
+  const el=document.getElementById(idv);
+  if(el)el.classList.toggle('open');
+}
+function closeActionMenus(){document.querySelectorAll('.action-menu-list').forEach(x=>x.classList.remove('open'))}
+window.addEventListener('click',()=>closeActionMenus());
+
+function employeePermissionBoxes(prefix='empPer', per={}){
+  const mods=[
+    ['complaints','Complaints'],
+    ['attendance','Attendance'],
+    ['clients','Clients'],
+    ['billing','Billing'],
+    ['invoice','Invoice'],
+    ['finance','Finance'],
+    ['advance','Advance'],
+    ['targets','Targets']
+  ];
+  return `<div class="perm-grid">${mods.map(m=>`<label class="perm-box"><input type="checkbox" id="${prefix}_${m[0]}" ${per[m[0]]!==false?'checked':''}> ${m[1]}</label>`).join('')}</div>`;
+}
+function readEmployeePerm(prefix='empPer'){
+  const mods=['complaints','attendance','clients','billing','invoice','finance','advance','targets'];
+  const per={};
+  mods.forEach(m=>per[m]=document.getElementById(prefix+'_'+m)?.checked?1:0);
+  return per;
+}
+
+/* Override employees page with Clients/Billing permissions visible */
+function employees(){
+  if(U&&U.role!=='admin')return dash();
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>Add Employee</h2></div>
+    <div class="row">
+      <div class="fg"><label>Name</label><input id="empName"></div>
+      <div class="fg"><label>Login / Username</label><input id="empLogin"></div>
+      <div class="fg"><label>Mobile</label><input id="empMobile" placeholder="03001234561"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>PIN</label><input id="empPin" value="1234"></div>
+      <div class="fg"><label>Role</label><input id="empRole" value="Collection"></div>
+      <div class="fg"><label>Status</label><select id="empActive"><option value="1">Active</option><option value="0">Inactive</option></select></div>
+    </div>
+    <h3 style="margin:10px 0;color:#243447">Module Permissions</h3>
+    ${employeePermissionBoxes('empPer',{complaints:1,attendance:1,clients:1,billing:1,invoice:1,finance:1,advance:1,targets:1})}
+    <br>
+    <div class="actions">
+      <button class="btn btn-p" onclick="addEmployeeWithPermissions()">Add Employee</button>
+      <button class="btn btn-s" onclick="enableAllEmployeeClientBilling()">Enable Clients/Billing For All</button>
+    </div>
+  </div>
+  ${employeesTableFixed()}`;
+}
+function addEmployeeWithPermissions(){
+  const e={
+    id:id('e'),
+    name:(document.getElementById('empName')?.value||'').trim(),
+    phone:(document.getElementById('empLogin')?.value||'').trim(),
+    mobile:pkMobile(document.getElementById('empMobile')?.value||''),
+    pin:(document.getElementById('empPin')?.value||'1234').trim(),
+    role:(document.getElementById('empRole')?.value||'Collection').trim(),
+    active:document.getElementById('empActive')?.value!=='0',
+    per:readEmployeePerm('empPer')
+  };
+  if(!e.name||!e.phone)return toast('Name and login required','error');
+  S.employees=S.employees||[];
+  S.employees.push(e);
+  saveAndSync('employees',e);
+  toast('Employee added with permissions','success');
+  employees();
+}
+function employeesTableFixed(){
+  const rows=(S.employees||[]).map(e=>{
+    const per=e.per||{};
+    const perText=['clients','billing','complaints','invoice','finance','targets'].filter(k=>per[k]!==false&&per[k]).join(', ');
+    const actions=actionMenu([
+      {label:'Edit',fn:`openEmployeeEditModal('${e.id}')`},
+      {label:e.active===false?'Activate':'Inactive',fn:`toggleEmployeeStatus('${e.id}')`},
+      {label:'Delete',fn:`deleteEmployeeFixed('${e.id}')`}
+    ]);
+    return `<tr>
+      <td>${esc(e.name||'-')}</td>
+      <td>${esc(e.phone||'-')}</td>
+      <td>${esc(e.mobile||'-')}</td>
+      <td>${esc(e.role||'-')}</td>
+      <td>${e.active===false?'<span class="badge bad">Inactive</span>':'<span class="badge done">Active</span>'}</td>
+      <td><small>${esc(perText||'-')}</small></td>
+      <td>${actions}</td>
+    </tr>`;
+  });
+  return `<div class="card"><div class="head"><h2>Employees</h2></div>
+    <div class="tbl"><table><thead><tr><th>Name</th><th>Login</th><th>Mobile</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
+  </div>`;
+}
+function openEmployeeEditModal(empId){
+  const e=(S.employees||[]).find(x=>x.id===empId);
+  if(!e)return toast('Employee not found','error');
+  const html=`<div class="head"><h2>Edit Employee</h2><button class="btn btn-l btn-sm" onclick="closeEmployeeModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Name</label><input id="editEmpName" value="${esc(e.name||'')}"></div>
+      <div class="fg"><label>Login / Username</label><input id="editEmpLogin" value="${esc(e.phone||'')}"></div>
+      <div class="fg"><label>Mobile</label><input id="editEmpMobile" value="${esc(e.mobile||'')}" placeholder="03001234561"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>PIN</label><input id="editEmpPin" value="${esc(e.pin||'1234')}"></div>
+      <div class="fg"><label>Role</label><input id="editEmpRole" value="${esc(e.role||'')}"></div>
+      <div class="fg"><label>Status</label><select id="editEmpActive"><option value="1" ${e.active!==false?'selected':''}>Active</option><option value="0" ${e.active===false?'selected':''}>Inactive</option></select></div>
+    </div>
+    <h3 style="margin:10px 0;color:#243447">Module Permissions</h3>
+    ${employeePermissionBoxes('editPer',e.per||{})}
+    <br>
+    <button class="btn btn-p" onclick="saveEmployeeEditModal('${empId}')">Save Employee</button>`;
+  openEmployeeModal(html);
+}
+function openEmployeeModal(html){
+  let m=document.getElementById('employeeModal');
+  if(!m){
+    const div=document.createElement('div');
+    div.innerHTML='<div id="employeeModal" class="modal-bg"><div class="modal" id="employeeModalBox"></div></div>';
+    document.body.appendChild(div.firstChild);
+    m=document.getElementById('employeeModal');
+  }
+  document.getElementById('employeeModalBox').innerHTML=html;
+  m.classList.add('active');
+}
+function closeEmployeeModal(){document.getElementById('employeeModal')?.classList.remove('active')}
+function saveEmployeeEditModal(empId){
+  const e=(S.employees||[]).find(x=>x.id===empId);
+  if(!e)return;
+  e.name=(document.getElementById('editEmpName')?.value||'').trim();
+  e.phone=(document.getElementById('editEmpLogin')?.value||'').trim();
+  e.mobile=pkMobile(document.getElementById('editEmpMobile')?.value||'');
+  e.pin=(document.getElementById('editEmpPin')?.value||'1234').trim();
+  e.role=(document.getElementById('editEmpRole')?.value||'').trim();
+  e.active=document.getElementById('editEmpActive')?.value!=='0';
+  e.per=readEmployeePerm('editPer');
+  saveAndSync('employees',e);
+  if(U&&U.id===e.id){U={...U,...e};S.session=U;}
+  saveLocal();
+  closeEmployeeModal();
+  toast('Employee updated','success');
+  employees();
+}
+function toggleEmployeeStatus(empId){
+  const e=(S.employees||[]).find(x=>x.id===empId);
+  if(!e)return;
+  e.active=e.active===false;
+  saveAndSync('employees',e);
+  employees();
+}
+function deleteEmployeeFixed(empId){
+  if(!confirm('Delete employee?'))return;
+  S.employees=(S.employees||[]).filter(e=>e.id!==empId);
+  delAndSync('employees',empId);
+  employees();
+}
+function enableAllEmployeeClientBilling(){
+  (S.employees||[]).forEach(e=>{
+    e.per=e.per||{};
+    e.per.clients=1;
+    e.per.billing=1;
+    e.per.invoice=1;
+    e.per.finance=e.per.finance===undefined?1:e.per.finance;
+    saveAndSync('employees',e);
+  });
+  toast('Clients/Billing permissions enabled for all employees','success');
+  employees();
+}
+
+/* Make all row actions compact dropdown where possible */
+function compactBillingActionMenu(clientId){
+  return actionMenu([
+    {label:'Receive',fn:`receiveClientBill('${clientId}')`},
+    {label:'Fee Slip WA',fn:`whatsappFeeSlip('${clientId}')`},
+    {label:'Print Slip',fn:`printFeeSlip('${clientId}')`},
+    {label:'Edit Bill',fn:`openEditBillModal('${clientId}')`}
+  ]);
+}
 
 </script>
 </body>
