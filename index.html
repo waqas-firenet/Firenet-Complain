@@ -477,6 +477,27 @@ body.menu-open{overflow:hidden}
 </div></div>
 
 <script>
+
+/* ===== EARLY GLOBAL RECEIPT FIX ===== */
+window.generateReceiptId = window.generateReceiptId || function(){
+  var d=new Date();
+  var y=d.getFullYear();
+  var m=String(d.getMonth()+1).padStart(2,'0');
+  var da=String(d.getDate()).padStart(2,'0');
+  var h=String(d.getHours()).padStart(2,'0');
+  var mi=String(d.getMinutes()).padStart(2,'0');
+  var rand=Math.floor(Math.random()*9000)+1000;
+  return 'FRN-'+y+m+da+'-'+h+mi+'-'+rand;
+};
+function generateReceiptId(){
+  return window.safeReceiptId();
+}
+function safeReceiptId(){
+  try{return window.generateReceiptId ? window.safeReceiptId() : ('FRN-'+Date.now());}
+  catch(e){return 'FRN-'+Date.now();}
+}
+
+
 const KEY='firenet_clean_fixed_v1';
 const firebaseConfig={apiKey:'AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E',authDomain:'complaint-b1f3c.firebaseapp.com',projectId:'complaint-b1f3c',storageBucket:'complaint-b1f3c.firebasestorage.app',messagingSenderId:'400630080362',appId:'1:400630080362:web:bbe16973f247dd67407b13',measurementId:'G-ENJVNBEVXT'};
 let S,U,TAB='dashboard',draft=[],db=null,fbReady=false,fbLoading=false,unsubs=[];
@@ -677,7 +698,7 @@ function openApp(){sanitizeState();if(!U||!U.role){S.session=null;saveLocal();re
 function logout(){S.session=null;saveLocal();location.reload()}function toggleMenu(){pm.classList.toggle('active')}function openPwd(){pwdModal.classList.add('active');pm.classList.remove('active')}function closePwd(){pwdModal.classList.remove('active')}
 function savePwd(){let v=newPwd.value.trim();if(v.length<3)return toast('Minimum 3 characters','error');if(U.role==='admin'){S.admin.p=v;fbSettings()}else{let e=S.employees.find(x=>x.id===U.id);if(e){e.pin=v;fbSet('employees',e)}U.pin=v;S.session=U}saveLocal();newPwd.value='';closePwd();toast('Password changed','success')}
 function items(){
- let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['clients','Clients','🌐'],['billing','Billing','💳'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['settings','Settings','⚙️'],['backup','Backup','💾']];
+ let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['clients','Clients','🌐'],['billing','Billing','💳'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['template','Template','🎨'],['settings','Settings','⚙️'],['backup','Backup','💾']];
  if(U.role==='client')return [['dashboard','My Portal','🏠'],['complaints','Support','🛠️']];
  return U.role==='admin'?a:a.filter(x=>x[0]==='dashboard'||can(x[0]));
 }
@@ -687,7 +708,7 @@ function tab(x){if(!items().some(i=>i[0]===x))x='dashboard';TAB=x;document.query
 function renderCurrent(){
  try{
   sanitizeState();
-  const map={dashboard:dash,complaints,clients:clientsPage,billing:billingPage,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:openNewsPage,settings:openSettingsPage,backup};
+  const map={dashboard:dash,complaints,clients:clientsPage,billing:billingPage,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:openNewsPage,template:templatePage,settings:openSettingsPage,backup};
   (map[TAB]||dash)();
   setTimeout(()=>{if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker();if(typeof setupTableEnhancer==='function')setupTableEnhancer();if(typeof enhanceAllTables==='function')enhanceAllTables();},50);
  }catch(err){
@@ -3326,8 +3347,8 @@ function items(){
     ['advance','Advance','💸'],
     ['targets','Targets','🎯'],
     ['news','News','📢'],
-    ['settings','Settings','⚙️'],
-    ['backup','Backup','💾']
+    ['template','Template','🎨'],['settings','Settings','⚙️'],
+    ['template','Template','🎨'],['backup','Backup','💾']
   ];
   if(!U||U.role==='admin')return all;
   return all.filter(x=>employeeHasAccess(x[0]));
@@ -4821,7 +4842,7 @@ function ensureReceiptForClientMonth(clientId, month=billMonthNow()){
     S.invoices.push(inv);
   }
   let fin=(S.finance||[]).slice().reverse().find(f=>f.clientId===clientId && f.billMonth===month && (f.type||'income')!=='expense');
-  const rid=(fin&&fin.receiptId)||inv.receiptId||generateReceiptId();
+  const rid=(fin&&fin.receiptId)||inv.receiptId||safeReceiptId();
   inv.receiptId=rid;
   inv.verifyUrl=getVerifyUrl(rid);
   if(fin && !fin.receiptId){
@@ -5214,7 +5235,7 @@ function ensureReceiptForClientMonth(clientId, month=(typeof billMonthNow==='fun
     S.invoices.push(inv);
   }
   let fin=S.finance.slice().reverse().find(f=>f.clientId===clientId && f.billMonth===month && (f.type||'income')!=='expense');
-  const rid=(fin&&fin.receiptId)||inv.receiptId||generateReceiptId();
+  const rid=(fin&&fin.receiptId)||inv.receiptId||safeReceiptId();
   inv.receiptId=rid;
   inv.verifyUrl=getVerifyUrl(rid);
   if(fin && !fin.receiptId){
@@ -5225,6 +5246,352 @@ function ensureReceiptForClientMonth(clientId, month=(typeof billMonthNow==='fun
   try{ if(typeof saveAndSync==='function')saveAndSync('invoices',inv); }catch(e){}
   try{ if(typeof saveLocal==='function')saveLocal(); }catch(e){}
   return rid;
+}
+
+
+
+/* ===== FINAL RECEIPT ALIAS SAFETY ===== */
+window.generateReceiptId = window.generateReceiptId || safeReceiptId;
+
+
+
+/* ===== LIGHT SPEED SAFE PATCH - FULL FEATURES KEPT ===== */
+let __fullSafeRenderTimer=null;
+function safeRefreshCurrent(){
+  clearTimeout(__fullSafeRenderTimer);
+  __fullSafeRenderTimer=setTimeout(()=>{try{if(typeof renderCurrent==='function')renderCurrent();else if(typeof dash==='function')dash();}catch(e){console.warn(e)}},250);
+}
+/* Reduce repeated realtime render pressure */
+if(typeof startRealtime==='function'){
+  const __originalStartRealtimeFull = startRealtime;
+  startRealtime = function(){
+    try{
+      if(typeof unsubs!=='undefined')unsubs.forEach(u=>u&&u());
+      if(typeof unsubs!=='undefined')unsubs=[];
+      if(!db)return;
+      ['employees','complaints','clients','finance','invoices','targets','attendance','items','packages','advances','notifications'].forEach(col=>{
+        unsubs.push(db.collection(col).onSnapshot(snap=>{
+          if(typeof fbLoading!=='undefined' && fbLoading)return;
+          S[col]=snap.docs.map(d=>({id:d.id,...d.data()}));
+          try{saveLocal()}catch(e){}
+          const a=document.activeElement;
+          const typing=a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT');
+          if(U&&TAB&&!typing)safeRefreshCurrent();
+        },e=>{try{setSync('Firebase realtime failed',false)}catch(_){}}));
+      });
+    }catch(e){console.warn('safe realtime failed',e);try{__originalStartRealtimeFull()}catch(_){}}
+  }
+}
+/* Safer saveLocal but keep all important features/data */
+if(typeof saveLocal==='function'){
+  const __originalSaveLocalFull=saveLocal;
+  saveLocal=function(){
+    try{
+      localStorage.setItem(KEY,JSON.stringify(S));
+    }catch(e){
+      try{
+        const slim={...S};
+        slim.notifications=(S.notifications||[]).slice(-150);
+        slim.finance=(S.finance||[]).slice(-500);
+        slim.invoices=(S.invoices||[]).slice(-500);
+        slim.complaints=(S.complaints||[]).slice(-300);
+        localStorage.setItem(KEY,JSON.stringify(slim));
+      }catch(_){
+        console.warn('local save failed');
+      }
+    }
+  }
+}
+
+
+
+/* ===== TEMPLATE TAB + PAYMENT QR UPLOAD ===== */
+function ensureTemplateSettings(){
+  S.appSettings=S.appSettings||{};
+  S.appSettings.templates=S.appSettings.templates||{
+    billTitle:'MONTHLY INTERNET BILL',
+    invoiceTitle:'INVOICE',
+    feeSlipTitle:'Internet Fee Payment Slip',
+    showLogo:true,
+    showCompanyInfo:true,
+    showPaymentQr:true,
+    showVerifyQr:true,
+    note:'Please pay your monthly internet bill on or before the due date to avoid service interruption.',
+    footer:'This is a computer-generated document. Please keep it for your record.',
+    primaryColor:'#dc2626',
+    paymentQrImage:'',
+    paymentQrText:'',
+    invoiceTerms:'Payment is due as mentioned on the bill. Thank you for choosing our service.'
+  };
+  return S.appSettings.templates;
+}
+function templatePage(){
+  if(U&&U.role!=='admin')return content.innerHTML='<div class="card"><div class="head"><h2>Access Denied</h2></div><p>Only admin can edit templates.</p></div>';
+  const T=ensureTemplateSettings();
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>🎨 Templates & Payment QR</h2></div>
+    <p style="font-weight:900;color:#64748b">Yahan se Monthly Bill, Invoice aur Fee Slip ka title, notes, colors aur payment QR adjust kar sakte hain.</p>
+    <div class="row">
+      <div class="fg"><label>Monthly Bill Title</label><input id="tplBillTitle" value="${esc(T.billTitle||'MONTHLY INTERNET BILL')}"></div>
+      <div class="fg"><label>Invoice Title</label><input id="tplInvoiceTitle" value="${esc(T.invoiceTitle||'INVOICE')}"></div>
+      <div class="fg"><label>Fee Slip Title</label><input id="tplFeeSlipTitle" value="${esc(T.feeSlipTitle||'Internet Fee Payment Slip')}"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Template Primary Color</label><input id="tplPrimaryColor" type="color" value="${esc(T.primaryColor||'#dc2626')}"></div>
+      <div class="fg"><label>Show Payment QR on Monthly Bill</label><select id="tplShowPaymentQr"><option value="1" ${T.showPaymentQr!==false?'selected':''}>Yes</option><option value="0" ${T.showPaymentQr===false?'selected':''}>No</option></select></div>
+      <div class="fg"><label>Show Verify QR on Fee Slip</label><select id="tplShowVerifyQr"><option value="1" ${T.showVerifyQr!==false?'selected':''}>Yes</option><option value="0" ${T.showVerifyQr===false?'selected':''}>No</option></select></div>
+    </div>
+    <div class="row two">
+      <div class="fg"><label>Payment QR Upload</label><input id="tplQrUpload" type="file" accept="image/*" onchange="previewTemplateQr(event)"></div>
+      <div class="fg"><label>Payment QR Text / Account Details</label><input id="tplPaymentQrText" value="${esc(T.paymentQrText||'')}" placeholder="Bank/JazzCash/EasyPaisa details or payment link"></div>
+    </div>
+    <div class="row two">
+      <div class="card" style="box-shadow:none;border:1px dashed #cbd5e1">
+        <h3>Current Payment QR Preview</h3>
+        <div id="tplQrPreview" style="text-align:center;padding:10px">
+          ${T.paymentQrImage?`<img src="${T.paymentQrImage}" style="max-width:180px;max-height:180px;border:1px solid #e5e7eb;border-radius:12px;padding:6px;background:#fff">`:'<p>No QR uploaded yet. Auto-generated QR will be used.</p>'}
+        </div>
+        <button class="btn btn-w btn-sm" onclick="removeTemplateQr()">Remove Uploaded QR</button>
+      </div>
+      <div class="card" style="box-shadow:none;border:1px dashed #cbd5e1">
+        <h3>QR Usage</h3>
+        <p>Uploaded QR monthly A4 bill par payment QR ki jagah show hoga.</p>
+        <p>Fee slip par verification QR separate rahega, unless disabled.</p>
+      </div>
+    </div>
+    <div class="fg"><label>Monthly Bill Note</label><textarea id="tplNote">${esc(T.note||'')}</textarea></div>
+    <div class="fg"><label>Invoice Terms</label><textarea id="tplInvoiceTerms">${esc(T.invoiceTerms||'')}</textarea></div>
+    <div class="fg"><label>Footer Text</label><textarea id="tplFooter">${esc(T.footer||'')}</textarea></div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveTemplateSettings()">Save Template Settings</button>
+      <button class="btn btn-i" onclick="previewTemplateSample()">Preview Sample Bill</button>
+    </div>
+  </div>`;
+}
+function previewTemplateQr(ev){
+  const f=ev.target.files&&ev.target.files[0];
+  if(!f)return;
+  if(f.size>800000)return toast('QR image too large. Use under 800KB','error');
+  const r=new FileReader();
+  r.onload=()=>{
+    const img=r.result;
+    ensureTemplateSettings().paymentQrImage=img;
+    const box=document.getElementById('tplQrPreview');
+    if(box)box.innerHTML=`<img src="${img}" style="max-width:180px;max-height:180px;border:1px solid #e5e7eb;border-radius:12px;padding:6px;background:#fff">`;
+  };
+  r.readAsDataURL(f);
+}
+function removeTemplateQr(){
+  ensureTemplateSettings().paymentQrImage='';
+  const box=document.getElementById('tplQrPreview');
+  if(box)box.innerHTML='<p>No QR uploaded yet. Auto-generated QR will be used.</p>';
+}
+function saveTemplateSettings(){
+  const T=ensureTemplateSettings();
+  T.billTitle=document.getElementById('tplBillTitle')?.value||'MONTHLY INTERNET BILL';
+  T.invoiceTitle=document.getElementById('tplInvoiceTitle')?.value||'INVOICE';
+  T.feeSlipTitle=document.getElementById('tplFeeSlipTitle')?.value||'Internet Fee Payment Slip';
+  T.primaryColor=document.getElementById('tplPrimaryColor')?.value||'#dc2626';
+  T.showPaymentQr=document.getElementById('tplShowPaymentQr')?.value!=='0';
+  T.showVerifyQr=document.getElementById('tplShowVerifyQr')?.value!=='0';
+  T.paymentQrText=document.getElementById('tplPaymentQrText')?.value||'';
+  T.note=document.getElementById('tplNote')?.value||'';
+  T.invoiceTerms=document.getElementById('tplInvoiceTerms')?.value||'';
+  T.footer=document.getElementById('tplFooter')?.value||'';
+  S.appSettings.templates=T;
+  try{saveLocal()}catch(e){}
+  try{if(typeof db!=='undefined'&&db)db.collection('settings').doc('main').set({appSettings:S.appSettings},{merge:true})}catch(e){}
+  toast('Template settings saved','success');
+  templatePage();
+}
+function getTemplatePaymentQrUrl(text){
+  const T=ensureTemplateSettings();
+  if(T.paymentQrImage)return T.paymentQrImage;
+  if(T.paymentQrText)return getQRImageUrl(T.paymentQrText);
+  return getQRImageUrl(text||'');
+}
+function getTemplatePaymentQrBackup(text){
+  const T=ensureTemplateSettings();
+  if(T.paymentQrImage)return T.paymentQrImage;
+  if(T.paymentQrText)return getQRBackupImageUrl(T.paymentQrText);
+  return getQRBackupImageUrl(text||'');
+}
+function previewTemplateSample(){
+  const first=(S.clients||[])[0];
+  if(first&&typeof printMonthlyBillA4==='function')return printMonthlyBillA4(first.id);
+  toast('Add at least one client to preview bill','warning');
+}
+
+/* Override monthly A4 bill print to use template settings and uploaded payment QR */
+function printMonthlyBillA4(clientId){
+  const data=monthlyBillDisplayData(clientId, window.billingMonth||billMonthNow());
+  if(!data)return toast('Client not found','error');
+  const T=ensureTemplateSettings();
+  const c=data.client, r=data.row, info=data.company;
+  const color=T.primaryColor||'#dc2626';
+  const qrSrc=getTemplatePaymentQrUrl(data.paymentQrText);
+  const qrBackup=getTemplatePaymentQrBackup(data.paymentQrText);
+  const qrBox=T.showPaymentQr===false?'':`<div class="card qrbox">
+          <h3>Payment QR</h3>
+          <img src="${qrSrc}" onerror="this.onerror=null;this.src='${qrBackup}'" alt="Payment QR">
+          <div style="font-size:12px;font-weight:800;margin-top:8px">Scan for payment details</div>
+          ${T.paymentQrText?`<div style="font-size:10px;color:#64748b;margin-top:5px;word-break:break-word">${esc(T.paymentQrText)}</div>`:''}
+        </div>`;
+  const gridStyle=T.showPaymentQr===false?'grid-template-columns:1fr':'grid-template-columns:1.2fr .8fr';
+  const html=`<html><head><title>Monthly Bill</title>
+  <style>
+    @page{size:A4;margin:14mm}
+    body{font-family:Arial,sans-serif;color:#111827;background:#fff}
+    .page{width:100%;max-width:190mm;margin:0 auto}
+    .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid ${color};padding-bottom:10px;margin-bottom:14px}
+    .brand h1{margin:0;color:${color};font-size:28px}
+    .brand p{margin:4px 0;color:#475569;font-size:12px;line-height:1.5}
+    .billbox{border:1px solid #e5e7eb;border-radius:14px;padding:12px 14px;min-width:210px}
+    .billbox h2{margin:0 0 8px 0;font-size:20px}
+    .grid{display:grid;${gridStyle};gap:14px;margin-bottom:14px}
+    .card{border:1px solid #e5e7eb;border-radius:14px;padding:14px}
+    .card h3{margin:0 0 10px 0;font-size:16px;color:#111827}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .meta .item{background:#f8fafc;border-radius:10px;padding:10px}
+    .meta .item b{display:block;color:#475569;font-size:12px;margin-bottom:4px}
+    .meta .item span{font-weight:800}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid #e5e7eb;font-size:13px}
+    th{text-align:left;background:#f8fafc}
+    .totals{margin-top:12px;margin-left:auto;max-width:320px}
+    .totals .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #cbd5e1}
+    .totals .grand{font-size:20px;font-weight:900;color:${color}}
+    .qrbox{text-align:center}
+    .qrbox img{width:170px;height:170px;object-fit:contain}
+    .badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;background:#fef3c7;color:#92400e}
+    .note{margin-top:14px;padding:12px;border:1px dashed #cbd5e1;border-radius:12px;background:#fcfcfd;font-size:12px;line-height:1.6;color:#475569}
+    .footer{margin-top:14px;font-size:11px;color:#64748b;text-align:center}
+  </style></head><body>
+    <div class="page">
+      <div class="head">
+        <div class="brand">
+          <h1>${esc(info.companyName)}</h1>
+          <p>${esc(info.address)}<br>Mobile: ${esc(info.mobile)}<br>Email: ${esc(info.email)}</p>
+        </div>
+        <div class="billbox">
+          <h2>${esc(T.billTitle||'MONTHLY INTERNET BILL')}</h2>
+          <div><b>Bill No:</b> ${esc(data.billNo)}</div>
+          <div><b>Bill Month:</b> ${esc(data.month)}</div>
+          <div><b>Issue Date:</b> ${esc(data.issueDate)}</div>
+          <div><b>Due Date:</b> <span style="color:${color};font-weight:900">${esc(data.dueDate)}</span></div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Bill To</h3>
+          <div class="meta">
+            <div class="item"><b>Customer Name</b><span>${esc(c.name||'-')}</span></div>
+            <div class="item"><b>Mobile</b><span>${esc(c.mobile||'-')}</span></div>
+            <div class="item"><b>Client Code</b><span>${esc(c.ccode||c.pin||'-')}</span></div>
+            <div class="item"><b>User ID / PPPoE</b><span>${esc(c.pppoe||'-')}</span></div>
+            <div class="item"><b>Package</b><span>${esc(c.package||'-')}</span></div>
+            <div class="item"><b>Area</b><span>${esc(c.area||c.zone||c.address||'-')}</span></div>
+          </div>
+        </div>
+        ${qrBox}
+      </div>
+
+      <div class="card">
+        <h3>Monthly Bill Summary</h3>
+        <table>
+          <thead><tr><th>Description</th><th>Details</th></tr></thead>
+          <tbody>${data.summary.map(x=>`<tr><td>${esc(x.label)}</td><td>${esc(x.value)}</td></tr>`).join('')}</tbody>
+        </table>
+        <div class="totals">
+          <div class="row"><span>Total Bill</span><strong>${money(r.total||0)}</strong></div>
+          <div class="row"><span>Discount</span><strong>${money(r.discount||0)}</strong></div>
+          <div class="row"><span>Received</span><strong>${money(r.received||0)}</strong></div>
+          <div class="row grand"><span>Amount Due</span><strong>${money(r.due||0)}</strong></div>
+        </div>
+      </div>
+
+      <div class="note"><b>Important Note:</b><br>${esc(T.note||'Please pay before due date.')}<br>Current status: <span class="badge">${esc(r.status||'Unpaid')}</span></div>
+      <div class="footer">${esc(T.footer||'This is a computer-generated monthly bill.')}</div>
+    </div>
+  </body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(),800);
+}
+
+
+
+/* ===== TEMPLATE + SETTINGS ROUTE FINAL FIX ===== */
+function uniqueNavItems(list){
+  const seen={};
+  return (list||[]).filter(x=>{
+    if(!x||!x[0])return false;
+    if(seen[x[0]])return false;
+    seen[x[0]]=1;
+    return true;
+  });
+}
+function openSettingsFixed(){
+  if(typeof openSettingsPage==='function')return openSettingsPage();
+  if(typeof settings==='function')return settings();
+  if(typeof settingsPage==='function')return settingsPage();
+  const c=document.getElementById('content');
+  if(c)c.innerHTML='<div class="card"><div class="head"><h2>Settings</h2></div><p>Settings function not found.</p></div>';
+}
+function openTemplateFixed(){
+  if(typeof templatePage==='function')return templatePage();
+  const c=document.getElementById('content');
+  if(c)c.innerHTML='<div class="card"><div class="head"><h2>Template</h2></div><p>Template page not found.</p></div>';
+}
+/* Override nav render so Template/Settings always work and duplicate is removed */
+function navRender(){
+  const el=document.getElementById('nav');
+  if(!el)return;
+  let list=[];
+  if(U&&U.role==='client'){
+    list=[['dashboard','My Portal','🏠'],['complaints','Support','🛠️']];
+  }else{
+    list=[
+      ['dashboard','Dashboard','📊'],
+      ['complaints','Complaints','🛠️'],
+      ['clients','Clients','🌐'],
+      ['billing','Billing','💳'],
+      ['employees','Employees','👥'],
+      ['attendance','Attendance','🗓️'],
+      ['invoice','Invoice','🧾'],
+      ['finance','Finance','💰'],
+      ['items','Items','📦'],
+      ['packages','Packages','📶'],
+      ['advance','Advance','💸'],
+      ['targets','Targets','🎯'],
+      ['news','News','📢'],
+      ['template','Template','🎨'],
+      ['settings','Settings','⚙️'],
+      ['backup','Backup','💾']
+    ];
+    if(U&&U.role==='employee'&&typeof employeeHasAccess==='function'){
+      list=list.filter(x=>x[0]==='dashboard'||employeeHasAccess(x[0]));
+    }
+  }
+  list=uniqueNavItems(list);
+  el.innerHTML=list.map(x=>{
+    let click=x[0]==='template'?'openTemplateFixed()':x[0]==='settings'?'openSettingsFixed()':x[0]==='news'&&typeof openNewsPage==='function'?'openNewsPage()':`tab('${x[0]}')`;
+    return `<button id="n-${x[0]}" class="${TAB===x[0]?'active':''}" onclick="${click}">${x[2]} ${x[1]}</button>`;
+  }).join('');
+}
+function tab(t){
+  TAB=t;
+  try{
+    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+    let n=document.getElementById('n-'+t); if(n)n.classList.add('active');
+  }catch(e){}
+  try{if(typeof closeSideMenu==='function')closeSideMenu(); else document.getElementById('sidePanel')?.classList.remove('open')}catch(e){}
+  if(t==='template')return openTemplateFixed();
+  if(t==='settings')return openSettingsFixed();
+  if(typeof renderCurrent==='function')return renderCurrent();
+  if(typeof render==='function')return render();
 }
 
 </script>
