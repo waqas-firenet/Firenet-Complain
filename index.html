@@ -357,6 +357,11 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
 .tbl th[onclick], .tbl thead th{user-select:none}
 .table-pages .btn{min-width:34px}
 
+
+.billing-list-controls{align-items:flex-end}
+.billing-list-controls input{min-width:240px}
+@media(max-width:700px){.billing-list-controls{display:block}.billing-list-controls .right{margin-top:10px}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -2348,6 +2353,7 @@ function billingPage(){
       <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
       <button class="btn btn-i" onclick="printBillingReport()">Print Billing Report</button>
       <button class="btn btn-w" onclick="recalcBillingFromFinance()">Recalculate From Income</button>
+      <button class="btn btn-l" onclick="openSlipFieldsModal()">Slip Fields</button>
       <button class="btn btn-l" onclick="tab('clients')">Clients</button>
       <span id="billingSelectedCount" class="badge pending">0 selected</span>
     </div>
@@ -2850,6 +2856,7 @@ function billingPage(){
       <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
       <button class="btn btn-i" onclick="printBillingReport()">Print Report</button>
       <button class="btn btn-w" onclick="recalcBillingFromFinance()">Recalculate</button>
+      <button class="btn btn-l" onclick="openSlipFieldsModal()">Slip Fields</button>
       <span id="billingSelectedCount" class="badge pending">0 selected</span>
     </div>
   </div>
@@ -3788,6 +3795,342 @@ function enhanceAllTables(){
   });
 }
 function setupTableEnhancer(){enhanceAllTables();}
+
+
+
+/* ===== FEE SLIP RECEIVED BY + FINANCE EMPLOYEE TAG + EDITABLE SLIP FIELDS ===== */
+function ensureSlipSettings(){
+  S.appSettings=S.appSettings||{};
+  S.appSettings.feeSlipFields=S.appSettings.feeSlipFields||{
+    clientName:1,mobile:1,ccode:1,pppoe:1,package:1,month:1,paidNow:1,paymentMode:1,
+    receivedBy:1,totalBill:1,discount:1,totalPaid:1,remainingDue:1,date:1,status:1
+  };
+  return S.appSettings.feeSlipFields;
+}
+function slipFieldRows(data){
+  const F=ensureSlipSettings();
+  const rows=[
+    ['clientName','Client Name',data.clientName],
+    ['mobile','Mobile',data.mobile],
+    ['ccode','C.Code',data.ccode],
+    ['pppoe','PPPoE',data.pppoe],
+    ['package','Package',data.package],
+    ['month','Month',data.month],
+    ['paidNow','Paid Now',data.paidNow],
+    ['paymentMode','Payment Mode',data.paymentMode],
+    ['receivedBy','Received By',data.receivedBy],
+    ['totalBill','Total Bill',data.totalBill],
+    ['discount','Discount',data.discount],
+    ['totalPaid','Total Paid',data.totalPaid],
+    ['remainingDue','Remaining Due',data.remainingDue],
+    ['date','Date',data.date]
+  ];
+  return rows.filter(r=>F[r[0]]).map(r=>`<tr><td>${esc(r[1])}</td><td>${esc(r[2]||'-')}</td></tr>`).join('');
+}
+function slipTextLines(data){
+  const F=ensureSlipSettings();
+  const lines=[
+    ['clientName','Name',data.clientName],
+    ['mobile','Mobile',data.mobile],
+    ['ccode','C.Code',data.ccode],
+    ['pppoe','PPPoE',data.pppoe],
+    ['package','Package',data.package],
+    ['month','Month',data.month],
+    ['paidNow','Paid Now',data.paidNow],
+    ['paymentMode','Mode',data.paymentMode],
+    ['receivedBy','Received By',data.receivedBy],
+    ['totalBill','Total Bill',data.totalBill],
+    ['discount','Discount',data.discount],
+    ['totalPaid','Total Paid',data.totalPaid],
+    ['remainingDue','Remaining Due',data.remainingDue],
+    ['date','Date',data.date],
+    ['status','Status',data.status]
+  ];
+  return lines.filter(r=>F[r[0]]).map(r=>`${r[1]}: ${encodeURIComponent(r[2]||'-')}`).join('%0A');
+}
+function getPaymentReceiverName(pay){
+  if(pay && (pay.receiver||pay.employeeName))return pay.receiver||pay.employeeName;
+  if(pay && pay.by){
+    if(pay.by==='admin')return 'Admin';
+    const e=(S.employees||[]).find(x=>x.id===pay.by);
+    if(e)return e.name||e.phone||'Employee';
+  }
+  return U?.name||'Admin';
+}
+function feeSlipData(clientId){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return null;
+  const month=window.billingMonth||billMonthNow();
+  const row=getClientBillRow(clientId,month) || {
+    total:clientMonthlyBillAmount(c),
+    discount:0,
+    received:0,
+    due:clientMonthlyBillAmount(c),
+    status:'Unpaid'
+  };
+  const pay=latestPaymentForClient(clientId,month);
+  return {c,month,row,pay};
+}
+function feeSlipDisplayData(clientId){
+  const d=feeSlipData(clientId);
+  if(!d)return null;
+  const c=d.c,row=d.row,pay=d.pay;
+  const paidNow=pay?money(pay.amount):'-';
+  const mode=pay?(pay.mode||'cash').toUpperCase():'-';
+  return {
+    c, row, pay, month:d.month,
+    clientName:c.name||'-',
+    mobile:c.mobile||'-',
+    ccode:c.ccode||c.pin||'-',
+    pppoe:c.pppoe||'-',
+    package:c.package||'-',
+    paidNow,
+    paymentMode:mode,
+    receivedBy:getPaymentReceiverName(pay),
+    totalBill:money(row.total),
+    discount:money(row.discount||0),
+    totalPaid:money(row.received),
+    remainingDue:money(row.due),
+    date:(pay&&pay.time)||now(),
+    status:row.status
+  };
+}
+function shortFeeSlipText(clientId){
+  const data=feeSlipDisplayData(clientId);
+  if(!data)return '';
+  return `🧾 *${S.appSettings?.companyName||'Fire.net.pk'} Fee Slip*%0A`+slipTextLines(data);
+}
+function whatsappFeeSlip(clientId){
+  const data=feeSlipDisplayData(clientId);
+  if(!data)return toast('Client not found','error');
+  window.open('https://wa.me/'+waNumber(data.c.mobile)+'?text='+shortFeeSlipText(clientId),'_blank');
+}
+function printFeeSlip(clientId){
+  const data=feeSlipDisplayData(clientId);
+  if(!data)return toast('Client not found','error');
+  const F=ensureSlipSettings();
+  const statusHtml=F.status?`<div class="status">Status: ${esc(data.status)}</div>`:'';
+  const html=`<html><head><title>Fee Slip</title>
+  <style>
+    body{font-family:Arial;padding:18px;color:#111}
+    .slip{max-width:390px;margin:auto;border:2px solid #111;border-radius:10px;padding:14px}
+    h2{text-align:center;margin:0;color:#e74c3c}
+    .sub{text-align:center;font-size:12px;margin:4px 0 12px;color:#444}
+    table{width:100%;border-collapse:collapse}
+    td{padding:7px;border-bottom:1px dashed #bbb;font-size:13px}
+    td:last-child{text-align:right;font-weight:bold}
+    .foot{text-align:center;margin-top:12px;font-size:12px;color:#555}
+    .status{font-weight:bold;padding:6px;border:1px solid #111;border-radius:8px;text-align:center;margin-top:10px}
+    @media print{body{padding:0}.slip{border:1px solid #000}}
+  </style></head><body>
+  <div class="slip">
+    <h2>${esc(S.appSettings?.companyName||'Fire.net.pk')}</h2>
+    <div class="sub">Internet Fee Payment Slip</div>
+    <table>${slipFieldRows(data)}</table>
+    ${statusHtml}
+    <div class="foot">${esc(S.appSettings?.invoiceFooter||'Thank you for your payment.')}</div>
+  </div>
+  </body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+}
+function openSlipFieldsModal(){
+  const F=ensureSlipSettings();
+  const labels={
+    clientName:'Client Name',mobile:'Mobile',ccode:'C.Code',pppoe:'PPPoE',package:'Package',
+    month:'Month',paidNow:'Paid Now',paymentMode:'Payment Mode',receivedBy:'Received By',
+    totalBill:'Total Bill',discount:'Discount',totalPaid:'Total Paid',remainingDue:'Remaining Due',
+    date:'Date',status:'Status'
+  };
+  const html=`<div class="head"><h2>🧾 Fee Slip Fields</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+  <p style="color:#64748b;font-weight:900;margin-bottom:10px">Select fields jo print slip aur WhatsApp slip me show hon.</p>
+  <div class="perm-grid">${Object.keys(labels).map(k=>`<label class="perm-box"><input type="checkbox" id="slip_${k}" ${F[k]?'checked':''}> ${labels[k]}</label>`).join('')}</div>
+  <br><button class="btn btn-p" onclick="saveSlipFieldsSettings()">Save Slip Fields</button>`;
+  if(typeof openBillingModal==='function')openBillingModal(html);
+  else alert('Billing modal not available');
+}
+function saveSlipFieldsSettings(){
+  const keys=['clientName','mobile','ccode','pppoe','package','month','paidNow','paymentMode','receivedBy','totalBill','discount','totalPaid','remainingDue','date','status'];
+  S.appSettings=S.appSettings||{};
+  S.appSettings.feeSlipFields={};
+  keys.forEach(k=>S.appSettings.feeSlipFields[k]=document.getElementById('slip_'+k)?.checked?1:0);
+  try{saveLocal()}catch(e){}
+  try{if(typeof db!=='undefined'&&db)db.collection('settings').doc('main').set({appSettings:S.appSettings},{merge:true})}catch(e){}
+  closeBillingModal();
+  toast('Slip fields saved','success');
+}
+/* Override receive save: add employee tag and receiver properly */
+function saveReceiveBillModal(clientId,sendWA=false,printSlip=false){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const month=window.billingMonth||billMonthNow();
+  const inv=findOrCreateBillForClient(clientId);
+  const total=+document.getElementById('rxTotal')?.value||0;
+  const discount=+document.getElementById('rxDiscount')?.value||0;
+  const amount=+document.getElementById('rxAmount')?.value||0;
+  const mode=(document.getElementById('rxMode')?.value||'cash')==='online'?'online':'cash';
+  const receiver=document.getElementById('rxReceiver')?.value||U?.name||'Admin';
+  const note=document.getElementById('rxNote')?.value||'';
+  if(amount<0)return toast('Invalid amount','error');
+  if(discount<0)return toast('Invalid discount','error');
+  inv.total=total;
+  inv.discount=discount;
+  inv.dueDate=inv.dueDate||billDueDateForMonth(month);
+  if(amount>0){
+    const fin={
+      id:id('fi'),type:'income',mode,amount,
+      customer:c.name,paidBy:c.name,clientId:c.id,phone:c.mobile,billMonth:month,
+      cat:'Monthly Bill - '+month,date:today(),time:now(),
+      by:U?.id||'admin',
+      emp:U?.id||'admin',
+      employee:U?.id||'admin',
+      employeeName:U?.name||'Admin',
+      receiver,
+      receivedBy:receiver,
+      note
+    };
+    S.finance.push(fin);
+    saveAndSync('finance',fin);
+  }
+  const paidNow=clientMonthFinancePaid(c.id,month);
+  inv.received=paidNow;
+  inv.due=Math.max(0,total-discount-paidNow);
+  inv.status=inv.due<=0?'Paid':(paidNow>0?'Partial':'Unpaid');
+  inv.note=note;
+  inv.receivedBy=receiver;
+  inv.employeeName=U?.name||'Admin';
+  inv.paidAt=amount>0?now():inv.paidAt;
+  saveAndSync('invoices',inv);
+  closeBillingModal();
+  toast(`Payment saved. Discount: ${money(discount)}`,'success');
+  billingPage();
+  setTimeout(()=>{ if(sendWA)whatsappFeeSlip(clientId); if(printSlip)printFeeSlip(clientId); },400);
+}
+/* Make finance filters find employee-tagged income */
+function financeEntryEmployee(e){
+  return e.by||e.emp||e.employee||'admin';
+}
+
+
+
+/* ===== BILLING SEARCH BOX ABOVE LIST ===== */
+function billingPage(){
+  ensureBillingState();
+  const month=window.billingMonth||billMonthNow();
+  const filter=window.billingFilter||'all';
+  const limit=window.billingLimit||35;
+  window.billingPageNo=window.billingPageNo||1;
+
+  let rows=clientBillRows(month);
+  if(filter==='paid')rows=rows.filter(r=>r.status==='Paid');
+  if(filter==='unpaid')rows=rows.filter(r=>r.status==='Unpaid');
+  if(filter==='partial')rows=rows.filter(r=>r.status==='Partial');
+
+  const q=(window.billingSearch||'').toLowerCase();
+  if(q)rows=rows.filter(r=>{
+    const c=r.client;
+    return [c.name,c.mobile,c.ccode,c.pin,c.pppoe,c.package,c.area,c.address,r.status,r.total,r.received,r.due].join(' ').toLowerCase().includes(q);
+  });
+
+  const sortIndex=window.billingSortIndex;
+  const sortDir=window.billingSortDir||'asc';
+  if(sortIndex!==undefined && sortIndex!==null && sortIndex>0 && sortIndex<10){
+    rows.sort((a,b)=>{
+      const ac=a.client,bc=b.client;
+      const arrA=['',ac.name,ac.mobile,ac.ccode||ac.pin,ac.package,a.total,a.discount||0,a.received,a.due,a.status];
+      const arrB=['',bc.name,bc.mobile,bc.ccode||bc.pin,bc.package,b.total,b.discount||0,b.received,b.due,b.status];
+      const av=sortValue(arrA[sortIndex]),bv=sortValue(arrB[sortIndex]);
+      if(typeof av==='number'&&typeof bv==='number')return sortDir==='asc'?av-bv:bv-av;
+      return sortDir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+    });
+  }
+
+  const totalRows=rows.length;
+  const pages=limit==='all'?1:Math.max(1,Math.ceil(totalRows/(+limit||10)));
+  if(window.billingPageNo>pages)window.billingPageNo=pages;
+  const page=window.billingPageNo;
+  const start=limit==='all'?0:(page-1)*(+limit||10);
+  const shownRows=limit==='all'?rows:rows.slice(start,start+(+limit||10));
+
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>💳 Client Billing</h2></div>
+    <div class="row two">
+      <div class="fg"><label>Billing Month</label><input type="month" value="${esc(month)}" onchange="window.billingMonth=this.value;window.billingPageNo=1;billingPage()"></div>
+      <div class="fg"><label>Status Filter</label><select onchange="window.billingFilter=this.value;window.billingPageNo=1;billingPage()"><option value="all" ${filter==='all'?'selected':''}>All</option><option value="paid" ${filter==='paid'?'selected':''}>Paid</option><option value="unpaid" ${filter==='unpaid'?'selected':''}>Unpaid</option><option value="partial" ${filter==='partial'?'selected':''}>Partial</option></select></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="generateSelectedBills()">Generate Selected Bills</button>
+      <button class="btn btn-s" onclick="whatsappSelectedFeeSlips()">Selected Fee Slip WA</button>
+      <button class="btn btn-i" onclick="printSelectedFeeSlips()">Print Selected Slips</button>
+      <button class="btn btn-w" onclick="receiveSelectedFirst()">Receive Selected</button>
+      <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
+      <button class="btn btn-i" onclick="printBillingReport()">Print Report</button>
+      <button class="btn btn-w" onclick="recalcBillingFromFinance()">Recalculate</button>
+      <button class="btn btn-l" onclick="openSlipFieldsModal()">Slip Fields</button>
+      <span id="billingSelectedCount" class="badge pending">0 selected</span>
+    </div>
+  </div>
+
+  ${billingStatusCards(month)}
+
+  <div class="summary">
+    <div class="sum">Current Month<b>${esc(month)}</b></div>
+    <div class="sum">Filter<b>${esc(filter.toUpperCase())}</b></div>
+    <div class="sum">Showing<b>${shownRows.length} / ${totalRows}</b></div>
+    <div class="sum">Page<b>${page} / ${pages}</b></div>
+  </div>
+
+  <div class="card">
+    <div class="head"><h2>Client Billing List</h2></div>
+    <div class="table-controls billing-list-controls">
+      <div class="left" style="flex:1;min-width:220px">
+        <label style="font-weight:900;color:#374151">Search Client</label>
+        <input value="${esc(window.billingSearch||'')}" placeholder="Search name, mobile, PPPoE, C.Code, package..." oninput="window.billingSearch=this.value;window.billingPageNo=1;billingPage()">
+      </div>
+      <div class="right">
+        <label style="font-weight:900">Show</label>
+        <select onchange="window.billingLimit=this.value;window.billingPageNo=1;billingPage()">
+          <option ${limit==10?'selected':''}>10</option>
+          <option ${limit==35?'selected':''}>35</option>
+          <option ${limit==50?'selected':''}>50</option>
+          <option ${limit==100?'selected':''}>100</option>
+          <option value="all" ${limit==='all'?'selected':''}>all</option>
+        </select>
+      </div>
+    </div>
+    <div class="tbl"><table><thead><tr>
+      <th><input type="checkbox" onchange="toggleAllBillingChecks(this)"></th>
+      <th onclick="setBillingSort(1)">Client${sortArrow(1)}</th>
+      <th onclick="setBillingSort(2)">Mobile${sortArrow(2)}</th>
+      <th onclick="setBillingSort(3)">C.Code${sortArrow(3)}</th>
+      <th onclick="setBillingSort(4)">Package${sortArrow(4)}</th>
+      <th onclick="setBillingSort(5)">Bill${sortArrow(5)}</th>
+      <th onclick="setBillingSort(6)">Discount${sortArrow(6)}</th>
+      <th onclick="setBillingSort(7)">Received${sortArrow(7)}</th>
+      <th onclick="setBillingSort(8)">Due${sortArrow(8)}</th>
+      <th onclick="setBillingSort(9)">Status${sortArrow(9)}</th>
+      <th>Action</th>
+    </tr></thead><tbody>${shownRows.map(r=>{
+      const c=r.client;
+      const status=r.status==='Paid'?'<span class="badge done">Paid</span>':r.status==='Partial'?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
+      return `<tr>
+        <td><input type="checkbox" class="billing-check" value="${c.id}" onchange="updateBillingSelectedCount()"></td>
+        <td><b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small></td>
+        <td>${esc(c.mobile||'-')}</td>
+        <td>${esc(c.ccode||c.pin||'-')}</td>
+        <td>${esc(c.package||'-')}</td>
+        <td>${money(r.total)}</td>
+        <td>${money(r.discount||0)}</td>
+        <td>${money(r.received)}</td>
+        <td>${money(r.due)}</td>
+        <td>${status}</td>
+        <td>${compactBillingActionMenu(c.id)}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div>
+    ${paginationButtons(totalRows,page,limit,'billingGotoPage')}
+  </div>`;
+}
 
 </script>
 </body>
