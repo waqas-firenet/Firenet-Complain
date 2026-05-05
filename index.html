@@ -326,6 +326,9 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
 @media(max-width:850px){.target-mini{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.target-mini{grid-template-columns:1fr}}
 
+
+.billing-check{width:18px;height:18px;accent-color:#e74c3c}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -587,7 +590,7 @@ function openApp(){sanitizeState();if(!U||!U.role){S.session=null;saveLocal();re
 function logout(){S.session=null;saveLocal();location.reload()}function toggleMenu(){pm.classList.toggle('active')}function openPwd(){pwdModal.classList.add('active');pm.classList.remove('active')}function closePwd(){pwdModal.classList.remove('active')}
 function savePwd(){let v=newPwd.value.trim();if(v.length<3)return toast('Minimum 3 characters','error');if(U.role==='admin'){S.admin.p=v;fbSettings()}else{let e=S.employees.find(x=>x.id===U.id);if(e){e.pin=v;fbSet('employees',e)}U.pin=v;S.session=U}saveLocal();newPwd.value='';closePwd();toast('Password changed','success')}
 function items(){
- let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['clients','Clients','🌐'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['settings','Settings','⚙️'],['backup','Backup','💾']];
+ let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['clients','Clients','🌐'],['billing','Billing','💳'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['settings','Settings','⚙️'],['backup','Backup','💾']];
  if(U.role==='client')return [['dashboard','My Portal','🏠'],['complaints','Support','🛠️']];
  return U.role==='admin'?a:a.filter(x=>x[0]==='dashboard'||can(x[0]));
 }
@@ -597,7 +600,7 @@ function tab(x){if(!items().some(i=>i[0]===x))x='dashboard';TAB=x;document.query
 function renderCurrent(){
  try{
   sanitizeState();
-  const map={dashboard:dash,complaints,clients:clientsPage,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:openNewsPage,settings:openSettingsPage,backup};
+  const map={dashboard:dash,complaints,clients:clientsPage,billing:billingPage,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:openNewsPage,settings:openSettingsPage,backup};
   (map[TAB]||dash)();
   setTimeout(()=>{if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker();if(typeof setupTableEnhancer==='function')setupTableEnhancer();if(typeof enhanceAllTables==='function')enhanceAllTables();},50);
  }catch(err){
@@ -724,6 +727,7 @@ function dash(){
    <div class="stable-quick">
     <div class="stable-quick-card" onclick="tab('complaints')"><div class="q">🛠️</div><b>Complaints</b><small>Add and assign tasks</small></div>
     <div class="stable-quick-card" onclick="tab('invoice')"><div class="q">🧾</div><b>Create Invoice</b><small>New connection and due</small></div>
+    <div class="stable-quick-card" onclick="tab('billing')"><div class="q">💳</div><b>Billing</b><small>Paid / unpaid clients</small></div>
     <div class="stable-quick-card" onclick="tab('finance')"><div class="q">💰</div><b>Finance</b><small>Recovery and expenses</small></div>
     <div class="stable-quick-card" onclick="tab('targets')"><div class="q">🎯</div><b>Targets</b><small>Sales and collection</small></div>
     <div class="stable-quick-card" onclick="openSettingsPage()"><div class="q">⚙️</div><b>Settings</b><small>WhatsApp and company settings</small></div>
@@ -2239,6 +2243,495 @@ function markAllNotificationsRead(){
   renderNotificationsPanel();
 }
 try{restoreTickerDirectBackup();}catch(e){}
+
+
+
+/* ===== CLIENT BILLING MODULE: PAID / UNPAID ===== */
+function ensureBillingState(){
+  S=S||{};
+  S.clients=Array.isArray(S.clients)?S.clients:[];
+  S.invoices=Array.isArray(S.invoices)?S.invoices:[];
+  S.finance=Array.isArray(S.finance)?S.finance:[];
+  S.appSettings=S.appSettings||{};
+}
+function billMonthNow(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+function billDueDateForMonth(month){
+  const day=Number(S.appSettings?.defaultDueDay||10)||10;
+  return month+'-'+String(Math.min(Math.max(day,1),28)).padStart(2,'0');
+}
+function clientMonthlyBillAmount(c){
+  return +(c.bill||c.monthlyFee||c.mBill||c.monthly||0);
+}
+function clientBillRows(month=billMonthNow()){
+  ensureBillingState();
+  return S.clients.filter(c=>c.active!==false).map(c=>{
+    const bills=S.invoices.filter(v=>
+      (v.billMonth===month || (String(v.date||'').slice(0,7)===month && (v.work==='Monthly Fee'||v.work==='Monthly Bill'))) &&
+      (v.clientId===c.id || v.phone===c.mobile || v.cust===c.name)
+    );
+    const total=bills.reduce((s,v)=>s+(+v.total||0),0) || clientMonthlyBillAmount(c);
+    const received=bills.reduce((s,v)=>s+(+v.received||0),0);
+    const due=Math.max(0,total-received);
+    const status=due<=0 && (bills.length||total>0) ? 'Paid' : 'Unpaid';
+    return {client:c,bills,total,received,due,status};
+  });
+}
+function billingSummary(month=billMonthNow()){
+  const rows=clientBillRows(month);
+  return {
+    clients:rows.length,
+    paid:rows.filter(r=>r.status==='Paid').length,
+    unpaid:rows.filter(r=>r.status!=='Paid').length,
+    total:rows.reduce((s,r)=>s+r.total,0),
+    received:rows.reduce((s,r)=>s+r.received,0),
+    due:rows.reduce((s,r)=>s+r.due,0)
+  };
+}
+function billingPage(){
+  ensureBillingState();
+  const month=window.billingMonth||billMonthNow();
+  const filter=window.billingFilter||'all';
+  let rows=clientBillRows(month);
+  if(filter==='paid')rows=rows.filter(r=>r.status==='Paid');
+  if(filter==='unpaid')rows=rows.filter(r=>r.status==='Unpaid');
+  if(filter==='partial')rows=rows.filter(r=>r.status==='Partial');
+  const sum=billingSummary(month);
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>💳 Client Billing</h2></div>
+    <div class="row">
+      <div class="fg"><label>Billing Month</label><input type="month" id="billingMonthInput" value="${esc(month)}" onchange="window.billingMonth=this.value;billingPage()"></div>
+      <div class="fg"><label>Status Filter</label><select id="billingFilterInput" onchange="window.billingFilter=this.value;billingPage()"><option value="all" ${filter==='all'?'selected':''}>All</option><option value="paid" ${filter==='paid'?'selected':''}>Paid</option><option value="unpaid" ${filter==='unpaid'?'selected':''}>Unpaid</option><option value="partial" ${filter==='partial'?'selected':''}>Partial</option></select></div>
+      <div class="fg"><label>&nbsp;</label><button class="btn btn-p" onclick="generateMonthlyBills()">Generate Bills for Current Clients</button></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="generateSelectedBills()">Generate Selected Bills</button>
+      <button class="btn btn-s" onclick="whatsappSelectedFeeSlips()">Selected Fee Slip WA</button>
+      <button class="btn btn-i" onclick="printSelectedFeeSlips()">Print Selected Slips</button>
+      <button class="btn btn-w" onclick="receiveSelectedFirst()">Receive Selected</button>
+      <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
+      <button class="btn btn-i" onclick="printBillingReport()">Print Billing Report</button>
+      <button class="btn btn-w" onclick="recalcBillingFromFinance()">Recalculate From Income</button>
+      <button class="btn btn-l" onclick="tab('clients')">Clients</button>
+      <span id="billingSelectedCount" class="badge pending">0 selected</span>
+    </div>
+  </div>
+  ${billingStatusCards(month)}
+  <div class="summary">
+    <div class="sum">Current Month<b>${esc(month)}</b></div>
+    <div class="sum">Current Filter<b>${esc(filter.toUpperCase())}</b></div>
+    <div class="sum">Shown Rows<b>${rows.length}</b></div>
+    <div class="sum">Due Date<b>${esc(billDueDateForMonth(month))}</b></div>
+  </div>
+  ${simpleTable('Client Bills',['<input type="checkbox" onchange="toggleAllBillingChecks(this)">','Client','Mobile','C.Code','Package','Bill','Received','Due','Status','Action'],rows.map(r=>{
+    const c=r.client;
+    const status=r.status==='Paid'?'<span class="badge done">Paid</span>':'<span class="badge pending">Unpaid</span>';
+    return `<tr>
+      <td><input type="checkbox" class="billing-check" value="${c.id}" onchange="updateBillingSelectedCount()"></td>
+      <td><b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small></td>
+      <td>${esc(c.mobile||'-')}</td>
+      <td>${esc(c.ccode||c.pin||'-')}</td>
+      <td>${esc(c.package||'-')}</td>
+      <td>${money(r.total)}</td>
+      <td>${money(r.received)}</td>
+      <td>${money(r.due)}</td>
+      <td>${status}</td>
+      <td><div class="actions">
+        <button class="btn btn-s btn-sm" onclick="receiveClientBill('${c.id}')">Receive</button>
+        <button class="btn btn-i btn-sm" onclick="whatsappFeeSlip('${c.id}')">Fee Slip WA</button>
+        <button class="btn btn-l btn-sm" onclick="printFeeSlip('${c.id}')">Print Slip</button>
+        <button class="btn btn-w btn-sm" onclick="generateSingleClientBill('${c.id}')">Create Bill</button>
+      </div></td>
+    </tr>`;
+  }))}
+  `;
+}
+function generateMonthlyBills(){
+  ensureBillingState();
+  const month=window.billingMonth||billMonthNow();
+  const dueDate=billDueDateForMonth(month);
+  let created=0,skipped=0;
+  S.clients.filter(c=>c.active!==false).forEach(c=>{
+    const exists=S.invoices.some(v=>(v.billMonth===month)&&(v.clientId===c.id || v.phone===c.mobile));
+    if(exists){skipped++;return;}
+    const amount=clientMonthlyBillAmount(c);
+    if(!amount){skipped++;return;}
+    const inv={id:id('inv'),clientId:c.id,cust:c.name,phone:c.mobile,ccode:c.ccode||c.pin||'',pppoe:c.pppoe||'',package:c.package||'',work:'Monthly Bill',billMonth:month,total:amount,received:0,due:amount,dueDate,date:today(),time:now(),by:U?.id||'admin',status:'Unpaid'};
+    S.invoices.push(inv);
+    saveAndSync('invoices',inv);
+    created++;
+  });
+  toast(`Bills created: ${created}, skipped: ${skipped}`,'success');
+  billingPage();
+}
+function generateSingleClientBill(clientId){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const month=window.billingMonth||billMonthNow();
+  const exists=S.invoices.find(v=>(v.billMonth===month)&&(v.clientId===c.id || v.phone===c.mobile));
+  if(exists)return toast('This month bill already exists','warning');
+  const amount=clientMonthlyBillAmount(c);
+  if(!amount)return toast('Client bill amount missing','error');
+  const inv={id:id('inv'),clientId:c.id,cust:c.name,phone:c.mobile,ccode:c.ccode||c.pin||'',pppoe:c.pppoe||'',package:c.package||'',work:'Monthly Bill',billMonth:month,total:amount,received:0,due:amount,dueDate:billDueDateForMonth(month),date:today(),time:now(),by:U?.id||'admin',status:'Unpaid'};
+  S.invoices.push(inv);
+  saveAndSync('invoices',inv);
+  toast('Bill created','success');
+  billingPage();
+}
+function receiveClientBill(clientId){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const month=window.billingMonth||billMonthNow();
+  let inv=S.invoices.find(v=>(v.billMonth===month)&&(v.clientId===c.id || v.phone===c.mobile));
+  if(!inv){
+    const amount=clientMonthlyBillAmount(c);
+    inv={id:id('inv'),clientId:c.id,cust:c.name,phone:c.mobile,ccode:c.ccode||c.pin||'',pppoe:c.pppoe||'',package:c.package||'',work:'Monthly Bill',billMonth:month,total:amount,received:0,due:amount,dueDate:billDueDateForMonth(month),date:today(),time:now(),by:U?.id||'admin',status:'Unpaid'};
+    S.invoices.push(inv);
+  }
+  const due=+inv.due||0;
+  const amount=+(prompt(`Receive payment for ${c.name}\nDue: ${money(due)}\nEnter amount:`, due)||0);
+  if(amount<=0)return;
+  const mode=(prompt('Payment mode: cash / online','cash')||'cash').toLowerCase()==='online'?'online':'cash';
+  inv.received=(+inv.received||0)+amount;
+  inv.due=Math.max(0,(+inv.total||0)-(+inv.received||0));
+  inv.status=inv.due<=0?'Paid':'Partial';
+  inv.paidAt=now();
+  saveAndSync('invoices',inv);
+  const fin={id:id('fi'),type:'income',mode,amount,customer:c.name,paidBy:c.name,clientId:c.id,phone:c.mobile,cat:'Monthly Bill - '+month,date:today(),time:now(),by:U?.id||'admin',receiver:U?.name||'Admin'};
+  S.finance.push(fin);
+  saveAndSync('finance',fin);
+  toast(`Payment received: ${money(amount)}`,'success');
+  setTimeout(()=>{ if(confirm('Print fee slip now?')) printFeeSlip(clientId); },300);
+  billingPage();
+}
+function sendClientBillForMonth(clientId){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return;
+  const month=window.billingMonth||billMonthNow();
+  const row=clientBillRows(month).find(r=>r.client.id===clientId);
+  const due=row?row.due:clientMonthlyBillAmount(c);
+  const total=row?row.total:clientMonthlyBillAmount(c);
+  const received=row?row.received:0;
+  const status=due<=0?'Paid':'Unpaid';
+  const msg=`🌐 *${S.appSettings?.companyName||'Fire.net.pk'} Monthly Bill*%0A━━━━━━━━━━━━━━%0AName: ${encodeURIComponent(c.name||'-')}%0AMobile: ${encodeURIComponent(c.mobile||'-')}%0AC.Code: ${encodeURIComponent(c.ccode||c.pin||'-')}%0APPPoE: ${encodeURIComponent(c.pppoe||'-')}%0APackage: ${encodeURIComponent(c.package||'-')}%0AMonth: ${encodeURIComponent(month)}%0ABill: ${encodeURIComponent(money(total))}%0AReceived: ${encodeURIComponent(money(received))}%0ADue: ${encodeURIComponent(money(due))}%0AStatus: ${encodeURIComponent(status)}%0ADue Date: ${encodeURIComponent(billDueDateForMonth(month))}%0A━━━━━━━━━━━━━━%0A${encodeURIComponent(S.appSettings?.invoiceFooter||'Please pay your bill on time.')}`;
+  window.open('https://wa.me/'+waNumber(c.mobile)+'?text='+msg,'_blank');
+}
+function sendAllUnpaidBills(){
+  const month=window.billingMonth||billMonthNow();
+  const unpaid=clientBillRows(month).filter(r=>r.status!=='Paid');
+  if(!unpaid.length)return toast('No unpaid clients','success');
+  if(!confirm(`Open WhatsApp messages for ${unpaid.length} unpaid clients?`))return;
+  unpaid.forEach((r,i)=>setTimeout(()=>sendClientBillForMonth(r.client.id),i*900));
+}
+function printBillingReport(){
+  const month=window.billingMonth||billMonthNow();
+  const rows=clientBillRows(month);
+  const sum=billingSummary(month);
+  const html=`<html><head><title>Billing Report</title><style>body{font-family:Arial;padding:24px}h1{color:#e74c3c}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px;font-size:12px}th{background:#243447;color:#fff}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.box{border:1px solid #ddd;padding:10px;border-radius:8px}</style></head><body><h1>Fire.net.pk Billing Report</h1><p>Month: ${esc(month)} | Generated: ${esc(now())}</p><div class="grid"><div class="box">Clients<br><b>${sum.clients}</b></div><div class="box">Paid<br><b>${sum.paid}</b></div><div class="box">Unpaid<br><b>${sum.unpaid}</b></div><div class="box">Due<br><b>${money(sum.due)}</b></div></div><table><thead><tr><th>Client</th><th>Mobile</th><th>Package</th><th>Bill</th><th>Received</th><th>Due</th><th>Status</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.client.name)}</td><td>${esc(r.client.mobile)}</td><td>${esc(r.client.package||'-')}</td><td>${money(r.total)}</td><td>${money(r.received)}</td><td>${money(r.due)}</td><td>${r.status}</td></tr>`).join('')}</tbody></table></body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),500);
+}
+
+
+
+/* ===== BILLING FEE SLIP PRINT + WHATSAPP ===== */
+function latestPaymentForClient(clientId, month=billMonthNow()){
+  ensureBillingState();
+  const rows=(S.finance||[]).filter(f=>f.clientId===clientId && String(f.cat||'').includes(month) && typeOf(f)!=='expense');
+  return rows.length ? rows[rows.length-1] : null;
+}
+function getClientBillRow(clientId, month=billMonthNow()){
+  return clientBillRows(month).find(r=>r.client.id===clientId);
+}
+function feeSlipData(clientId){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return null;
+  const month=window.billingMonth||billMonthNow();
+  const row=getClientBillRow(clientId,month) || {
+    total:clientMonthlyBillAmount(c),
+    received:0,
+    due:clientMonthlyBillAmount(c),
+    status:'Unpaid'
+  };
+  const pay=latestPaymentForClient(clientId,month);
+  return {c,month,row,pay};
+}
+function shortFeeSlipText(clientId){
+  const d=feeSlipData(clientId);
+  if(!d)return '';
+  const c=d.c, month=d.month, row=d.row, pay=d.pay;
+  const paidNow=pay?money(pay.amount):'-';
+  const mode=pay?(pay.mode||'cash').toUpperCase():'-';
+  return `🧾 *${S.appSettings?.companyName||'Fire.net.pk'} Fee Slip*%0A`+
+         `Name: ${encodeURIComponent(c.name||'-')}%0A`+
+         `C.Code: ${encodeURIComponent(c.ccode||c.pin||'-')}%0A`+
+         `PPPoE: ${encodeURIComponent(c.pppoe||'-')}%0A`+
+         `Month: ${encodeURIComponent(month)}%0A`+
+         `Paid Now: ${encodeURIComponent(paidNow)}%0A`+
+         `Mode: ${encodeURIComponent(mode)}%0A`+
+         `Total Paid: ${encodeURIComponent(money(row.received))}%0A`+
+         `Remaining Due: ${encodeURIComponent(money(row.due))}%0A`+
+         `Status: ${encodeURIComponent(row.status)}%0A`+
+         `Date: ${encodeURIComponent(now())}`;
+}
+function whatsappFeeSlip(clientId){
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const msg=shortFeeSlipText(clientId);
+  window.open('https://wa.me/'+waNumber(c.mobile)+'?text='+msg,'_blank');
+}
+function printFeeSlip(clientId){
+  const d=feeSlipData(clientId);
+  if(!d)return toast('Client not found','error');
+  const c=d.c, month=d.month, row=d.row, pay=d.pay;
+  const paidNow=pay?money(pay.amount):'-';
+  const mode=pay?(pay.mode||'cash').toUpperCase():'-';
+  const html=`<html><head><title>Fee Slip</title>
+  <style>
+    body{font-family:Arial;padding:18px;color:#111}
+    .slip{max-width:390px;margin:auto;border:2px solid #111;border-radius:10px;padding:14px}
+    h2{text-align:center;margin:0;color:#e74c3c}
+    .sub{text-align:center;font-size:12px;margin:4px 0 12px;color:#444}
+    table{width:100%;border-collapse:collapse}
+    td{padding:7px;border-bottom:1px dashed #bbb;font-size:13px}
+    td:last-child{text-align:right;font-weight:bold}
+    .foot{text-align:center;margin-top:12px;font-size:12px;color:#555}
+    .status{font-weight:bold;padding:6px;border:1px solid #111;border-radius:8px;text-align:center;margin-top:10px}
+    @media print{body{padding:0}.slip{border:1px solid #000}}
+  </style></head><body>
+  <div class="slip">
+    <h2>${esc(S.appSettings?.companyName||'Fire.net.pk')}</h2>
+    <div class="sub">Internet Fee Payment Slip</div>
+    <table>
+      <tr><td>Client Name</td><td>${esc(c.name||'-')}</td></tr>
+      <tr><td>Mobile</td><td>${esc(c.mobile||'-')}</td></tr>
+      <tr><td>C.Code</td><td>${esc(c.ccode||c.pin||'-')}</td></tr>
+      <tr><td>PPPoE</td><td>${esc(c.pppoe||'-')}</td></tr>
+      <tr><td>Package</td><td>${esc(c.package||'-')}</td></tr>
+      <tr><td>Month</td><td>${esc(month)}</td></tr>
+      <tr><td>Paid Now</td><td>${esc(paidNow)}</td></tr>
+      <tr><td>Payment Mode</td><td>${esc(mode)}</td></tr>
+      <tr><td>Total Bill</td><td>${money(row.total)}</td></tr>
+      <tr><td>Total Paid</td><td>${money(row.received)}</td></tr>
+      <tr><td>Remaining Due</td><td>${money(row.due)}</td></tr>
+      <tr><td>Date</td><td>${esc(now())}</td></tr>
+    </table>
+    <div class="status">Status: ${esc(row.status)}</div>
+    <div class="foot">${esc(S.appSettings?.invoiceFooter||'Thank you for your payment.')}</div>
+  </div>
+  </body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(),500);
+}
+
+
+
+/* ===== BILLING PAYMENT SOURCE FIX: FINANCE IS SOURCE OF TRUTH ===== */
+function clientMonthFinancePaid(clientId, month=billMonthNow()){
+  ensureBillingState();
+  const c=(S.clients||[]).find(x=>x.id===clientId);
+  return (S.finance||[]).filter(f=>{
+    const isIncome=(typeof typeOf==='function'?typeOf(f):f.type)!=='expense';
+    const sameClient=f.clientId===clientId || (c && (f.phone===c.mobile || f.customer===c.name || f.paidBy===c.name));
+    const sameMonth=String(f.billMonth||'')===month || String(f.cat||'').includes(month) || String(f.date||'').slice(0,7)===month;
+    const isBill=String(f.cat||'').toLowerCase().includes('monthly bill') || String(f.cat||'').toLowerCase().includes('monthly fee') || sameMonth;
+    return isIncome && sameClient && sameMonth && isBill;
+  }).reduce((s,f)=>s+(+f.amount||0),0);
+}
+function syncInvoicePaymentFromFinance(clientId, month=billMonthNow()){
+  ensureBillingState();
+  const paid=clientMonthFinancePaid(clientId,month);
+  (S.invoices||[]).filter(v=>v.billMonth===month && v.clientId===clientId).forEach(v=>{
+    v.received=paid;
+    v.due=Math.max(0,(+v.total||0)-paid);
+    v.status=v.due<=0?'Paid':(paid>0?'Partial':'Unpaid');
+    saveAndSync('invoices',v);
+  });
+  return paid;
+}
+/* Override billing rows: do not trust invoice.received when finance entry is deleted */
+function clientBillRows(month=billMonthNow()){
+  ensureBillingState();
+  return S.clients.filter(c=>c.active!==false).map(c=>{
+    const bills=S.invoices.filter(v=>
+      (v.billMonth===month || (String(v.date||'').slice(0,7)===month && (v.work==='Monthly Fee'||v.work==='Monthly Bill'))) &&
+      (v.clientId===c.id || v.phone===c.mobile || v.cust===c.name)
+    );
+    const total=bills.reduce((s,v)=>s+(+v.total||0),0) || clientMonthlyBillAmount(c);
+    const received=clientMonthFinancePaid(c.id,month);
+    const due=Math.max(0,total-received);
+    const status=due<=0 && total>0 ? 'Paid' : (received>0?'Partial':'Unpaid');
+    return {client:c,bills,total,received,due,status};
+  });
+}
+/* Override receive bill: finance creates paid status; invoice mirrors finance */
+function receiveClientBill(clientId){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const month=window.billingMonth||billMonthNow();
+  let inv=S.invoices.find(v=>(v.billMonth===month)&&(v.clientId===c.id || v.phone===c.mobile));
+  if(!inv){
+    const amount=clientMonthlyBillAmount(c);
+    inv={id:id('inv'),clientId:c.id,cust:c.name,phone:c.mobile,ccode:c.ccode||c.pin||'',pppoe:c.pppoe||'',package:c.package||'',work:'Monthly Bill',billMonth:month,total:amount,received:0,due:amount,dueDate:billDueDateForMonth(month),date:today(),time:now(),by:U?.id||'admin',status:'Unpaid'};
+    S.invoices.push(inv);
+    saveAndSync('invoices',inv);
+  }
+  const alreadyPaid=clientMonthFinancePaid(c.id,month);
+  const realDue=Math.max(0,(+inv.total||0)-alreadyPaid);
+  const amount=+(prompt(`Receive payment for ${c.name}\nDue: ${money(realDue)}\nEnter amount:`, realDue)||0);
+  if(amount<=0)return;
+  const mode=(prompt('Payment mode: cash / online','cash')||'cash').toLowerCase()==='online'?'online':'cash';
+  const fin={id:id('fi'),type:'income',mode,amount,customer:c.name,paidBy:c.name,clientId:c.id,phone:c.mobile,billMonth:month,cat:'Monthly Bill - '+month,date:today(),time:now(),by:U?.id||'admin',receiver:U?.name||'Admin'};
+  S.finance.push(fin);
+  saveAndSync('finance',fin);
+  const paidNow=clientMonthFinancePaid(c.id,month);
+  inv.received=paidNow;
+  inv.due=Math.max(0,(+inv.total||0)-paidNow);
+  inv.status=inv.due<=0?'Paid':(paidNow>0?'Partial':'Unpaid');
+  inv.paidAt=now();
+  saveAndSync('invoices',inv);
+  toast(`Payment received: ${money(amount)}`,'success');
+  setTimeout(()=>{ if(confirm('Print fee slip now?')) printFeeSlip(clientId); },300);
+  billingPage();
+}
+function recalcBillingFromFinance(){
+  ensureBillingState();
+  const month=window.billingMonth||billMonthNow();
+  S.clients.forEach(c=>syncInvoicePaymentFromFinance(c.id,month));
+  saveLocal();
+  toast('Billing recalculated from income entries','success');
+  billingPage();
+}
+
+
+
+/* ===== BILLING TABLE SELECTION ACTIONS ===== */
+function selectedBillingClientIds(){
+  return [...document.querySelectorAll('.billing-check:checked')].map(x=>x.value);
+}
+function toggleAllBillingChecks(master){
+  document.querySelectorAll('.billing-check').forEach(x=>x.checked=master.checked);
+  updateBillingSelectedCount();
+}
+function updateBillingSelectedCount(){
+  const n=selectedBillingClientIds().length;
+  const el=document.getElementById('billingSelectedCount');
+  if(el)el.textContent=n+' selected';
+}
+function generateSelectedBills(){
+  const ids=selectedBillingClientIds();
+  if(!ids.length)return toast('Select at least one client','warning');
+  const month=window.billingMonth||billMonthNow();
+  const dueDate=billDueDateForMonth(month);
+  let created=0,skipped=0;
+  ids.forEach(clientId=>{
+    const c=S.clients.find(x=>x.id===clientId);
+    if(!c){skipped++;return;}
+    const exists=S.invoices.some(v=>(v.billMonth===month)&&(v.clientId===c.id || v.phone===c.mobile));
+    if(exists){skipped++;return;}
+    const amount=clientMonthlyBillAmount(c);
+    if(!amount){skipped++;return;}
+    const inv={id:id('inv'),clientId:c.id,cust:c.name,phone:c.mobile,ccode:c.ccode||c.pin||'',pppoe:c.pppoe||'',package:c.package||'',work:'Monthly Bill',billMonth:month,total:amount,received:0,due:amount,dueDate,date:today(),time:now(),by:U?.id||'admin',status:'Unpaid'};
+    S.invoices.push(inv);
+    saveAndSync('invoices',inv);
+    created++;
+  });
+  toast(`Selected bills created: ${created}, skipped: ${skipped}`,'success');
+  billingPage();
+}
+function whatsappSelectedFeeSlips(){
+  const ids=selectedBillingClientIds();
+  if(!ids.length)return toast('Select at least one client','warning');
+  if(!confirm(`Open WhatsApp fee slips for ${ids.length} selected clients?`))return;
+  ids.forEach((clientId,i)=>setTimeout(()=>whatsappFeeSlip(clientId),i*850));
+}
+function whatsappSelectedUnpaidBills(){
+  const ids=selectedBillingClientIds();
+  if(!ids.length)return toast('Select at least one client','warning');
+  const month=window.billingMonth||billMonthNow();
+  const unpaid=ids.filter(clientId=>{
+    const row=clientBillRows(month).find(r=>r.client.id===clientId);
+    return row && row.status!=='Paid';
+  });
+  if(!unpaid.length)return toast('Selected clients are already paid','success');
+  if(!confirm(`Open WhatsApp unpaid bill messages for ${unpaid.length} selected clients?`))return;
+  unpaid.forEach((clientId,i)=>setTimeout(()=>sendClientBillForMonth(clientId),i*850));
+}
+function printSelectedFeeSlips(){
+  const ids=selectedBillingClientIds();
+  if(!ids.length)return toast('Select at least one client','warning');
+  ids.forEach((clientId,i)=>setTimeout(()=>printFeeSlip(clientId),i*650));
+}
+function receiveSelectedFirst(){
+  const ids=selectedBillingClientIds();
+  if(!ids.length)return toast('Select at least one client','warning');
+  receiveClientBill(ids[0]);
+}
+
+
+
+/* ===== BILLING PAID / UNPAID USER CARDS ===== */
+function billingStatusCards(month=billMonthNow()){
+  const rows=clientBillRows(month);
+  const paidRows=rows.filter(r=>r.status==='Paid');
+  const partialRows=rows.filter(r=>r.status==='Partial');
+  const unpaidRows=rows.filter(r=>r.status==='Unpaid');
+  const paidAmount=paidRows.reduce((s,r)=>s+r.received,0)+partialRows.reduce((s,r)=>s+r.received,0);
+  const unpaidAmount=rows.reduce((s,r)=>s+r.due,0);
+  const totalBill=rows.reduce((s,r)=>s+r.total,0);
+  const collectionPct=totalBill?Math.round((paidAmount/totalBill)*100):0;
+  return `<div class="stable-kpi-grid">
+    <div class="stable-kpi stable-green"><div class="icon">✅</div><span>Paid Users</span><b>${paidRows.length}</b><small>Fully paid clients</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">❌</div><span>Unpaid Users</span><b>${unpaidRows.length}</b><small>No payment received</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">🟡</div><span>Partial Users</span><b>${partialRows.length}</b><small>Some amount paid</small></div>
+    <div class="stable-kpi stable-blue"><div class="icon">📊</div><span>Collection</span><b>${collectionPct}%</b><small>${money(paidAmount)} received</small></div>
+  </div>
+  <div class="summary">
+    <div class="sum">Total Users<b>${rows.length}</b></div>
+    <div class="sum">Paid Amount<b>${money(paidAmount)}</b></div>
+    <div class="sum">Unpaid/Due Amount<b>${money(unpaidAmount)}</b></div>
+    <div class="sum">Total Bill Amount<b>${money(totalBill)}</b></div>
+  </div>`;
+}
+
+
+
+/* ===== CLICKABLE BILLING STATUS CARDS FILTER ===== */
+function setBillingCardFilter(type){
+  window.billingFilter = type || 'all';
+  billingPage();
+}
+function billingStatusCards(month=billMonthNow()){
+  const rows=clientBillRows(month);
+  const paidRows=rows.filter(r=>r.status==='Paid');
+  const partialRows=rows.filter(r=>r.status==='Partial');
+  const unpaidRows=rows.filter(r=>r.status==='Unpaid');
+  const paidAmount=paidRows.reduce((s,r)=>s+r.received,0)+partialRows.reduce((s,r)=>s+r.received,0);
+  const unpaidAmount=rows.reduce((s,r)=>s+r.due,0);
+  const totalBill=rows.reduce((s,r)=>s+r.total,0);
+  const collectionPct=totalBill?Math.round((paidAmount/totalBill)*100):0;
+  const active=window.billingFilter||'all';
+  return `<div class="stable-kpi-grid">
+    <div class="stable-kpi stable-green" style="cursor:pointer;${active==='paid'?'outline:3px solid #16a34a':''}" onclick="setBillingCardFilter('paid')"><div class="icon">✅</div><span>Paid Users</span><b>${paidRows.length}</b><small>Click to show paid list</small></div>
+    <div class="stable-kpi stable-red" style="cursor:pointer;${active==='unpaid'?'outline:3px solid #dc2626':''}" onclick="setBillingCardFilter('unpaid')"><div class="icon">❌</div><span>Unpaid Users</span><b>${unpaidRows.length}</b><small>Click to show unpaid list</small></div>
+    <div class="stable-kpi stable-purple" style="cursor:pointer;${active==='partial'?'outline:3px solid #7c3aed':''}" onclick="setBillingCardFilter('partial')"><div class="icon">🟡</div><span>Partial Users</span><b>${partialRows.length}</b><small>Click to show partial list</small></div>
+    <div class="stable-kpi stable-blue" style="cursor:pointer;${active==='all'?'outline:3px solid #2563eb':''}" onclick="setBillingCardFilter('all')"><div class="icon">📊</div><span>All / Collection</span><b>${collectionPct}%</b><small>Click to show all users</small></div>
+  </div>
+  <div class="summary">
+    <div class="sum">Total Users<b>${rows.length}</b></div>
+    <div class="sum">Paid Amount<b>${money(paidAmount)}</b></div>
+    <div class="sum">Unpaid/Due Amount<b>${money(unpaidAmount)}</b></div>
+    <div class="sum">Total Bill Amount<b>${money(totalBill)}</b></div>
+  </div>`;
+}
 
 </script>
 </body>
