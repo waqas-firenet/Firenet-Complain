@@ -2397,6 +2397,7 @@ function billingPage(){
       <button class="btn btn-p" onclick="generateSelectedBills()">Generate Selected Bills</button>
       <button class="btn btn-s" onclick="whatsappSelectedFeeSlips()">Selected Fee Slip WA</button>
       <button class="btn btn-i" onclick="printSelectedFeeSlips()">Print Selected Slips</button>
+      <button class="btn btn-l" onclick="printSelectedMonthlyBills()">Print Selected Monthly Bills</button>
       <button class="btn btn-w" onclick="receiveSelectedFirst()">Receive Selected</button>
       <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
       <button class="btn btn-i" onclick="printBillingReport()">Print Billing Report</button>
@@ -4994,6 +4995,237 @@ window.addEventListener('load',()=>{
     }catch(e){console.warn(e)}
   },100);
 });
+
+
+
+/* ===== MONTHLY A4 BILL WITH PAYMENT QR ===== */
+function companyInfoLines(){
+  const s=S?.appSettings||{};
+  return {
+    companyName:s.companyName||'Fire.net.pk',
+    address:s.companyAddress||'Your Office Address',
+    mobile:s.companyMobile||s.ownerWhatsApp||'03001234567',
+    email:s.companyEmail||'support@firenet.pk'
+  };
+}
+function getPaymentQrText(client, row, month){
+  const s=S?.appSettings||{};
+  if((s.paymentQrText||'').trim())return s.paymentQrText.trim();
+  const info=companyInfoLines();
+  return `Pay monthly internet bill to ${info.companyName}\nClient: ${client.name||'-'}\nC.Code: ${client.ccode||client.pin||'-'}\nMonth: ${month}\nAmount Due: ${money(row.due)}\nSupport: ${info.mobile}`;
+}
+function monthlyBillNo(client, month){
+  const code=(client.ccode||client.pin||client.id||'0000').toString();
+  return `MB-${month.replace('-','')}-${code}`;
+}
+function getClientBillRow(clientId, month=billMonthNow()){
+  const rows=clientBillRows(month);
+  return rows.find(r=>r.client.id===clientId)||null;
+}
+function monthlyBillDisplayData(clientId, month=billMonthNow()){
+  const c=(S.clients||[]).find(x=>x.id===clientId);
+  if(!c)return null;
+  const row=getClientBillRow(clientId,month) || {
+    client:c,total:clientMonthlyBillAmount(c),discount:0,received:0,due:clientMonthlyBillAmount(c),status:'Unpaid'
+  };
+  const info=companyInfoLines();
+  const billNo=monthlyBillNo(c,month);
+  const dueDate=(row.bills && row.bills[0] && row.bills[0].dueDate) || c.dueDate || c.exDate || billDueDateForMonth(month);
+  const paymentQrText=getPaymentQrText(c,row,month);
+  return {
+    company:info,
+    client:c,
+    row:row,
+    month:month,
+    billNo:billNo,
+    issueDate:today(),
+    dueDate:dueDate,
+    paymentQrText:paymentQrText,
+    paymentQrUrl:getQRImageUrl(paymentQrText),
+    paymentQrBackup:getQRBackupImageUrl(paymentQrText),
+    summary:[
+      {label:'Package', value:c.package||'-'},
+      {label:'User ID / PPPoE', value:c.pppoe||'-'},
+      {label:'Monthly Bill', value:money(row.total)},
+      {label:'Discount', value:money(row.discount||0)},
+      {label:'Already Paid', value:money(row.received||0)},
+      {label:'Net Due', value:money(row.due||0)},
+    ]
+  };
+}
+function printMonthlyBillA4(clientId){
+  const data=monthlyBillDisplayData(clientId, window.billingMonth||billMonthNow());
+  if(!data)return toast('Client not found','error');
+  const c=data.client, r=data.row, info=data.company;
+  const html=`<html><head><title>Monthly Bill</title>
+  <style>
+    @page{size:A4;margin:14mm}
+    body{font-family:Arial,sans-serif;color:#111827;background:#fff}
+    .page{width:100%;max-width:190mm;margin:0 auto}
+    .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #ef4444;padding-bottom:10px;margin-bottom:14px}
+    .brand h1{margin:0;color:#dc2626;font-size:28px}
+    .brand p{margin:4px 0;color:#475569;font-size:12px;line-height:1.5}
+    .billbox{border:1px solid #e5e7eb;border-radius:14px;padding:12px 14px;min-width:210px}
+    .billbox h2{margin:0 0 8px 0;font-size:20px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-bottom:14px}
+    .card{border:1px solid #e5e7eb;border-radius:14px;padding:14px}
+    .card h3{margin:0 0 10px 0;font-size:16px;color:#111827}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .meta .item{background:#f8fafc;border-radius:10px;padding:10px}
+    .meta .item b{display:block;color:#475569;font-size:12px;margin-bottom:4px}
+    .meta .item span{font-weight:800}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid #e5e7eb;font-size:13px}
+    th{text-align:left;background:#f8fafc}
+    .totals{margin-top:12px;margin-left:auto;max-width:320px}
+    .totals .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #cbd5e1}
+    .totals .grand{font-size:20px;font-weight:900;color:#dc2626}
+    .qrbox{text-align:center}
+    .qrbox img{width:170px;height:170px}
+    .badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;background:#fef3c7;color:#92400e}
+    .note{margin-top:14px;padding:12px;border:1px dashed #cbd5e1;border-radius:12px;background:#fcfcfd;font-size:12px;line-height:1.6;color:#475569}
+    .footer{margin-top:14px;font-size:11px;color:#64748b;text-align:center}
+  </style></head><body>
+    <div class="page">
+      <div class="head">
+        <div class="brand">
+          <h1>${esc(info.companyName)}</h1>
+          <p>${esc(info.address)}<br>Mobile: ${esc(info.mobile)}<br>Email: ${esc(info.email)}</p>
+        </div>
+        <div class="billbox">
+          <h2>MONTHLY BILL</h2>
+          <div><b>Bill No:</b> ${esc(data.billNo)}</div>
+          <div><b>Bill Month:</b> ${esc(data.month)}</div>
+          <div><b>Issue Date:</b> ${esc(data.issueDate)}</div>
+          <div><b>Due Date:</b> <span style="color:#dc2626;font-weight:900">${esc(data.dueDate)}</span></div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Bill To</h3>
+          <div class="meta">
+            <div class="item"><b>Customer Name</b><span>${esc(c.name||'-')}</span></div>
+            <div class="item"><b>Mobile</b><span>${esc(c.mobile||'-')}</span></div>
+            <div class="item"><b>Client Code</b><span>${esc(c.ccode||c.pin||'-')}</span></div>
+            <div class="item"><b>User ID / PPPoE</b><span>${esc(c.pppoe||'-')}</span></div>
+            <div class="item"><b>Package</b><span>${esc(c.package||'-')}</span></div>
+            <div class="item"><b>Area</b><span>${esc(c.area||c.zone||c.address||'-')}</span></div>
+          </div>
+        </div>
+        <div class="card qrbox">
+          <h3>Payment QR</h3>
+          <img src="${data.paymentQrUrl}" onerror="this.onerror=null;this.src='${data.paymentQrBackup}'" alt="Payment QR">
+          <div style="font-size:12px;font-weight:800;margin-top:8px">Scan to pay / save payment details</div>
+          <div style="font-size:10px;color:#64748b;margin-top:5px;word-break:break-word">${esc(data.paymentQrText)}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Monthly Bill Summary</h3>
+        <table>
+          <thead><tr><th>Description</th><th>Details</th></tr></thead>
+          <tbody>
+            ${data.summary.map(x=>`<tr><td>${esc(x.label)}</td><td>${esc(x.value)}</td></tr>`).join('')}
+          </tbody>
+        </table>
+        <div class="totals">
+          <div class="row"><span>Total Bill</span><strong>${money(r.total||0)}</strong></div>
+          <div class="row"><span>Discount</span><strong>${money(r.discount||0)}</strong></div>
+          <div class="row"><span>Received</span><strong>${money(r.received||0)}</strong></div>
+          <div class="row grand"><span>Amount Due</span><strong>${money(r.due||0)}</strong></div>
+        </div>
+      </div>
+
+      <div class="note">
+        <b>Important Note:</b><br>
+        Please pay your monthly internet bill on or before the due date to avoid service interruption or late penalties.
+        If you have already paid, please ignore this bill and contact support if the record is not updated.
+        Current status: <span class="badge">${esc(r.status||'Unpaid')}</span>
+      </div>
+
+      <div class="footer">
+        This is a computer-generated monthly bill. Please keep this bill for your record.
+      </div>
+    </div>
+  </body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(),800);
+}
+function printSelectedMonthlyBills(){
+  const ids=[...document.querySelectorAll('.billing-check:checked')].map(x=>x.value);
+  if(!ids.length)return toast('Select clients first','warning');
+  ids.forEach((idv,idx)=>setTimeout(()=>printMonthlyBillA4(idv), idx*900));
+}
+function compactBillingActionMenu(clientId){
+  return actionMenu([
+    {label:'Receive',fn:`receiveClientBill('${clientId}')`},
+    {label:'Fee Slip WA',fn:`whatsappFeeSlip('${clientId}')`},
+    {label:'Print Slip',fn:`printFeeSlip('${clientId}')`},
+    {label:'Print Monthly Bill A4',fn:`printMonthlyBillA4('${clientId}')`},
+    {label:'Edit Bill',fn:`openEditBillModal('${clientId}')`}
+  ]);
+}
+
+
+
+/* ===== FINAL RECEIPT ID FALLBACK FIX ===== */
+function generateReceiptId(){
+  const d=new Date();
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,'0');
+  const da=String(d.getDate()).padStart(2,'0');
+  const h=String(d.getHours()).padStart(2,'0');
+  const mi=String(d.getMinutes()).padStart(2,'0');
+  const rand=Math.floor(Math.random()*9000)+1000;
+  return `FRN-${y}${m}${da}-${h}${mi}-${rand}`;
+}
+function getVerifyBaseUrl(){
+  try{
+    const saved=(S?.appSettings?.verifyBaseUrl||'').trim();
+    if(saved)return saved.replace(/\/+$/,'');
+  }catch(e){}
+  const href=String(location.href||'').split('#')[0];
+  return href.split('?')[0].replace(/\/+$/,'');
+}
+function getVerifyUrl(receiptId){
+  const base=getVerifyBaseUrl();
+  return base ? `${base}?verify=${encodeURIComponent(receiptId)}` : `?verify=${encodeURIComponent(receiptId)}`;
+}
+function getQRImageUrl(txt){
+  return 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data='+encodeURIComponent(txt||'');
+}
+function getQRBackupImageUrl(txt){
+  return 'https://quickchart.io/qr?size=180&text='+encodeURIComponent(txt||'');
+}
+function ensureReceiptForClientMonth(clientId, month=(typeof billMonthNow==='function'?billMonthNow():new Date().toISOString().slice(0,7))){
+  if(typeof ensureBillingState==='function')ensureBillingState();
+  S.clients=Array.isArray(S.clients)?S.clients:[];
+  S.invoices=Array.isArray(S.invoices)?S.invoices:[];
+  S.finance=Array.isArray(S.finance)?S.finance:[];
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return '';
+  let inv=S.invoices.find(i=>i.clientId===clientId && i.billMonth===month);
+  if(!inv){
+    const total=typeof clientMonthlyBillAmount==='function'?clientMonthlyBillAmount(c):+(c.bill||c.monthlyFee||0);
+    inv={id:typeof id==='function'?id('inv'):'inv'+Date.now(),clientId:c.id,cust:c.name,phone:c.mobile,ccode:c.ccode||c.pin||'',pppoe:c.pppoe||'',package:c.package||'',work:'Monthly Bill',billMonth:month,total,discount:0,received:0,due:total,dueDate:typeof billDueDateForMonth==='function'?billDueDateForMonth(month):'',date:typeof today==='function'?today():new Date().toISOString().slice(0,10),time:typeof now==='function'?now():new Date().toLocaleString(),by:U?.id||'admin',status:'Unpaid'};
+    S.invoices.push(inv);
+  }
+  let fin=S.finance.slice().reverse().find(f=>f.clientId===clientId && f.billMonth===month && (f.type||'income')!=='expense');
+  const rid=(fin&&fin.receiptId)||inv.receiptId||generateReceiptId();
+  inv.receiptId=rid;
+  inv.verifyUrl=getVerifyUrl(rid);
+  if(fin && !fin.receiptId){
+    fin.receiptId=rid;
+    fin.verifyUrl=inv.verifyUrl;
+    try{ if(typeof saveAndSync==='function')saveAndSync('finance',fin); }catch(e){}
+  }
+  try{ if(typeof saveAndSync==='function')saveAndSync('invoices',inv); }catch(e){}
+  try{ if(typeof saveLocal==='function')saveLocal(); }catch(e){}
+  return rid;
+}
 
 </script>
 </body>
