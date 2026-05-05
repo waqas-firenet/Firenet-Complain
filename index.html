@@ -353,6 +353,10 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
 .action-menu-list button:hover{background:#f8fafc}
 @media(max-width:700px){.perm-grid{grid-template-columns:repeat(2,1fr)}}
 
+
+.tbl th[onclick], .tbl thead th{user-select:none}
+.table-pages .btn{min-width:34px}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -3565,6 +3569,225 @@ function compactBillingActionMenu(clientId){
     {label:'Edit Bill',fn:`openEditBillModal('${clientId}')`}
   ]);
 }
+
+
+
+/* ===== PAGINATION + SORTING FOR TABLES ===== */
+function sortValue(v){
+  const s=String(v||'').replace(/<[^>]*>/g,'').trim();
+  const n=Number(s.replace(/[^\d.-]/g,''));
+  if(s && !isNaN(n) && /\d/.test(s))return n;
+  return s.toLowerCase();
+}
+function sortRowsByIndex(rows,idx,dir){
+  return rows.slice().sort((a,b)=>{
+    const av=sortValue(a[idx]), bv=sortValue(b[idx]);
+    if(typeof av==='number'&&typeof bv==='number')return dir==='asc'?av-bv:bv-av;
+    return dir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+  });
+}
+function paginationButtons(total,page,limit,fnName='billingGotoPage'){
+  if(limit==='all')return '';
+  const pages=Math.max(1,Math.ceil(total/(+limit||10)));
+  if(pages<=1)return '';
+  let btns='';
+  const add=(p,label=p)=>btns+=`<button class="btn ${p===page?'btn-p':'btn-l'} btn-sm" onclick="${fnName}(${p})">${label}</button>`;
+  if(page>1)add(page-1,'Prev');
+  const start=Math.max(1,page-2), end=Math.min(pages,page+2);
+  if(start>1){add(1); if(start>2)btns+=`<span class="badge">...</span>`;}
+  for(let p=start;p<=end;p++)add(p);
+  if(end<pages){if(end<pages-1)btns+=`<span class="badge">...</span>`;add(pages);}
+  if(page<pages)add(page+1,'Next');
+  return `<div class="actions" style="margin-top:10px;justify-content:center">${btns}</div>`;
+}
+function billingGotoPage(p){
+  window.billingPageNo=p;
+  billingPage();
+}
+function setBillingSort(idx){
+  if(window.billingSortIndex===idx) window.billingSortDir=window.billingSortDir==='asc'?'desc':'asc';
+  else {window.billingSortIndex=idx;window.billingSortDir='asc';}
+  window.billingPageNo=1;
+  billingPage();
+}
+function sortArrow(idx){
+  return window.billingSortIndex===idx?(window.billingSortDir==='asc'?' ▲':' ▼'):' ⇅';
+}
+
+/* Override fast billing page with page numbers + sortable headers */
+function billingPage(){
+  ensureBillingState();
+  const month=window.billingMonth||billMonthNow();
+  const filter=window.billingFilter||'all';
+  const limit=window.billingLimit||35;
+  window.billingPageNo=window.billingPageNo||1;
+  let rows=clientBillRows(month);
+  if(filter==='paid')rows=rows.filter(r=>r.status==='Paid');
+  if(filter==='unpaid')rows=rows.filter(r=>r.status==='Unpaid');
+  if(filter==='partial')rows=rows.filter(r=>r.status==='Partial');
+
+  const q=(window.billingSearch||'').toLowerCase();
+  if(q)rows=rows.filter(r=>{
+    const c=r.client;
+    return [c.name,c.mobile,c.ccode,c.pin,c.pppoe,c.package,c.area,c.address,r.status,r.total,r.received,r.due].join(' ').toLowerCase().includes(q);
+  });
+
+  const sortIndex=window.billingSortIndex;
+  const sortDir=window.billingSortDir||'asc';
+  const rowArrays=rows.map(r=>{
+    const c=r.client;
+    return {
+      raw:r,
+      cells:[
+        '',
+        `<b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small>`,
+        esc(c.mobile||'-'),
+        esc(c.ccode||c.pin||'-'),
+        esc(c.package||'-'),
+        money(r.total),
+        money(r.discount||0),
+        money(r.received),
+        money(r.due),
+        r.status
+      ]
+    };
+  });
+  if(sortIndex!==undefined && sortIndex!==null && sortIndex>0 && sortIndex<10){
+    const sorted=sortRowsByIndex(rowArrays.map(x=>x.cells),sortIndex,sortDir);
+    // map sorted cells back by stable joined key
+    rowArrays.sort((a,b)=>{
+      const av=sortValue(a.cells[sortIndex]), bv=sortValue(b.cells[sortIndex]);
+      if(typeof av==='number'&&typeof bv==='number')return sortDir==='asc'?av-bv:bv-av;
+      return sortDir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+    });
+  }
+  rows=rowArrays.map(x=>x.raw);
+
+  const totalRows=rows.length;
+  const pages=limit==='all'?1:Math.max(1,Math.ceil(totalRows/(+limit||10)));
+  if(window.billingPageNo>pages)window.billingPageNo=pages;
+  const page=window.billingPageNo;
+  const start=limit==='all'?0:(page-1)*(+limit||10);
+  const shownRows=limit==='all'?rows:rows.slice(start,start+(+limit||10));
+  const sum=billingSummary(month);
+
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>💳 Client Billing</h2></div>
+    <div class="row">
+      <div class="fg"><label>Billing Month</label><input type="month" value="${esc(month)}" onchange="window.billingMonth=this.value;window.billingPageNo=1;billingPage()"></div>
+      <div class="fg"><label>Status Filter</label><select onchange="window.billingFilter=this.value;window.billingPageNo=1;billingPage()"><option value="all" ${filter==='all'?'selected':''}>All</option><option value="paid" ${filter==='paid'?'selected':''}>Paid</option><option value="unpaid" ${filter==='unpaid'?'selected':''}>Unpaid</option><option value="partial" ${filter==='partial'?'selected':''}>Partial</option></select></div>
+      <div class="fg"><label>Search Client</label><input value="${esc(window.billingSearch||'')}" placeholder="name/mobile/pppoe/code" oninput="window.billingSearch=this.value;window.billingPageNo=1;billingPage()"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="generateSelectedBills()">Generate Selected Bills</button>
+      <button class="btn btn-s" onclick="whatsappSelectedFeeSlips()">Selected Fee Slip WA</button>
+      <button class="btn btn-i" onclick="printSelectedFeeSlips()">Print Selected Slips</button>
+      <button class="btn btn-w" onclick="receiveSelectedFirst()">Receive Selected</button>
+      <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
+      <button class="btn btn-i" onclick="printBillingReport()">Print Report</button>
+      <button class="btn btn-w" onclick="recalcBillingFromFinance()">Recalculate</button>
+      <span id="billingSelectedCount" class="badge pending">0 selected</span>
+    </div>
+  </div>
+  ${billingStatusCards(month)}
+  <div class="summary">
+    <div class="sum">Current Month<b>${esc(month)}</b></div>
+    <div class="sum">Filter<b>${esc(filter.toUpperCase())}</b></div>
+    <div class="sum">Showing<b>${shownRows.length} / ${totalRows}</b></div>
+    <div class="sum">Page<b>${page} / ${pages}</b></div>
+  </div>
+  <div class="card">
+    <div class="table-controls">
+      <div class="left"><b>Billing List</b><span class="table-info">${totalRows} users in filter</span></div>
+      <div class="right"><label style="font-weight:900">Show</label><select onchange="window.billingLimit=this.value;window.billingPageNo=1;billingPage()"><option ${limit==10?'selected':''}>10</option><option ${limit==35?'selected':''}>35</option><option ${limit==50?'selected':''}>50</option><option ${limit==100?'selected':''}>100</option><option value="all" ${limit==='all'?'selected':''}>all</option></select></div>
+    </div>
+    <div class="tbl"><table><thead><tr>
+      <th><input type="checkbox" onchange="toggleAllBillingChecks(this)"></th>
+      <th onclick="setBillingSort(1)">Client${sortArrow(1)}</th>
+      <th onclick="setBillingSort(2)">Mobile${sortArrow(2)}</th>
+      <th onclick="setBillingSort(3)">C.Code${sortArrow(3)}</th>
+      <th onclick="setBillingSort(4)">Package${sortArrow(4)}</th>
+      <th onclick="setBillingSort(5)">Bill${sortArrow(5)}</th>
+      <th onclick="setBillingSort(6)">Discount${sortArrow(6)}</th>
+      <th onclick="setBillingSort(7)">Received${sortArrow(7)}</th>
+      <th onclick="setBillingSort(8)">Due${sortArrow(8)}</th>
+      <th onclick="setBillingSort(9)">Status${sortArrow(9)}</th>
+      <th>Action</th>
+    </tr></thead><tbody>${shownRows.map(r=>{
+      const c=r.client;
+      const status=r.status==='Paid'?'<span class="badge done">Paid</span>':r.status==='Partial'?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
+      return `<tr>
+        <td><input type="checkbox" class="billing-check" value="${c.id}" onchange="updateBillingSelectedCount()"></td>
+        <td><b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small></td>
+        <td>${esc(c.mobile||'-')}</td>
+        <td>${esc(c.ccode||c.pin||'-')}</td>
+        <td>${esc(c.package||'-')}</td>
+        <td>${money(r.total)}</td>
+        <td>${money(r.discount||0)}</td>
+        <td>${money(r.received)}</td>
+        <td>${money(r.due)}</td>
+        <td>${status}</td>
+        <td>${compactBillingActionMenu(c.id)}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div>
+    ${paginationButtons(totalRows,page,limit,'billingGotoPage')}
+  </div>`;
+}
+
+/* Generic table sorting + pagination */
+function enhanceAllTables(){
+  if(TAB==='billing')return;
+  document.querySelectorAll('.tbl').forEach((w,wi)=>{
+    if(w.dataset.enhanced)return;
+    w.dataset.enhanced=1;
+    let rows=[...w.querySelectorAll('tbody tr')];
+    if(!rows.length)return;
+    let page=1,limit=rows.length>10?10:'all',sortIdx=null,sortDir='asc',q='';
+    const ths=[...w.querySelectorAll('thead th')];
+    ths.forEach((th,idx)=>{
+      th.style.cursor='pointer';
+      th.title='Click to sort';
+      th.addEventListener('click',()=>{
+        if(sortIdx===idx)sortDir=sortDir==='asc'?'desc':'asc';else{sortIdx=idx;sortDir='asc'}
+        page=1;apply();
+      });
+    });
+    const div=document.createElement('div');
+    div.className='table-controls';
+    div.innerHTML='<div class="left"><input placeholder="Search table"><span class="table-info"></span></div><div class="right"><label style="font-weight:900">Show</label><select><option>10</option><option>35</option><option>50</option><option>100</option><option value="all">all</option></select></div><div class="actions table-pages" style="width:100%;justify-content:center"></div>';
+    w.parentNode.insertBefore(div,w);
+    const inp=div.querySelector('input'),sel=div.querySelector('select'),info=div.querySelector('.table-info'),pagesEl=div.querySelector('.table-pages');
+    function apply(){
+      q=inp.value.toLowerCase();limit=sel.value;
+      let filtered=rows.filter(r=>r.innerText.toLowerCase().includes(q));
+      if(sortIdx!==null){
+        filtered=filtered.sort((a,b)=>{
+          const av=sortValue(a.children[sortIdx]?.innerText||''),bv=sortValue(b.children[sortIdx]?.innerText||'');
+          if(typeof av==='number'&&typeof bv==='number')return sortDir==='asc'?av-bv:bv-av;
+          return sortDir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+        });
+      }
+      const total=filtered.length,pages=limit==='all'?1:Math.max(1,Math.ceil(total/(+limit||10)));
+      if(page>pages)page=pages;
+      const start=limit==='all'?0:(page-1)*(+limit||10);
+      const shown=limit==='all'?filtered:filtered.slice(start,start+(+limit||10));
+      rows.forEach(r=>r.style.display='none');
+      shown.forEach(r=>r.style.display='');
+      info.textContent=` ${shown.length}/${total} rows • Page ${page}/${pages}`;
+      pagesEl.innerHTML='';
+      if(limit!=='all'&&pages>1){
+        if(page>1)pagesEl.innerHTML+=`<button class="btn btn-l btn-sm" data-p="${page-1}">Prev</button>`;
+        for(let p=Math.max(1,page-2);p<=Math.min(pages,page+2);p++)pagesEl.innerHTML+=`<button class="btn ${p===page?'btn-p':'btn-l'} btn-sm" data-p="${p}">${p}</button>`;
+        if(page<pages)pagesEl.innerHTML+=`<button class="btn btn-l btn-sm" data-p="${page+1}">Next</button>`;
+        pagesEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{page=+b.dataset.p;apply()});
+      }
+    }
+    inp.oninput=()=>{page=1;apply()};
+    sel.onchange=()=>{page=1;apply()};
+    apply();
+  });
+}
+function setupTableEnhancer(){enhanceAllTables();}
 
 </script>
 </body>
