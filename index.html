@@ -329,6 +329,19 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
 
 .billing-check{width:18px;height:18px;accent-color:#e74c3c}
 
+
+.stable-kpi{transition:.16s}
+.stable-kpi:hover{transform:translateY(-2px)}
+.billing-check{width:18px;height:18px;accent-color:#e74c3c}
+
+
+#billingModal .modal{max-width:820px}
+#billingModal input[disabled]{background:#f8fafc;color:#64748b}
+
+
+#clientEditModal .modal{max-width:900px}
+#clientEditModal input[readonly]{background:#f8fafc;color:#64748b;font-weight:900}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -382,6 +395,12 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
 </div>
 
 <div id="tw" class="toast-wrap"></div>
+
+
+
+<div id="clientEditModal" class="modal-bg"><div class="modal" id="clientEditModalBox"></div></div>
+
+<div id="billingModal" class="modal-bg"><div class="modal" id="billingModalBox"></div></div>
 
 <div id="pwdModal" class="modal-bg"><div class="modal">
   <div class="head"><h2>Change Password / PIN</h2><button class="btn btn-l btn-sm" onclick="closePwd()">Close</button></div>
@@ -908,22 +927,22 @@ function clientPaymentInfo(){
 function clientsPage(){
  if(U.role!=='admin')return dash();
  content.innerHTML=`<div class="card"><div class="head"><h2>Add Client</h2></div>
- <div class="row"><div class="fg"><label>Client Name</label><input id="clientName"></div><div class="fg"><label>Mobile</label><input id="clientMobile" placeholder="03001234561"></div><div class="fg"><label>C.Code / Login Access</label><input id="clientPin" placeholder="C.Code"></div></div>
+ <div class="row"><div class="fg"><label>Client Name</label><input id="clientName"></div><div class="fg"><label>Mobile</label><input id="clientMobile" placeholder="03001234561"></div><div class="fg"><label>C.Code / Login Access</label><input id="clientPin" readonly placeholder="Auto generated C.Code"></div></div>
  <div class="row"><div class="fg"><label>PPPoE Username / ID-IP</label><input id="clientPppoe"></div><div class="fg"><label>Package</label><input id="clientPackage" placeholder="Package"></div><div class="fg"><label>Bill / M.Bill</label><input id="clientFee" type="number" value="0"></div></div>
  <div class="row"><div class="fg"><label>Manual Due</label><input id="clientDue" type="number" value="0"></div><div class="fg"><label>Area / Zone</label><input id="clientAddress"></div><div class="fg"><label>Assigned Employee</label><select id="clientEmp"><option value="">None</option>${empOpts()}</select></div></div>
- <div class="actions"><button class="btn btn-p" onclick="addClient()">Add Client</button><button class="btn btn-i" onclick="clientImportFile.click()">Import CSV/Excel</button></div><input class="hidden" type="file" id="clientImportFile" accept=".csv,.xlsx,.xls" onchange="importClientsFile(event)"></div>
+ <div class="actions"><button class="btn btn-p" onclick="openAddClientModal()">Add Client</button><button class="btn btn-i" onclick="clientImportFile.click()">Import CSV/Excel</button></div><input class="hidden" type="file" id="clientImportFile" accept=".csv,.xlsx,.xls" onchange="importClientsFile(event)"></div>
  <div class="card"><div class="head"><h2>Clients</h2></div>${clientsTable()}</div>`;
 }
 function addClient(){
  let mobile=pkMobile(clientMobile.value);
  if(!clientName.value.trim()||!validPk(mobile))return toast('Client name and valid mobile required','error');
  if((S.clients||[]).some(c=>c.mobile===mobile))return toast('Client already exists','error');
- let rec={id:id('cl'),name:clientName.value.trim(),mobile,pin:clientPin.value.trim(),ccode:clientPin.value.trim(),pppoe:clientPppoe.value.trim(),package:clientPackage.value.trim(),monthlyFee:+clientFee.value||0,bill:+clientFee.value||0,due:+clientDue.value||0,dueDate:document.getElementById('clientDueDate')?.value||'',address:clientAddress.value.trim(),area:clientAddress.value.trim(),subArea:document.getElementById('clientSubArea')?.value||'',nid:document.getElementById('clientNid')?.value||'',assigned:clientEmp.value,active:true,date:today()};
+ let rec={id:id('cl'),name:clientName.value.trim(),mobile,pin:(clientPin.value.trim()||nextClientCCode()),ccode:(clientPin.value.trim()||nextClientCCode()),pppoe:clientPppoe.value.trim(),package:clientPackage.value.trim(),monthlyFee:+clientFee.value||0,bill:+clientFee.value||0,due:+clientDue.value||0,dueDate:document.getElementById('clientDueDate')?.value||'',address:clientAddress.value.trim(),area:clientAddress.value.trim(),subArea:document.getElementById('clientSubArea')?.value||'',nid:document.getElementById('clientNid')?.value||'',assigned:clientEmp.value,active:true,date:today()};
  S.clients.push(rec);saveAndSync('clients',rec);toast('Client added','success');clientsPage();
 }
 function clientsTable(){
  let r=S.clients||[];if(!r.length)return'<div class="empty">No clients</div>';
- return `<div class="tbl"><table><thead><tr><th>Name</th><th>Mobile/Login</th><th>PPPoE</th><th>Package</th><th>Monthly</th><th>Due</th><th>Employee</th><th>Status</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td><b>${esc(c.name)}</b><br><small>${esc(c.address||'')}</small></td><td>${esc(c.mobile)}<br>PIN: ${esc(c.pin||'1234')}</td><td>${esc(c.pppoe||'-')}</td><td>${esc(c.package||'-')}</td><td>${money(c.monthlyFee||0)}</td><td>${money(clientDue(c.id))}</td><td>${esc(empName(c.assigned)||'-')}</td><td>${c.active===false?'Inactive':'Active'}</td><td><div class="actions"><button class="btn btn-i btn-sm" onclick="editClient('${c.id}')">Edit</button><button class="btn btn-s btn-sm" onclick="sendClientBill('${c.id}')">WhatsApp Bill</button><button class="btn btn-w btn-sm" onclick="toggleClient('${c.id}')">${c.active===false?'Active':'Inactive'}</button><button class="btn btn-e btn-sm" onclick="deleteClient('${c.id}')">Delete</button></div></td></tr>`).join('')}</tbody></table></div>`;
+ return `<div class="tbl"><table><thead><tr><th>Name</th><th>Mobile/Login</th><th>PPPoE</th><th>Package</th><th>Monthly</th><th>Due</th><th>Employee</th><th>Status</th><th>Action</th></tr></thead><tbody>${r.map(c=>`<tr><td><b>${esc(c.name)}</b><br><small>${esc(c.address||'')}</small></td><td>${esc(c.mobile)}<br>PIN: ${esc(c.pin||'1234')}</td><td>${esc(c.pppoe||'-')}</td><td>${esc(c.package||'-')}</td><td>${money(c.monthlyFee||0)}</td><td>${money(clientDue(c.id))}</td><td>${esc(empName(c.assigned)||'-')}</td><td>${c.active===false?'Inactive':'Active'}</td><td><div class="actions"><button class="btn btn-i btn-sm" onclick="openEditClientModal('${c.id}')">Edit</button><button class="btn btn-s btn-sm" onclick="sendClientBill('${c.id}')">WhatsApp Bill</button><button class="btn btn-w btn-sm" onclick="toggleClient('${c.id}')">${c.active===false?'Active':'Inactive'}</button><button class="btn btn-e btn-sm" onclick="deleteClient('${c.id}')">Delete</button></div></td></tr>`).join('')}</tbody></table></div>`;
 }
 
 function normalizeClientRow(row){
@@ -2325,7 +2344,7 @@ function billingPage(){
     <div class="sum">Shown Rows<b>${rows.length}</b></div>
     <div class="sum">Due Date<b>${esc(billDueDateForMonth(month))}</b></div>
   </div>
-  ${simpleTable('Client Bills',['<input type="checkbox" onchange="toggleAllBillingChecks(this)">','Client','Mobile','C.Code','Package','Bill','Received','Due','Status','Action'],rows.map(r=>{
+  ${simpleTable('Client Bills',['<input type="checkbox" onchange="toggleAllBillingChecks(this)">','Client','Mobile','C.Code','Package','Bill','Discount','Received','Due','Status','Action'],rows.map(r=>{
     const c=r.client;
     const status=r.status==='Paid'?'<span class="badge done">Paid</span>':'<span class="badge pending">Unpaid</span>';
     return `<tr>
@@ -2342,7 +2361,7 @@ function billingPage(){
         <button class="btn btn-s btn-sm" onclick="receiveClientBill('${c.id}')">Receive</button>
         <button class="btn btn-i btn-sm" onclick="whatsappFeeSlip('${c.id}')">Fee Slip WA</button>
         <button class="btn btn-l btn-sm" onclick="printFeeSlip('${c.id}')">Print Slip</button>
-        <button class="btn btn-w btn-sm" onclick="generateSingleClientBill('${c.id}')">Create Bill</button>
+        <button class="btn btn-w btn-sm" onclick="openEditBillModal('${c.id}')">Edit Bill</button>
       </div></td>
     </tr>`;
   }))}
@@ -2474,7 +2493,7 @@ function shortFeeSlipText(clientId){
          `Month: ${encodeURIComponent(month)}%0A`+
          `Paid Now: ${encodeURIComponent(paidNow)}%0A`+
          `Mode: ${encodeURIComponent(mode)}%0A`+
-         `Total Paid: ${encodeURIComponent(money(row.received))}%0A`+
+         `Total Paid: ${encodeURIComponent(money(row.received))}%0A`+`Discount: ${encodeURIComponent(money(row.discount||0))}%0A`+
          `Remaining Due: ${encodeURIComponent(money(row.due))}%0A`+
          `Status: ${encodeURIComponent(row.status)}%0A`+
          `Date: ${encodeURIComponent(now())}`;
@@ -2517,6 +2536,7 @@ function printFeeSlip(clientId){
       <tr><td>Paid Now</td><td>${esc(paidNow)}</td></tr>
       <tr><td>Payment Mode</td><td>${esc(mode)}</td></tr>
       <tr><td>Total Bill</td><td>${money(row.total)}</td></tr>
+      <tr><td>Discount</td><td>${money(row.discount||0)}</td></tr>
       <tr><td>Total Paid</td><td>${money(row.received)}</td></tr>
       <tr><td>Remaining Due</td><td>${money(row.due)}</td></tr>
       <tr><td>Date</td><td>${esc(now())}</td></tr>
@@ -2732,6 +2752,484 @@ function billingStatusCards(month=billMonthNow()){
     <div class="sum">Total Bill Amount<b>${money(totalBill)}</b></div>
   </div>`;
 }
+
+
+
+/* ===== PERFORMANCE OPTIMIZATION PATCH ===== */
+let __renderTimer=null;
+function scheduleRenderFast(){
+  if(!U||!TAB)return;
+  clearTimeout(__renderTimer);
+  __renderTimer=setTimeout(()=>{try{renderCurrent()}catch(e){console.warn(e)}},350);
+}
+
+/* Slim local save to avoid mobile slowdown */
+function saveLocal(){
+  try{
+    const small={...S};
+    small.clients=(S.clients||[]).slice(-120);
+    small.finance=(S.finance||[]).slice(-200);
+    small.invoices=(S.invoices||[]).slice(-200);
+    small.complaints=(S.complaints||[]).slice(-150);
+    small.notifications=(S.notifications||[]).slice(-100);
+    localStorage.setItem(KEY,JSON.stringify(small));
+  }catch(e){
+    try{
+      localStorage.setItem(KEY,JSON.stringify({
+        admin:S.admin,employees:S.employees||[],items:S.items||[],packages:S.packages||[],
+        news:S.news,clientNews:S.clientNews,appSettings:S.appSettings,ownerWhatsApp:S.ownerWhatsApp,
+        session:S.session,clients:[],finance:[],invoices:[],complaints:[],targets:[],notifications:[]
+      }));
+    }catch(_){}
+  }
+}
+
+/* Override realtime to debounce rendering instead of full re-render on every document update */
+function startRealtime(){
+ if(!db)return;
+ try{unsubs.forEach(u=>u&&u());unsubs=[];}catch(e){}
+ ['employees','complaints','clients','finance','invoices','targets','attendance','items','packages','advances','notifications'].forEach(col=>{
+   unsubs.push(db.collection(col).onSnapshot(snap=>{
+     if(fbLoading)return;
+     S[col]=snap.docs.map(d=>({id:d.id,...d.data()}));
+     try{saveLocal()}catch(e){}
+     if(U&&TAB){
+       try{updateNotificationBell()}catch(e){}
+       scheduleRenderFast();
+     }
+   },e=>setSync&&setSync('Firebase realtime failed',false)));
+ });
+}
+
+/* Fast billing page with limited visible rows */
+function billingPage(){
+  ensureBillingState();
+  const month=window.billingMonth||billMonthNow();
+  const filter=window.billingFilter||'all';
+  const limit=window.billingLimit||35;
+  let rows=clientBillRows(month);
+  if(filter==='paid')rows=rows.filter(r=>r.status==='Paid');
+  if(filter==='unpaid')rows=rows.filter(r=>r.status==='Unpaid');
+  if(filter==='partial')rows=rows.filter(r=>r.status==='Partial');
+  const allRowsCount=rows.length;
+  const q=(window.billingSearch||'').toLowerCase();
+  if(q)rows=rows.filter(r=>{
+    const c=r.client;
+    return [c.name,c.mobile,c.ccode,c.pin,c.pppoe,c.package,c.area,c.address].join(' ').toLowerCase().includes(q);
+  });
+  const shownRows=limit==='all'?rows:rows.slice(0,+limit);
+  const sum=billingSummary(month);
+
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>💳 Client Billing</h2></div>
+    <div class="row">
+      <div class="fg"><label>Billing Month</label><input type="month" value="${esc(month)}" onchange="window.billingMonth=this.value;billingPage()"></div>
+      <div class="fg"><label>Status Filter</label><select onchange="window.billingFilter=this.value;billingPage()"><option value="all" ${filter==='all'?'selected':''}>All</option><option value="paid" ${filter==='paid'?'selected':''}>Paid</option><option value="unpaid" ${filter==='unpaid'?'selected':''}>Unpaid</option><option value="partial" ${filter==='partial'?'selected':''}>Partial</option></select></div>
+      <div class="fg"><label>Search Client</label><input value="${esc(window.billingSearch||'')}" placeholder="name/mobile/pppoe/code" oninput="window.billingSearch=this.value;billingPage()"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="generateSelectedBills()">Generate Selected Bills</button>
+      <button class="btn btn-s" onclick="whatsappSelectedFeeSlips()">Selected Fee Slip WA</button>
+      <button class="btn btn-i" onclick="printSelectedFeeSlips()">Print Selected Slips</button>
+      <button class="btn btn-w" onclick="receiveSelectedFirst()">Receive Selected</button>
+      <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
+      <button class="btn btn-i" onclick="printBillingReport()">Print Report</button>
+      <button class="btn btn-w" onclick="recalcBillingFromFinance()">Recalculate</button>
+      <span id="billingSelectedCount" class="badge pending">0 selected</span>
+    </div>
+  </div>
+  ${billingStatusCards(month)}
+  <div class="summary">
+    <div class="sum">Current Month<b>${esc(month)}</b></div>
+    <div class="sum">Filter<b>${esc(filter.toUpperCase())}</b></div>
+    <div class="sum">Showing<b>${shownRows.length} / ${rows.length}</b></div>
+    <div class="sum">Due Date<b>${esc(billDueDateForMonth(month))}</b></div>
+  </div>
+  <div class="card">
+    <div class="table-controls">
+      <div class="left"><b>Billing List</b><span class="table-info">${allRowsCount} users in filter</span></div>
+      <div class="right"><label style="font-weight:900">Show</label><select onchange="window.billingLimit=this.value;billingPage()"><option ${limit==10?'selected':''}>10</option><option ${limit==35?'selected':''}>35</option><option ${limit==50?'selected':''}>50</option><option ${limit==100?'selected':''}>100</option><option value="all" ${limit==='all'?'selected':''}>all</option></select></div>
+    </div>
+    <div class="tbl"><table><thead><tr>
+      <th><input type="checkbox" onchange="toggleAllBillingChecks(this)"></th><th>Client</th><th>Mobile</th><th>C.Code</th><th>Package</th><th>Bill</th><th>Discount</th><th>Received</th><th>Due</th><th>Status</th><th>Action</th>
+    </tr></thead><tbody>${shownRows.map(r=>{
+      const c=r.client;
+      const status=r.status==='Paid'?'<span class="badge done">Paid</span>':r.status==='Partial'?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
+      return `<tr>
+        <td><input type="checkbox" class="billing-check" value="${c.id}" onchange="updateBillingSelectedCount()"></td>
+        <td><b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small></td>
+        <td>${esc(c.mobile||'-')}</td>
+        <td>${esc(c.ccode||c.pin||'-')}</td>
+        <td>${esc(c.package||'-')}</td>
+        <td>${money(r.total)}</td>
+        <td>${money(r.discount||0)}</td>
+        <td>${money(r.received)}</td>
+        <td>${money(r.due)}</td>
+        <td>${status}</td>
+        <td><div class="actions">
+          <button class="btn btn-s btn-sm" onclick="receiveClientBill('${c.id}')">Receive</button>
+          <button class="btn btn-i btn-sm" onclick="whatsappFeeSlip('${c.id}')">Fee Slip WA</button>
+          <button class="btn btn-l btn-sm" onclick="printFeeSlip('${c.id}')">Print Slip</button>
+          <button class="btn btn-w btn-sm" onclick="openEditBillModal('${c.id}')">Edit Bill</button>
+        </div></td>
+      </tr>`;
+    }).join('')}</tbody></table></div>
+  </div>`;
+}
+
+/* Faster table enhancer: do not re-enhance billing table */
+function enhanceAllTables(){
+  if(TAB==='billing')return;
+  document.querySelectorAll('.tbl').forEach(w=>{
+    if(w.dataset.enhanced)return;
+    w.dataset.enhanced=1;
+    const rows=[...w.querySelectorAll('tbody tr')];
+    if(rows.length<11)return;
+    const div=document.createElement('div');
+    div.className='table-controls';
+    div.innerHTML='<div class="left"><input placeholder="Search table"></div><div class="right"><select><option>10</option><option>35</option><option>50</option><option>100</option><option value="all">all</option></select></div>';
+    w.parentNode.insertBefore(div,w);
+    const inp=div.querySelector('input'),sel=div.querySelector('select');
+    function apply(){
+      const q=inp.value.toLowerCase(),max=sel.value==='all'?999999:+sel.value;let shown=0;
+      rows.forEach(r=>{const ok=r.innerText.toLowerCase().includes(q);r.style.display=ok&&shown<max?'':'none';if(ok&&shown<max)shown++});
+    }
+    inp.oninput=apply;sel.onchange=apply;apply();
+  });
+}
+function setupTableEnhancer(){enhanceAllTables();}
+
+
+
+/* ===== BILLING RECEIVE / EDIT MODAL + DISCOUNT ===== */
+function closeBillingModal(){
+  const m=document.getElementById('billingModal');
+  if(m)m.classList.remove('active');
+}
+function openBillingModal(html){
+  const m=document.getElementById('billingModal'), b=document.getElementById('billingModalBox');
+  if(!m||!b)return;
+  b.innerHTML=html;
+  m.classList.add('active');
+}
+function findOrCreateBillForClient(clientId){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return null;
+  const month=window.billingMonth||billMonthNow();
+  let inv=S.invoices.find(v=>(v.billMonth===month)&&(v.clientId===c.id || v.phone===c.mobile));
+  if(!inv){
+    const amount=clientMonthlyBillAmount(c);
+    inv={id:id('inv'),clientId:c.id,cust:c.name,phone:c.mobile,ccode:c.ccode||c.pin||'',pppoe:c.pppoe||'',package:c.package||'',work:'Monthly Bill',billMonth:month,total:amount,discount:0,received:0,due:amount,dueDate:billDueDateForMonth(month),date:today(),time:now(),by:U?.id||'admin',status:'Unpaid',note:''};
+    S.invoices.push(inv);
+    saveAndSync('invoices',inv);
+  }
+  return inv;
+}
+function openReceiveBillModal(clientId){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const month=window.billingMonth||billMonthNow();
+  const inv=findOrCreateBillForClient(clientId);
+  const alreadyPaid=clientMonthFinancePaid(clientId,month);
+  const discount=+(inv.discount||0);
+  const total=+inv.total||0;
+  const realDue=Math.max(0,total-discount-alreadyPaid);
+  openBillingModal(`<div class="head"><h2>💳 Receive Bill</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="summary">
+      <div class="sum">Client<b>${esc(c.name||'-')}</b></div>
+      <div class="sum">Month<b>${esc(month)}</b></div>
+      <div class="sum">Current Due<b>${money(realDue)}</b></div>
+      <div class="sum">Already Paid<b>${money(alreadyPaid)}</b></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Total Bill</label><input id="rxTotal" type="number" value="${total}"></div>
+      <div class="fg"><label>Discount</label><input id="rxDiscount" type="number" value="${discount}" oninput="calcReceiveDue()"></div>
+      <div class="fg"><label>Receive Amount</label><input id="rxAmount" type="number" value="${realDue}" oninput="calcReceiveDue()"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Payment Mode</label><select id="rxMode"><option value="cash">Cash</option><option value="online">Online</option></select></div>
+      <div class="fg"><label>Receiver</label><input id="rxReceiver" value="${esc(U?.name||'Admin')}"></div>
+      <div class="fg"><label>Due After This Payment</label><input id="rxDueAfter" value="${money(realDue)}" disabled></div>
+    </div>
+    <div class="fg"><label>Note / Remarks</label><input id="rxNote" placeholder="optional"></div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveReceiveBillModal('${clientId}')">Save Payment</button>
+      <button class="btn btn-s" onclick="saveReceiveBillModal('${clientId}',true)">Save + WhatsApp Slip</button>
+      <button class="btn btn-i" onclick="saveReceiveBillModal('${clientId}',false,true)">Save + Print Slip</button>
+    </div>`);
+  calcReceiveDue();
+}
+function calcReceiveDue(){
+  try{
+    const total=+document.getElementById('rxTotal')?.value||0;
+    const discount=+document.getElementById('rxDiscount')?.value||0;
+    const amount=+document.getElementById('rxAmount')?.value||0;
+    const due=Math.max(0,total-discount-amount);
+    const el=document.getElementById('rxDueAfter');
+    if(el)el.value=money(due);
+  }catch(e){}
+}
+function saveReceiveBillModal(clientId,sendWA=false,printSlip=false){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const month=window.billingMonth||billMonthNow();
+  const inv=findOrCreateBillForClient(clientId);
+  const total=+document.getElementById('rxTotal')?.value||0;
+  const discount=+document.getElementById('rxDiscount')?.value||0;
+  const amount=+document.getElementById('rxAmount')?.value||0;
+  const mode=(document.getElementById('rxMode')?.value||'cash')==='online'?'online':'cash';
+  const receiver=document.getElementById('rxReceiver')?.value||U?.name||'Admin';
+  const note=document.getElementById('rxNote')?.value||'';
+  if(amount<0)return toast('Invalid amount','error');
+  if(discount<0)return toast('Invalid discount','error');
+  inv.total=total;
+  inv.discount=discount;
+  inv.dueDate=inv.dueDate||billDueDateForMonth(month);
+  if(amount>0){
+    const fin={id:id('fi'),type:'income',mode,amount,customer:c.name,paidBy:c.name,clientId:c.id,phone:c.mobile,billMonth:month,cat:'Monthly Bill - '+month,date:today(),time:now(),by:U?.id||'admin',receiver,note};
+    S.finance.push(fin);
+    saveAndSync('finance',fin);
+  }
+  const paidNow=clientMonthFinancePaid(c.id,month);
+  inv.received=paidNow;
+  inv.due=Math.max(0,total-discount-paidNow);
+  inv.status=inv.due<=0?'Paid':(paidNow>0?'Partial':'Unpaid');
+  inv.note=note;
+  inv.paidAt=amount>0?now():inv.paidAt;
+  saveAndSync('invoices',inv);
+  closeBillingModal();
+  toast(`Payment saved. Discount: ${money(discount)}`,'success');
+  billingPage();
+  setTimeout(()=>{ if(sendWA)whatsappFeeSlip(clientId); if(printSlip)printFeeSlip(clientId); },400);
+}
+/* Override old prompt-based receive */
+function receiveClientBill(clientId){
+  openReceiveBillModal(clientId);
+}
+function openEditBillModal(clientId){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const inv=findOrCreateBillForClient(clientId);
+  openBillingModal(`<div class="head"><h2>✏️ Edit Bill</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Client Name</label><input value="${esc(c.name||'-')}" disabled></div>
+      <div class="fg"><label>Billing Month</label><input id="editBillMonth" value="${esc(inv.billMonth||billMonthNow())}"></div>
+      <div class="fg"><label>Work / Type</label><input id="editBillWork" value="${esc(inv.work||'Monthly Bill')}"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Total Bill</label><input id="editBillTotal" type="number" value="${+inv.total||0}"></div>
+      <div class="fg"><label>Discount</label><input id="editBillDiscount" type="number" value="${+inv.discount||0}"></div>
+      <div class="fg"><label>Due Date</label><input id="editBillDueDate" type="date" value="${esc(inv.dueDate||billDueDateForMonth(inv.billMonth||billMonthNow()))}"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Package</label><input id="editBillPackage" value="${esc(inv.package||c.package||'')}"></div>
+      <div class="fg"><label>PPPoE</label><input id="editBillPppoe" value="${esc(inv.pppoe||c.pppoe||'')}"></div>
+      <div class="fg"><label>Status</label><select id="editBillStatus"><option ${inv.status==='Unpaid'?'selected':''}>Unpaid</option><option ${inv.status==='Partial'?'selected':''}>Partial</option><option ${inv.status==='Paid'?'selected':''}>Paid</option></select></div>
+    </div>
+    <div class="fg"><label>Note</label><input id="editBillNote" value="${esc(inv.note||'')}"></div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveEditBillModal('${clientId}')">Save Bill</button>
+      <button class="btn btn-e" onclick="deleteBillForClient('${clientId}')">Delete Bill</button>
+    </div>`);
+}
+function saveEditBillModal(clientId){
+  const c=S.clients.find(x=>x.id===clientId);
+  const inv=findOrCreateBillForClient(clientId);
+  const month=document.getElementById('editBillMonth')?.value||billMonthNow();
+  inv.billMonth=month;
+  inv.work=document.getElementById('editBillWork')?.value||'Monthly Bill';
+  inv.total=+document.getElementById('editBillTotal')?.value||0;
+  inv.discount=+document.getElementById('editBillDiscount')?.value||0;
+  inv.dueDate=document.getElementById('editBillDueDate')?.value||billDueDateForMonth(month);
+  inv.package=document.getElementById('editBillPackage')?.value||c.package||'';
+  inv.pppoe=document.getElementById('editBillPppoe')?.value||c.pppoe||'';
+  inv.note=document.getElementById('editBillNote')?.value||'';
+  const paid=clientMonthFinancePaid(clientId,month);
+  inv.received=paid;
+  inv.due=Math.max(0,inv.total-inv.discount-paid);
+  inv.status=inv.due<=0?'Paid':(paid>0?'Partial':(document.getElementById('editBillStatus')?.value||'Unpaid'));
+  saveAndSync('invoices',inv);
+  closeBillingModal();
+  toast('Bill updated','success');
+  billingPage();
+}
+function deleteBillForClient(clientId){
+  const month=window.billingMonth||billMonthNow();
+  const inv=S.invoices.find(v=>v.billMonth===month&&v.clientId===clientId);
+  if(!inv)return toast('Bill not found','error');
+  if(!confirm('Delete this bill? Finance income entries will not be deleted.'))return;
+  S.invoices=S.invoices.filter(v=>v.id!==inv.id);
+  delAndSync('invoices',inv.id);
+  closeBillingModal();
+  toast('Bill deleted','success');
+  billingPage();
+}
+/* Discount-aware billing rows */
+function clientBillRows(month=billMonthNow()){
+  ensureBillingState();
+  return S.clients.filter(c=>c.active!==false).map(c=>{
+    const bills=S.invoices.filter(v=>
+      (v.billMonth===month || (String(v.date||'').slice(0,7)===month && (v.work==='Monthly Fee'||v.work==='Monthly Bill'))) &&
+      (v.clientId===c.id || v.phone===c.mobile || v.cust===c.name)
+    );
+    const total=bills.reduce((s,v)=>s+(+v.total||0),0) || clientMonthlyBillAmount(c);
+    const discount=bills.reduce((s,v)=>s+(+v.discount||0),0);
+    const received=clientMonthFinancePaid(c.id,month);
+    const due=Math.max(0,total-discount-received);
+    const status=due<=0 && total>0 ? 'Paid' : (received>0?'Partial':'Unpaid');
+    return {client:c,bills,total,discount,received,due,status};
+  });
+}
+
+
+
+/* ===== CLIENT EDIT MODAL + AUTO C.CODE ===== */
+function closeClientEditModal(){
+  const m=document.getElementById('clientEditModal');
+  if(m)m.classList.remove('active');
+}
+function openClientEditModal(html){
+  const m=document.getElementById('clientEditModal'), b=document.getElementById('clientEditModalBox');
+  if(!m||!b)return;
+  b.innerHTML=html;
+  m.classList.add('active');
+}
+function numericCCodeValue(v){
+  const n=String(v||'').match(/\d+/);
+  return n?parseInt(n[0],10):0;
+}
+function nextClientCCode(){
+  const max=(S.clients||[]).reduce((m,c)=>Math.max(m,numericCCodeValue(c.ccode||c.pin||c.customerNo||c.regNo)),0);
+  return String(max+1).padStart(4,'0');
+}
+function fillNextCCode(){
+  const el=document.getElementById('cCode')||document.getElementById('clientPin')||document.getElementById('clientCCode');
+  if(el && !el.value) el.value=nextClientCCode();
+}
+function openAddClientModal(){
+  const code=nextClientCCode();
+  openClientEditModal(`<div class="head"><h2>🌐 Add New Client</h2><button class="btn btn-l btn-sm" onclick="closeClientEditModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Client Name</label><input id="mClientName"></div>
+      <div class="fg"><label>Mobile</label><input id="mClientMobile" placeholder="03001234561"></div>
+      <div class="fg"><label>C.Code / Customer Registered No.</label><input id="mClientCCode" value="${esc(code)}" readonly></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>PPPoE / ID-IP</label><input id="mClientPppoe"></div>
+      <div class="fg"><label>PPPoE Password</label><input id="mClientPassword"></div>
+      <div class="fg"><label>Protocol</label><input id="mClientProtocol" placeholder="PPPoE"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Package</label><input id="mClientPackage"></div>
+      <div class="fg"><label>Monthly Bill</label><input id="mClientBill" type="number"></div>
+      <div class="fg"><label>Due Date / Ex.Date</label><input id="mClientDueDate" type="date"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Area / Zone</label><input id="mClientArea"></div>
+      <div class="fg"><label>Sub Area / Sub Zone</label><input id="mClientSubArea"></div>
+      <div class="fg"><label>NID</label><input id="mClientNid"></div>
+    </div>
+    <div class="fg"><label>Address / Notes</label><input id="mClientAddress"></div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveClientFromModal()">Save Client</button>
+    </div>`);
+}
+function saveClientFromModal(existingId=''){
+  const mobile=pkMobile(document.getElementById('mClientMobile')?.value||'');
+  const name=(document.getElementById('mClientName')?.value||'').trim();
+  const ccode=(document.getElementById('mClientCCode')?.value||'').trim() || nextClientCCode();
+  if(!name)return toast('Client name required','error');
+  if(!validPk(mobile))return toast('Mobile format use karein: 03001234561','error');
+  const dup=(S.clients||[]).find(c=>c.id!==existingId && (c.mobile===mobile || String(c.ccode||c.pin||'')===ccode));
+  if(dup)return toast('Duplicate mobile or C.Code found','error');
+  let c=existingId?(S.clients||[]).find(x=>x.id===existingId):null;
+  if(!c){
+    c={id:id('cl'),date:today(),active:true};
+    S.clients.push(c);
+  }
+  c.name=name;
+  c.mobile=mobile;
+  c.ccode=ccode;
+  c.pin=ccode;
+  c.customerNo=ccode;
+  c.regNo=ccode;
+  c.pppoe=(document.getElementById('mClientPppoe')?.value||'').trim();
+  c.password=(document.getElementById('mClientPassword')?.value||'').trim();
+  c.protocol=(document.getElementById('mClientProtocol')?.value||'').trim();
+  c.package=(document.getElementById('mClientPackage')?.value||'').trim();
+  c.bill=+(document.getElementById('mClientBill')?.value||0);
+  c.monthlyFee=c.bill;
+  c.dueDate=document.getElementById('mClientDueDate')?.value||'';
+  c.exDate=c.dueDate;
+  c.area=(document.getElementById('mClientArea')?.value||'').trim();
+  c.address=(document.getElementById('mClientAddress')?.value||c.area||'').trim();
+  c.subArea=(document.getElementById('mClientSubArea')?.value||'').trim();
+  c.nid=(document.getElementById('mClientNid')?.value||'').trim();
+  saveAndSync('clients',c);
+  closeClientEditModal();
+  toast(existingId?'Client updated':'Client added','success');
+  if(typeof clientsPage==='function')clientsPage();
+}
+function openEditClientModal(clientId){
+  const c=(S.clients||[]).find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const code=c.ccode||c.pin||c.customerNo||c.regNo||nextClientCCode();
+  openClientEditModal(`<div class="head"><h2>✏️ Edit Client</h2><button class="btn btn-l btn-sm" onclick="closeClientEditModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Client Name</label><input id="mClientName" value="${esc(c.name||'')}"></div>
+      <div class="fg"><label>Mobile</label><input id="mClientMobile" value="${esc(c.mobile||'')}" placeholder="03001234561"></div>
+      <div class="fg"><label>C.Code / Customer Registered No.</label><input id="mClientCCode" value="${esc(code)}" readonly></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>PPPoE / ID-IP</label><input id="mClientPppoe" value="${esc(c.pppoe||c.username||'')}"></div>
+      <div class="fg"><label>PPPoE Password</label><input id="mClientPassword" value="${esc(c.password||'')}"></div>
+      <div class="fg"><label>Protocol</label><input id="mClientProtocol" value="${esc(c.protocol||'')}"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Package</label><input id="mClientPackage" value="${esc(c.package||'')}"></div>
+      <div class="fg"><label>Monthly Bill</label><input id="mClientBill" type="number" value="${+(c.bill||c.monthlyFee||0)}"></div>
+      <div class="fg"><label>Due Date / Ex.Date</label><input id="mClientDueDate" type="date" value="${esc(c.dueDate||c.exDate||'')}"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Area / Zone</label><input id="mClientArea" value="${esc(c.area||c.zone||'')}"></div>
+      <div class="fg"><label>Sub Area / Sub Zone</label><input id="mClientSubArea" value="${esc(c.subArea||c.subZone||'')}"></div>
+      <div class="fg"><label>NID</label><input id="mClientNid" value="${esc(c.nid||'')}"></div>
+    </div>
+    <div class="fg"><label>Address / Notes</label><input id="mClientAddress" value="${esc(c.address||'')}"></div>
+    <div class="row two">
+      <div class="fg"><label>Status</label><select id="mClientActive"><option value="1" ${c.active!==false?'selected':''}>Active</option><option value="0" ${c.active===false?'selected':''}>Inactive</option></select></div>
+      <div class="fg"><label>Assigned Employee</label><select id="mClientAssigned"><option value="">None</option>${typeof empOpts==='function'?empOpts(c.assigned||''):''}</select></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveEditClientModal('${clientId}')">Save Changes</button>
+      <button class="btn btn-e" onclick="deleteClientFromModal('${clientId}')">Delete Client</button>
+    </div>`);
+}
+function saveEditClientModal(clientId){
+  const c=(S.clients||[]).find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  saveClientFromModal(clientId);
+  const updated=(S.clients||[]).find(x=>x.id===clientId);
+  if(updated){
+    updated.active=document.getElementById('mClientActive')?.value!=='0';
+    updated.assigned=document.getElementById('mClientAssigned')?.value||'';
+    saveAndSync('clients',updated);
+  }
+}
+function deleteClientFromModal(clientId){
+  if(!confirm('Delete this client?'))return;
+  S.clients=(S.clients||[]).filter(c=>c.id!==clientId);
+  delAndSync('clients',clientId);
+  closeClientEditModal();
+  toast('Client deleted','success');
+  if(typeof clientsPage==='function')clientsPage();
+}
+/* Legacy editClient prompt override */
+function editClient(i){openEditClientModal(i)}
 
 </script>
 </body>
