@@ -3753,7 +3753,7 @@ function billingPage(){
     <div class="row">
       <div class="fg"><label>Billing Month</label><input type="month" value="${esc(month)}" onchange="window.billingMonth=this.value;window.billingPageNo=1;billingPage()"></div>
       <div class="fg"><label>Status Filter</label><select onchange="window.billingFilter=this.value;window.billingPageNo=1;billingPage()"><option value="all" ${filter==='all'?'selected':''}>All</option><option value="paid" ${filter==='paid'?'selected':''}>Paid</option><option value="unpaid" ${filter==='unpaid'?'selected':''}>Unpaid</option><option value="partial" ${filter==='partial'?'selected':''}>Partial</option></select></div>
-      <div class="fg"><label>Search Client</label><input value="${esc(window.billingSearch||'')}" placeholder="name/mobile/pppoe/code" oninput="window.billingSearch=this.value;window.billingPageNo=1;billingPage()"></div>
+      <div class="fg"><label>Search Client</label><input id="billingSearchBox" value="${esc(window.billingSearch||'')}" placeholder="name/mobile/pppoe/code" oninput="billingSearchInput(this)"></div>
     </div>
     <div class="actions">
       <button class="btn btn-p" onclick="generateSelectedBills()">Generate Selected Bills</button>
@@ -4156,7 +4156,7 @@ function billingPage(){
     <div class="table-controls billing-list-controls">
       <div class="left" style="flex:1;min-width:220px">
         <label style="font-weight:900;color:#374151">Search Client</label>
-        <input value="${esc(window.billingSearch||'')}" placeholder="Search name, mobile, PPPoE, C.Code, package..." oninput="window.billingSearch=this.value;window.billingPageNo=1;billingPage()">
+        <input id="billingSearchBox" value="${esc(window.billingSearch||'')}" placeholder="Search name, mobile, PPPoE, C.Code, package..." oninput="billingSearchInput(this)">
       </div>
       <div class="right">
         <label style="font-weight:900">Show</label>
@@ -5592,6 +5592,29 @@ function tab(t){
   if(t==='settings')return openSettingsFixed();
   if(typeof renderCurrent==='function')return renderCurrent();
   if(typeof render==='function')return render();
+}
+
+
+
+/* ===== BILLING SEARCH FOCUS FIX ===== */
+let __billingSearchTimer=null;
+function billingSearchInput(el){
+  window.billingSearch = el.value;
+  window.billingPageNo = 1;
+  clearTimeout(__billingSearchTimer);
+  __billingSearchTimer = setTimeout(()=>{
+    try{
+      billingPage();
+      setTimeout(()=>{
+        const s=document.getElementById('billingSearchBox');
+        if(s){
+          s.focus();
+          const len=s.value.length;
+          try{s.setSelectionRange(len,len)}catch(e){}
+        }
+      },40);
+    }catch(e){console.warn(e)}
+  },250);
 }
 
 </script>
