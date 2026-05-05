@@ -362,6 +362,54 @@ button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden
 .billing-list-controls input{min-width:240px}
 @media(max-width:700px){.billing-list-controls{display:block}.billing-list-controls .right{margin-top:10px}}
 
+
+/* ===== FIX SIDEBAR SCROLL BEHAVIOR ===== */
+.layout{align-items:start}
+.sidebar{
+  position:sticky !important;
+  top:12px !important;
+  align-self:start !important;
+  max-height:calc(100vh - 24px) !important;
+  overflow-y:auto !important;
+  overscroll-behavior:contain;
+}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
+body.menu-open{overflow:hidden}
+@media(max-width:900px){
+  .sidebar{
+    position:fixed !important;
+    left:10px !important;
+    right:10px !important;
+    top:10px !important;
+    bottom:auto !important;
+    z-index:9999 !important;
+    max-height:calc(100vh - 20px) !important;
+    overflow-y:auto !important;
+    transform:translateY(-120%);
+    transition:.22s ease;
+  }
+  .sidebar.open{
+    display:block !important;
+    transform:translateY(0);
+  }
+  .sidebar::before{
+    content:'Menu';
+    display:block;
+    font-weight:900;
+    font-size:20px;
+    color:#243447;
+    margin:4px 4px 10px;
+  }
+}
+
+
+#employeeModal .modal{max-width:900px}
+.perm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0}
+.perm-box{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:10px;font-weight:900;color:#374151;display:flex;align-items:center;gap:8px}
+.perm-box input{width:18px;height:18px;accent-color:#2563eb}
+@media(max-width:700px){.perm-grid{grid-template-columns:repeat(2,1fr)}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -4130,6 +4178,251 @@ function billingPage(){
     }).join('')}</tbody></table></div>
     ${paginationButtons(totalRows,page,limit,'billingGotoPage')}
   </div>`;
+}
+
+
+
+/* ===== SIDEBAR FIXED SCROLL PATCH ===== */
+function toggleSideMenu(){
+  const s=document.getElementById('sidePanel');
+  if(!s)return;
+  s.classList.toggle('open');
+  document.body.classList.toggle('menu-open',s.classList.contains('open'));
+}
+function closeSideMenu(){
+  const s=document.getElementById('sidePanel');
+  if(s)s.classList.remove('open');
+  document.body.classList.remove('menu-open');
+}
+/* Close mobile sidebar after selecting a module */
+const __oldTabSidebarFix = (typeof tab==='function') ? tab : null;
+function tab(t){
+  TAB=t;
+  try{document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-'+t);if(n)n.classList.add('active')}catch(e){}
+  closeSideMenu();
+  if(typeof renderCurrent==='function')renderCurrent();
+}
+
+
+
+/* ===== FINAL EMPLOYEE PERMISSION EDIT FIX ===== */
+function empPermKeys(){
+  return ['complaints','attendance','clients','billing','invoice','finance','advance','targets','items','packages'];
+}
+function empPermLabels(){
+  return {
+    complaints:'Complaints',
+    attendance:'Attendance',
+    clients:'Clients',
+    billing:'Billing',
+    invoice:'Invoice',
+    finance:'Finance',
+    advance:'Advance',
+    targets:'Targets',
+    items:'Items',
+    packages:'Packages'
+  };
+}
+function normalizeEmpPermObject(per={}){
+  const out={...per};
+  empPermKeys().forEach(k=>{ if(out[k]===undefined) out[k]=1; });
+  return out;
+}
+function employeePermissionBoxes(prefix='empPer', per={}){
+  per=normalizeEmpPermObject(per);
+  const labels=empPermLabels();
+  return `<div class="perm-grid">${empPermKeys().map(k=>`
+    <label class="perm-box">
+      <input type="checkbox" id="${prefix}_${k}" ${per[k]!==false && per[k]!==0 ? 'checked' : ''}>
+      ${labels[k]}
+    </label>`).join('')}</div>`;
+}
+function readEmployeePerm(prefix='empPer'){
+  const per={};
+  empPermKeys().forEach(k=>{
+    per[k]=document.getElementById(prefix+'_'+k)?.checked ? 1 : 0;
+  });
+  return per;
+}
+function ensureEmployeeModal(){
+  let m=document.getElementById('employeeModal');
+  if(!m){
+    const wrap=document.createElement('div');
+    wrap.innerHTML='<div id="employeeModal" class="modal-bg"><div class="modal" id="employeeModalBox"></div></div>';
+    document.body.appendChild(wrap.firstElementChild);
+    m=document.getElementById('employeeModal');
+  }
+  return m;
+}
+function openEmployeeModal(html){
+  const m=ensureEmployeeModal();
+  document.getElementById('employeeModalBox').innerHTML=html;
+  m.classList.add('active');
+}
+function closeEmployeeModal(){
+  document.getElementById('employeeModal')?.classList.remove('active');
+}
+function employeeActionsMenu(empId){
+  if(typeof actionMenu==='function'){
+    return actionMenu([
+      {label:'Edit / Permissions',fn:`openEmployeeEditModal('${empId}')`},
+      {label:'Active / Inactive',fn:`toggleEmployeeStatusFinal('${empId}')`},
+      {label:'Delete',fn:`deleteEmployeeFinal('${empId}')`}
+    ]);
+  }
+  return `<button class="btn btn-i btn-sm" onclick="openEmployeeEditModal('${empId}')">Edit</button>`;
+}
+function employees(){
+  if(U && U.role!=='admin')return dash();
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>Add Employee</h2></div>
+    <div class="row">
+      <div class="fg"><label>Name</label><input id="empName"></div>
+      <div class="fg"><label>Login / Username</label><input id="empLogin"></div>
+      <div class="fg"><label>Mobile</label><input id="empMobile" placeholder="03001234561"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>PIN</label><input id="empPin" value="1234"></div>
+      <div class="fg"><label>Role</label><input id="empRole" value="Collection"></div>
+      <div class="fg"><label>Status</label><select id="empActive"><option value="1">Active</option><option value="0">Inactive</option></select></div>
+    </div>
+    <h3 style="margin:10px 0;color:#243447">Module Permissions</h3>
+    ${employeePermissionBoxes('empPer',{complaints:1,attendance:1,clients:1,billing:1,invoice:1,finance:1,advance:1,targets:1,items:1,packages:1})}
+    <br>
+    <div class="actions">
+      <button class="btn btn-p" onclick="addEmployeeFinal()">Add Employee</button>
+      <button class="btn btn-s" onclick="enableAllEmployeePermissionsFinal()">Enable All Permissions</button>
+    </div>
+  </div>
+  ${employeesTableFinal()}`;
+  setTimeout(()=>{try{enhanceAllTables()}catch(e){}},50);
+}
+function addEmployeeFinal(){
+  const e={
+    id:id('e'),
+    name:(document.getElementById('empName')?.value||'').trim(),
+    phone:(document.getElementById('empLogin')?.value||'').trim(),
+    mobile:pkMobile(document.getElementById('empMobile')?.value||''),
+    pin:(document.getElementById('empPin')?.value||'1234').trim(),
+    role:(document.getElementById('empRole')?.value||'Collection').trim(),
+    active:document.getElementById('empActive')?.value!=='0',
+    per:readEmployeePerm('empPer')
+  };
+  if(!e.name || !e.phone)return toast('Name and login required','error');
+  S.employees=S.employees||[];
+  S.employees.push(e);
+  saveAndSync('employees',e);
+  toast('Employee added','success');
+  employees();
+}
+function employeesTableFinal(){
+  const rows=(S.employees||[]).map(e=>{
+    e.per=normalizeEmpPermObject(e.per||{});
+    const enabled=empPermKeys().filter(k=>e.per[k]!==false && e.per[k]!==0).map(k=>empPermLabels()[k]).join(', ');
+    return `<tr>
+      <td>${esc(e.name||'-')}</td>
+      <td>${esc(e.phone||'-')}</td>
+      <td>${esc(e.mobile||'-')}</td>
+      <td>${esc(e.role||'-')}</td>
+      <td>${e.active===false?'<span class="badge bad">Inactive</span>':'<span class="badge done">Active</span>'}</td>
+      <td><small>${esc(enabled||'-')}</small></td>
+      <td>${employeeActionsMenu(e.id)}</td>
+    </tr>`;
+  }).join('');
+  return `<div class="card"><div class="head"><h2>Employees</h2></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Name</th><th>Login</th><th>Mobile</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </div>`;
+}
+function openEmployeeEditModal(empId){
+  const e=(S.employees||[]).find(x=>x.id===empId);
+  if(!e)return toast('Employee not found','error');
+  e.per=normalizeEmpPermObject(e.per||{});
+  openEmployeeModal(`<div class="head">
+    <h2>Edit Employee Permissions</h2>
+    <button class="btn btn-l btn-sm" onclick="closeEmployeeModal()">Close</button>
+  </div>
+  <div class="row">
+    <div class="fg"><label>Name</label><input id="editEmpName" value="${esc(e.name||'')}"></div>
+    <div class="fg"><label>Login / Username</label><input id="editEmpLogin" value="${esc(e.phone||'')}"></div>
+    <div class="fg"><label>Mobile</label><input id="editEmpMobile" value="${esc(e.mobile||'')}" placeholder="03001234561"></div>
+  </div>
+  <div class="row">
+    <div class="fg"><label>PIN</label><input id="editEmpPin" value="${esc(e.pin||'1234')}"></div>
+    <div class="fg"><label>Role</label><input id="editEmpRole" value="${esc(e.role||'')}"></div>
+    <div class="fg"><label>Status</label><select id="editEmpActive">
+      <option value="1" ${e.active!==false?'selected':''}>Active</option>
+      <option value="0" ${e.active===false?'selected':''}>Inactive</option>
+    </select></div>
+  </div>
+  <h3 style="margin:10px 0;color:#243447">Module Permissions</h3>
+  ${employeePermissionBoxes('editPer',e.per)}
+  <br>
+  <div class="actions">
+    <button class="btn btn-p" onclick="saveEmployeeEditModal('${empId}')">Save Changes</button>
+    <button class="btn btn-s" onclick="checkAllEditPermissions(true)">Check All</button>
+    <button class="btn btn-w" onclick="checkAllEditPermissions(false)">Uncheck All</button>
+  </div>`);
+}
+function checkAllEditPermissions(state){
+  empPermKeys().forEach(k=>{
+    const el=document.getElementById('editPer_'+k);
+    if(el)el.checked=state;
+  });
+}
+function saveEmployeeEditModal(empId){
+  const e=(S.employees||[]).find(x=>x.id===empId);
+  if(!e)return toast('Employee not found','error');
+  e.name=(document.getElementById('editEmpName')?.value||'').trim();
+  e.phone=(document.getElementById('editEmpLogin')?.value||'').trim();
+  e.mobile=pkMobile(document.getElementById('editEmpMobile')?.value||'');
+  e.pin=(document.getElementById('editEmpPin')?.value||'1234').trim();
+  e.role=(document.getElementById('editEmpRole')?.value||'').trim();
+  e.active=document.getElementById('editEmpActive')?.value!=='0';
+  e.per=readEmployeePerm('editPer');
+  saveAndSync('employees',e);
+  if(U && U.id===e.id){
+    U={...U,...e};
+    S.session=U;
+  }
+  try{saveLocal()}catch(err){}
+  closeEmployeeModal();
+  toast('Employee permissions updated','success');
+  employees();
+}
+function toggleEmployeeStatusFinal(empId){
+  const e=(S.employees||[]).find(x=>x.id===empId);
+  if(!e)return;
+  e.active=e.active===false;
+  saveAndSync('employees',e);
+  employees();
+}
+function deleteEmployeeFinal(empId){
+  if(!confirm('Delete employee?'))return;
+  S.employees=(S.employees||[]).filter(e=>e.id!==empId);
+  delAndSync('employees',empId);
+  toast('Employee deleted','success');
+  employees();
+}
+function enableAllEmployeePermissionsFinal(){
+  (S.employees||[]).forEach(e=>{
+    e.per={};
+    empPermKeys().forEach(k=>e.per[k]=1);
+    saveAndSync('employees',e);
+  });
+  try{saveLocal()}catch(err){}
+  toast('All permissions enabled for employees','success');
+  employees();
+}
+/* Access check uses edited permissions */
+function employeeHasAccess(tabName){
+  if(!U)return false;
+  if(U.role==='admin')return true;
+  if(U.role==='client')return tabName==='dashboard'||tabName==='complaints';
+  const per=normalizeEmpPermObject(U.per||{});
+  return tabName==='dashboard' || per[tabName]===1 || per[tabName]===true;
 }
 
 </script>
