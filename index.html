@@ -410,6 +410,27 @@ body.menu-open{overflow:hidden}
 .perm-box input{width:18px;height:18px;accent-color:#2563eb}
 @media(max-width:700px){.perm-grid{grid-template-columns:repeat(2,1fr)}}
 
+
+/* Mobile menu close/open stability */
+body.menu-open{overflow:hidden}
+@media(max-width:900px){
+  .sidebar.open,.side.open,#sidePanel.open,#side.open{
+    display:block!important;
+    transform:translateY(0)!important;
+    z-index:9999!important;
+  }
+}
+
+
+/* reports/cashflow sidebar mobile visibility */
+@media(max-width:900px){
+  .sidebar.open,.side.open,#sidePanel.open,#side.open{
+    display:block!important;
+    transform:translateY(0)!important;
+    z-index:9999!important;
+  }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
@@ -698,7 +719,7 @@ function openApp(){sanitizeState();if(!U||!U.role){S.session=null;saveLocal();re
 function logout(){S.session=null;saveLocal();location.reload()}function toggleMenu(){pm.classList.toggle('active')}function openPwd(){pwdModal.classList.add('active');pm.classList.remove('active')}function closePwd(){pwdModal.classList.remove('active')}
 function savePwd(){let v=newPwd.value.trim();if(v.length<3)return toast('Minimum 3 characters','error');if(U.role==='admin'){S.admin.p=v;fbSettings()}else{let e=S.employees.find(x=>x.id===U.id);if(e){e.pin=v;fbSet('employees',e)}U.pin=v;S.session=U}saveLocal();newPwd.value='';closePwd();toast('Password changed','success')}
 function items(){
- let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['clients','Clients','🌐'],['billing','Billing','💳'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['template','Template','🎨'],['settings','Settings','⚙️'],['backup','Backup','💾']];
+ let a=[['dashboard','Dashboard','📊'],['complaints','Complaints','🛠️'],['clients','Clients','🌐'],['billing','Billing','💳'],['employees','Employees','👥'],['attendance','Attendance','🗓️'],['invoice','Invoice','🧾'],['finance','Finance','💰'],['cashflow','Cash Flow','💵'],['reports','Reports','📈'],['items','Items','📦'],['packages','Packages','📶'],['advance','Advance','💸'],['targets','Targets','🎯'],['news','News','📢'],['template','Template','🎨'],['settings','Settings','⚙️'],['backup','Backup','💾']];
  if(U.role==='client')return [['dashboard','My Portal','🏠'],['complaints','Support','🛠️']];
  return U.role==='admin'?a:a.filter(x=>x[0]==='dashboard'||can(x[0]));
 }
@@ -3368,7 +3389,7 @@ function renderCurrent(){
       employees:employees,
       attendance:attendance,
       invoice:invoice,
-      finance:finance,
+      finance:finance,reports:reportsPage,cashflow:cashFlowPage,reports:reportsPage,
       items:itemsPage,
       packages:packagesPage,
       advance:advancePage,
@@ -4236,7 +4257,7 @@ function empPermLabels(){
     complaints:'Complaints',
     attendance:'Attendance',
     clients:'Clients',
-    billing:'Billing',
+    billing:'Billing',cashflow:'Cash Flow',
     invoice:'Invoice',
     finance:'Finance',
     advance:'Advance',
@@ -5577,7 +5598,7 @@ function navRender(){
   }
   list=uniqueNavItems(list);
   el.innerHTML=list.map(x=>{
-    let click=x[0]==='template'?'openTemplateFixed()':x[0]==='settings'?'openSettingsFixed()':x[0]==='news'&&typeof openNewsPage==='function'?'openNewsPage()':`tab('${x[0]}')`;
+    let click=x[0]==='reports'?'openReportsFixed()':x[0]==='cashflow'?'openCashFlowFixed()':x[0]==='template'?'openTemplateFixed()':x[0]==='settings'?'openSettingsFixed()':x[0]==='news'&&typeof openNewsPage==='function'?'openNewsPage()':`tab('${x[0]}')`;
     return `<button id="n-${x[0]}" class="${TAB===x[0]?'active':''}" onclick="${click}">${x[2]} ${x[1]}</button>`;
   }).join('');
 }
@@ -5615,6 +5636,2066 @@ function billingSearchInput(el){
       },40);
     }catch(e){console.warn(e)}
   },250);
+}
+
+
+
+/* ===== CASH FLOW / ACCOUNTS MODULE ===== */
+function ensureCashFlowState(){
+  S.accounts = Array.isArray(S.accounts) ? S.accounts : [];
+  S.cashExpenses = Array.isArray(S.cashExpenses) ? S.cashExpenses : [];
+  S.cashHandovers = Array.isArray(S.cashHandovers) ? S.cashHandovers : [];
+  if(!S.accounts.length){
+    S.accounts.push({id:'acc_main_cash',name:'Main Cash / Office Account',type:'cash',opening:0,active:true,created_at:now()});
+  }
+}
+function cfEmployeeId(f){
+  return f.employee_id || f.emp || f.employee || f.by || 'admin';
+}
+function cfEmployeeName(eid){
+  if(!eid || eid==='admin') return 'Admin';
+  const e=(S.employees||[]).find(x=>x.id===eid || x.phone===eid || x.name===eid || x.mobile===eid);
+  return e ? (e.name || e.phone || 'Employee') : eid;
+}
+function cfIsCashIncome(f){
+  return (f.type||'income')!=='expense' && String(f.mode||'cash').toLowerCase()==='cash';
+}
+function cfCashSummary(){
+  ensureCashFlowState();
+  const collected={}, expenses={}, handovers={};
+  (S.finance||[]).filter(cfIsCashIncome).forEach(f=>{
+    const eid=cfEmployeeId(f);
+    collected[eid]=(collected[eid]||0)+(+f.amount||0);
+  });
+  (S.cashExpenses||[]).forEach(x=>{
+    const eid=x.employee_id||'admin';
+    expenses[eid]=(expenses[eid]||0)+(+x.amount||0);
+  });
+  (S.cashHandovers||[]).forEach(h=>{
+    const eid=h.employee_id||'admin';
+    handovers[eid]=(handovers[eid]||0)+(+h.amount||0);
+  });
+  const ids=[...new Set([...Object.keys(collected),...Object.keys(expenses),...Object.keys(handovers)])];
+  return ids.map(eid=>{
+    const col=collected[eid]||0;
+    const exp=expenses[eid]||0;
+    const hand=handovers[eid]||0;
+    const expected=col-exp;
+    const pending=expected-hand;
+    return {
+      employee_id:eid,
+      employee_name:cfEmployeeName(eid),
+      collected:col,
+      expenses:exp,
+      expected,
+      handover:hand,
+      pending,
+      short: pending>0 ? pending : 0,
+      extra: pending<0 ? Math.abs(pending) : 0,
+      status: pending===0 ? 'Settled' : (pending>0 ? 'Cash Short / Pending' : 'Extra Credit')
+    };
+  });
+}
+function cfAccountBalances(){
+  ensureCashFlowState();
+  return S.accounts.map(a=>{
+    const hand=(S.cashHandovers||[]).filter(h=>h.account_id===a.id).reduce((s,h)=>s+(+h.amount||0),0);
+    const online=(S.finance||[]).filter(f=>(f.type||'income')!=='expense' && String(f.mode||'').toLowerCase()==='online' && (f.account_id===a.id || (!f.account_id && a.id==='acc_main_cash'))).reduce((s,f)=>s+(+f.amount||0),0);
+    const accExp=(S.cashExpenses||[]).filter(x=>x.paid_from==='account' && x.account_id===a.id).reduce((s,x)=>s+(+x.amount||0),0);
+    return {...a,handovers:hand,online,expenses:accExp,balance:(+a.opening||0)+hand+online-accExp};
+  });
+}
+function cashFlowPage(){
+  ensureCashFlowState();
+  const rows=cfCashSummary();
+  const accounts=cfAccountBalances();
+  const totalCollected=rows.reduce((s,x)=>s+x.collected,0);
+  const totalExpenses=rows.reduce((s,x)=>s+x.expenses,0);
+  const totalExpected=rows.reduce((s,x)=>s+x.expected,0);
+  const totalHanded=rows.reduce((s,x)=>s+x.handover,0);
+  const totalPending=rows.reduce((s,x)=>s+x.pending,0);
+  const totalBalance=accounts.reduce((s,x)=>s+x.balance,0);
+
+  content.innerHTML=`<div class="stable-hero">
+    <div class="stable-hero-row">
+      <div><h1>💵 Cash Flow</h1><p>Customer → Employee Cash → Expense Minus → Cash Handover → Real Account</p></div>
+      <div class="stable-pill">Accounts Control</div>
+    </div>
+  </div>
+
+  <div class="stable-kpi-grid">
+    <div class="stable-kpi stable-blue"><div class="icon">👥</div><span>Collected Cash</span><b>${money(totalCollected)}</b><small>Customer to employee</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">🧾</div><span>Cash Expenses</span><b>${money(totalExpenses)}</b><small>Minus from employee cash</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">🤝</div><span>Cash Handover</span><b>${money(totalHanded)}</b><small>Employee to account/admin</small></div>
+    <div class="stable-kpi stable-green"><div class="icon">🏦</div><span>Real Account Balance</span><b>${money(totalBalance)}</b><small>Cash/bank/wallet</small></div>
+  </div>
+
+  <div class="card">
+    <div class="head"><h2>Cash Flow Formula</h2></div>
+    <div class="summary">
+      <div class="sum">Collected Cash<b>${money(totalCollected)}</b></div>
+      <div class="sum">Minus Expenses<b>${money(totalExpenses)}</b></div>
+      <div class="sum">Expected Handover<b>${money(totalExpected)}</b></div>
+      <div class="sum">Pending / Short<b>${money(totalPending)}</b></div>
+    </div>
+    <p style="font-weight:900;color:#64748b">Pending = Collected Cash - Cash Expenses - Cash Handover. If pending is positive, employee cash is short/recoverable. If negative, employee has extra credit.</p>
+  </div>
+
+  <div class="card">
+    <div class="head">
+      <h2>Employee Cash Position</h2>
+      <div class="actions">
+        <button class="btn btn-w btn-sm" onclick="openCashExpenseModal()">Add Cash Expense</button>
+        <button class="btn btn-p btn-sm" onclick="openCashHandoverModal()">Cash Handover</button>
+      </div>
+    </div>
+    ${simpleTable('Employee Cash Flow',['Employee','Collected','Expense','Expected Handover','Handed Over','Pending / Short','Extra Credit','Status','Action'],rows.map(x=>`<tr>
+      <td><b>${esc(x.employee_name)}</b></td>
+      <td>${money(x.collected)}</td>
+      <td>${money(x.expenses)}</td>
+      <td>${money(x.expected)}</td>
+      <td>${money(x.handover)}</td>
+      <td>${x.short>0?'<span class="badge expense">'+money(x.short)+'</span>':money(0)}</td>
+      <td>${x.extra>0?'<span class="badge done">'+money(x.extra)+'</span>':money(0)}</td>
+      <td>${x.status==='Settled'?'<span class="badge done">Settled</span>':x.extra>0?'<span class="badge pending">Extra Credit</span>':'<span class="badge expense">Short / Pending</span>'}</td>
+      <td><div class="actions"><button class="btn btn-w btn-sm" onclick="openCashExpenseModal('${x.employee_id}')">Expense</button><button class="btn btn-p btn-sm" onclick="openCashHandoverModal('${x.employee_id}')">Handover</button></div></td>
+    </tr>`))}
+  </div>
+
+  <div class="card">
+    <div class="head"><h2>Real Accounts</h2><button class="btn btn-p btn-sm" onclick="openRealAccountModal()">Add Account</button></div>
+    ${simpleTable('Real Accounts',['Account','Type','Opening','Cash Handovers','Online','Expenses','Balance','Action'],accounts.map(a=>`<tr>
+      <td><b>${esc(a.name)}</b></td>
+      <td>${esc(a.type||'cash')}</td>
+      <td>${money(a.opening||0)}</td>
+      <td>${money(a.handovers||0)}</td>
+      <td>${money(a.online||0)}</td>
+      <td>${money(a.expenses||0)}</td>
+      <td><b>${money(a.balance||0)}</b></td>
+      <td><button class="btn btn-l btn-sm" onclick="openRealAccountModal('${a.id}')">Edit</button></td>
+    </tr>`))}
+  </div>
+
+  <div class="card">
+    <div class="head"><h2>Cash Expenses</h2></div>
+    ${simpleTable('Cash Expenses',['Date','Employee','Category','Amount','Paid From','Note'],(S.cashExpenses||[]).slice().reverse().map(x=>`<tr>
+      <td>${esc(x.date||'')}</td>
+      <td>${esc(cfEmployeeName(x.employee_id))}</td>
+      <td>${esc(x.category||'-')}</td>
+      <td>${money(x.amount)}</td>
+      <td>${esc(x.paid_from==='account'?('Real Account: '+(x.account_name||cfAccountName(x.account_id))):'Employee Cash')}</td>
+      <td>${esc(x.note||'')}</td>
+    </tr>`))}
+  </div>
+
+  <div class="card">
+    <div class="head"><h2>Cash Handover History</h2></div>
+    ${simpleTable('Cash Handovers',['Date','Employee','Real Account','Amount','Received By','Note'],(S.cashHandovers||[]).slice().reverse().map(h=>`<tr>
+      <td>${esc(h.date||'')}</td>
+      <td>${esc(cfEmployeeName(h.employee_id))}</td>
+      <td>${esc((S.accounts||[]).find(a=>a.id===h.account_id)?.name||'-')}</td>
+      <td>${money(h.amount)}</td>
+      <td>${esc(h.received_by||'')}</td>
+      <td>${esc(h.note||'')}</td>
+    </tr>`))}
+  </div>`;
+}
+function cfEmployeeOptions(selected=''){
+  let opts=[`<option value="admin" ${selected==='admin'?'selected':''}>Admin</option>`];
+  (S.employees||[]).forEach(e=>opts.push(`<option value="${e.id}" ${selected===e.id?'selected':''}>${esc(e.name||e.phone||'Employee')}</option>`));
+  return opts.join('');
+}
+function cfAccountOptions(selected=''){
+  ensureCashFlowState();
+  return (S.accounts||[]).filter(a=>a.active!==false).map(a=>`<option value="${a.id}" ${selected===a.id?'selected':''}>${esc(a.name)} (${esc(a.type||'cash')})</option>`).join('');
+}
+function openCashExpenseModal(empId=''){
+  ensureCashFlowState();
+  openBillingModal(`<div class="head"><h2>Add Cash Expense</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Employee</label><select id="cfExpEmployee">${cfEmployeeOptions(empId||'')}</select></div>
+      <div class="fg"><label>Category</label><input id="cfExpCategory" placeholder="Fuel / Cable / Repair / Other"></div>
+      <div class="fg"><label>Amount</label><input id="cfExpAmount" type="number"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Paid From</label><select id="cfExpPaidFrom" onchange="document.getElementById('cfExpAccBox').style.display=this.value==='account'?'block':'none'"><option value="employee_cash">Employee Cash</option><option value="account">Real Account</option></select></div>
+      <div class="fg" id="cfExpAccBox" style="display:none"><label>Account</label><select id="cfExpAccount">${cfAccountOptions()}</select></div>
+      <div class="fg"><label>Date</label><input id="cfExpDate" type="date" value="${today()}"></div>
+    </div>
+    <div class="fg"><label>Note</label><input id="cfExpNote" placeholder="Expense note / receipt reference"></div>
+    <button class="btn btn-p" onclick="saveCashExpense()">Save Expense</button>`);
+}
+function saveCashExpense(){
+  ensureCashFlowState();
+  const x={
+    id:id('ce'),
+    employee_id:document.getElementById('cfExpEmployee')?.value||'admin',
+    category:document.getElementById('cfExpCategory')?.value||'Expense',
+    amount:+document.getElementById('cfExpAmount')?.value||0,
+    paid_from:document.getElementById('cfExpPaidFrom')?.value||'employee_cash',
+    account_id:document.getElementById('cfExpPaidFrom')?.value==='account' ? (document.getElementById('cfExpAccount')?.value||'') : '',
+    date:document.getElementById('cfExpDate')?.value||today(),
+    note:document.getElementById('cfExpNote')?.value||'',
+    by:U?.id||'admin',
+    created_at:now()
+  };
+  if(x.amount<=0)return toast('Invalid expense amount','error');
+  S.cashExpenses.push(x);
+  try{saveAndSync('cashExpenses',x)}catch(e){saveLocal()}
+  closeBillingModal();
+  toast('Cash expense saved','success');
+  cashFlowPage();
+}
+function openCashHandoverModal(empId=''){
+  ensureCashFlowState();
+  const row=empId?cfCashSummary().find(x=>x.employee_id===empId):null;
+  const suggested=row&&row.pending>0?row.pending:0;
+  openBillingModal(`<div class="head"><h2>Cash Handover</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    ${row?`<div class="summary"><div class="sum">Employee<b>${esc(row.employee_name)}</b></div><div class="sum">Expected Pending<b>${money(row.pending)}</b></div></div>`:''}
+    <div class="row">
+      <div class="fg"><label>Employee</label><select id="cfHandEmployee">${cfEmployeeOptions(empId||'')}</select></div>
+      <div class="fg"><label>Real Account / Cash Box</label><select id="cfHandAccount">${cfAccountOptions()}</select></div>
+      <div class="fg"><label>Handover Amount</label><input id="cfHandAmount" type="number" value="${suggested}"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Received By</label><input id="cfHandReceivedBy" value="${esc(U?.name||'Admin')}"></div>
+      <div class="fg"><label>Date</label><input id="cfHandDate" type="date" value="${today()}"></div>
+      <div class="fg"><label>Reference</label><input id="cfHandRef" placeholder="optional"></div>
+    </div>
+    <div class="fg"><label>Note</label><input id="cfHandNote" placeholder="Cash handed over by employee"></div>
+    <button class="btn btn-p" onclick="saveCashHandover()">Save Cash Handover</button>`);
+}
+function saveCashHandover(){
+  ensureCashFlowState();
+  const h={
+    id:id('ch'),
+    employee_id:document.getElementById('cfHandEmployee')?.value||'admin',
+    account_id:document.getElementById('cfHandAccount')?.value||'acc_main_cash',
+    amount:+document.getElementById('cfHandAmount')?.value||0,
+    received_by:document.getElementById('cfHandReceivedBy')?.value||U?.name||'Admin',
+    date:document.getElementById('cfHandDate')?.value||today(),
+    ref:document.getElementById('cfHandRef')?.value||'',
+    note:document.getElementById('cfHandNote')?.value||'',
+    by:U?.id||'admin',
+    created_at:now()
+  };
+  if(h.amount<=0)return toast('Invalid handover amount','error');
+  S.cashHandovers.push(h);
+  try{saveAndSync('cashHandovers',h)}catch(e){saveLocal()}
+  closeBillingModal();
+  toast('Cash handover saved','success');
+  cashFlowPage();
+}
+function openRealAccountModal(accId=''){
+  ensureCashFlowState();
+  const a=(S.accounts||[]).find(x=>x.id===accId)||{id:'',name:'',type:'cash',opening:0,active:true};
+  openBillingModal(`<div class="head"><h2>${accId?'Edit':'Add'} Real Account</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Account Name</label><input id="cfAccName" value="${esc(a.name||'')}" placeholder="Main Cash / Bank / JazzCash"></div>
+      <div class="fg"><label>Type</label><select id="cfAccType"><option value="cash" ${a.type==='cash'?'selected':''}>Cash</option><option value="bank" ${a.type==='bank'?'selected':''}>Bank</option><option value="wallet" ${a.type==='wallet'?'selected':''}>Wallet</option></select></div>
+      <div class="fg"><label>Opening Balance</label><input id="cfAccOpening" type="number" value="${+a.opening||0}"></div>
+    </div>
+    <label style="font-weight:900"><input type="checkbox" id="cfAccActive" ${a.active!==false?'checked':''}> Active</label><br><br>
+    <button class="btn btn-p" onclick="saveRealAccount('${accId}')">Save Account</button>`);
+}
+function saveRealAccount(accId=''){
+  ensureCashFlowState();
+  let a=accId?S.accounts.find(x=>x.id===accId):null;
+  if(!a){
+    a={id:id('acc'),created_at:now()};
+    S.accounts.push(a);
+  }
+  a.name=document.getElementById('cfAccName')?.value||'Account';
+  a.type=document.getElementById('cfAccType')?.value||'cash';
+  a.opening=+document.getElementById('cfAccOpening')?.value||0;
+  a.active=document.getElementById('cfAccActive')?.checked!==false;
+  try{saveAndSync('accounts',a)}catch(e){saveLocal()}
+  closeBillingModal();
+  toast('Account saved','success');
+  cashFlowPage();
+}
+/* Cash payment receive marks employee holding */
+if(typeof saveReceiveBillModal==='function'){
+  const __oldSaveReceiveBillModalCashFlow=saveReceiveBillModal;
+  saveReceiveBillModal=function(clientId,sendWA=false,printSlip=false){
+    __oldSaveReceiveBillModalCashFlow(clientId,sendWA,printSlip);
+    setTimeout(()=>{
+      try{
+        const month=window.billingMonth||billMonthNow();
+        const latest=(S.finance||[]).slice().reverse().find(f=>f.clientId===clientId && f.billMonth===month && (f.type||'income')!=='expense');
+        if(latest && String(latest.mode||'cash').toLowerCase()==='cash'){
+          latest.cash_flow_stage='employee_holding';
+          latest.cash_status='with_employee';
+          latest.employee_id=latest.employee_id||latest.emp||latest.employee||latest.by||U?.id||'admin';
+          latest.employeeName=latest.employeeName||U?.name||'Admin';
+          saveAndSync('finance',latest);
+        }
+      }catch(e){}
+    },200);
+  }
+}
+function openCashFlowFixed(){
+  TAB='cashflow';
+  try{navRender()}catch(e){}
+  cashFlowPage();
+}
+
+
+
+/* ===== FINAL MOBILE MENU + CASH FLOW NAV FIX ===== */
+function closeMobileMenuFinal(){
+  try{
+    const s=document.getElementById('sidePanel') || document.getElementById('side') || document.querySelector('.sidebar') || document.querySelector('.side');
+    if(s) s.classList.remove('open');
+    document.body.classList.remove('menu-open');
+  }catch(e){}
+}
+function openCashFlowFixed(){
+  TAB='cashflow';
+  closeMobileMenuFinal();
+  try{
+    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+    const n=document.getElementById('n-cashflow'); if(n)n.classList.add('active');
+  }catch(e){}
+  if(typeof cashFlowPage==='function') return cashFlowPage();
+  const c=document.getElementById('content');
+  if(c)c.innerHTML='<div class="card"><div class="head"><h2>Cash Flow</h2></div><p>Cash Flow module not loaded.</p></div>';
+}
+function openNewsFixed(){
+  TAB='news';
+  closeMobileMenuFinal();
+  try{
+    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+    const n=document.getElementById('n-news'); if(n)n.classList.add('active');
+  }catch(e){}
+  if(typeof openNewsPage==='function')return openNewsPage();
+  if(typeof newsPage==='function')return newsPage();
+  const c=document.getElementById('content');
+  if(c)c.innerHTML='<div class="card"><div class="head"><h2>News</h2></div><p>News page not found.</p></div>';
+}
+function openTemplateFixed(){
+  TAB='template';
+  closeMobileMenuFinal();
+  try{
+    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+    const n=document.getElementById('n-template'); if(n)n.classList.add('active');
+  }catch(e){}
+  if(typeof templatePage==='function')return templatePage();
+  const c=document.getElementById('content');
+  if(c)c.innerHTML='<div class="card"><div class="head"><h2>Template</h2></div><p>Template page not found.</p></div>';
+}
+function openSettingsFixed(){
+  TAB='settings';
+  closeMobileMenuFinal();
+  try{
+    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+    const n=document.getElementById('n-settings'); if(n)n.classList.add('active');
+  }catch(e){}
+  if(typeof openSettingsPage==='function')return openSettingsPage();
+  if(typeof settings==='function')return settings();
+  if(typeof settingsPage==='function')return settingsPage();
+  const c=document.getElementById('content');
+  if(c)c.innerHTML='<div class="card"><div class="head"><h2>Settings</h2></div><p>Settings page not found.</p></div>';
+}
+function navItemsFinal(){
+  if(U&&U.role==='client') return [['dashboard','Dashboard','📊'],['complaints','Support','🛠️'],['news','News','📢']];
+  let list=[
+    ['dashboard','Dashboard','📊'],
+    ['complaints','Complaints','🛠️'],
+    ['clients','Clients','🌐'],
+    ['billing','Billing','💳'],
+    ['employees','Employees','👥'],
+    ['attendance','Attendance','🗓️'],
+    ['invoice','Invoice','🧾'],
+    ['finance','Finance','💰'],
+    ['cashflow','Cash Flow','💵'],
+    ['items','Items','📦'],
+    ['packages','Packages','📶'],
+    ['advance','Advance','💸'],
+    ['targets','Targets','🎯'],
+    ['news','News','📢'],
+    ['template','Template','🎨'],
+    ['settings','Settings','⚙️'],
+    ['backup','Backup','💾']
+  ];
+  if(U&&U.role==='employee'&&typeof employeeHasAccess==='function'){
+    list=list.filter(x=>x[0]==='dashboard'||employeeHasAccess(x[0])||x[0]==='cashflow');
+  }
+  const seen={};
+  return list.filter(x=>{ if(seen[x[0]])return false; seen[x[0]]=1; return true; });
+}
+function navRender(){
+  const el=document.getElementById('nav');
+  if(!el)return;
+  const list=navItemsFinal();
+  el.innerHTML=list.map(x=>{
+    let click=`tab('${x[0]}')`;
+    if(x[0]==='cashflow')click='openCashFlowFixed()';
+    if(x[0]==='news')click='openNewsFixed()';
+    if(x[0]==='template')click='openTemplateFixed()';
+    if(x[0]==='settings')click='openSettingsFixed()';
+    return `<button id="n-${x[0]}" class="${TAB===x[0]?'active':''}" onclick="${click}">${x[2]} ${x[1]}</button>`;
+  }).join('');
+}
+function tab(t){
+  TAB=t;
+  closeMobileMenuFinal();
+  try{
+    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+    const n=document.getElementById('n-'+t); if(n)n.classList.add('active');
+  }catch(e){}
+  if(t==='reports')return openReportsFixed();
+  if(t==='cashflow')return openCashFlowFixed();
+  if(t==='news')return openNewsFixed();
+  if(t==='template')return openTemplateFixed();
+  if(t==='settings')return openSettingsFixed();
+  if(typeof renderCurrent==='function')return renderCurrent();
+  if(typeof render==='function')return render();
+}
+/* make employee permission treat cashflow as allowed if finance/accounts allowed */
+if(typeof employeeHasAccess==='function'){
+  const __oldEmployeeHasAccessCashFinal=employeeHasAccess;
+  employeeHasAccess=function(tabName){
+    if(tabName==='reports'){return U&&U.role==='admin'||(U&&U.role==='employee'&&(U.per?.reports||U.per?.finance||U.per?.billing));}
+    if(tabName==='cashflow'){
+      if(!U)return false;
+      if(U.role==='admin')return true;
+      if(U.role==='employee'){
+        const per=U.per||{};
+        return per.cashflow!==false && (per.cashflow || per.finance || per.billing || true);
+      }
+    }
+    return __oldEmployeeHasAccessCashFinal(tabName);
+  }
+}
+setTimeout(()=>{try{navRender()}catch(e){}},300);
+
+
+
+/* ===== EXPENSE ACCOUNT SOURCE FIX ===== */
+function openCashExpenseModal(empId=''){
+  ensureCashFlowState();
+  openBillingModal(`<div class="head"><h2>Add Cash Expense</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Employee</label><select id="cfExpEmployee">${cfEmployeeOptions(empId||'')}</select></div>
+      <div class="fg"><label>Expense Category</label><input id="cfExpCategory" placeholder="Fuel / Cable / Repair / Other"></div>
+      <div class="fg"><label>Amount</label><input id="cfExpAmount" type="number"></div>
+    </div>
+    <div class="row">
+      <div class="fg">
+        <label>Expense From</label>
+        <select id="cfExpPaidFrom" onchange="toggleExpenseAccountBox()">
+          <option value="employee_cash">Employee Cash Holding</option>
+          <option value="account">Real Account / Bank / Wallet</option>
+        </select>
+      </div>
+      <div class="fg" id="cfExpAccBox" style="display:none">
+        <label>Select Real Account</label>
+        <select id="cfExpAccount">${cfAccountOptions()}</select>
+      </div>
+      <div class="fg"><label>Date</label><input id="cfExpDate" type="date" value="${today()}"></div>
+    </div>
+    <div class="fg"><label>Note</label><input id="cfExpNote" placeholder="Expense note / receipt reference"></div>
+    <button class="btn btn-p" onclick="saveCashExpense()">Save Expense</button>`);
+}
+function toggleExpenseAccountBox(){
+  const from=document.getElementById('cfExpPaidFrom')?.value||'employee_cash';
+  const box=document.getElementById('cfExpAccBox');
+  if(box)box.style.display=from==='account'?'block':'none';
+}
+function saveCashExpense(){
+  ensureCashFlowState();
+  const paidFrom=document.getElementById('cfExpPaidFrom')?.value||'employee_cash';
+  const accountId=paidFrom==='account' ? (document.getElementById('cfExpAccount')?.value||'') : '';
+  if(paidFrom==='account' && !accountId)return toast('Please select account for expense','error');
+  const x={
+    id:id('ce'),
+    employee_id:document.getElementById('cfExpEmployee')?.value||'admin',
+    category:document.getElementById('cfExpCategory')?.value||'Expense',
+    amount:+document.getElementById('cfExpAmount')?.value||0,
+    paid_from:paidFrom,
+    account_id:accountId,
+    account_name:accountId?((S.accounts||[]).find(a=>a.id===accountId)?.name||'Account'):'',
+    date:document.getElementById('cfExpDate')?.value||today(),
+    note:document.getElementById('cfExpNote')?.value||'',
+    by:U?.id||'admin',
+    created_at:now()
+  };
+  if(x.amount<=0)return toast('Invalid expense amount','error');
+  S.cashExpenses.push(x);
+  try{saveAndSync('cashExpenses',x)}catch(e){saveLocal()}
+  closeBillingModal();
+  toast('Expense saved from '+(x.paid_from==='account'?x.account_name:'Employee Cash'),'success');
+  cashFlowPage();
+}
+/* Finance expense also asks source account */
+function addExpense(){
+  ensureCashFlowState();
+  const opts=cfAccountOptions();
+  openBillingModal(`<div class="head"><h2>Add Expense</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Category</label><input id="finExpCat" placeholder="Fuel / Office / Repair"></div>
+      <div class="fg"><label>Amount</label><input id="finExpAmt" type="number"></div>
+      <div class="fg"><label>Expense From Account</label><select id="finExpAccount">${opts}</select></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Date</label><input id="finExpDate" type="date" value="${today()}"></div>
+      <div class="fg"><label>Mode</label><select id="finExpMode"><option value="cash">Cash</option><option value="online">Online</option></select></div>
+      <div class="fg"><label>Note</label><input id="finExpNote"></div>
+    </div>
+    <button class="btn btn-p" onclick="saveFinanceExpenseWithAccount()">Save Expense</button>`);
+}
+function saveFinanceExpenseWithAccount(){
+  ensureCashFlowState();
+  const accountId=document.getElementById('finExpAccount')?.value||'';
+  if(!accountId)return toast('Please select expense account','error');
+  const amount=+document.getElementById('finExpAmt')?.value||0;
+  if(amount<=0)return toast('Invalid amount','error');
+  const acc=(S.accounts||[]).find(a=>a.id===accountId);
+  const f={
+    id:id('fi'),
+    type:'expense',
+    cat:document.getElementById('finExpCat')?.value||'Expense',
+    amount,
+    mode:document.getElementById('finExpMode')?.value||'cash',
+    account_id:accountId,
+    account_name:acc?.name||'Account',
+    date:document.getElementById('finExpDate')?.value||today(),
+    time:now(),
+    note:document.getElementById('finExpNote')?.value||'',
+    by:U?.id||'admin'
+  };
+  S.finance=S.finance||[];
+  S.finance.push(f);
+  const ce={
+    id:id('ce'),
+    employee_id:U?.id||'admin',
+    category:f.cat,
+    amount:f.amount,
+    paid_from:'account',
+    account_id:accountId,
+    account_name:f.account_name,
+    date:f.date,
+    note:f.note,
+    by:U?.id||'admin',
+    created_at:now(),
+    finance_id:f.id
+  };
+  S.cashExpenses=S.cashExpenses||[];
+  S.cashExpenses.push(ce);
+  try{saveAndSync('finance',f);saveAndSync('cashExpenses',ce)}catch(e){saveLocal()}
+  closeBillingModal();
+  toast('Expense saved from '+f.account_name,'success');
+  if(TAB==='cashflow')cashFlowPage(); else if(typeof finance==='function')finance(); else if(typeof financePage==='function')financePage();
+}
+
+
+
+/* ===== ACCOUNT DROPDOWN + BALANCE MINUS FINAL FIX ===== */
+function ensureCashFlowState(){
+  S.accounts = Array.isArray(S.accounts) ? S.accounts : [];
+  S.cashExpenses = Array.isArray(S.cashExpenses) ? S.cashExpenses : [];
+  S.cashHandovers = Array.isArray(S.cashHandovers) ? S.cashHandovers : [];
+  if(!S.accounts.length){
+    S.accounts.push({id:'acc_main_cash',name:'Main Cash / Office Account',type:'cash',opening:0,active:true,created_at:now()});
+    try{saveLocal()}catch(e){}
+  }
+}
+function cfAccountOptions(selected=''){
+  ensureCashFlowState();
+  return (S.accounts||[])
+    .filter(a=>a.active!==false)
+    .map(a=>`<option value="${a.id}" ${selected===a.id?'selected':''}>${esc(a.name||'Account')} (${esc(a.type||'cash')})</option>`)
+    .join('');
+}
+function cfAccountName(accountId){
+  const a=(S.accounts||[]).find(x=>x.id===accountId);
+  return a ? (a.name||'Account') : '-';
+}
+function cfAccountBalances(){
+  ensureCashFlowState();
+  return S.accounts.map(a=>{
+    const handovers=(S.cashHandovers||[])
+      .filter(h=>h.account_id===a.id)
+      .reduce((s,h)=>s+(+h.amount||0),0);
+
+    const onlineIncome=(S.finance||[])
+      .filter(f=>(f.type||'income')!=='expense' && String(f.mode||'').toLowerCase()==='online' && (f.account_id===a.id))
+      .reduce((s,f)=>s+(+f.amount||0),0);
+
+    const accountExpensesFromCashFlow=(S.cashExpenses||[])
+      .filter(x=>x.paid_from==='account' && x.account_id===a.id)
+      .reduce((s,x)=>s+(+x.amount||0),0);
+
+    const financeExpensesDirect=(S.finance||[])
+      .filter(f=>(f.type==='expense') && f.account_id===a.id && !f.cash_expense_id)
+      .reduce((s,f)=>s+(+f.amount||0),0);
+
+    const expenses=accountExpensesFromCashFlow+financeExpensesDirect;
+
+    return {
+      ...a,
+      handovers,
+      online:onlineIncome,
+      expenses,
+      balance:(+a.opening||0)+handovers+onlineIncome-expenses
+    };
+  });
+}
+/* Account save must update dropdown immediately */
+function saveRealAccount(accId=''){
+  ensureCashFlowState();
+  let a=accId?S.accounts.find(x=>x.id===accId):null;
+  if(!a){
+    a={id:id('acc'),created_at:now()};
+    S.accounts.push(a);
+  }
+  a.name=document.getElementById('cfAccName')?.value||'Account';
+  a.type=document.getElementById('cfAccType')?.value||'cash';
+  a.opening=+document.getElementById('cfAccOpening')?.value||0;
+  a.active=document.getElementById('cfAccActive')?document.getElementById('cfAccActive').checked:true;
+  try{saveAndSync('accounts',a)}catch(e){saveLocal()}
+  closeBillingModal();
+  toast('Account saved and available in expense dropdown','success');
+  if(TAB==='cashflow')cashFlowPage();
+}
+/* Cash Flow expense: account dropdown shows saved accounts and minus from selected account */
+function openCashExpenseModal(empId=''){
+  ensureCashFlowState();
+  openBillingModal(`<div class="head"><h2>Add Cash Expense</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Employee</label><select id="cfExpEmployee">${cfEmployeeOptions(empId||'')}</select></div>
+      <div class="fg"><label>Expense Category</label><input id="cfExpCategory" placeholder="Fuel / Cable / Repair / Other"></div>
+      <div class="fg"><label>Amount</label><input id="cfExpAmount" type="number"></div>
+    </div>
+    <div class="row">
+      <div class="fg">
+        <label>Expense From</label>
+        <select id="cfExpPaidFrom" onchange="toggleExpenseAccountBox()">
+          <option value="employee_cash">Employee Cash Holding</option>
+          <option value="account">Real Account / Bank / Wallet</option>
+        </select>
+      </div>
+      <div class="fg" id="cfExpAccBox" style="display:none">
+        <label>Select Real Account</label>
+        <select id="cfExpAccount">${cfAccountOptions()}</select>
+      </div>
+      <div class="fg"><label>Date</label><input id="cfExpDate" type="date" value="${today()}"></div>
+    </div>
+    <div class="fg"><label>Note</label><input id="cfExpNote" placeholder="Expense note / receipt reference"></div>
+    <button class="btn btn-p" onclick="saveCashExpense()">Save Expense</button>`);
+}
+function saveCashExpense(){
+  ensureCashFlowState();
+  const paidFrom=document.getElementById('cfExpPaidFrom')?.value||'employee_cash';
+  const accountId=paidFrom==='account' ? (document.getElementById('cfExpAccount')?.value||'') : '';
+  if(paidFrom==='account' && !accountId)return toast('Please select real account','error');
+
+  const x={
+    id:id('ce'),
+    employee_id:document.getElementById('cfExpEmployee')?.value||'admin',
+    category:document.getElementById('cfExpCategory')?.value||'Expense',
+    amount:+document.getElementById('cfExpAmount')?.value||0,
+    paid_from:paidFrom,
+    account_id:accountId,
+    account_name:accountId?cfAccountName(accountId):'',
+    date:document.getElementById('cfExpDate')?.value||today(),
+    note:document.getElementById('cfExpNote')?.value||'',
+    by:U?.id||'admin',
+    created_at:now()
+  };
+  if(x.amount<=0)return toast('Invalid expense amount','error');
+
+  S.cashExpenses.push(x);
+
+  /* also create finance expense entry for reports, linked to prevent double minus */
+  const f={
+    id:id('fi'),
+    type:'expense',
+    cat:x.category,
+    amount:x.amount,
+    mode:x.paid_from==='account'?'account':'cash',
+    account_id:x.account_id,
+    account_name:x.account_name,
+    date:x.date,
+    time:now(),
+    note:x.note,
+    by:U?.id||'admin',
+    cash_expense_id:x.id
+  };
+  S.finance=S.finance||[];
+  S.finance.push(f);
+
+  try{saveAndSync('cashExpenses',x);saveAndSync('finance',f)}catch(e){saveLocal()}
+  closeBillingModal();
+  toast(x.paid_from==='account' ? ('Expense minus from '+x.account_name) : 'Expense minus from employee cash','success');
+  if(TAB==='cashflow')cashFlowPage(); else if(typeof finance==='function')finance(); else if(typeof financePage==='function')financePage();
+}
+/* Finance add expense: always ask selected real account and minus from that account */
+function addExpense(){
+  ensureCashFlowState();
+  openBillingModal(`<div class="head"><h2>Add Account Expense</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Expense Category</label><input id="finExpCat" placeholder="Fuel / Office / Repair"></div>
+      <div class="fg"><label>Amount</label><input id="finExpAmt" type="number"></div>
+      <div class="fg"><label>Expense From Account</label><select id="finExpAccount">${cfAccountOptions()}</select></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Date</label><input id="finExpDate" type="date" value="${today()}"></div>
+      <div class="fg"><label>Mode</label><select id="finExpMode"><option value="cash">Cash</option><option value="online">Online</option></select></div>
+      <div class="fg"><label>Note</label><input id="finExpNote"></div>
+    </div>
+    <button class="btn btn-p" onclick="saveFinanceExpenseWithAccount()">Save Expense</button>`);
+}
+function saveFinanceExpenseWithAccount(){
+  ensureCashFlowState();
+  const accountId=document.getElementById('finExpAccount')?.value||'';
+  if(!accountId)return toast('Please select expense account','error');
+  const amount=+document.getElementById('finExpAmt')?.value||0;
+  if(amount<=0)return toast('Invalid amount','error');
+  const accName=cfAccountName(accountId);
+
+  const ce={
+    id:id('ce'),
+    employee_id:U?.id||'admin',
+    category:document.getElementById('finExpCat')?.value||'Expense',
+    amount,
+    paid_from:'account',
+    account_id:accountId,
+    account_name:accName,
+    date:document.getElementById('finExpDate')?.value||today(),
+    note:document.getElementById('finExpNote')?.value||'',
+    by:U?.id||'admin',
+    created_at:now()
+  };
+  const f={
+    id:id('fi'),
+    type:'expense',
+    cat:ce.category,
+    amount,
+    mode:document.getElementById('finExpMode')?.value||'cash',
+    account_id:accountId,
+    account_name:accName,
+    date:ce.date,
+    time:now(),
+    note:ce.note,
+    by:U?.id||'admin',
+    cash_expense_id:ce.id
+  };
+
+  S.cashExpenses=S.cashExpenses||[];
+  S.finance=S.finance||[];
+  S.cashExpenses.push(ce);
+  S.finance.push(f);
+
+  try{saveAndSync('cashExpenses',ce);saveAndSync('finance',f)}catch(e){saveLocal()}
+  closeBillingModal();
+  toast('Expense minus from '+accName,'success');
+  if(TAB==='cashflow')cashFlowPage(); else if(typeof finance==='function')finance(); else if(typeof financePage==='function')financePage();
+}
+
+
+
+/* ===== FINAL FORCE ACCOUNT DROPDOWN IN EXPENSE ===== */
+function loadAccountsFresh(){
+  S.accounts = Array.isArray(S.accounts) ? S.accounts : [];
+  if(!S.accounts.length){
+    S.accounts.push({
+      id:'acc_main_cash',
+      name:'Main Cash / Office Account',
+      type:'cash',
+      opening:0,
+      active:true,
+      created_at:now()
+    });
+    try{saveLocal()}catch(e){}
+  }
+  return S.accounts;
+}
+function accountOptionsFresh(selected=''){
+  const accounts = loadAccountsFresh().filter(a=>a.active!==false);
+  if(!accounts.length){
+    return `<option value="acc_main_cash">Main Cash / Office Account</option>`;
+  }
+  return accounts.map(a=>`<option value="${esc(a.id)}" ${selected===a.id?'selected':''}>${esc(a.name||'Account')} - ${esc(a.type||'cash')}</option>`).join('');
+}
+function getFreshAccountName(accountId){
+  const a=loadAccountsFresh().find(x=>x.id===accountId);
+  return a ? (a.name||'Account') : 'Account';
+}
+function refreshExpenseAccountDropdown(selectId='cfExpAccount'){
+  const el=document.getElementById(selectId);
+  if(el)el.innerHTML=accountOptionsFresh(el.value||'');
+}
+function toggleExpenseAccountBox(){
+  const from=document.getElementById('cfExpPaidFrom')?.value||'employee_cash';
+  const box=document.getElementById('cfExpAccBox');
+  if(box)box.style.display=from==='account'?'block':'none';
+  if(from==='account')refreshExpenseAccountDropdown('cfExpAccount');
+}
+/* Override account save so saved accounts immediately appear in expense dropdown */
+function saveRealAccount(accId=''){
+  loadAccountsFresh();
+  let a=accId?S.accounts.find(x=>x.id===accId):null;
+  if(!a){
+    a={id:id('acc'),created_at:now()};
+    S.accounts.push(a);
+  }
+  a.name=document.getElementById('cfAccName')?.value || document.getElementById('accName')?.value || 'Account';
+  a.type=document.getElementById('cfAccType')?.value || document.getElementById('accType')?.value || 'cash';
+  a.opening=+(document.getElementById('cfAccOpening')?.value || document.getElementById('accOpening')?.value || 0);
+  a.active=document.getElementById('cfAccActive') ? document.getElementById('cfAccActive').checked : (document.getElementById('accActive') ? document.getElementById('accActive').checked : true);
+  try{saveAndSync('accounts',a)}catch(e){try{saveLocal()}catch(_){}}
+  try{closeBillingModal()}catch(e){try{closeModal()}catch(_){}}
+  toast('Account saved and added to expense dropdown','success');
+  if(TAB==='cashflow' && typeof cashFlowPage==='function')cashFlowPage();
+}
+/* In case old account function name is used */
+function saveAccount(accId=''){ return saveRealAccount(accId); }
+/* Force Cash Expense modal with fresh account dropdown */
+function openCashExpenseModal(empId=''){
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  loadAccountsFresh();
+  const html=`<div class="head"><h2>Add Cash Expense</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Employee</label><select id="cfExpEmployee">${typeof cfEmployeeOptions==='function'?cfEmployeeOptions(empId||''):'<option value="admin">Admin</option>'}</select></div>
+      <div class="fg"><label>Expense Category</label><input id="cfExpCategory" placeholder="Fuel / Cable / Repair / Other"></div>
+      <div class="fg"><label>Amount</label><input id="cfExpAmount" type="number"></div>
+    </div>
+    <div class="row">
+      <div class="fg">
+        <label>Expense From</label>
+        <select id="cfExpPaidFrom" onchange="toggleExpenseAccountBox()">
+          <option value="employee_cash">Employee Cash Holding</option>
+          <option value="account">Real Account / Bank / Wallet</option>
+        </select>
+      </div>
+      <div class="fg" id="cfExpAccBox" style="display:none">
+        <label>Select Real Account</label>
+        <select id="cfExpAccount">${accountOptionsFresh()}</select>
+      </div>
+      <div class="fg"><label>Date</label><input id="cfExpDate" type="date" value="${today()}"></div>
+    </div>
+    <div class="fg"><label>Note</label><input id="cfExpNote" placeholder="Expense note / receipt reference"></div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveCashExpense()">Save Expense</button>
+      <button class="btn btn-l" onclick="openRealAccountModal()">Add New Account</button>
+    </div>`;
+  if(typeof openBillingModal==='function')openBillingModal(html);
+  else if(typeof openModal==='function')openModal(html);
+}
+/* Force Finance Expense modal with fresh account dropdown */
+function addExpense(){
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  loadAccountsFresh();
+  const html=`<div class="head"><h2>Add Account Expense</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="row">
+      <div class="fg"><label>Expense Category</label><input id="finExpCat" placeholder="Fuel / Office / Repair"></div>
+      <div class="fg"><label>Amount</label><input id="finExpAmt" type="number"></div>
+      <div class="fg"><label>Expense From Account</label><select id="finExpAccount">${accountOptionsFresh()}</select></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Date</label><input id="finExpDate" type="date" value="${today()}"></div>
+      <div class="fg"><label>Mode</label><select id="finExpMode"><option value="cash">Cash</option><option value="online">Online</option></select></div>
+      <div class="fg"><label>Note</label><input id="finExpNote"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveFinanceExpenseWithAccount()">Save Expense</button>
+      <button class="btn btn-l" onclick="openRealAccountModal()">Add New Account</button>
+    </div>`;
+  if(typeof openBillingModal==='function')openBillingModal(html);
+  else if(typeof openModal==='function')openModal(html);
+}
+function saveCashExpense(){
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  loadAccountsFresh();
+  const paidFrom=document.getElementById('cfExpPaidFrom')?.value||'employee_cash';
+  const accountId=paidFrom==='account' ? (document.getElementById('cfExpAccount')?.value||'') : '';
+  if(paidFrom==='account' && !accountId)return toast('Please select real account','error');
+
+  const amount=+document.getElementById('cfExpAmount')?.value||0;
+  if(amount<=0)return toast('Invalid expense amount','error');
+
+  const x={
+    id:id('ce'),
+    employee_id:document.getElementById('cfExpEmployee')?.value||'admin',
+    category:document.getElementById('cfExpCategory')?.value||'Expense',
+    amount,
+    paid_from:paidFrom,
+    account_id:accountId,
+    account_name:accountId?getFreshAccountName(accountId):'',
+    date:document.getElementById('cfExpDate')?.value||today(),
+    note:document.getElementById('cfExpNote')?.value||'',
+    by:U?.id||'admin',
+    created_at:now()
+  };
+
+  S.cashExpenses=S.cashExpenses||[];
+  S.cashExpenses.push(x);
+
+  const f={
+    id:id('fi'),
+    type:'expense',
+    cat:x.category,
+    amount:x.amount,
+    mode:x.paid_from==='account'?'account':'cash',
+    account_id:x.account_id,
+    account_name:x.account_name,
+    date:x.date,
+    time:now(),
+    note:x.note,
+    by:U?.id||'admin',
+    cash_expense_id:x.id
+  };
+  S.finance=S.finance||[];
+  S.finance.push(f);
+
+  try{saveAndSync('cashExpenses',x);saveAndSync('finance',f)}catch(e){try{saveLocal()}catch(_){}}
+  try{closeBillingModal()}catch(e){try{closeModal()}catch(_){}}
+  toast(x.paid_from==='account' ? ('Expense minus from '+x.account_name) : 'Expense minus from employee cash','success');
+  if(TAB==='cashflow' && typeof cashFlowPage==='function')cashFlowPage();
+  else if(typeof finance==='function')finance();
+  else if(typeof financePage==='function')financePage();
+}
+function saveFinanceExpenseWithAccount(){
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  loadAccountsFresh();
+  const accountId=document.getElementById('finExpAccount')?.value||'';
+  if(!accountId)return toast('Please select expense account','error');
+  const amount=+document.getElementById('finExpAmt')?.value||0;
+  if(amount<=0)return toast('Invalid amount','error');
+
+  const accName=getFreshAccountName(accountId);
+  const ce={
+    id:id('ce'),
+    employee_id:U?.id||'admin',
+    category:document.getElementById('finExpCat')?.value||'Expense',
+    amount,
+    paid_from:'account',
+    account_id:accountId,
+    account_name:accName,
+    date:document.getElementById('finExpDate')?.value||today(),
+    note:document.getElementById('finExpNote')?.value||'',
+    by:U?.id||'admin',
+    created_at:now()
+  };
+  const f={
+    id:id('fi'),
+    type:'expense',
+    cat:ce.category,
+    amount,
+    mode:document.getElementById('finExpMode')?.value||'cash',
+    account_id:accountId,
+    account_name:accName,
+    date:ce.date,
+    time:now(),
+    note:ce.note,
+    by:U?.id||'admin',
+    cash_expense_id:ce.id
+  };
+
+  S.cashExpenses=S.cashExpenses||[];
+  S.finance=S.finance||[];
+  S.cashExpenses.push(ce);
+  S.finance.push(f);
+
+  try{saveAndSync('cashExpenses',ce);saveAndSync('finance',f)}catch(e){try{saveLocal()}catch(_){}}
+  try{closeBillingModal()}catch(e){try{closeModal()}catch(_){}}
+  toast('Expense minus from '+accName,'success');
+  if(TAB==='cashflow' && typeof cashFlowPage==='function')cashFlowPage();
+  else if(typeof finance==='function')finance();
+  else if(typeof financePage==='function')financePage();
+}
+
+
+
+/* ===== REPORTING MODULE ===== */
+function reportMonthNow(){
+  if(typeof billMonthNow==='function')return billMonthNow();
+  const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+function reportToday(){return typeof today==='function'?today():new Date().toISOString().slice(0,10)}
+function inDateRange(date,start,end){
+  if(!date)return false;
+  const d=String(date).slice(0,10);
+  if(start&&d<start)return false;
+  if(end&&d>end)return false;
+  return true;
+}
+function csvEscape(v){return `"${String(v??'').replace(/"/g,'""')}"`}
+function downloadCSV(filename, rows){
+  const csv=rows.map(r=>r.map(csvEscape).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function reportPrint(title, html){
+  const w=window.open('','_blank');
+  w.document.write(`<html><head><title>${esc(title)}</title><style>
+    body{font-family:Arial,sans-serif;color:#111;padding:18px}
+    h1{margin:0 0 8px;color:#dc2626}
+    .meta{color:#64748b;font-weight:700;margin-bottom:14px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border:1px solid #e5e7eb;padding:8px;font-size:12px;text-align:left}
+    th{background:#f8fafc}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+    .sum{border:1px solid #e5e7eb;border-radius:10px;padding:10px}
+    .sum b{display:block;font-size:18px}
+    @media print{@page{size:A4;margin:12mm}}
+  </style></head><body><h1>${esc(title)}</h1><div class="meta">Generated: ${now()}</div>${html}</body></html>`);
+  w.document.close();setTimeout(()=>w.print(),600);
+}
+function getReportFinance(start,end){
+  return (S.finance||[]).filter(f=>inDateRange(f.date,start,end));
+}
+function getReportInvoices(month){
+  if(typeof clientBillRows==='function')return clientBillRows(month||reportMonthNow());
+  return (S.invoices||[]).filter(i=>i.billMonth===(month||reportMonthNow())).map(i=>({client:(S.clients||[]).find(c=>c.id===i.clientId)||{},total:+i.total||0,discount:+i.discount||0,received:+i.received||0,due:+i.due||0,status:i.status||'Unpaid'}));
+}
+function reportEmployeeCashRows(start,end){
+  const collected={}, expenses={}, handovers={};
+  (S.finance||[]).filter(f=>(f.type||'income')!=='expense' && String(f.mode||'cash').toLowerCase()==='cash' && inDateRange(f.date,start,end)).forEach(f=>{
+    const eid=(typeof cfEmployeeId==='function')?cfEmployeeId(f):(f.employee_id||f.emp||f.employee||f.by||'admin');
+    collected[eid]=(collected[eid]||0)+(+f.amount||0);
+  });
+  (S.cashExpenses||[]).filter(x=>inDateRange(x.date,start,end)).forEach(x=>{
+    const eid=x.employee_id||'admin';
+    expenses[eid]=(expenses[eid]||0)+(+x.amount||0);
+  });
+  (S.cashHandovers||[]).filter(h=>inDateRange(h.date,start,end)).forEach(h=>{
+    const eid=h.employee_id||'admin';
+    handovers[eid]=(handovers[eid]||0)+(+h.amount||0);
+  });
+  const ids=[...new Set([...Object.keys(collected),...Object.keys(expenses),...Object.keys(handovers)])];
+  return ids.map(eid=>{
+    const name=(typeof cfEmployeeName==='function')?cfEmployeeName(eid):eid;
+    const col=collected[eid]||0, exp=expenses[eid]||0, hand=handovers[eid]||0;
+    const expected=col-exp, pending=expected-hand;
+    return {eid,name,collected:col,expenses:exp,expected,handovers:hand,pending,status:pending===0?'Settled':pending>0?'Short/Pending':'Extra Credit'};
+  });
+}
+function reportsPage(){
+  const month=window.reportMonth||reportMonthNow();
+  const start=window.reportStart||reportToday();
+  const end=window.reportEnd||reportToday();
+  const type=window.reportType||'billing';
+
+  let html='';
+  if(type==='billing')html=renderBillingReport(month);
+  else if(type==='finance')html=renderFinanceReport(start,end);
+  else if(type==='cashflow')html=renderCashFlowReport(start,end);
+  else if(type==='accounts')html=renderAccountsReport(start,end);
+  else if(type==='employees')html=renderEmployeeReport(start,end);
+
+  content.innerHTML=`<div class="stable-hero">
+    <div class="stable-hero-row"><div><h1>📈 Reporting</h1><p>Billing, Finance, Cash Flow, Accounts and Employee collection reports</p></div><div class="stable-pill">Reports</div></div>
+  </div>
+  <div class="card">
+    <div class="head"><h2>Report Filters</h2></div>
+    <div class="row">
+      <div class="fg"><label>Report Type</label><select onchange="window.reportType=this.value;reportsPage()">
+        <option value="billing" ${type==='billing'?'selected':''}>Monthly Billing</option>
+        <option value="finance" ${type==='finance'?'selected':''}>Finance Income/Expense</option>
+        <option value="cashflow" ${type==='cashflow'?'selected':''}>Cash Flow</option>
+        <option value="accounts" ${type==='accounts'?'selected':''}>Real Accounts</option>
+        <option value="employees" ${type==='employees'?'selected':''}>Employee Collection</option>
+      </select></div>
+      <div class="fg"><label>Billing Month</label><input type="month" value="${esc(month)}" onchange="window.reportMonth=this.value;reportsPage()"></div>
+      <div class="fg"><label>Date From</label><input type="date" value="${esc(start)}" onchange="window.reportStart=this.value;reportsPage()"></div>
+      <div class="fg"><label>Date To</label><input type="date" value="${esc(end)}" onchange="window.reportEnd=this.value;reportsPage()"></div>
+    </div>
+  </div>
+  ${html}`;
+}
+function renderBillingReport(month){
+  const rows=getReportInvoices(month);
+  const total=rows.reduce((s,r)=>s+(+r.total||0),0);
+  const discount=rows.reduce((s,r)=>s+(+r.discount||0),0);
+  const received=rows.reduce((s,r)=>s+(+r.received||0),0);
+  const due=rows.reduce((s,r)=>s+(+r.due||0),0);
+  const paid=rows.filter(r=>r.status==='Paid').length;
+  const unpaid=rows.filter(r=>r.status==='Unpaid').length;
+  const partial=rows.filter(r=>r.status==='Partial').length;
+  const tableRows=rows.map(r=>{
+    const c=r.client||{};
+    return `<tr><td>${esc(c.name||'-')}</td><td>${esc(c.mobile||'-')}</td><td>${esc(c.ccode||c.pin||'-')}</td><td>${esc(c.package||'-')}</td><td>${money(r.total)}</td><td>${money(r.discount)}</td><td>${money(r.received)}</td><td>${money(r.due)}</td><td>${esc(r.status)}</td></tr>`;
+  });
+  return `<div class="stable-kpi-grid">
+    <div class="stable-kpi stable-blue"><div class="icon">🧾</div><span>Total Bill</span><b>${money(total)}</b><small>${rows.length} bills</small></div>
+    <div class="stable-kpi stable-green"><div class="icon">✅</div><span>Received</span><b>${money(received)}</b><small>${paid} paid</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">❌</div><span>Due</span><b>${money(due)}</b><small>${unpaid} unpaid</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">🟡</div><span>Partial</span><b>${partial}</b><small>partial users</small></div>
+  </div>
+  <div class="card"><div class="head"><h2>Monthly Billing Report - ${esc(month)}</h2><div class="actions"><button class="btn btn-i btn-sm" onclick="printBillingReportView()">Print</button><button class="btn btn-s btn-sm" onclick="exportBillingReportCSV()">CSV</button></div></div>
+  ${simpleTable('Billing Report',['Client','Mobile','C.Code','Package','Bill','Discount','Received','Due','Status'],tableRows)}</div>`;
+}
+function printBillingReportView(){
+  const month=window.reportMonth||reportMonthNow();
+  const rows=getReportInvoices(month);
+  const body=`<table><thead><tr><th>Client</th><th>Mobile</th><th>C.Code</th><th>Package</th><th>Bill</th><th>Received</th><th>Due</th><th>Status</th></tr></thead><tbody>${rows.map(r=>{const c=r.client||{};return `<tr><td>${esc(c.name||'-')}</td><td>${esc(c.mobile||'-')}</td><td>${esc(c.ccode||c.pin||'-')}</td><td>${esc(c.package||'-')}</td><td>${money(r.total)}</td><td>${money(r.received)}</td><td>${money(r.due)}</td><td>${esc(r.status)}</td></tr>`}).join('')}</tbody></table>`;
+  reportPrint('Monthly Billing Report - '+month, body);
+}
+function exportBillingReportCSV(){
+  const month=window.reportMonth||reportMonthNow();
+  const rows=[['Client','Mobile','C.Code','Package','Bill','Discount','Received','Due','Status']];
+  getReportInvoices(month).forEach(r=>{const c=r.client||{};rows.push([c.name||'',c.mobile||'',c.ccode||c.pin||'',c.package||'',r.total,r.discount,r.received,r.due,r.status])});
+  downloadCSV('billing-report-'+month+'.csv', rows);
+}
+function renderFinanceReport(start,end){
+  const rows=getReportFinance(start,end);
+  const income=rows.filter(f=>(f.type||'income')!=='expense').reduce((s,f)=>s+(+f.amount||0),0);
+  const exp=rows.filter(f=>f.type==='expense').reduce((s,f)=>s+(+f.amount||0),0);
+  const cash=rows.filter(f=>String(f.mode||'cash').toLowerCase()==='cash'&&(f.type||'income')!=='expense').reduce((s,f)=>s+(+f.amount||0),0);
+  const online=rows.filter(f=>String(f.mode||'').toLowerCase()==='online'&&(f.type||'income')!=='expense').reduce((s,f)=>s+(+f.amount||0),0);
+  const tableRows=rows.map(f=>`<tr><td>${esc(f.date||'')}</td><td>${esc(f.type||'income')}</td><td>${esc(f.cat||'-')}</td><td>${esc(f.customer||'-')}</td><td>${money(f.amount)}</td><td>${esc(f.mode||'-')}</td><td>${esc(f.receivedBy||f.employeeName||f.by||'-')}</td><td>${esc(f.account_name||'-')}</td></tr>`);
+  return `<div class="stable-kpi-grid">
+    <div class="stable-kpi stable-green"><div class="icon">💰</div><span>Income</span><b>${money(income)}</b><small>${start} to ${end}</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">🧾</div><span>Expenses</span><b>${money(exp)}</b><small>total expense</small></div>
+    <div class="stable-kpi stable-blue"><div class="icon">💵</div><span>Cash Income</span><b>${money(cash)}</b><small>cash received</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">🏦</div><span>Online Income</span><b>${money(online)}</b><small>online/bank</small></div>
+  </div>
+  <div class="card"><div class="head"><h2>Finance Report</h2><div class="actions"><button class="btn btn-i btn-sm" onclick="printFinanceReportView()">Print</button><button class="btn btn-s btn-sm" onclick="exportFinanceReportCSV()">CSV</button></div></div>
+  ${simpleTable('Finance Report',['Date','Type','Category','Customer','Amount','Mode','Employee','Account'],tableRows)}</div>`;
+}
+function printFinanceReportView(){
+  const start=window.reportStart||reportToday(), end=window.reportEnd||reportToday();
+  const rows=getReportFinance(start,end);
+  const body=`<table><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Customer</th><th>Amount</th><th>Mode</th><th>Employee</th><th>Account</th></tr></thead><tbody>${rows.map(f=>`<tr><td>${esc(f.date||'')}</td><td>${esc(f.type||'income')}</td><td>${esc(f.cat||'-')}</td><td>${esc(f.customer||'-')}</td><td>${money(f.amount)}</td><td>${esc(f.mode||'-')}</td><td>${esc(f.receivedBy||f.employeeName||f.by||'-')}</td><td>${esc(f.account_name||'-')}</td></tr>`).join('')}</tbody></table>`;
+  reportPrint('Finance Report '+start+' to '+end, body);
+}
+function exportFinanceReportCSV(){
+  const start=window.reportStart||reportToday(), end=window.reportEnd||reportToday();
+  const rows=[['Date','Type','Category','Customer','Amount','Mode','Employee','Account']];
+  getReportFinance(start,end).forEach(f=>rows.push([f.date||'',f.type||'income',f.cat||'',f.customer||'',f.amount||0,f.mode||'',f.receivedBy||f.employeeName||f.by||'',f.account_name||'']));
+  downloadCSV('finance-report-'+start+'-'+end+'.csv', rows);
+}
+function renderCashFlowReport(start,end){
+  const rows=reportEmployeeCashRows(start,end);
+  const collected=rows.reduce((s,x)=>s+x.collected,0), exp=rows.reduce((s,x)=>s+x.expenses,0), hand=rows.reduce((s,x)=>s+x.handovers,0), pending=rows.reduce((s,x)=>s+x.pending,0);
+  const tableRows=rows.map(x=>`<tr><td>${esc(x.name)}</td><td>${money(x.collected)}</td><td>${money(x.expenses)}</td><td>${money(x.expected)}</td><td>${money(x.handovers)}</td><td>${money(x.pending)}</td><td>${esc(x.status)}</td></tr>`);
+  return `<div class="stable-kpi-grid">
+    <div class="stable-kpi stable-blue"><div class="icon">👥</div><span>Collected</span><b>${money(collected)}</b><small>cash collected</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">🧾</div><span>Expenses</span><b>${money(exp)}</b><small>cash expense</small></div>
+    <div class="stable-kpi stable-green"><div class="icon">🤝</div><span>Handover</span><b>${money(hand)}</b><small>given to account</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">⚖️</div><span>Pending</span><b>${money(pending)}</b><small>short/extra</small></div>
+  </div>
+  <div class="card"><div class="head"><h2>Cash Flow Report</h2><div class="actions"><button class="btn btn-i btn-sm" onclick="printCashFlowReportView()">Print</button><button class="btn btn-s btn-sm" onclick="exportCashFlowReportCSV()">CSV</button></div></div>
+  ${simpleTable('Cash Flow Report',['Employee','Collected','Expenses','Expected','Handover','Pending','Status'],tableRows)}</div>`;
+}
+function printCashFlowReportView(){
+  const start=window.reportStart||reportToday(), end=window.reportEnd||reportToday();
+  const rows=reportEmployeeCashRows(start,end);
+  const body=`<table><thead><tr><th>Employee</th><th>Collected</th><th>Expenses</th><th>Expected</th><th>Handover</th><th>Pending</th><th>Status</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.name)}</td><td>${money(x.collected)}</td><td>${money(x.expenses)}</td><td>${money(x.expected)}</td><td>${money(x.handovers)}</td><td>${money(x.pending)}</td><td>${esc(x.status)}</td></tr>`).join('')}</tbody></table>`;
+  reportPrint('Cash Flow Report '+start+' to '+end, body);
+}
+function exportCashFlowReportCSV(){
+  const start=window.reportStart||reportToday(), end=window.reportEnd||reportToday();
+  const rows=[['Employee','Collected','Expenses','Expected','Handover','Pending','Status']];
+  reportEmployeeCashRows(start,end).forEach(x=>rows.push([x.name,x.collected,x.expenses,x.expected,x.handovers,x.pending,x.status]));
+  downloadCSV('cash-flow-report-'+start+'-'+end+'.csv', rows);
+}
+function renderAccountsReport(start,end){
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  const balances=typeof cfAccountBalances==='function'?cfAccountBalances():(S.accounts||[]);
+  const total=balances.reduce((s,a)=>s+(+a.balance||0),0);
+  const exp=(S.cashExpenses||[]).filter(x=>x.paid_from==='account'&&inDateRange(x.date,start,end)).reduce((s,x)=>s+(+x.amount||0),0);
+  const hand=(S.cashHandovers||[]).filter(h=>inDateRange(h.date,start,end)).reduce((s,h)=>s+(+h.amount||0),0);
+  const tableRows=balances.map(a=>`<tr><td>${esc(a.name||'-')}</td><td>${esc(a.type||'cash')}</td><td>${money(a.opening||0)}</td><td>${money(a.handovers||0)}</td><td>${money(a.online||0)}</td><td>${money(a.expenses||0)}</td><td>${money(a.balance||0)}</td></tr>`);
+  return `<div class="stable-kpi-grid">
+    <div class="stable-kpi stable-green"><div class="icon">🏦</div><span>Total Balance</span><b>${money(total)}</b><small>all real accounts</small></div>
+    <div class="stable-kpi stable-blue"><div class="icon">🤝</div><span>Handovers</span><b>${money(hand)}</b><small>period handovers</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">🧾</div><span>Account Expenses</span><b>${money(exp)}</b><small>period expenses</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">📒</div><span>Accounts</span><b>${balances.length}</b><small>cash/bank/wallet</small></div>
+  </div>
+  <div class="card"><div class="head"><h2>Accounts Report</h2><button class="btn btn-i btn-sm" onclick="printAccountsReportView()">Print</button></div>
+  ${simpleTable('Accounts Report',['Account','Type','Opening','Handovers','Online','Expenses','Balance'],tableRows)}</div>`;
+}
+function printAccountsReportView(){
+  const start=window.reportStart||reportToday(), end=window.reportEnd||reportToday();
+  const balances=typeof cfAccountBalances==='function'?cfAccountBalances():(S.accounts||[]);
+  const body=`<table><thead><tr><th>Account</th><th>Type</th><th>Opening</th><th>Handovers</th><th>Online</th><th>Expenses</th><th>Balance</th></tr></thead><tbody>${balances.map(a=>`<tr><td>${esc(a.name||'-')}</td><td>${esc(a.type||'cash')}</td><td>${money(a.opening||0)}</td><td>${money(a.handovers||0)}</td><td>${money(a.online||0)}</td><td>${money(a.expenses||0)}</td><td>${money(a.balance||0)}</td></tr>`).join('')}</tbody></table>`;
+  reportPrint('Accounts Report '+start+' to '+end, body);
+}
+function renderEmployeeReport(start,end){
+  const rows=reportEmployeeCashRows(start,end);
+  const tableRows=rows.map(x=>`<tr><td>${esc(x.name)}</td><td>${money(x.collected)}</td><td>${money(x.expenses)}</td><td>${money(x.handovers)}</td><td>${money(x.pending)}</td><td>${esc(x.status)}</td></tr>`);
+  return `<div class="card"><div class="head"><h2>Employee Collection Report</h2><div class="actions"><button class="btn btn-i btn-sm" onclick="printCashFlowReportView()">Print</button><button class="btn btn-s btn-sm" onclick="exportCashFlowReportCSV()">CSV</button></div></div>
+  ${simpleTable('Employee Collection Report',['Employee','Collection','Expenses','Handover','Pending','Status'],tableRows)}</div>`;
+}
+function openReportsFixed(){
+  TAB='reports';
+  try{navRender()}catch(e){}
+  reportsPage();
+}
+
+
+
+/* ===== FINAL REPORTS SIDEBAR FORCE FIX ===== */
+function closeMenuAfterNav(){
+  try{
+    const els=[
+      document.getElementById('sidePanel'),
+      document.getElementById('side'),
+      document.querySelector('.sidebar'),
+      document.querySelector('.side')
+    ].filter(Boolean);
+    els.forEach(e=>e.classList.remove('open'));
+    document.body.classList.remove('menu-open');
+  }catch(e){}
+}
+function openReportsFixed(){
+  TAB='reports';
+  closeMenuAfterNav();
+  try{
+    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+    const n=document.getElementById('n-reports'); if(n)n.classList.add('active');
+  }catch(e){}
+  if(typeof reportsPage==='function')return reportsPage();
+  const c=document.getElementById('content');
+  if(c)c.innerHTML='<div class="card"><div class="head"><h2>Reports</h2></div><p>Reports module not loaded.</p></div>';
+}
+function openCashFlowFixed(){
+  TAB='cashflow';
+  closeMenuAfterNav();
+  try{
+    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
+    const n=document.getElementById('n-cashflow'); if(n)n.classList.add('active');
+  }catch(e){}
+  if(typeof cashFlowPage==='function')return cashFlowPage();
+  const c=document.getElementById('content');
+  if(c)c.innerHTML='<div class="card"><div class="head"><h2>Cash Flow</h2></div><p>Cash Flow module not loaded.</p></div>';
+}
+function openNewsFixed(){
+  TAB='news';
+  closeMenuAfterNav();
+  if(typeof openNewsPage==='function')return openNewsPage();
+  if(typeof newsPage==='function')return newsPage();
+}
+function openTemplateFixed(){
+  TAB='template';
+  closeMenuAfterNav();
+  if(typeof templatePage==='function')return templatePage();
+}
+function openSettingsFixed(){
+  TAB='settings';
+  closeMenuAfterNav();
+  if(typeof openSettingsPage==='function')return openSettingsPage();
+  if(typeof settings==='function')return settings();
+  if(typeof settingsPage==='function')return settingsPage();
+}
+function finalSidebarItems(){
+  if(U&&U.role==='client'){
+    return [['dashboard','Dashboard','📊'],['complaints','Support','🛠️'],['news','News','📢']];
+  }
+  let list=[
+    ['dashboard','Dashboard','📊'],
+    ['complaints','Complaints','🛠️'],
+    ['clients','Clients','🌐'],
+    ['billing','Billing','💳'],
+    ['finance','Finance','💰'],
+    ['cashflow','Cash Flow','💵'],
+    ['reports','Reports','📈'],
+    ['employees','Employees','👥'],
+    ['attendance','Attendance','🗓️'],
+    ['invoice','Invoice','🧾'],
+    ['items','Items','📦'],
+    ['packages','Packages','📶'],
+    ['advance','Advance','💸'],
+    ['targets','Targets','🎯'],
+    ['news','News','📢'],
+    ['template','Template','🎨'],
+    ['settings','Settings','⚙️'],
+    ['backup','Backup','💾']
+  ];
+  if(U&&U.role==='employee'&&typeof employeeHasAccess==='function'){
+    list=list.filter(x=>['dashboard','cashflow','reports'].includes(x[0]) || employeeHasAccess(x[0]));
+  }
+  const seen={};
+  return list.filter(x=>{ if(seen[x[0]])return false; seen[x[0]]=1; return true; });
+}
+function navRender(){
+  const nav=document.getElementById('nav');
+  if(!nav)return;
+  nav.innerHTML=finalSidebarItems().map(x=>{
+    let click=`tab('${x[0]}')`;
+    if(x[0]==='cashflow')click='openCashFlowFixed()';
+    if(x[0]==='reports')click='openReportsFixed()';
+    if(x[0]==='news')click='openNewsFixed()';
+    if(x[0]==='template')click='openTemplateFixed()';
+    if(x[0]==='settings')click='openSettingsFixed()';
+    return `<button id="n-${x[0]}" class="${TAB===x[0]?'active':''}" onclick="${click}">${x[2]} ${x[1]}</button>`;
+  }).join('');
+}
+function tab(t){
+  TAB=t;
+  closeMenuAfterNav();
+  if(t==='cashflow')return openCashFlowFixed();
+  if(t==='reports')return openReportsFixed();
+  if(t==='news')return openNewsFixed();
+  if(t==='template')return openTemplateFixed();
+  if(t==='settings')return openSettingsFixed();
+  if(typeof renderCurrent==='function')return renderCurrent();
+  if(typeof render==='function')return render();
+}
+if(typeof employeeHasAccess==='function'){
+  const __oldEmpAccessReportFinal=employeeHasAccess;
+  employeeHasAccess=function(tabName){
+    if(tabName==='reports'){
+      if(!U)return false;
+      if(U.role==='admin')return true;
+      if(U.role==='employee'){
+        const per=U.per||{};
+        return per.reports!==false && (per.reports || per.finance || per.billing || true);
+      }
+    }
+    if(tabName==='cashflow'){
+      if(!U)return false;
+      if(U.role==='admin')return true;
+      if(U.role==='employee'){
+        const per=U.per||{};
+        return per.cashflow!==false && (per.cashflow || per.finance || per.billing || true);
+      }
+    }
+    return __oldEmpAccessReportFinal(tabName);
+  }
+}
+setTimeout(()=>{try{navRender()}catch(e){}},500);
+
+
+
+/* ===== COLLECTION DIRECT INCOME + INVOICE CLEAN FIX ===== */
+function isRealInvoiceRecord(v){
+  if(!v)return false;
+  if(v.type==='income' || v.type==='payment' || v.cat || v.cash_flow_stage)return false;
+  if(v.payment_id || v.finance_id)return false;
+  if(v.work && String(v.work).toLowerCase().includes('payment'))return false;
+  return (v.total!==undefined || v.billMonth || v.work || v.dueDate || v.clientId);
+}
+function cleanInvoiceRecords(){
+  S.invoices=Array.isArray(S.invoices)?S.invoices:[];
+  /* remove accidental finance/payment style entries from invoice list only */
+  S.invoices=S.invoices.filter(isRealInvoiceRecord);
+  try{saveLocal()}catch(e){}
+}
+function getInvoiceClient(inv){
+  return (S.clients||[]).find(c=>c.id===inv.clientId || c.mobile===inv.phone || c.name===inv.cust) || {};
+}
+function invoice(){
+  cleanInvoiceRecords();
+  const month=window.invoiceMonth||window.billingMonth||billMonthNow();
+  const q=(window.invoiceSearch||'').toLowerCase();
+  let rows=(S.invoices||[]).filter(isRealInvoiceRecord);
+  rows=rows.filter(v=>(v.billMonth||String(v.date||'').slice(0,7)||month)===month);
+  if(q)rows=rows.filter(v=>{
+    const c=getInvoiceClient(v);
+    return [v.cust,v.phone,v.ccode,v.pppoe,v.work,v.status,c.name,c.mobile,c.ccode,c.pppoe].join(' ').toLowerCase().includes(q);
+  });
+
+  const total=rows.reduce((s,v)=>s+(+v.total||0),0);
+  const received=rows.reduce((s,v)=>s+(+v.received||0),0);
+  const due=rows.reduce((s,v)=>s+(+v.due||0),0);
+
+  content.innerHTML=`<div class="stable-hero">
+    <div class="stable-hero-row"><div><h1>🧾 Invoices</h1><p>Invoice/Bill records only. Customer collections are shown in Finance Income and Cash Flow.</p></div><div class="stable-pill">Clean Invoice Ledger</div></div>
+  </div>
+  <div class="stable-kpi-grid">
+    <div class="stable-kpi stable-blue"><div class="icon">🧾</div><span>Total Invoice</span><b>${money(total)}</b><small>${rows.length} invoice rows</small></div>
+    <div class="stable-kpi stable-green"><div class="icon">✅</div><span>Received</span><b>${money(received)}</b><small>invoice received amount</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">❌</div><span>Due</span><b>${money(due)}</b><small>pending invoice amount</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">💰</div><span>Collections</span><b>Finance</b><small>payment entries moved there</small></div>
+  </div>
+  <div class="card">
+    <div class="head"><h2>Invoice List</h2></div>
+    <div class="row two">
+      <div class="fg"><label>Month</label><input type="month" value="${esc(month)}" onchange="window.invoiceMonth=this.value;invoice()"></div>
+      <div class="fg"><label>Search</label><input value="${esc(window.invoiceSearch||'')}" oninput="window.invoiceSearch=this.value;invoice()" placeholder="client / mobile / ccode / pppoe"></div>
+    </div>
+    ${simpleTable('Invoice Clean List',['Client','Mobile','C.Code','PPPoE','Work / Type','Month','Total','Received','Due','Status','Action'],rows.map(v=>{
+      const c=getInvoiceClient(v);
+      const status=(+v.due||0)<=0?'<span class="badge done">Paid</span>':(+v.received||0)>0?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
+      const clientName=v.cust||c.name||'-';
+      const phone=v.phone||c.mobile||'-';
+      const code=v.ccode||c.ccode||c.pin||'-';
+      const pppoe=v.pppoe||c.pppoe||'-';
+      const action=`<div class="actions">${v.clientId?`<button class="btn btn-i btn-sm" onclick="printMonthlyBillA4('${v.clientId}')">Print A4</button><button class="btn btn-s btn-sm" onclick="whatsappFeeSlip('${v.clientId}')">WA Slip</button>`:'-'}</div>`;
+      return `<tr>
+        <td><b>${esc(clientName)}</b></td>
+        <td>${esc(phone)}</td>
+        <td>${esc(code)}</td>
+        <td>${esc(pppoe)}</td>
+        <td>${esc(v.work||'Monthly Bill')}</td>
+        <td>${esc(v.billMonth||month)}</td>
+        <td>${money(v.total||0)}</td>
+        <td>${money(v.received||0)}</td>
+        <td>${money(v.due||0)}</td>
+        <td>${status}</td>
+        <td>${action}</td>
+      </tr>`;
+    }))}
+  </div>`;
+}
+function invoicePage(){ return invoice(); }
+
+/* Collection/payment receive must save only to finance income + update existing invoice summary */
+function saveReceiveBillModal(clientId,sendWA=false,printSlip=false){
+  ensureBillingState();
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const month=window.billingMonth||billMonthNow();
+  const inv=findOrCreateBillForClient(clientId);
+
+  const total=+document.getElementById('rxTotal')?.value||0;
+  const discount=+document.getElementById('rxDiscount')?.value||0;
+  const amount=+document.getElementById('rxAmount')?.value||0;
+  const mode=(document.getElementById('rxMode')?.value||'cash')==='online'?'online':'cash';
+  const receiver=document.getElementById('rxReceiver')?.value||U?.name||'Admin';
+  const note=document.getElementById('rxNote')?.value||'';
+
+  if(amount<0)return toast('Invalid amount','error');
+  if(discount<0)return toast('Invalid discount','error');
+
+  /* Update invoice/bill summary only */
+  inv.total=total;
+  inv.discount=discount;
+  inv.dueDate=inv.dueDate||billDueDateForMonth(month);
+  inv.work=inv.work||'Monthly Bill';
+  inv.billMonth=month;
+  inv.clientId=c.id;
+  inv.cust=c.name;
+  inv.phone=c.mobile;
+  inv.ccode=c.ccode||c.pin||'';
+  inv.pppoe=c.pppoe||'';
+  inv.package=c.package||'';
+
+  let receiptId='';
+  if(amount>0){
+    receiptId=(typeof safeReceiptId==='function'?safeReceiptId():(typeof generateReceiptId==='function'?generateReceiptId():'FRN-'+Date.now()));
+    const fin={
+      id:id('fi'),
+      type:'income',
+      mode,
+      amount,
+      customer:c.name,
+      paidBy:c.name,
+      clientId:c.id,
+      phone:c.mobile,
+      billMonth:month,
+      cat:'Monthly Bill Collection - '+month,
+      date:today(),
+      time:now(),
+      by:U?.id||'admin',
+      emp:U?.id||'admin',
+      employee:U?.id||'admin',
+      employee_id:U?.id||'admin',
+      employeeName:U?.name||'Admin',
+      receiver,
+      receivedBy:receiver,
+      cash_flow_stage: mode==='cash'?'employee_holding':'real_account',
+      cash_status: mode==='cash'?'with_employee':'deposited',
+      account_id: mode==='online'?'acc_main_cash':null,
+      note,
+      receiptId,
+      verifyUrl:typeof getVerifyUrl==='function'?getVerifyUrl(receiptId):''
+    };
+    S.finance=S.finance||[];
+    S.finance.push(fin);
+    saveAndSync('finance',fin);
+  }
+
+  const paidNow=clientMonthFinancePaid(c.id,month);
+  inv.received=paidNow;
+  inv.due=Math.max(0,total-discount-paidNow);
+  inv.status=inv.due<=0?'Paid':(paidNow>0?'Partial':'Unpaid');
+  inv.note=note;
+  inv.receivedBy=receiver;
+  inv.employeeName=U?.name||'Admin';
+  if(receiptId)inv.receiptId=receiptId;
+  inv.verifyUrl=inv.receiptId&&typeof getVerifyUrl==='function'?getVerifyUrl(inv.receiptId):inv.verifyUrl;
+  inv.paidAt=amount>0?now():inv.paidAt;
+
+  cleanInvoiceRecords();
+  saveAndSync('invoices',inv);
+  closeBillingModal();
+  toast('Collection saved in Finance Income. Invoice summary updated.','success');
+  billingPage();
+  setTimeout(()=>{ if(sendWA)whatsappFeeSlip(clientId); if(printSlip)printFeeSlip(clientId); },400);
+}
+
+/* Finance page hint: collections are income */
+function openFinanceFromCollection(){
+  TAB='finance';
+  try{navRender()}catch(e){}
+  if(typeof finance==='function')finance();
+  else if(typeof financePage==='function')financePage();
+}
+
+
+
+
+
+/* ===== INVOICE MODULE RESTORE: CLIENT SEARCH + PACKAGE + ITEMS + NEW CONNECTION ===== */
+function invoiceRows(){
+  S.invoices=Array.isArray(S.invoices)?S.invoices:[];
+  return S.invoices.filter(v=>{
+    if(!v)return false;
+    if(v.type==='income'||v.type==='payment'||v.cat||v.cash_flow_stage)return false;
+    const work=String(v.work||v.invoice_type||'').toLowerCase();
+    if(work.includes('monthly bill')||work.includes('monthly fee')||v.source==='billing'||v.is_monthly_bill===true)return false;
+    return !!(v.manual_invoice||v.source==='manual_invoice'||v.source==='new_connection'||v.invoice_type||v.items||v.invoiceNo||v.invoice_no||work);
+  });
+}
+function invoiceClientOptions(selected=''){
+  return `<option value="">Manual / New Customer</option>`+(S.clients||[]).map(c=>`<option value="${c.id}" ${selected===c.id?'selected':''}>${esc(c.name||'-')} - ${esc(c.mobile||'')} - ${esc(c.pppoe||'')}</option>`).join('');
+}
+function invoiceItemOptions(){
+  return `<option value="">Custom Item</option>`+(S.items||[]).map(i=>`<option value="${i.id}" data-name="${esc(i.name||'')}" data-price="${+(i.sale||i.price||0)}">${esc(i.name||'-')} - ${money(i.sale||i.price||0)}</option>`).join('');
+}
+function invoicePackageOptions(selected=''){
+  const pkgs=(S.packages||[]).map(p=>p.name||p.title||'').filter(Boolean);
+  const current=selected&&!pkgs.includes(selected)?`<option value="${esc(selected)}" selected>${esc(selected)}</option>`:'';
+  return current+pkgs.map(p=>`<option value="${esc(p)}" ${selected===p?'selected':''}>${esc(p)}</option>`).join('');
+}
+function openInvoiceModal(invoiceId=''){
+  const inv=invoiceId?(S.invoices||[]).find(x=>x.id===invoiceId):null;
+  const items=inv?.items||[{name:'New Connection / Service',qty:1,rate:+(inv?.total||0)||0,total:+(inv?.total||0)||0}];
+  openBillingModal(`<div class="head"><h2>${invoiceId?'Edit':'Create'} Invoice / New Connection</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    <div class="card" style="box-shadow:none;border:1px dashed #cbd5e1">
+      <h3>Client Search / Existing User</h3>
+      <div class="row">
+        <div class="fg"><label>Search Existing Client</label><input id="invClientSearch" placeholder="Search name/mobile/pppoe/ccode" oninput="filterInvoiceClientSelect()"></div>
+        <div class="fg"><label>Select Client</label><select id="invClientSelect" onchange="fillInvoiceClient()">${invoiceClientOptions(inv?.clientId||'')}</select></div>
+        <div class="fg"><label>Invoice Type</label><select id="invType"><option value="New Connection" ${(inv?.invoice_type||inv?.work)==='New Connection'?'selected':''}>New Connection</option><option value="Device Sale" ${(inv?.invoice_type||inv?.work)==='Device Sale'?'selected':''}>Device Sale</option><option value="Installation" ${(inv?.invoice_type||inv?.work)==='Installation'?'selected':''}>Installation</option><option value="Service" ${(inv?.invoice_type||inv?.work)==='Service'?'selected':''}>Service</option><option value="Custom Invoice" ${(inv?.invoice_type||inv?.work)==='Custom Invoice'?'selected':''}>Custom Invoice</option></select></div>
+      </div>
+      <p style="color:#64748b;font-weight:900">Existing connected client select karein ya manual/new customer details enter karein.</p>
+    </div>
+
+    <div class="row">
+      <div class="fg"><label>Client Name</label><input id="invName" value="${esc(inv?.cust||inv?.client_name||'')}"></div>
+      <div class="fg"><label>Mobile</label><input id="invMobile" value="${esc(inv?.phone||inv?.mobile||'')}"></div>
+      <div class="fg"><label>C.Code</label><input id="invCCode" value="${esc(inv?.ccode||'')}"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>PPPoE / User ID</label><input id="invPppoe" value="${esc(inv?.pppoe||'')}"></div>
+      <div class="fg"><label>Package</label><select id="invPackage" onchange="onInvoicePackageChanged()"><option value="">Select Package</option>${invoicePackageOptions(inv?.package||'')}</select></div>
+      <div class="fg"><label>Manual Package</label><input id="invPackageManual" value="${esc(inv?.package_manual||'')}" placeholder="If package not in list" oninput="onInvoicePackageChanged()"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Invoice Month</label><input id="invMonth" type="month" value="${esc(inv?.billMonth||billMonthNow())}"></div>
+      <div class="fg"><label>Due Date</label><input id="invDueDate" type="date" value="${esc(inv?.dueDate||today())}"></div>
+      <div class="fg"><label>Status</label><select id="invStatus"><option value="Unpaid" ${inv?.status==='Unpaid'?'selected':''}>Unpaid</option><option value="Partial" ${inv?.status==='Partial'?'selected':''}>Partial</option><option value="Paid" ${inv?.status==='Paid'?'selected':''}>Paid</option></select></div>
+    </div>
+
+    <div class="card" style="box-shadow:none;border:1px dashed #cbd5e1">
+      <div class="head"><h3>Invoice Items</h3><button class="btn btn-i btn-sm" onclick="addInvoiceItemRow()">Add Item</button></div>
+      <div id="invoiceItemsBox">
+        ${items.map((it,idx)=>invoiceItemRowHtml(idx,it)).join('')}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="fg"><label>Total</label><input id="invTotal" type="number" value="${+(inv?.total||0)}"></div>
+      <div class="fg"><label>Received</label><input id="invReceived" type="number" value="${+(inv?.received||0)}"></div>
+      <div class="fg"><label>Due</label><input id="invDue" type="number" value="${+(inv?.due||0)}" readonly></div>
+    </div>
+    <div class="fg"><label>Note / Description</label><input id="invNote" value="${esc(inv?.note||'')}"></div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveRestoredInvoice('${invoiceId}')">Save Invoice</button>
+      <button class="btn btn-i" onclick="calcInvoiceTotals()">Recalculate</button>
+    </div>`);
+  setTimeout(()=>{fillInvoiceClient(false);calcInvoiceTotals()},50);
+}
+function invoiceItemRowHtml(idx,it={}){
+  return `<div class="row invoice-item-row" data-idx="${idx}">
+    <div class="fg"><label>Item</label><select onchange="fillInvoiceItem(this)">${invoiceItemOptions()}</select><input class="invItemName" value="${esc(it.name||'')}" placeholder="Item / service name"></div>
+    <div class="fg"><label>Qty</label><input class="invItemQty" type="number" value="${+(it.qty||1)}" oninput="calcInvoiceTotals()"></div>
+    <div class="fg"><label>Rate</label><input class="invItemRate" type="number" value="${+(it.rate||0)}" oninput="calcInvoiceTotals()"></div>
+    <div class="fg"><label>Total</label><input class="invItemTotal" type="number" value="${+(it.total||0)}" readonly></div>
+    <div class="fg"><label>&nbsp;</label><button class="btn btn-e btn-sm" onclick="this.closest('.invoice-item-row').remove();calcInvoiceTotals()">Remove</button></div>
+  </div>`;
+}
+function addInvoiceItemRow(){
+  const box=document.getElementById('invoiceItemsBox');
+  const idx=box.querySelectorAll('.invoice-item-row').length;
+  box.insertAdjacentHTML('beforeend', invoiceItemRowHtml(idx,{name:'',qty:1,rate:0,total:0}));
+}
+function fillInvoiceItem(sel){
+  const opt=sel.options[sel.selectedIndex];
+  const row=sel.closest('.invoice-item-row');
+  const name=opt?.dataset?.name||'';
+  const price=+(opt?.dataset?.price||0);
+  if(name)row.querySelector('.invItemName').value=name;
+  if(price)row.querySelector('.invItemRate').value=price;
+  calcInvoiceTotals();
+}
+function calcInvoiceTotals(){
+  let total=0;
+  document.querySelectorAll('.invoice-item-row').forEach(row=>{
+    const qty=+row.querySelector('.invItemQty')?.value||0;
+    const rate=+row.querySelector('.invItemRate')?.value||0;
+    const t=qty*rate;
+    row.querySelector('.invItemTotal').value=t;
+    total+=t;
+  });
+  const received=+document.getElementById('invReceived')?.value||0;
+  if(document.getElementById('invTotal'))document.getElementById('invTotal').value=total;
+  if(document.getElementById('invDue'))document.getElementById('invDue').value=Math.max(0,total-received);
+}
+function filterInvoiceClientSelect(){
+  const q=(document.getElementById('invClientSearch')?.value||'').toLowerCase();
+  const sel=document.getElementById('invClientSelect');
+  if(!sel)return;
+  const old=sel.value;
+  sel.innerHTML=`<option value="">Manual / New Customer</option>`+(S.clients||[]).filter(c=>[c.name,c.mobile,c.ccode,c.pin,c.pppoe,c.package].join(' ').toLowerCase().includes(q)).map(c=>`<option value="${c.id}">${esc(c.name||'-')} - ${esc(c.mobile||'')} - ${esc(c.pppoe||'')}</option>`).join('');
+  if([...sel.options].some(o=>o.value===old))sel.value=old;
+}
+function fillInvoiceClient(overwrite=true){
+  const cid=document.getElementById('invClientSelect')?.value||'';
+  const c=(S.clients||[]).find(x=>x.id===cid);
+  if(!c)return;
+  if(overwrite || !document.getElementById('invName')?.value)document.getElementById('invName').value=c.name||'';
+  if(overwrite || !document.getElementById('invMobile')?.value)document.getElementById('invMobile').value=c.mobile||'';
+  if(overwrite || !document.getElementById('invCCode')?.value)document.getElementById('invCCode').value=c.ccode||c.pin||'';
+  if(overwrite || !document.getElementById('invPppoe')?.value)document.getElementById('invPppoe').value=c.pppoe||'';
+  if(c.package){
+    const pkg=document.getElementById('invPackage');
+    if([...pkg.options].some(o=>o.value===c.package))pkg.value=c.package;
+    else document.getElementById('invPackageManual').value=c.package;
+  }
+}
+function readInvoiceItems(){
+  const items=[];
+  document.querySelectorAll('.invoice-item-row').forEach(row=>{
+    const name=row.querySelector('.invItemName')?.value||'';
+    const qty=+row.querySelector('.invItemQty')?.value||0;
+    const rate=+row.querySelector('.invItemRate')?.value||0;
+    const total=qty*rate;
+    if(name||total)items.push({name,qty,rate,total});
+  });
+  return items;
+}
+function saveRestoredInvoice(invoiceId=''){
+  calcInvoiceTotals();
+  const cid=document.getElementById('invClientSelect')?.value||'';
+  const c=(S.clients||[]).find(x=>x.id===cid)||{};
+  const items=readInvoiceItems();
+  const total=+document.getElementById('invTotal')?.value||0;
+  const received=+document.getElementById('invReceived')?.value||0;
+  const due=Math.max(0,total-received);
+  let inv=invoiceId?(S.invoices||[]).find(x=>x.id===invoiceId):null;
+  if(!inv){
+    inv={id:id('inv'),date:today(),time:now(),by:U?.id||'admin'};
+    S.invoices=S.invoices||[];
+    S.invoices.push(inv);
+  }
+  inv.manual_invoice=true;
+  inv.source=cid?'manual_invoice':'new_connection';
+  inv.clientId=cid||'';
+  inv.cust=document.getElementById('invName')?.value||c.name||'';
+  inv.client_name=inv.cust;
+  inv.phone=document.getElementById('invMobile')?.value||c.mobile||'';
+  inv.mobile=inv.phone;
+  inv.ccode=document.getElementById('invCCode')?.value||c.ccode||c.pin||'';
+  inv.pppoe=document.getElementById('invPppoe')?.value||c.pppoe||'';
+  inv.package=document.getElementById('invPackageManual')?.value||document.getElementById('invPackage')?.value||c.package||'';
+  inv.package_manual=document.getElementById('invPackageManual')?.value||'';
+  inv.invoice_type=document.getElementById('invType')?.value||'Custom Invoice';
+  inv.work=inv.invoice_type;
+  inv.billMonth=document.getElementById('invMonth')?.value||billMonthNow();
+  inv.dueDate=document.getElementById('invDueDate')?.value||today();
+  inv.items=items;
+  inv.total=total;
+  inv.received=received;
+  inv.due=due;
+  inv.status=due<=0?'Paid':received>0?'Partial':'Unpaid';
+  inv.note=document.getElementById('invNote')?.value||'';
+  saveAndSync('invoices',inv);
+  closeBillingModal();
+  toast('Invoice saved with client/package/items','success');
+  invoice();
+}
+function invoice(){
+  const month=window.invoiceMonth||window.billingMonth||billMonthNow();
+  const q=(window.invoiceSearch||'').toLowerCase();
+  let rows=invoiceRows().filter(v=>(v.billMonth||String(v.date||'').slice(0,7)||month)===month);
+  if(q)rows=rows.filter(v=>[v.cust,v.client_name,v.phone,v.mobile,v.ccode,v.pppoe,v.package,v.work,v.invoice_type,(v.items||[]).map(i=>i.name).join(' ')].join(' ').toLowerCase().includes(q));
+  const total=rows.reduce((s,v)=>s+(+v.total||0),0), received=rows.reduce((s,v)=>s+(+v.received||0),0), due=rows.reduce((s,v)=>s+(+v.due||0),0);
+  content.innerHTML=`<div class="stable-hero"><div class="stable-hero-row"><div><h1>🧾 Invoices</h1><p>Manual invoices, new connection invoices, items and package details.</p></div><div class="stable-pill">Invoice Ledger</div></div></div>
+  <div class="stable-kpi-grid">
+    <div class="stable-kpi stable-blue"><div class="icon">🧾</div><span>Invoice Total</span><b>${money(total)}</b><small>${rows.length} invoices</small></div>
+    <div class="stable-kpi stable-green"><div class="icon">✅</div><span>Received</span><b>${money(received)}</b><small>invoice received</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">❌</div><span>Due</span><b>${money(due)}</b><small>invoice due</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">📦</div><span>Items</span><b>${rows.reduce((s,v)=>s+((v.items||[]).length),0)}</b><small>invoice items</small></div>
+  </div>
+  <div class="card"><div class="head"><h2>Invoice List</h2><button class="btn btn-p btn-sm" onclick="openInvoiceModal()">New Connection / Invoice</button></div>
+    <div class="row two">
+      <div class="fg"><label>Month</label><input type="month" value="${esc(month)}" onchange="window.invoiceMonth=this.value;invoice()"></div>
+      <div class="fg"><label>Search</label><input value="${esc(window.invoiceSearch||'')}" oninput="window.invoiceSearch=this.value;invoice()" placeholder="client / mobile / package / item / pppoe"></div>
+    </div>
+    ${rows.length?simpleTable('Invoice List',['Client','Mobile','C.Code','PPPoE','Package','Type','Items','Total','Received','Due','Status','Action'],rows.map(v=>{
+      const itemText=(v.items||[]).map(i=>`${esc(i.name)} x${i.qty||1}`).join('<br>')||esc(v.note||'-');
+      const status=(+v.due||0)<=0?'<span class="badge done">Paid</span>':(+v.received||0)>0?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
+      return `<tr>
+        <td><b>${esc(v.cust||v.client_name||'-')}</b></td>
+        <td>${esc(v.phone||v.mobile||'-')}</td>
+        <td>${esc(v.ccode||'-')}</td>
+        <td>${esc(v.pppoe||'-')}</td>
+        <td>${esc(v.package||'-')}</td>
+        <td>${esc(v.invoice_type||v.work||'Custom')}</td>
+        <td>${itemText}</td>
+        <td>${money(v.total||0)}</td>
+        <td>${money(v.received||0)}</td>
+        <td>${money(v.due||0)}</td>
+        <td>${status}</td>
+        <td><div class="actions"><button class="btn btn-i btn-sm" onclick="printManualInvoice('${v.id}')">Print</button><button class="btn btn-l btn-sm" onclick="openInvoiceModal('${v.id}')">Edit</button></div></td>
+      </tr>`;
+    })):`<div class="card" style="box-shadow:none;border:1px dashed #cbd5e1"><h3>No invoices yet</h3><p>Use “New Connection / Invoice” to create manual invoice. Monthly bills remain in Billing tab.</p></div>`}
+  </div>`;
+}
+function printManualInvoice(invId){
+  const v=(S.invoices||[]).find(x=>x.id===invId);
+  if(!v)return toast('Invoice not found','error');
+  const items=v.items||[];
+  const itemRows=items.length?items.map(i=>`<tr><td>${esc(i.name||'-')}</td><td>${i.qty||1}</td><td>${money(i.rate||0)}</td><td>${money(i.total||0)}</td></tr>`).join(''):`<tr><td>${esc(v.note||v.invoice_type||'Custom Invoice')}</td><td>1</td><td>${money(v.total||0)}</td><td>${money(v.total||0)}</td></tr>`;
+  const html=`<html><head><title>Invoice</title><style>
+    @page{size:A4;margin:14mm}body{font-family:Arial;color:#111}.head{display:flex;justify-content:space-between;border-bottom:3px solid #dc2626;padding-bottom:12px;margin-bottom:16px}
+    h1{color:#dc2626;margin:0}.box{border:1px solid #e5e7eb;border-radius:12px;padding:12px;margin-bottom:14px}table{width:100%;border-collapse:collapse}td,th{padding:10px;border-bottom:1px solid #e5e7eb;text-align:left}.total{font-size:20px;color:#dc2626;font-weight:900}
+  </style></head><body>
+    <div class="head"><div><h1>${esc(S.appSettings?.companyName||'Fire.net.pk')}</h1><p>${esc(v.invoice_type||v.work||'Invoice')}</p></div><div><b>Invoice:</b> ${esc(v.id)}<br><b>Month:</b> ${esc(v.billMonth||'-')}<br><b>Due:</b> ${esc(v.dueDate||'-')}</div></div>
+    <div class="box"><b>Bill To:</b><br>${esc(v.cust||'-')}<br>${esc(v.phone||'-')}<br>C.Code: ${esc(v.ccode||'-')}<br>PPPoE: ${esc(v.pppoe||'-')}<br>Package: ${esc(v.package||'-')}</div>
+    <table><tr><th>Item / Service</th><th>Qty</th><th>Rate</th><th>Total</th></tr>${itemRows}<tr><td colspan="3">Received</td><td>${money(v.received||0)}</td></tr><tr><td colspan="3" class="total">Due</td><td class="total">${money(v.due||0)}</td></tr></table>
+    <p><b>Note:</b> ${esc(v.note||'')}</p>
+  </body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();setTimeout(()=>w.print(),600);
+}
+
+
+
+/* ===== CLIENT DUPLICATE USERNAME CHECK ===== */
+function normClientVal(v){ return String(v||'').trim().toLowerCase(); }
+function findDuplicateClient(field,value,ignoreId=''){
+  const val=field==='mobile'?pkMobile(value):normClientVal(value);
+  if(!val)return null;
+  return (S.clients||[]).find(c=>{
+    if(ignoreId && c.id===ignoreId)return false;
+    if(field==='mobile')return pkMobile(c.mobile||'')===val;
+    if(field==='pppoe')return normClientVal(c.pppoe||c.pppoe_username||c.username||'')===val;
+    if(field==='ccode')return normClientVal(c.ccode||c.pin||c.client_code||'')===val;
+    return false;
+  })||null;
+}
+function validateClientUniqueFromForm(clientId=''){
+  const pppoe=(document.getElementById('cPppoe')?.value || document.getElementById('pppoe')?.value || document.getElementById('clientPppoe')?.value || '').trim();
+  const mobile=(document.getElementById('cMobile')?.value || document.getElementById('mobile')?.value || document.getElementById('clientMobile')?.value || '').trim();
+  const ccode=(document.getElementById('cCode')?.value || document.getElementById('ccode')?.value || document.getElementById('clientCode')?.value || '').trim();
+
+  const duPppoe=findDuplicateClient('pppoe',pppoe,clientId);
+  if(pppoe && duPppoe){
+    toast(`PPPoE username already taken by ${duPppoe.name||duPppoe.mobile||'another client'}`,'error');
+    return false;
+  }
+  const duMobile=findDuplicateClient('mobile',mobile,clientId);
+  if(mobile && duMobile){
+    toast(`Mobile number already exists for ${duMobile.name||duMobile.pppoe||'another client'}`,'error');
+    return false;
+  }
+  const duCode=findDuplicateClient('ccode',ccode,clientId);
+  if(ccode && duCode){
+    toast(`C.Code already exists for ${duCode.name||duCode.mobile||'another client'}`,'error');
+    return false;
+  }
+  return true;
+}
+function showClientDuplicateHint(){
+  const pppoe=(document.getElementById('cPppoe')?.value||'').trim();
+  const clientId=window.__editingClientId||'';
+  const du=findDuplicateClient('pppoe',pppoe,clientId);
+  let hint=document.getElementById('pppoeDuplicateHint');
+  if(!hint && document.getElementById('cPppoe')){
+    document.getElementById('cPppoe').insertAdjacentHTML('afterend','<small id="pppoeDuplicateHint" style="font-weight:900;display:block;margin-top:5px"></small>');
+    hint=document.getElementById('pppoeDuplicateHint');
+  }
+  if(!hint)return;
+  if(pppoe && du){
+    hint.style.color='#dc2626';
+    hint.textContent='Already taken by: '+(du.name||du.mobile||du.ccode||'another client');
+  }else if(pppoe){
+    hint.style.color='#16a34a';
+    hint.textContent='Username available';
+  }else{
+    hint.textContent='';
+  }
+}
+/* Patch client edit modal to remember current id and add live PPPoE check */
+if(typeof editClient==='function'){
+  const __oldEditClientDuplicate=editClient;
+  editClient=function(cid=''){
+    window.__editingClientId=cid||'';
+    const res=__oldEditClientDuplicate(cid);
+    setTimeout(()=>{
+      const p=document.getElementById('cPppoe');
+      if(p){
+        p.setAttribute('oninput','showClientDuplicateHint()');
+        showClientDuplicateHint();
+      }
+    },80);
+    return res;
+  }
+}
+/* Override saveClient with duplicate checks, preserving original behavior */
+if(typeof saveClient==='function'){
+  const __oldSaveClientDuplicate=saveClient;
+  saveClient=function(cid=''){
+    if(!validateClientUniqueFromForm(cid||window.__editingClientId||''))return;
+    return __oldSaveClientDuplicate(cid);
+  }
+}
+/* Safety: if app uses addClient/saveAddClient names */
+if(typeof addClient==='function'){
+  const __oldAddClientDuplicate=addClient;
+  addClient=function(){
+    if(!validateClientUniqueFromForm(window.__editingClientId||''))return;
+    return __oldAddClientDuplicate();
+  }
+}
+if(typeof saveAddClient==='function'){
+  const __oldSaveAddClientDuplicate=saveAddClient;
+  saveAddClient=function(){
+    if(!validateClientUniqueFromForm(window.__editingClientId||''))return;
+    return __oldSaveAddClientDuplicate();
+  }
+}
+
+
+
+/* ===== INVOICE FORM MODE FIX: NEW CONNECTION VS INVOICE ===== */
+function openInvoiceModal(invoiceId=''){
+  const inv=invoiceId?(S.invoices||[]).find(x=>x.id===invoiceId):null;
+  const mode=inv?.invoice_mode || (inv?.source==='new_connection'?'new_connection':'invoice');
+  const items=inv?.items||[{name:mode==='new_connection'?'New Connection Charges':'Service / Item',qty:1,rate:+(inv?.total||0)||0,total:+(inv?.total||0)||0}];
+
+  openBillingModal(`<div class="head"><h2>${invoiceId?'Edit':'Create'} Invoice</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+
+    <div class="card" style="box-shadow:none;border:1px dashed #cbd5e1">
+      <h3>Invoice Format</h3>
+      <div class="row">
+        <div class="fg">
+          <label>Select Type</label>
+          <select id="invMode" onchange="toggleInvoiceMode()">
+            <option value="new_connection" ${mode==='new_connection'?'selected':''}>New Connection</option>
+            <option value="invoice" ${mode==='invoice'?'selected':''}>Invoice</option>
+          </select>
+        </div>
+        <div class="fg" id="invClientSearchBox">
+          <label>Search Existing Customer</label>
+          <input id="invClientSearch" placeholder="Search name/mobile/pppoe/ccode" oninput="filterInvoiceClientSelect()">
+        </div>
+        <div class="fg" id="invClientSelectBox">
+          <label>Select Existing Customer</label>
+          <select id="invClientSelect" onchange="fillInvoiceClient(true)">${invoiceClientOptions(inv?.clientId||'')}</select>
+        </div>
+      </div>
+      <p id="invoiceModeHelp" style="color:#64748b;font-weight:900"></p>
+    </div>
+
+    <div class="row">
+      <div class="fg"><label>Client Name</label><input id="invName" value="${esc(inv?.cust||inv?.client_name||'')}" placeholder="Customer name"></div>
+      <div class="fg"><label>Mobile</label><input id="invMobile" value="${esc(inv?.phone||inv?.mobile||'')}" placeholder="03xxxxxxxxx"></div>
+      <div class="fg"><label>C.Code</label><input id="invCCode" value="${esc(inv?.ccode||'')}" placeholder="Client code"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>PPPoE / User ID</label><input id="invPppoe" value="${esc(inv?.pppoe||'')}" placeholder="PPPoE username"></div>
+      <div class="fg"><label>Package</label><select id="invPackage" onchange="onInvoicePackageChanged()"><option value="">Select Package</option>${invoicePackageOptions(inv?.package||'')}</select></div>
+      <div class="fg"><label>Manual Package</label><input id="invPackageManual" value="${esc(inv?.package_manual||'')}" placeholder="If package not in list" oninput="onInvoicePackageChanged()"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Invoice Month</label><input id="invMonth" type="month" value="${esc(inv?.billMonth||billMonthNow())}"></div>
+      <div class="fg"><label>Due Date</label><input id="invDueDate" type="date" value="${esc(inv?.dueDate||today())}"></div>
+      <div class="fg">
+        <label>Invoice Type / Work</label>
+        <input id="invTypeText" value="${esc(inv?.invoice_type||inv?.work||(mode==='new_connection'?'New Connection':'Invoice'))}" placeholder="Installation / Device / Service">
+      </div>
+    </div>
+
+    <div class="card" style="box-shadow:none;border:1px dashed #cbd5e1">
+      <div class="head"><h3>Invoice Items</h3><button class="btn btn-i btn-sm" onclick="addInvoiceItemRow()">Add Item</button></div>
+      <div id="invoiceItemsBox">
+        ${items.map((it,idx)=>invoiceItemRowHtml(idx,it)).join('')}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="fg"><label>Total</label><input id="invTotal" type="number" value="${+(inv?.total||0)}"></div>
+      <div class="fg"><label>Received</label><input id="invReceived" type="number" value="${+(inv?.received||0)}" oninput="calcInvoiceTotals()"></div>
+      <div class="fg"><label>Due</label><input id="invDue" type="number" value="${+(inv?.due||0)}" readonly></div>
+    </div>
+    <div class="fg"><label>Note / Description</label><input id="invNote" value="${esc(inv?.note||'')}"></div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="saveRestoredInvoice('${invoiceId}')">Save Invoice</button>
+      <button class="btn btn-i" onclick="calcInvoiceTotals()">Recalculate</button>
+    </div>`);
+  setTimeout(()=>{
+    toggleInvoiceMode();
+    if(mode==='invoice' && inv?.clientId)fillInvoiceClient(false);
+    calcInvoiceTotals();
+  },80);
+}
+function toggleInvoiceMode(){
+  const mode=document.getElementById('invMode')?.value||'new_connection';
+  const searchBox=document.getElementById('invClientSearchBox');
+  const selectBox=document.getElementById('invClientSelectBox');
+  const help=document.getElementById('invoiceModeHelp');
+
+  if(mode==='new_connection'){
+    if(searchBox)searchBox.style.display='none';
+    if(selectBox)selectBox.style.display='none';
+    if(help)help.textContent='New Connection selected: all customer and package fields will be entered manually.';
+    const sel=document.getElementById('invClientSelect');
+    if(sel)sel.value='';
+    if(!document.getElementById('invTypeText')?.value)document.getElementById('invTypeText').value='New Connection';
+    /* Enable manual fields */
+    ['invName','invMobile','invCCode','invPppoe','invPackage','invPackageManual'].forEach(id=>{
+      const el=document.getElementById(id); if(el)el.disabled=false;
+    });
+  }else{
+    if(searchBox)searchBox.style.display='block';
+    if(selectBox)selectBox.style.display='block';
+    if(help)help.textContent='Invoice selected: select already connected customer from searchable list; details will auto-fill but remain editable.';
+    if(!document.getElementById('invTypeText')?.value || document.getElementById('invTypeText').value==='New Connection')document.getElementById('invTypeText').value='Invoice';
+  }
+}
+function saveRestoredInvoice(invoiceId=''){
+  calcInvoiceTotals();
+  const mode=document.getElementById('invMode')?.value||'new_connection';
+  const cid=mode==='invoice'?(document.getElementById('invClientSelect')?.value||''):'';
+  if(mode==='invoice' && !cid)return toast('Please select existing customer for Invoice','error');
+
+  const c=(S.clients||[]).find(x=>x.id===cid)||{};
+  const items=readInvoiceItems();
+  const total=+document.getElementById('invTotal')?.value||0;
+  const received=+document.getElementById('invReceived')?.value||0;
+  const due=Math.max(0,total-received);
+
+  let inv=invoiceId?(S.invoices||[]).find(x=>x.id===invoiceId):null;
+  if(!inv){
+    inv={id:id('inv'),date:today(),time:now(),by:U?.id||'admin'};
+    S.invoices=S.invoices||[];
+    S.invoices.push(inv);
+  }
+
+  inv.manual_invoice=true;
+  inv.invoice_mode=mode;
+  inv.source=mode==='new_connection'?'new_connection':'manual_invoice';
+  inv.clientId=cid||'';
+  inv.cust=document.getElementById('invName')?.value||c.name||'';
+  inv.client_name=inv.cust;
+  inv.phone=document.getElementById('invMobile')?.value||c.mobile||'';
+  inv.mobile=inv.phone;
+  inv.ccode=document.getElementById('invCCode')?.value||c.ccode||c.pin||'';
+  inv.pppoe=document.getElementById('invPppoe')?.value||c.pppoe||'';
+  inv.package=document.getElementById('invPackageManual')?.value||document.getElementById('invPackage')?.value||c.package||'';
+  inv.package_manual=document.getElementById('invPackageManual')?.value||'';
+  inv.invoice_type=document.getElementById('invTypeText')?.value||(mode==='new_connection'?'New Connection':'Invoice');
+  inv.work=inv.invoice_type;
+  inv.billMonth=document.getElementById('invMonth')?.value||billMonthNow();
+  inv.dueDate=document.getElementById('invDueDate')?.value||today();
+  inv.items=items;
+  inv.total=total;
+  inv.received=received;
+  inv.due=due;
+  inv.status=due<=0?'Paid':received>0?'Partial':'Unpaid';
+  inv.note=document.getElementById('invNote')?.value||'';
+
+  if(!inv.cust)return toast('Client name required','error');
+  if(total<=0)return toast('Invoice total required','error');
+
+  saveAndSync('invoices',inv);
+  closeBillingModal();
+  toast((mode==='new_connection'?'New connection':'Invoice')+' saved','success');
+  invoice();
+}
+
+
+
+/* ===== INVOICE PACKAGE INCLUDED IN TOTAL FIX ===== */
+function getPackageAmountByName(pkgName){
+  const name=String(pkgName||'').trim().toLowerCase();
+  if(!name)return 0;
+  const p=(S.packages||[]).find(x=>String(x.name||x.title||'').trim().toLowerCase()===name);
+  return +(p?.fee||p?.price||p?.amount||p?.monthly_fee||0);
+}
+function getSelectedInvoicePackage(){
+  return (document.getElementById('invPackageManual')?.value || document.getElementById('invPackage')?.value || '').trim();
+}
+function selectedInvoiceClient(){
+  const cid=document.getElementById('invClientSelect')?.value||'';
+  return (S.clients||[]).find(x=>x.id===cid)||{};
+}
+function getInvoicePackageAmount(pkgName){
+  const c=selectedInvoiceClient();
+  return getPackageAmountByName(pkgName) || +(c.bill||c.monthlyFee||c.monthly_bill||0) || 0;
+}
+function addOrUpdatePackageInvoiceItem(){
+  const pkg=getSelectedInvoicePackage();
+  if(!pkg)return;
+  const amount=getInvoicePackageAmount(pkg);
+  if(!amount)return;
+  const box=document.getElementById('invoiceItemsBox');
+  if(!box)return;
+
+  let row=[...box.querySelectorAll('.invoice-item-row')].find(r=>r.dataset.packageRow==='1');
+  if(!row){
+    const idx=box.querySelectorAll('.invoice-item-row').length;
+    box.insertAdjacentHTML('beforeend', invoiceItemRowHtml(idx,{name:'Package: '+pkg,qty:1,rate:amount,total:amount}));
+    row=box.lastElementChild;
+    row.dataset.packageRow='1';
+  }
+  row.dataset.packageRow='1';
+  row.querySelector('.invItemName').value='Package: '+pkg;
+  row.querySelector('.invItemQty').value=1;
+  row.querySelector('.invItemRate').value=amount;
+  row.querySelector('.invItemTotal').value=amount;
+  calcInvoiceTotals();
+}
+function onInvoicePackageChanged(){
+  addOrUpdatePackageInvoiceItem();
+}
+function calcInvoiceTotals(){
+  let total=0;
+  document.querySelectorAll('.invoice-item-row').forEach(row=>{
+    const qty=+row.querySelector('.invItemQty')?.value||0;
+    const rate=+row.querySelector('.invItemRate')?.value||0;
+    const t=qty*rate;
+    const totalEl=row.querySelector('.invItemTotal');
+    if(totalEl)totalEl.value=t;
+    total+=t;
+  });
+  const received=+document.getElementById('invReceived')?.value||0;
+  if(document.getElementById('invTotal'))document.getElementById('invTotal').value=total;
+  if(document.getElementById('invDue'))document.getElementById('invDue').value=Math.max(0,total-received);
+}
+if(typeof fillInvoiceClient==='function'){
+  const __oldFillInvoiceClientPkgTotal=fillInvoiceClient;
+  fillInvoiceClient=function(overwrite=true){
+    const r=__oldFillInvoiceClientPkgTotal(overwrite);
+    setTimeout(()=>addOrUpdatePackageInvoiceItem(),80);
+    return r;
+  }
+}
+if(typeof openInvoiceModal==='function'){
+  const __oldOpenInvoiceModalPkgTotal=openInvoiceModal;
+  openInvoiceModal=function(invoiceId=''){
+    const r=__oldOpenInvoiceModalPkgTotal(invoiceId);
+    setTimeout(()=>{
+      const pkg=document.getElementById('invPackage');
+      const man=document.getElementById('invPackageManual');
+      if(pkg)pkg.setAttribute('onchange','onInvoicePackageChanged()');
+      if(man)man.setAttribute('oninput','onInvoicePackageChanged()');
+      if(getSelectedInvoicePackage())addOrUpdatePackageInvoiceItem();
+    },120);
+    return r;
+  }
 }
 
 </script>
