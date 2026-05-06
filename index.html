@@ -7698,6 +7698,377 @@ if(typeof openInvoiceModal==='function'){
   }
 }
 
+
+
+
+
+/* ===== PROFESSIONAL WHATSAPP FEE SLIP WITH HEADINGS ===== */
+function companySupportNumber(){
+  return S?.appSettings?.whatsappSupport || S?.appSettings?.support || S?.appSettings?.ownerWhatsApp || S?.ownerWhatsApp || S?.settings?.support || '';
+}
+function companyDisplayName(){
+  return S?.appSettings?.companyName || S?.settings?.companyName || 'Fire.net.pk';
+}
+function getFeeSlipStatusEmoji(status){
+  status=String(status||'').toLowerCase();
+  if(status==='paid')return '✅';
+  if(status==='partial')return '🟡';
+  return '🔴';
+}
+function proFeeSlipText(clientId){
+  const data=typeof feeSlipDisplayData==='function' ? feeSlipDisplayData(clientId) : null;
+  if(!data)return '';
+  const c=data.c || {};
+  const status=data.status || data.row?.status || 'Unpaid';
+  const emoji=getFeeSlipStatusEmoji(status);
+  const support=companySupportNumber();
+  const company=companyDisplayName();
+  const receipt=data.receiptId || data.pay?.receiptId || data.row?.receiptId || '-';
+  const verify=data.verifyUrl || data.pay?.verifyUrl || data.row?.verifyUrl || '';
+
+  const lines=[
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `*${company.toUpperCase()}*`,
+    `*INTERNET FEE PAYMENT SLIP*`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    ``,
+    `*RECEIPT INFORMATION*`,
+    `Receipt ID: ${receipt}`,
+    `Date: ${data.date || '-'}`,
+    `Billing Month: ${data.month || '-'}`,
+    ``,
+    `*CUSTOMER DETAILS*`,
+    `Name: ${data.clientName || c.name || '-'}`,
+    `Mobile: ${data.mobile || c.mobile || '-'}`,
+    `C.Code: ${data.ccode || c.ccode || c.pin || '-'}`,
+    `User ID / PPPoE: ${data.pppoe || c.pppoe || '-'}`,
+    `Package: ${data.package || c.package || '-'}`,
+    ``,
+    `*PAYMENT SUMMARY*`,
+    `Total Bill: ${data.totalBill || '-'}`,
+    `Discount: ${data.discount || 'Rs. 0'}`,
+    `Paid Now: ${data.paidNow || '-'}`,
+    `Total Paid: ${data.totalPaid || '-'}`,
+    `Remaining Due: ${data.remainingDue || '-'}`,
+    `Payment Mode: ${data.paymentMode || '-'}`,
+    `Received By: ${data.receivedBy || '-'}`,
+    ``,
+    `*PAYMENT STATUS*`,
+    `${emoji} Status: *${status}*`
+  ];
+
+  if(verify){
+    lines.push(
+      ``,
+      `*PAYMENT VERIFICATION*`,
+      `Scan/verify payment here:`,
+      verify
+    );
+  }
+
+  lines.push(
+    ``,
+    `*IMPORTANT NOTE*`,
+    `Please keep this slip for your record.`
+  );
+
+  if(support){
+    lines.push(`For support: ${support}`);
+  }
+
+  lines.push(
+    ``,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `Thank you for choosing *${company}*.`
+  );
+
+  return encodeURIComponent(lines.join('\n'));
+}
+function whatsappFeeSlip(clientId){
+  const data=typeof feeSlipDisplayData==='function' ? feeSlipDisplayData(clientId) : null;
+  if(!data)return toast('Client not found','error');
+  const phone=waNumber(data.c?.mobile || data.mobile || '');
+  if(!phone)return toast('Client mobile not found','error');
+  window.open('https://wa.me/'+phone+'?text='+proFeeSlipText(clientId),'_blank');
+}
+function shortFeeSlipText(clientId){
+  return proFeeSlipText(clientId);
+}
+
+
+
+/* ===== EMPLOYEE CASH FLOW OWN CASH + ADMIN APPROVAL ===== */
+function isAdminUser(){
+  return U && U.role==='admin';
+}
+function currentEmployeeId(){
+  if(!U)return 'admin';
+  return U.id || U.employee_id || U.phone || 'admin';
+}
+function canSeeCashEmployee(eid){
+  if(isAdminUser())return true;
+  return String(eid||'')===String(currentEmployeeId());
+}
+function cfApprovedHandovers(){
+  S.cashHandovers=Array.isArray(S.cashHandovers)?S.cashHandovers:[];
+  return S.cashHandovers.filter(h=>!h.approval_status || h.approval_status==='approved');
+}
+function cfPendingHandovers(){
+  S.cashHandovers=Array.isArray(S.cashHandovers)?S.cashHandovers:[];
+  return S.cashHandovers.filter(h=>h.approval_status==='pending');
+}
+function cfRejectedHandovers(){
+  S.cashHandovers=Array.isArray(S.cashHandovers)?S.cashHandovers:[];
+  return S.cashHandovers.filter(h=>h.approval_status==='rejected');
+}
+function cfCashSummary(){
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  const collected={}, expenses={}, handovers={};
+  (S.finance||[]).filter(f=>{
+    const isIncome=(f.type||'income')!=='expense';
+    const isCash=String(f.mode||'cash').toLowerCase()==='cash';
+    return isIncome && isCash;
+  }).forEach(f=>{
+    const eid=(typeof cfEmployeeId==='function')?cfEmployeeId(f):(f.employee_id||f.emp||f.employee||f.by||'admin');
+    collected[eid]=(collected[eid]||0)+(+f.amount||0);
+  });
+  (S.cashExpenses||[]).forEach(x=>{
+    const eid=x.employee_id||'admin';
+    expenses[eid]=(expenses[eid]||0)+(+x.amount||0);
+  });
+  cfApprovedHandovers().forEach(h=>{
+    const eid=h.employee_id||'admin';
+    handovers[eid]=(handovers[eid]||0)+(+h.amount||0);
+  });
+  const ids=[...new Set([...Object.keys(collected),...Object.keys(expenses),...Object.keys(handovers)])].filter(canSeeCashEmployee);
+  return ids.map(eid=>{
+    const name=(typeof cfEmployeeName==='function')?cfEmployeeName(eid):eid;
+    const col=collected[eid]||0, exp=expenses[eid]||0, hand=handovers[eid]||0;
+    const expected=col-exp;
+    const pending=expected-hand;
+    return {
+      employee_id:eid,
+      employee_name:name,
+      collected:col,
+      expenses:exp,
+      expected,
+      handover:hand,
+      pending,
+      short: pending>0 ? pending : 0,
+      extra: pending<0 ? Math.abs(pending) : 0,
+      status: pending===0 ? 'Settled' : (pending>0 ? 'Cash Short / Pending' : 'Extra Credit')
+    };
+  });
+}
+function cfAccountBalances(){
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  return (S.accounts||[]).map(a=>{
+    const handovers=cfApprovedHandovers()
+      .filter(h=>h.account_id===a.id)
+      .reduce((s,h)=>s+(+h.amount||0),0);
+
+    const onlineIncome=(S.finance||[])
+      .filter(f=>(f.type||'income')!=='expense' && String(f.mode||'').toLowerCase()==='online' && (f.account_id===a.id))
+      .reduce((s,f)=>s+(+f.amount||0),0);
+
+    const accountExpensesFromCashFlow=(S.cashExpenses||[])
+      .filter(x=>x.paid_from==='account' && x.account_id===a.id)
+      .reduce((s,x)=>s+(+x.amount||0),0);
+
+    const financeExpensesDirect=(S.finance||[])
+      .filter(f=>(f.type==='expense') && f.account_id===a.id && !f.cash_expense_id)
+      .reduce((s,f)=>s+(+f.amount||0),0);
+
+    const expenses=accountExpensesFromCashFlow+financeExpensesDirect;
+
+    return {
+      ...a,
+      handovers,
+      online:onlineIncome,
+      expenses,
+      balance:(+a.opening||0)+handovers+onlineIncome-expenses
+    };
+  });
+}
+function cashFlowPage(){
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  const rows=cfCashSummary();
+  const allAccounts=typeof cfAccountBalances==='function'?cfAccountBalances():[];
+  const pendingApprovals=cfPendingHandovers().filter(h=>isAdminUser() || canSeeCashEmployee(h.employee_id));
+  const totalCollected=rows.reduce((s,x)=>s+x.collected,0);
+  const totalExpenses=rows.reduce((s,x)=>s+x.expenses,0);
+  const totalExpected=rows.reduce((s,x)=>s+x.expected,0);
+  const totalHanded=rows.reduce((s,x)=>s+x.handover,0);
+  const totalPending=rows.reduce((s,x)=>s+x.pending,0);
+  const totalBalance=allAccounts.reduce((s,x)=>s+x.balance,0);
+
+  content.innerHTML=`<div class="stable-hero">
+    <div class="stable-hero-row">
+      <div><h1>💵 Cash Flow</h1><p>${isAdminUser()?'Admin view: all employees cash and approvals':'Employee view: only your cash to handover'}</p></div>
+      <div class="stable-pill">${isAdminUser()?'Admin Approval':'My Cash'}</div>
+    </div>
+  </div>
+
+  <div class="stable-kpi-grid">
+    <div class="stable-kpi stable-blue"><div class="icon">👥</div><span>Collected Cash</span><b>${money(totalCollected)}</b><small>${isAdminUser()?'all employees':'your cash collection'}</small></div>
+    <div class="stable-kpi stable-red"><div class="icon">🧾</div><span>Cash Expenses</span><b>${money(totalExpenses)}</b><small>minus from cash</small></div>
+    <div class="stable-kpi stable-purple"><div class="icon">🤝</div><span>Approved Handover</span><b>${money(totalHanded)}</b><small>approved only</small></div>
+    <div class="stable-kpi stable-green"><div class="icon">⏳</div><span>Cash To Handover</span><b>${money(totalPending)}</b><small>remaining cash</small></div>
+  </div>
+
+  <div class="card">
+    <div class="head"><h2>${isAdminUser()?'Employee Cash Position':'My Cash Position'}</h2>
+      <div class="actions">
+        <button class="btn btn-w btn-sm" onclick="openCashExpenseModal('${isAdminUser()?'':currentEmployeeId()}')">Add Cash Expense</button>
+        <button class="btn btn-p btn-sm" onclick="openCashHandoverModal('${isAdminUser()?'':currentEmployeeId()}')">Cash Handover</button>
+      </div>
+    </div>
+    ${simpleTable('Employee Cash Flow',['Employee','Collected','Expense','Expected Handover','Approved Handover','Cash To Handover','Extra Credit','Status','Action'],rows.map(x=>`<tr>
+      <td><b>${esc(x.employee_name)}</b></td>
+      <td>${money(x.collected)}</td>
+      <td>${money(x.expenses)}</td>
+      <td>${money(x.expected)}</td>
+      <td>${money(x.handover)}</td>
+      <td>${x.short>0?'<span class="badge expense">'+money(x.short)+'</span>':money(0)}</td>
+      <td>${x.extra>0?'<span class="badge done">'+money(x.extra)+'</span>':money(0)}</td>
+      <td>${x.status==='Settled'?'<span class="badge done">Settled</span>':x.extra>0?'<span class="badge pending">Extra Credit</span>':'<span class="badge expense">Need Handover</span>'}</td>
+      <td><div class="actions"><button class="btn btn-w btn-sm" onclick="openCashExpenseModal('${x.employee_id}')">Expense</button><button class="btn btn-p btn-sm" onclick="openCashHandoverModal('${x.employee_id}')">Handover</button></div></td>
+    </tr>`))}
+  </div>
+
+  <div class="card">
+    <div class="head"><h2>Admin Approval Queue</h2></div>
+    ${pendingApprovals.length?simpleTable('Cash Approval Queue',['Date','Employee','Account','Amount','Received By','Note','Status','Action'],pendingApprovals.slice().reverse().map(h=>`<tr>
+      <td>${esc(h.date||'')}</td>
+      <td>${esc((typeof cfEmployeeName==='function')?cfEmployeeName(h.employee_id):h.employee_id)}</td>
+      <td>${esc((S.accounts||[]).find(a=>a.id===h.account_id)?.name||'-')}</td>
+      <td>${money(h.amount)}</td>
+      <td>${esc(h.received_by||'')}</td>
+      <td>${esc(h.note||'')}</td>
+      <td><span class="badge pending">Pending Approval</span></td>
+      <td>${isAdminUser()?`<button class="btn btn-s btn-sm" onclick="approveCashHandover('${h.id}')">Approve</button><button class="btn btn-e btn-sm" onclick="rejectCashHandover('${h.id}')">Reject</button>`:'Waiting Admin'}</td>
+    </tr>`)):`<div class="card" style="box-shadow:none;border:1px dashed #cbd5e1"><p>No pending cash handover approvals.</p></div>`}
+  </div>
+
+  ${isAdminUser()?`<div class="card">
+    <div class="head"><h2>Real Accounts</h2><button class="btn btn-p btn-sm" onclick="openRealAccountModal()">Add Account</button></div>
+    ${simpleTable('Real Accounts',['Account','Type','Opening','Approved Handovers','Online','Expenses','Balance','Action'],allAccounts.map(a=>`<tr>
+      <td><b>${esc(a.name)}</b></td>
+      <td>${esc(a.type||'cash')}</td>
+      <td>${money(a.opening||0)}</td>
+      <td>${money(a.handovers||0)}</td>
+      <td>${money(a.online||0)}</td>
+      <td>${money(a.expenses||0)}</td>
+      <td><b>${money(a.balance||0)}</b></td>
+      <td><button class="btn btn-l btn-sm" onclick="openRealAccountModal('${a.id}')">Edit</button></td>
+    </tr>`))}
+  </div>`:''}
+
+  <div class="card">
+    <div class="head"><h2>Cash Handover History</h2></div>
+    ${simpleTable('Cash Handovers',['Date','Employee','Real Account','Amount','Received By','Status','Approved/Rejected By','Note'],(S.cashHandovers||[]).filter(h=>isAdminUser()||canSeeCashEmployee(h.employee_id)).slice().reverse().map(h=>{
+      const st=h.approval_status||'approved';
+      const badge=st==='approved'?'<span class="badge done">Approved</span>':st==='rejected'?'<span class="badge expense">Rejected</span>':'<span class="badge pending">Pending</span>';
+      return `<tr>
+        <td>${esc(h.date||'')}</td>
+        <td>${esc((typeof cfEmployeeName==='function')?cfEmployeeName(h.employee_id):h.employee_id)}</td>
+        <td>${esc((S.accounts||[]).find(a=>a.id===h.account_id)?.name||'-')}</td>
+        <td>${money(h.amount)}</td>
+        <td>${esc(h.received_by||'')}</td>
+        <td>${badge}</td>
+        <td>${esc(h.approved_by_name||h.rejected_by_name||'-')}</td>
+        <td>${esc(h.note||h.reject_reason||'')}</td>
+      </tr>`;
+    }))}
+  </div>`;
+}
+function openCashHandoverModal(empId=''){
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  const fixedEmp=!isAdminUser()?currentEmployeeId():(empId||'');
+  const row=fixedEmp?cfCashSummary().find(x=>String(x.employee_id)===String(fixedEmp)):null;
+  const suggested=row&&row.pending>0?row.pending:0;
+  const employeeSelect=isAdminUser()
+    ? `<select id="cfHandEmployee">${typeof cfEmployeeOptions==='function'?cfEmployeeOptions(fixedEmp||''):'<option value="admin">Admin</option>'}</select>`
+    : `<input value="${esc((typeof cfEmployeeName==='function')?cfEmployeeName(currentEmployeeId()):U?.name||'Employee')}" readonly><input type="hidden" id="cfHandEmployee" value="${esc(currentEmployeeId())}">`;
+  openBillingModal(`<div class="head"><h2>Cash Handover Request</h2><button class="btn btn-l btn-sm" onclick="closeBillingModal()">Close</button></div>
+    ${row?`<div class="summary"><div class="sum">Employee<b>${esc(row.employee_name)}</b></div><div class="sum">Cash To Handover<b>${money(row.pending)}</b></div></div>`:''}
+    <p style="font-weight:900;color:#64748b">Handover will go to Admin Approval first. Real account balance updates only after approval.</p>
+    <div class="row">
+      <div class="fg"><label>Employee</label>${employeeSelect}</div>
+      <div class="fg"><label>Real Account / Cash Box</label><select id="cfHandAccount">${typeof cfAccountOptions==='function'?cfAccountOptions():''}</select></div>
+      <div class="fg"><label>Handover Amount</label><input id="cfHandAmount" type="number" value="${suggested}"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Received By</label><input id="cfHandReceivedBy" value="${isAdminUser()?esc(U?.name||'Admin'):'Admin Approval Pending'}"></div>
+      <div class="fg"><label>Date</label><input id="cfHandDate" type="date" value="${today()}"></div>
+      <div class="fg"><label>Reference</label><input id="cfHandRef" placeholder="optional"></div>
+    </div>
+    <div class="fg"><label>Note</label><input id="cfHandNote" placeholder="Cash handover note"></div>
+    <button class="btn btn-p" onclick="saveCashHandover()">Submit Handover For Approval</button>`);
+}
+function saveCashHandover(){
+  if(typeof ensureCashFlowState==='function')ensureCashFlowState();
+  const employeeId=document.getElementById('cfHandEmployee')?.value||currentEmployeeId();
+  if(!isAdminUser() && String(employeeId)!==String(currentEmployeeId()))return toast('You can only handover your own cash','error');
+  const amount=+document.getElementById('cfHandAmount')?.value||0;
+  if(amount<=0)return toast('Invalid handover amount','error');
+  const h={
+    id:id('ch'),
+    employee_id:employeeId,
+    employee_name:(typeof cfEmployeeName==='function')?cfEmployeeName(employeeId):(U?.name||'Employee'),
+    account_id:document.getElementById('cfHandAccount')?.value||'acc_main_cash',
+    amount,
+    received_by:document.getElementById('cfHandReceivedBy')?.value||'Admin Approval Pending',
+    date:document.getElementById('cfHandDate')?.value||today(),
+    ref:document.getElementById('cfHandRef')?.value||'',
+    note:document.getElementById('cfHandNote')?.value||'',
+    approval_status:'pending',
+    requested_by:U?.id||'admin',
+    requested_by_name:U?.name||'User',
+    created_at:now()
+  };
+  S.cashHandovers=S.cashHandovers||[];
+  S.cashHandovers.push(h);
+  try{saveAndSync('cashHandovers',h)}catch(e){saveLocal()}
+  closeBillingModal();
+  toast('Cash handover sent to Admin Approval','success');
+  cashFlowPage();
+}
+function approveCashHandover(hid){
+  if(!isAdminUser())return toast('Admin only','error');
+  const h=(S.cashHandovers||[]).find(x=>x.id===hid);
+  if(!h)return toast('Handover not found','error');
+  h.approval_status='approved';
+  h.approved_by=U?.id||'admin';
+  h.approved_by_name=U?.name||'Admin';
+  h.approved_at=now();
+  h.received_by=h.received_by&&h.received_by!=='Admin Approval Pending'?h.received_by:(U?.name||'Admin');
+  try{saveAndSync('cashHandovers',h)}catch(e){saveLocal()}
+  toast('Cash handover approved and added to real account','success');
+  cashFlowPage();
+}
+function rejectCashHandover(hid){
+  if(!isAdminUser())return toast('Admin only','error');
+  const h=(S.cashHandovers||[]).find(x=>x.id===hid);
+  if(!h)return toast('Handover not found','error');
+  const reason=prompt('Reject reason?')||'Rejected by admin';
+  h.approval_status='rejected';
+  h.rejected_by=U?.id||'admin';
+  h.rejected_by_name=U?.name||'Admin';
+  h.rejected_at=now();
+  h.reject_reason=reason;
+  try{saveAndSync('cashHandovers',h)}catch(e){saveLocal()}
+  toast('Cash handover rejected','success');
+  cashFlowPage();
+}
+/* Employee expense also only own cash */
+if(typeof openCashExpenseModal==='function'){
+  const __oldOpenCashExpenseModalOwn=openCashExpenseModal;
+  openCashExpenseModal=function(empId=''){
+    return __oldOpenCashExpenseModalOwn(isAdminUser()?empId:currentEmployeeId());
+  }
+}
+
 </script>
 </body>
 </html>
