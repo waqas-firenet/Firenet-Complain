@@ -499,8 +499,12 @@ body.menu-open{overflow:hidden}
 
 <script>
 
-/* ===== EARLY GLOBAL RECEIPT FIX ===== */
+/* ===== RECEIPT ID GENERATOR ===== */
 window.generateReceiptId = window.generateReceiptId || function(){
+  var d=new Date();
+  return 'FRN-'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'-'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'-'+(Math.floor(Math.random()*9000)+1000);
+};
+function generateReceiptId(){
   var d=new Date();
   var y=d.getFullYear();
   var m=String(d.getMonth()+1).padStart(2,'0');
@@ -509,12 +513,9 @@ window.generateReceiptId = window.generateReceiptId || function(){
   var mi=String(d.getMinutes()).padStart(2,'0');
   var rand=Math.floor(Math.random()*9000)+1000;
   return 'FRN-'+y+m+da+'-'+h+mi+'-'+rand;
-};
-function generateReceiptId(){
-  return window.safeReceiptId();
 }
 function safeReceiptId(){
-  try{return window.generateReceiptId ? window.safeReceiptId() : ('FRN-'+Date.now());}
+  try{return generateReceiptId();}
   catch(e){return 'FRN-'+Date.now();}
 }
 
@@ -568,24 +569,7 @@ function load(){
  }
  saveLocal();
 }
-function saveLocal(){
- try{
-   if(!S)return;
-   const small={...S};
-   small.clients=(S.clients||[]).slice(-80);
-   small.finance=(S.finance||[]).slice(-120);
-   small.invoices=(S.invoices||[]).slice(-120);
-   small.complaints=(S.complaints||[]).slice(-120);
-   small.notifications=(S.notifications||[]).slice(-80);
-   small.attendance=(S.attendance||[]).slice(-120);
-   small.targets=(S.targets||[]).slice(-120);
-   small.advances=(S.advances||[]).slice(-120);
-   localStorage.setItem(KEY,JSON.stringify(small));
- }catch(e){
-   console.warn('Local cache save skipped',e);
-   try{localStorage.setItem(KEY,JSON.stringify({admin:S.admin,employees:S.employees||[],items:S.items||[],packages:S.packages||[],news:S.news,notificationSettings:S.notificationSettings,session:S.session,clients:[],finance:[],invoices:[],complaints:[],targets:[],attendance:[],advances:[],notifications:[]}))}catch(_){}
- }
-}
+
 function setSync(t,ok){const el=document.getElementById('syncStatus');if(el){el.textContent=t;el.style.color=ok?'#166534':t.includes('failed')||t.includes('error')?'#dc2626':'#475569'}}
 function id(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function today(){return new Date().toISOString().slice(0,10)}
@@ -623,16 +607,7 @@ async function loadFirebase(){
  }catch(e){console.error(e);setSync('Firebase load failed',false);toast('Firebase load failed: '+(e.message||e),'error')}
  fbLoading=false;
 }
-function startRealtime(){
- if(!db)return; unsubs.forEach(u=>u&&u()); unsubs=[];
- ['employees','complaints','clients','finance','invoices','targets','attendance','items','packages','advances','notifications'].forEach(col=>{
-   unsubs.push(db.collection(col).onSnapshot(snap=>{
-     if(fbLoading)return;
-     S[col]=snap.docs.map(d=>({id:d.id,...d.data()})); saveLocal();
-     if(U&&TAB){updateNotificationBell();renderCurrent();}
-   },e=>setSync('Firebase realtime failed',false)));
- });
-}
+
 async function fbSet(col,obj){if(!fbReady||fbLoading||!obj?.id)return;try{await db.collection(col).doc(obj.id).set(JSON.parse(JSON.stringify(obj)),{merge:true});setSync('Firebase: synced',true)}catch(e){console.error(e);toast('Firebase write failed','error');setSync('Firebase write failed',false)}}
 async function fbDel(col,i){if(!fbReady||!i)return;try{await db.collection(col).doc(i).delete();setSync('Firebase: deleted',true)}catch(e){toast('Firebase delete failed','error')}}
 async function fbSettings(){if(!fbReady)return;try{await db.collection('settings').doc('main').set({admin:S.admin,news:S.news,clientNews:S.clientNews,notificationSettings:S.notificationSettings,ownerWhatsApp:S.ownerWhatsApp,appSettings:S.appSettings},{merge:true})}catch(e){}}
@@ -723,21 +698,10 @@ function items(){
  if(U.role==='client')return [['dashboard','My Portal','🏠'],['complaints','Support','🛠️']];
  return U.role==='admin'?a:a.filter(x=>x[0]==='dashboard'||can(x[0]));
 }
-function navRender(){nav.innerHTML=items().map(x=>`<button id="n-${x[0]}" onclick="${x[0]==='news'?'openNewsPage()':`tab('${x[0]}')`}">${x[2]} ${x[1]}</button>`).join('')}
+
 function toggleSideMenu(){document.getElementById('sidePanel')?.classList.toggle('open')}
-function tab(x){if(!items().some(i=>i[0]===x))x='dashboard';TAB=x;document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-'+x);if(n)n.classList.add('active');document.getElementById('sidePanel')?.classList.remove('open');renderCurrent()}
-function renderCurrent(){
- try{
-  sanitizeState();
-  const map={dashboard:dash,complaints,clients:clientsPage,billing:billingPage,employees,attendance,invoice,finance,items:itemsPage,packages:packagesPage,advance:advancePage,targets,news:openNewsPage,template:templatePage,settings:openSettingsPage,backup};
-  (map[TAB]||dash)();
-  setTimeout(()=>{if(typeof renderGlobalNewsTicker==='function')renderGlobalNewsTicker();if(typeof setupTableEnhancer==='function')setupTableEnhancer();if(typeof enhanceAllTables==='function')enhanceAllTables();},50);
- }catch(err){
-  console.error(err);
-  const c=document.getElementById('content');
-  if(c)c.innerHTML=`<div class="card"><div class="head"><h2>App Error</h2></div><p style="color:#dc2626;font-weight:800">${esc(err.message||err)}</p><button class="btn btn-e" onclick="localStorage.removeItem(KEY);location.reload()">Reset Local Data</button></div>`;
- }
-}
+
+
 function myFin(){let r=U.role==='admin'?S.finance:S.finance.filter(e=>e.by===U.id);if(U.role==='admin'&&financeEmp!=='all')r=r.filter(e=>e.by===financeEmp);return r}
 function myInv(){return U.role==='admin'?S.invoices:S.invoices.filter(e=>e.by===U.id||e.refEmp===U.id)}
 function myComp(){return U.role==='admin'?S.complaints:S.complaints.filter(c=>c.assigned===U.id||c.by===U.id)}
@@ -766,10 +730,7 @@ function newsTickerHtml(){
  const n=`📢 ${esc(msg)}`;
  return `<div class="force-news-bar"><div class="force-news-track"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
 }
-function renderGlobalNewsTicker(){
- const el=document.getElementById('globalNewsTicker');
- if(el)el.innerHTML=newsTickerHtml();
-}
+
 
 
 function stableNewsTickerHtml(){
@@ -782,10 +743,7 @@ function stableNewsTickerHtml(){
  const n=`📢 ${esc(msg)}`;
  return `<div class="stable-news-bar"><div class="stable-news-track"><span>${n}</span><span>${n}</span><span>${n}</span><span>${n}</span></div></div>`;
 }
-function renderGlobalNewsTicker(){
- const el=document.getElementById('globalNewsTicker');
- if(el)el.innerHTML=stableNewsTickerHtml();
-}
+
 
 
 function employeeTargetBanner(){
@@ -1117,7 +1075,7 @@ function sendClientBill(i){
  window.open('https://wa.me/'+waNumber(c.mobile)+'?text='+msg,'_blank');
 }
 
-function employees(){if(U.role!=='admin')return dash();content.innerHTML=`<div class="card"><div class="head"><h2>Add Employee</h2></div><div class="row"><div class="fg"><label>Name</label><input id="eName"></div><div class="fg"><label>Login</label><input id="ePhone"></div><div class="fg"><label>Mobile</label><input id="eMobile" placeholder="03001234561"></div></div><div class="row two"><div class="fg"><label>PIN</label><input id="ePin" value="1234"></div><div class="fg"><label>Role</label><input id="eRole" placeholder="Collection"></div></div><div class="actions">${['complaints','attendance','invoice','finance','advance','targets'].map(p=>`<label><input type="checkbox" class="perm" value="${p}" checked> ${p}</label>`).join('')}</div><br><button class="btn btn-p" onclick="addEmp()">Add Employee</button></div><div class="card"><div class="head"><h2>Employees</h2></div>${empTable()}</div>`}
+
 function addEmp(){let per={};document.querySelectorAll('.perm').forEach(x=>per[x.value]=x.checked);let mobile=pkMobile(eMobile.value);if(!eName.value.trim()||!ePhone.value.trim())return toast('Name and login required','error');if(mobile&&!validPk(mobile))return toast('Mobile number format use karein: 03001234561','error');if(S.employees.some(e=>e.phone.toLowerCase()===ePhone.value.trim().toLowerCase()))return toast('Employee already exists','error');let rec={id:id('e'),name:eName.value.trim(),phone:ePhone.value.trim(),mobile,pin:ePin.value.trim()||'1234',role:eRole.value.trim()||'Employee',active:true,per};S.employees.push(rec);saveAndSync('employees',rec);employees()}
 function empTable(){return`<div class="tbl"><table><thead><tr><th>Name</th><th>Login</th><th>Mobile</th><th>Role</th><th>PIN</th><th>Status</th><th>Action</th></tr></thead><tbody>${S.employees.map(e=>`<tr><td>${esc(e.name)}</td><td>${esc(e.phone)}</td><td>${esc(e.mobile||'')}</td><td>${esc(e.role)}</td><td>${esc(e.pin)}</td><td>${e.active?'Active':'Inactive'}</td><td><div class="actions"><button class="btn btn-p btn-sm" onclick="employeeAccountDetails('${e.id}')">Account Details</button><button class="btn btn-i btn-sm" onclick="editEmp('${e.id}')">Edit</button><button class="btn btn-w btn-sm" onclick="togEmp('${e.id}')">${e.active?'Disable':'Enable'}</button><button class="btn btn-e btn-sm" onclick="delEmp('${e.id}')">Delete</button></div></td></tr>`).join('')}</tbody></table></div>`}
 function editEmp(i){let e=S.employees.find(x=>x.id===i);if(!e)return;e.name=prompt('Name',e.name)||e.name;e.phone=prompt('Login',e.phone)||e.phone;e.mobile=pkMobile(prompt('Mobile',e.mobile||'')||e.mobile);e.pin=prompt('PIN',e.pin)||e.pin;e.role=prompt('Role',e.role)||e.role;saveAndSync('employees',e);employees()}
@@ -1137,65 +1095,7 @@ function packageOptions(){
  (S.packages||[]).forEach(x=>opts+=`<option value="${x.id}">${esc(x.name)} | Monthly: ${money(x.monthly)} | Install: ${money(x.installation)}</option>`);
  return opts;
 }
-function invoice(){content.innerHTML=`<div class="summary">${invoiceSummaryCards()}</div>
-<div class="card">
- <div class="head">
-  <h2>Create Invoice</h2>
-  <button class="btn btn-l btn-sm" onclick="draft=[];invoice()">Clear</button>
- </div>
 
- <h3 style="margin:6px 0 12px;color:#243447">Customer & Work Details</h3>
- <div class="row">
-  <div class="fg"><label>Customer Name</label><input id="invCust" placeholder="Customer full name"></div>
-  <div class="fg"><label>Customer WhatsApp</label><input id="invPhone" placeholder="03001234561"></div>
-  <div class="fg"><label>Work Type</label><select id="invWork" onchange="toggleRewardBox();togglePackageBox()"><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Repair</option><option>Other Work</option></select></div>
- </div>
-
- <div id="rewardBox" class="card" style="box-shadow:none;background:#f8fafc;margin:8px 0 12px;padding:12px;border:1px dashed #cbd5e1">
-  <div class="head" style="margin-bottom:8px"><h2 style="font-size:16px">Sales Reward Employee</h2></div>
-  <div class="row two">
-   <div class="fg"><label>Reference / Sales Reward Employee</label><select id="refEmp">${empOpts(U.role==='employee'?U.id:'')}</select></div>
-   <div class="fg"><label>Reward Note</label><input value="Sales reward applies only on New Connection" disabled></div>
-  </div>
- </div>
-
- <div id="packageBox" class="card" style="box-shadow:none;background:#fff;margin:8px 0 12px;padding:12px;border:1px solid #e5e7eb">
-  <div class="head" style="margin-bottom:8px"><h2 style="font-size:16px">Package Selection</h2></div>
-  <div class="row two">
-   <div class="fg"><label>Select Package</label><select id="pkgSelect" onchange="selectPackageForInvoice()">${packageOptions()}</select></div>
-   <div class="fg"><label>Package Note</label><input id="pkgNote" placeholder="Package will be added as invoice line"></div>
-  </div>
- </div>
-
- <h3 style="margin:14px 0 12px;color:#243447">Items / Services</h3>
- <div class="row">
-  <div class="fg"><label>Select Item from Inventory</label><select id="itSelect" onchange="selectInventoryItem()">${itemOptions()}</select></div>
-  <div class="fg"><label>Quantity</label><input id="itQty" type="number" value="1"></div>
-  <div class="fg"><label>Sale Rate</label><input id="itRate" type="number" value="0"></div>
- </div>
- <div class="row">
-  <div class="fg"><label>Custom Item / Service Name</label><input id="itName" placeholder="Only if custom item"></div>
-  <div class="fg"><label>Purchase Cost / Unit</label><input id="itCost" type="number" value="0"></div>
-  <div class="fg"><label>&nbsp;</label><button class="btn btn-i" style="width:100%" onclick="addItem()">Add Item</button></div>
- </div>
-
- <div id="itemsArea"></div>
-
- <h3 style="margin:14px 0 12px;color:#243447">Payment Details</h3>
- <div class="row">
-  <div class="fg"><label>Discount</label><input id="disc" type="number" value="0" oninput="drawItems()"></div>
-  <div class="fg"><label>Amount Received</label><input id="received" type="number" value="0" oninput="drawItems()"></div>
-  <div class="fg"><label>Notes</label><input id="invNotes" placeholder="Optional notes"></div>
- </div>
-
- <div class="actions">
-  <button class="btn btn-p" onclick="saveInv()">Save Invoice</button>
-  <button class="btn btn-s" onclick="sendDraftInv()">Send WhatsApp</button>
- </div>
-</div>
-<div class="card"><div class="head"><h2>Due Invoices</h2></div>${dueTable()}</div>
-<div class="card"><div class="head"><h2>Invoice History</h2></div>${invTable()}</div>`;
-drawItems();toggleRewardBox();togglePackageBox();selectInventoryItem()}
 function invoiceSummaryCards(){let x=invoiceSummary();let profit=(myInv()).reduce((s,v)=>s+(+v.profit||0),0);return`<div class="sum">Total Sales<b>${money(x.sales)}</b></div><div class="sum">Amount Received<b>${money(x.received)}</b></div><div class="sum">Due Amount<b>${money(x.due)}</b></div><div class="sum">Net Profit<b>${money(profit)}</b></div>`}
 function toggleRewardBox(){let b=document.getElementById('rewardBox');if(b)b.style.display=document.getElementById('invWork').value==='New Connection'?'block':'none'}
 function togglePackageBox(){let b=document.getElementById('packageBox');if(b)b.style.display=['New Connection','Package Change'].includes(document.getElementById('invWork').value)?'block':'none'}
@@ -1273,11 +1173,24 @@ function reduceStockForInvoice(v){
 function saveInv(){if(!draft.length)return toast('Add item','error');let v=invObj();if(!v.cust)return toast('Customer required','error');if(v.phone&&!validPk(v.phone))return toast('Mobile number format use karein: 03001234561','error');if(v.work==='New Connection'&&!v.refEmp)return toast('Select sales reward employee for New Connection','error');S.invoices.push(v);reduceStockForInvoice(v);saveAndSync('invoices',v);if(v.received>0)addFinanceFromInvoice(v,v.received);if(v.work==='New Connection'&&v.refEmp)applyTarget(v.refEmp,v.total,'sales');draft=[];toast('Invoice saved + inventory updated','success');invoice()}
 function addFinanceFromInvoice(v,amount){let rec={id:id('fin'),type:'income',mode:'cash',cat:'Invoice - '+v.work,amount,customer:v.cust,paidBy:v.cust,payer:v.cust,receiver:empName(v.refEmp)||v.byName,online:'',phone:v.phone,notes:`Auto income from invoice ${v.id} | Cost: ${money(v.cost||0)} | Profit: ${money(v.profit||0)}`,date:today(),time:now(),by:v.refEmp||v.by,byName:empName(v.refEmp)||v.byName};S.finance.push(rec);fbSet('finance',rec);saveLocal()}
 function sendDraftInv(){if(!draft.length)return toast('Add item','error');let v=invObj();if(!validPk(v.phone))return toast('Mobile number format use karein: 03001234561','error');window.open('https://wa.me/'+waNumber(v.phone)+'?text='+encodeURIComponent(invMsg(v)),'_blank')}
-function invTable(){let r=myInv().slice().reverse();if(!r.length)return'<div class="empty">No invoices</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Total</th><th>Cost</th><th>Profit</th><th>Received</th><th>Due</th><th>Ref Employee</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td>${money(v.cost||0)}</td><td><b>${money(v.profit||0)}</b></td><td>${money(v.received)}</td><td>${money(v.due)}</td><td>${esc(empName(v.refEmp))}</td><td><div class="actions"><button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button>${(+v.due||0)>0?`<button class="btn btn-i btn-sm" onclick="receiveDue('${v.id}')">Receive</button>`:''}${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delInv('${v.id}')">Delete</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`}
+function invTable(){let r=myInv().slice().reverse();if(!r.length)return'<div class="empty">No invoices</div>';return`<div class="tbl"><table><thead><tr><th>Date</th><th>Customer</th><th>Work</th><th>Total</th><th>Cost</th><th>Profit</th><th>Received</th><th>Due</th><th>Ref Employee</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${v.date}</td><td>${esc(v.cust)}<br>${esc(v.phone)}</td><td>${esc(v.work)}</td><td>${money(v.total)}</td><td>${money(v.cost||0)}</td><td><b>${money(v.profit||0)}</b></td><td>${money(v.received)}</td><td>${money(v.due)}</td><td>${esc(empName(v.refEmp))}</td><td><div class="actions"><button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button>${(+v.due||0)>0?`<button class="btn btn-i btn-sm" onclick="receiveDue('${v.id}')">Receive</button><button class="btn btn-p btn-sm" onclick="markInvPaid('${v.id}')">Mark Paid</button>`:'<span class="badge done">Paid</span>'}${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delInv('${v.id}')">Delete</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`}
 function dueTable(){let r=myInv().filter(v=>(+v.due||0)>0).slice().reverse();if(!r.length)return'<div class="empty">No due invoices</div>';return`<div class="tbl"><table><thead><tr><th>Customer</th><th>Phone</th><th>Total</th><th>Received</th><th>Due</th><th>Action</th></tr></thead><tbody>${r.map(v=>`<tr><td>${esc(v.cust)}</td><td>${esc(v.phone)}</td><td>${money(v.total)}</td><td>${money(v.received)}</td><td>${money(v.due)}</td><td><button class="btn btn-i btn-sm" onclick="receiveDue('${v.id}')">Receive Payment</button></td></tr>`).join('')}</tbody></table></div>`}
 function sendSavedInv(i){let v=S.invoices.find(x=>x.id===i);if(v)window.open('https://wa.me/'+waNumber(v.phone)+'?text='+encodeURIComponent(invMsg(v)),'_blank')}
 function receiveDue(i){let v=S.invoices.find(x=>x.id===i);if(!v)return;let a=+prompt('Received amount',v.due)||0;if(a<=0)return;v.received=(+v.received||0)+a;v.due=Math.max(0,(+v.total||0)-v.received);saveAndSync('invoices',v);addFinanceFromInvoice(v,a);toast('Payment received','success');invoice()}
 function delInv(i){if(!confirm('Delete invoice?'))return;S.invoices=S.invoices.filter(x=>x.id!==i);delAndSync('invoices',i);invoice()}
+function markInvPaid(i){
+  const v=S.invoices.find(x=>x.id===i);
+  if(!v)return toast('Invoice not found','error');
+  if((+v.due||0)<=0)return toast('Invoice already paid','success');
+  const remaining=+v.due||0;
+  const mode=(prompt('Payment mode: cash / online','cash')||'cash').toLowerCase()==='online'?'online':'cash';
+  v.received=(+v.received||0)+remaining;
+  v.due=0;
+  saveAndSync('invoices',v);
+  addFinanceFromInvoice(v,remaining);
+  toast('Invoice marked as Paid','success');
+  invoice();
+}
 
 function finance(){let f=calc(filteredFinance());content.innerHTML=`<div class="summary"><div class="sum">Total Income<b>${money(f.inc)}</b></div><div class="sum">Total Expense<b>${money(f.exp)}</b></div><div class="sum">Cash Income<b>${money(f.cash)}</b></div><div class="sum">Online Income<b>${money(f.online)}</b></div><div class="sum">Cash Expense<b>${money(f.cashExp)}</b></div><div class="sum">Online Expense<b>${money(f.onlineExp)}</b></div><div class="sum">Net Balance<b>${money(f.bal)}</b></div><div class="sum">Entries<b>${filteredFinance().length}</b></div></div><div class="card"><div class="head"><h2>Finance Filters</h2><div class="actions"><input type="date" style="max-width:170px" value="${financeDate}" onchange="financeDate=this.value;financeAll=false;finance()"><button class="btn btn-l btn-sm" onclick="financeDate=today();financeAll=false;finance()">Today</button><button class="btn btn-i btn-sm" onclick="financeAll=true;finance()">Show All</button><button class="btn btn-s btn-sm" onclick="loadFirebase()">Fetch Firebase</button></div></div>${U.role==='admin'?`<div class="fg"><label>Employee Filter</label><select onchange="financeEmp=this.value;finance()"><option value="all">All Employees/Admin</option><option value="admin" ${financeEmp==='admin'?'selected':''}>Admin</option>${S.employees.map(e=>`<option value="${e.id}" ${financeEmp===e.id?'selected':''}>${esc(e.name)}</option>`).join('')}</select></div>`:''}${employeeWiseSummary()}</div><div class="card"><div class="head"><h2>Add Account Entry</h2></div><div class="row"><div class="fg"><label>Type</label><select id="ft"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="fg"><label>Mode</label><select id="fm" onchange="onBox()"><option value="cash">Cash</option><option value="online">Online</option></select></div><div class="fg"><label>Category</label><select id="fc"><option>Monthly Fee</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Office Expense</option><option>Other</option></select></div></div><div class="row"><div class="fg"><label>Customer Name / Paid By</label><input id="fcu" placeholder="Customer who paid / paid to"></div><div class="fg"><label>Amount</label><input id="fa" type="number" value="0"></div><div class="fg"><label>Receiver Name</label><input id="fr" placeholder="Receiver"></div></div><div class="row"><div class="fg" id="ob"><label>Online Account</label><input id="fo" placeholder="JazzCash / Bank"></div><div class="fg"><label>Client WhatsApp</label><input id="fp" placeholder="03001234561"></div><div class="fg"><label>Notes</label><input id="fn"></div></div><button class="btn btn-p" onclick="addFin()">Save Entry</button></div><div class="card"><div class="head"><h2>Finance Report ${financeAll?'(All)':'('+financeDate+')'}</h2><div class="actions"><button class="btn btn-l btn-sm" onclick="printFinanceReport()">Print Report</button><button class="btn btn-s btn-sm" onclick="dailyReport()">WhatsApp Report</button></div></div>${finTable()}</div>`;onBox()}
 function filteredFinance(){let r=myFin().slice();if(!financeAll)r=r.filter(e=>e.date===financeDate);return r}
@@ -1760,66 +1673,8 @@ function clearAll(){if(confirm('Clear all data?')){localStorage.removeItem(KEY);
 function notify(){updateNotificationBell();let p=myComp().filter(c=>c.status!=='Resolved').length;if(U.role==='employee'&&p){toast(`You have ${p} pending task(s)`,'warning');beep()}}
 window.onerror=function(msg,src,line,col,err){console.error('App error',msg,err);let c=document.getElementById('content');if(c&&document.getElementById('app').style.display==='block'){c.innerHTML=`<div class="card"><div class="head"><h2>App Error</h2></div><p style="color:#dc2626;font-weight:800">${esc(msg)}</p><button class="btn btn-e" onclick="localStorage.removeItem(KEY);location.reload()">Reset Local Data</button></div>`;}return false;};
 
-function enhanceAllTables(){
- const root=document.getElementById('content');
- if(!root)return;
- root.querySelectorAll('.tbl').forEach((wrap,idx)=>{
-   const table=wrap.querySelector('table');
-   const tbody=table?.querySelector('tbody');
-   if(!table||!tbody||wrap.dataset.enhanced==='1')return;
-   wrap.dataset.enhanced='1';
-   const rows=Array.from(tbody.querySelectorAll('tr'));
-   if(!rows.length)return;
 
-   const controls=document.createElement('div');
-   controls.className='table-controls';
-   controls.innerHTML=`<div class="left">
-     <input type="search" placeholder="Search / filter table..." class="table-search">
-     <span class="table-info"></span>
-   </div>
-   <div class="right">
-     <label style="font-size:12px;font-weight:900;color:#64748b">Show</label>
-     <select class="table-limit">
-       <option value="10" selected>10</option>
-       <option value="35">35</option>
-       <option value="50">50</option>
-       <option value="100">100</option>
-       <option value="all">All</option>
-     </select>
-     <span style="font-size:12px;font-weight:900;color:#64748b">entries</span>
-   </div>`;
-   wrap.parentNode.insertBefore(controls,wrap);
 
-   const search=controls.querySelector('.table-search');
-   const limit=controls.querySelector('.table-limit');
-   const info=controls.querySelector('.table-info');
-
-   function apply(){
-     const q=(search.value||'').toLowerCase().trim();
-     const max=limit.value==='all'?Infinity:Number(limit.value||10);
-     let matched=0,shown=0;
-     rows.forEach(row=>{
-       const ok=!q || row.innerText.toLowerCase().includes(q);
-       if(ok)matched++;
-       const show=ok && shown<max;
-       row.style.display=show?'':'none';
-       if(show)shown++;
-     });
-     info.textContent=`Showing ${shown} of ${matched} filtered / ${rows.length} total`;
-   }
-   search.addEventListener('input',apply);
-   limit.addEventListener('change',apply);
-   apply();
- });
-}
-function setupTableEnhancer(){
- const root=document.getElementById('content');
- if(!root||root.dataset.tableObserver==='1')return;
- root.dataset.tableObserver='1';
- const obs=new MutationObserver(()=>setTimeout(enhanceAllTables,30));
- obs.observe(root,{childList:true,subtree:true});
- setTimeout(enhanceAllTables,80);
-}
 
 load();window.addEventListener('load',()=>{
  clock();setupTableEnhancer();initFirebase();
@@ -2458,7 +2313,7 @@ function billingPage(){
   </div>
   ${simpleTable('Client Bills',['<input type="checkbox" onchange="toggleAllBillingChecks(this)">','Client','Mobile','C.Code','Package','Bill','Discount','Received','Due','Status','Action'],rows.map(r=>{
     const c=r.client;
-    const status=r.status==='Paid'?'<span class="badge done">Paid</span>':'<span class="badge pending">Unpaid</span>';
+    const status=r.status==='Paid'?'<span class="badge done">Paid</span>':r.status==='Partial'?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
     return `<tr>
       <td><input type="checkbox" class="billing-check" value="${c.id}" onchange="updateBillingSelectedCount()"></td>
       <td><b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small></td>
@@ -2466,11 +2321,13 @@ function billingPage(){
       <td>${esc(c.ccode||c.pin||'-')}</td>
       <td>${esc(c.package||'-')}</td>
       <td>${money(r.total)}</td>
+      <td>${money(r.discount||0)}</td>
       <td>${money(r.received)}</td>
       <td>${money(r.due)}</td>
       <td>${status}</td>
       <td><div class="actions">
-        <button class="btn btn-s btn-sm" onclick="receiveClientBill('${c.id}')">Receive</button>
+        ${r.status!=='Paid'?`<button class="btn btn-s btn-sm" onclick="receiveClientBill('${c.id}')">Receive</button>`:''}
+        ${r.status!=='Paid'?`<button class="btn btn-p btn-sm" onclick="markClientBillPaid('${c.id}')">Mark Paid</button>`:''}
         <button class="btn btn-i btn-sm" onclick="whatsappFeeSlip('${c.id}')">Fee Slip WA</button>
         <button class="btn btn-l btn-sm" onclick="printFeeSlip('${c.id}')">Print Slip</button>
         <button class="btn btn-w btn-sm" onclick="openEditBillModal('${c.id}')">Edit Bill</button>
@@ -2745,6 +2602,32 @@ function recalcBillingFromFinance(){
 
 
 
+/* Mark client bill as fully paid without prompt */
+function markClientBillPaid(clientId){
+  ensureBillingState();
+  const c=S.clients.find(x=>x.id===clientId);
+  if(!c)return toast('Client not found','error');
+  const month=window.billingMonth||billMonthNow();
+  let inv=S.invoices.find(v=>(v.billMonth===month)&&(v.clientId===c.id||v.phone===c.mobile));
+  if(!inv){
+    const amount=clientMonthlyBillAmount(c);
+    inv={id:id('inv'),clientId:c.id,cust:c.name,phone:c.mobile,ccode:c.ccode||c.pin||'',pppoe:c.pppoe||'',package:c.package||'',work:'Monthly Bill',billMonth:month,total:amount,received:0,due:amount,dueDate:billDueDateForMonth(month),date:today(),time:now(),by:U?.id||'admin',status:'Unpaid'};
+    S.invoices.push(inv);
+  }
+  const alreadyPaid=clientMonthFinancePaid(c.id,month);
+  const remaining=Math.max(0,(+inv.total||0)-alreadyPaid);
+  if(remaining<=0){toast('Bill already paid','success');billingPage();return;}
+  const mode=(prompt('Payment mode: cash / online','cash')||'cash').toLowerCase()==='online'?'online':'cash';
+  const fin={id:id('fi'),type:'income',mode,amount:remaining,customer:c.name,paidBy:c.name,clientId:c.id,phone:c.mobile,billMonth:month,cat:'Monthly Bill - '+month,date:today(),time:now(),by:U?.id||'admin',receiver:U?.name||'Admin'};
+  S.finance.push(fin);
+  saveAndSync('finance',fin);
+  inv.received=(+inv.received||0)+remaining;
+  inv.due=0;inv.status='Paid';inv.paidAt=now();
+  saveAndSync('invoices',inv);
+  toast(`Bill marked as Paid: ${money(remaining)}`,'success');
+  billingPage();
+}
+
 /* ===== BILLING TABLE SELECTION ACTIONS ===== */
 function selectedBillingClientIds(){
   return [...document.querySelectorAll('.billing-check:checked')].map(x=>x.value);
@@ -2876,42 +2759,10 @@ function scheduleRenderFast(){
 }
 
 /* Slim local save to avoid mobile slowdown */
-function saveLocal(){
-  try{
-    const small={...S};
-    small.clients=(S.clients||[]).slice(-120);
-    small.finance=(S.finance||[]).slice(-200);
-    small.invoices=(S.invoices||[]).slice(-200);
-    small.complaints=(S.complaints||[]).slice(-150);
-    small.notifications=(S.notifications||[]).slice(-100);
-    localStorage.setItem(KEY,JSON.stringify(small));
-  }catch(e){
-    try{
-      localStorage.setItem(KEY,JSON.stringify({
-        admin:S.admin,employees:S.employees||[],items:S.items||[],packages:S.packages||[],
-        news:S.news,clientNews:S.clientNews,appSettings:S.appSettings,ownerWhatsApp:S.ownerWhatsApp,
-        session:S.session,clients:[],finance:[],invoices:[],complaints:[],targets:[],notifications:[]
-      }));
-    }catch(_){}
-  }
-}
+
 
 /* Override realtime to debounce rendering instead of full re-render on every document update */
-function startRealtime(){
- if(!db)return;
- try{unsubs.forEach(u=>u&&u());unsubs=[];}catch(e){}
- ['employees','complaints','clients','finance','invoices','targets','attendance','items','packages','advances','notifications'].forEach(col=>{
-   unsubs.push(db.collection(col).onSnapshot(snap=>{
-     if(fbLoading)return;
-     S[col]=snap.docs.map(d=>({id:d.id,...d.data()}));
-     try{saveLocal()}catch(e){}
-     if(U&&TAB){
-       try{updateNotificationBell()}catch(e){}
-       scheduleRenderFast();
-     }
-   },e=>setSync&&setSync('Firebase realtime failed',false)));
- });
-}
+
 
 /* Fast billing page with limited visible rows */
 function billingPage(){
@@ -2986,26 +2837,8 @@ function billingPage(){
 }
 
 /* Faster table enhancer: do not re-enhance billing table */
-function enhanceAllTables(){
-  if(TAB==='billing')return;
-  document.querySelectorAll('.tbl').forEach(w=>{
-    if(w.dataset.enhanced)return;
-    w.dataset.enhanced=1;
-    const rows=[...w.querySelectorAll('tbody tr')];
-    if(rows.length<11)return;
-    const div=document.createElement('div');
-    div.className='table-controls';
-    div.innerHTML='<div class="left"><input placeholder="Search table"></div><div class="right"><select><option>10</option><option>35</option><option>50</option><option>100</option><option value="all">all</option></select></div>';
-    w.parentNode.insertBefore(div,w);
-    const inp=div.querySelector('input'),sel=div.querySelector('select');
-    function apply(){
-      const q=inp.value.toLowerCase(),max=sel.value==='all'?999999:+sel.value;let shown=0;
-      rows.forEach(r=>{const ok=r.innerText.toLowerCase().includes(q);r.style.display=ok&&shown<max?'':'none';if(ok&&shown<max)shown++});
-    }
-    inp.oninput=apply;sel.onchange=apply;apply();
-  });
-}
-function setupTableEnhancer(){enhanceAllTables();}
+
+
 
 
 
@@ -3369,46 +3202,13 @@ function items(){
     ['targets','Targets','🎯'],
     ['news','News','📢'],
     ['template','Template','🎨'],['settings','Settings','⚙️'],
-    ['template','Template','🎨'],['backup','Backup','💾']
+    ['backup','Backup','💾']
   ];
   if(!U||U.role==='admin')return all;
   return all.filter(x=>employeeHasAccess(x[0]));
 }
-function navRender(){
-  const el=document.getElementById('nav');
-  if(!el)return;
-  el.innerHTML=items().map(x=>`<button id="n-${x[0]}" onclick="${x[0]==='news'?'openNewsPage()':x[0]==='settings'?'openSettingsPage()':`tab('${x[0]}')`}">${x[2]} ${x[1]}</button>`).join('');
-}
-function renderCurrent(){
-  try{
-    const map={
-      dashboard:dash,
-      complaints:complaints,
-      clients:clientsPage,
-      billing:billingPage,
-      employees:employees,
-      attendance:attendance,
-      invoice:invoice,
-      finance:finance,reports:reportsPage,cashflow:cashFlowPage,reports:reportsPage,
-      items:itemsPage,
-      packages:packagesPage,
-      advance:advancePage,
-      targets:targets,
-      news:openNewsPage,
-      settings:openSettingsPage,
-      backup:backup
-    };
-    if(U&&U.role==='employee'&&!employeeHasAccess(TAB)){
-      content.innerHTML=`<div class="card"><div class="head"><h2>Access Denied</h2></div><p style="font-weight:900;color:#64748b">You do not have permission for this module.</p></div>`;
-      return;
-    }
-    (map[TAB]||dash)();
-    setTimeout(()=>{try{renderGlobalNewsTicker()}catch(e){} try{setupTableEnhancer&&setupTableEnhancer();enhanceAllTables&&enhanceAllTables()}catch(e){}},50);
-  }catch(err){
-    console.error(err);
-    content.innerHTML=`<div class="card"><div class="head"><h2>App Error</h2></div><p style="color:#dc2626;font-weight:900">${esc(err.message||err)}</p></div>`;
-  }
-}
+
+
 /* Ensure new employees get clients + billing permission */
 const __oldAddEmployeeAccessFix = (typeof addEmployee==='function') ? addEmployee : null;
 function normalizeEmployeePermissions(e){
@@ -3447,33 +3247,7 @@ function normalizeSessionPermissions(){
     (S.employees||[]).forEach(e=>normalizeEmployeePermissionsSafe(e));
   }catch(e){}
 }
-/* Patch login button safely without touching openApp */
-const __oldLoginUserSafeAccess = (typeof loginUser==='function') ? loginUser : null;
-function loginUser(){
-  try{
-    if(__oldLoginUserSafeAccess){
-      const beforeSession = S ? S.session : null;
-      const result = __oldLoginUserSafeAccess();
-      setTimeout(()=>{normalizeSessionPermissions();try{saveLocal()}catch(e){}},50);
-      return result;
-    }
-  }catch(err){
-    console.error('old login failed',err);
-  }
-  // Fallback login
-  const u=(document.getElementById('lu')?.value||'').trim();
-  const p=(document.getElementById('lp')?.value||'').trim();
-  if(!u||!p)return toast('Login details required','error');
-  if(u.toLowerCase()===(S.admin?.u||'admin').toLowerCase() && p===(S.admin?.p||'admin123')){
-    U={role:'admin',id:'admin',name:'Administrator'};S.session=U;saveLocal();return openApp();
-  }
-  const mobile=pkMobile(u);
-  const emp=(S.employees||[]).find(x=>x.active!==false&&(String(x.phone||'').toLowerCase()===u.toLowerCase()||String(x.name||'').toLowerCase()===u.toLowerCase()||String(x.mobile||'')===mobile)&&String(x.pin||'')===p);
-  if(emp){U={role:'employee',...normalizeEmployeePermissionsSafe(emp)};S.session=U;saveLocal();return openApp();}
-  const client=(S.clients||[]).find(x=>(String(x.mobile||'')===mobile||String(x.pppoe||'').toLowerCase()===u.toLowerCase())&&String(x.ccode||x.pin||'')===p);
-  if(client){if(client.active===false)return toast('Pending approval','warning');U={role:'client',id:client.id,name:client.name,clientId:client.id,mobile:client.mobile};S.session=U;saveLocal();return openApp();}
-  toast('Invalid login','error');
-}
+/* loginUser is defined earlier and handles all login cases */
 window.addEventListener('load',()=>{try{normalizeSessionPermissions();}catch(e){}});
 
 
@@ -3518,30 +3292,7 @@ function readEmployeePerm(prefix='empPer'){
 }
 
 /* Override employees page with Clients/Billing permissions visible */
-function employees(){
-  if(U&&U.role!=='admin')return dash();
-  content.innerHTML=`<div class="card">
-    <div class="head"><h2>Add Employee</h2></div>
-    <div class="row">
-      <div class="fg"><label>Name</label><input id="empName"></div>
-      <div class="fg"><label>Login / Username</label><input id="empLogin"></div>
-      <div class="fg"><label>Mobile</label><input id="empMobile" placeholder="03001234561"></div>
-    </div>
-    <div class="row">
-      <div class="fg"><label>PIN</label><input id="empPin" value="1234"></div>
-      <div class="fg"><label>Role</label><input id="empRole" value="Collection"></div>
-      <div class="fg"><label>Status</label><select id="empActive"><option value="1">Active</option><option value="0">Inactive</option></select></div>
-    </div>
-    <h3 style="margin:10px 0;color:#243447">Module Permissions</h3>
-    ${employeePermissionBoxes('empPer',{complaints:1,attendance:1,clients:1,billing:1,invoice:1,finance:1,advance:1,targets:1})}
-    <br>
-    <div class="actions">
-      <button class="btn btn-p" onclick="addEmployeeWithPermissions()">Add Employee</button>
-      <button class="btn btn-s" onclick="enableAllEmployeeClientBilling()">Enable Clients/Billing For All</button>
-    </div>
-  </div>
-  ${employeesTableFixed()}`;
-}
+
 function addEmployeeWithPermissions(){
   const e={
     id:id('e'),
@@ -3833,59 +3584,8 @@ function billingPage(){
 }
 
 /* Generic table sorting + pagination */
-function enhanceAllTables(){
-  if(TAB==='billing')return;
-  document.querySelectorAll('.tbl').forEach((w,wi)=>{
-    if(w.dataset.enhanced)return;
-    w.dataset.enhanced=1;
-    let rows=[...w.querySelectorAll('tbody tr')];
-    if(!rows.length)return;
-    let page=1,limit=rows.length>10?10:'all',sortIdx=null,sortDir='asc',q='';
-    const ths=[...w.querySelectorAll('thead th')];
-    ths.forEach((th,idx)=>{
-      th.style.cursor='pointer';
-      th.title='Click to sort';
-      th.addEventListener('click',()=>{
-        if(sortIdx===idx)sortDir=sortDir==='asc'?'desc':'asc';else{sortIdx=idx;sortDir='asc'}
-        page=1;apply();
-      });
-    });
-    const div=document.createElement('div');
-    div.className='table-controls';
-    div.innerHTML='<div class="left"><input placeholder="Search table"><span class="table-info"></span></div><div class="right"><label style="font-weight:900">Show</label><select><option>10</option><option>35</option><option>50</option><option>100</option><option value="all">all</option></select></div><div class="actions table-pages" style="width:100%;justify-content:center"></div>';
-    w.parentNode.insertBefore(div,w);
-    const inp=div.querySelector('input'),sel=div.querySelector('select'),info=div.querySelector('.table-info'),pagesEl=div.querySelector('.table-pages');
-    function apply(){
-      q=inp.value.toLowerCase();limit=sel.value;
-      let filtered=rows.filter(r=>r.innerText.toLowerCase().includes(q));
-      if(sortIdx!==null){
-        filtered=filtered.sort((a,b)=>{
-          const av=sortValue(a.children[sortIdx]?.innerText||''),bv=sortValue(b.children[sortIdx]?.innerText||'');
-          if(typeof av==='number'&&typeof bv==='number')return sortDir==='asc'?av-bv:bv-av;
-          return sortDir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
-        });
-      }
-      const total=filtered.length,pages=limit==='all'?1:Math.max(1,Math.ceil(total/(+limit||10)));
-      if(page>pages)page=pages;
-      const start=limit==='all'?0:(page-1)*(+limit||10);
-      const shown=limit==='all'?filtered:filtered.slice(start,start+(+limit||10));
-      rows.forEach(r=>r.style.display='none');
-      shown.forEach(r=>r.style.display='');
-      info.textContent=` ${shown.length}/${total} rows • Page ${page}/${pages}`;
-      pagesEl.innerHTML='';
-      if(limit!=='all'&&pages>1){
-        if(page>1)pagesEl.innerHTML+=`<button class="btn btn-l btn-sm" data-p="${page-1}">Prev</button>`;
-        for(let p=Math.max(1,page-2);p<=Math.min(pages,page+2);p++)pagesEl.innerHTML+=`<button class="btn ${p===page?'btn-p':'btn-l'} btn-sm" data-p="${p}">${p}</button>`;
-        if(page<pages)pagesEl.innerHTML+=`<button class="btn btn-l btn-sm" data-p="${page+1}">Next</button>`;
-        pagesEl.querySelectorAll('button').forEach(b=>b.onclick=()=>{page=+b.dataset.p;apply()});
-      }
-    }
-    inp.oninput=()=>{page=1;apply()};
-    sel.onchange=()=>{page=1;apply()};
-    apply();
-  });
-}
-function setupTableEnhancer(){enhanceAllTables();}
+
+
 
 
 
@@ -4239,12 +3939,7 @@ function closeSideMenu(){
 }
 /* Close mobile sidebar after selecting a module */
 const __oldTabSidebarFix = (typeof tab==='function') ? tab : null;
-function tab(t){
-  TAB=t;
-  try{document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-'+t);if(n)n.classList.add('active')}catch(e){}
-  closeSideMenu();
-  if(typeof renderCurrent==='function')renderCurrent();
-}
+
 
 
 
@@ -4536,17 +4231,7 @@ function renderCurrent(){
     },120);
   });
 }
-function tab(t){
-  if(TAB===t && !__isRenderingStable)return;
-  TAB=t;
-  try{
-    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
-    let n=document.getElementById('n-'+t);
-    if(n)n.classList.add('active');
-  }catch(e){}
-  try{closeSideMenu&&closeSideMenu()}catch(e){}
-  renderCurrent();
-}
+
 
 /* Safer local save: no huge data, no recursive save/render */
 function saveLocal(){
@@ -5567,53 +5252,8 @@ function openTemplateFixed(){
   if(c)c.innerHTML='<div class="card"><div class="head"><h2>Template</h2></div><p>Template page not found.</p></div>';
 }
 /* Override nav render so Template/Settings always work and duplicate is removed */
-function navRender(){
-  const el=document.getElementById('nav');
-  if(!el)return;
-  let list=[];
-  if(U&&U.role==='client'){
-    list=[['dashboard','My Portal','🏠'],['complaints','Support','🛠️']];
-  }else{
-    list=[
-      ['dashboard','Dashboard','📊'],
-      ['complaints','Complaints','🛠️'],
-      ['clients','Clients','🌐'],
-      ['billing','Billing','💳'],
-      ['employees','Employees','👥'],
-      ['attendance','Attendance','🗓️'],
-      ['invoice','Invoice','🧾'],
-      ['finance','Finance','💰'],
-      ['items','Items','📦'],
-      ['packages','Packages','📶'],
-      ['advance','Advance','💸'],
-      ['targets','Targets','🎯'],
-      ['news','News','📢'],
-      ['template','Template','🎨'],
-      ['settings','Settings','⚙️'],
-      ['backup','Backup','💾']
-    ];
-    if(U&&U.role==='employee'&&typeof employeeHasAccess==='function'){
-      list=list.filter(x=>x[0]==='dashboard'||employeeHasAccess(x[0]));
-    }
-  }
-  list=uniqueNavItems(list);
-  el.innerHTML=list.map(x=>{
-    let click=x[0]==='reports'?'openReportsFixed()':x[0]==='cashflow'?'openCashFlowFixed()':x[0]==='template'?'openTemplateFixed()':x[0]==='settings'?'openSettingsFixed()':x[0]==='news'&&typeof openNewsPage==='function'?'openNewsPage()':`tab('${x[0]}')`;
-    return `<button id="n-${x[0]}" class="${TAB===x[0]?'active':''}" onclick="${click}">${x[2]} ${x[1]}</button>`;
-  }).join('');
-}
-function tab(t){
-  TAB=t;
-  try{
-    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
-    let n=document.getElementById('n-'+t); if(n)n.classList.add('active');
-  }catch(e){}
-  try{if(typeof closeSideMenu==='function')closeSideMenu(); else document.getElementById('sidePanel')?.classList.remove('open')}catch(e){}
-  if(t==='template')return openTemplateFixed();
-  if(t==='settings')return openSettingsFixed();
-  if(typeof renderCurrent==='function')return renderCurrent();
-  if(typeof render==='function')return render();
-}
+
+
 
 
 
@@ -6024,34 +5664,8 @@ function navItemsFinal(){
   const seen={};
   return list.filter(x=>{ if(seen[x[0]])return false; seen[x[0]]=1; return true; });
 }
-function navRender(){
-  const el=document.getElementById('nav');
-  if(!el)return;
-  const list=navItemsFinal();
-  el.innerHTML=list.map(x=>{
-    let click=`tab('${x[0]}')`;
-    if(x[0]==='cashflow')click='openCashFlowFixed()';
-    if(x[0]==='news')click='openNewsFixed()';
-    if(x[0]==='template')click='openTemplateFixed()';
-    if(x[0]==='settings')click='openSettingsFixed()';
-    return `<button id="n-${x[0]}" class="${TAB===x[0]?'active':''}" onclick="${click}">${x[2]} ${x[1]}</button>`;
-  }).join('');
-}
-function tab(t){
-  TAB=t;
-  closeMobileMenuFinal();
-  try{
-    document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));
-    const n=document.getElementById('n-'+t); if(n)n.classList.add('active');
-  }catch(e){}
-  if(t==='reports')return openReportsFixed();
-  if(t==='cashflow')return openCashFlowFixed();
-  if(t==='news')return openNewsFixed();
-  if(t==='template')return openTemplateFixed();
-  if(t==='settings')return openSettingsFixed();
-  if(typeof renderCurrent==='function')return renderCurrent();
-  if(typeof render==='function')return render();
-}
+
+
 /* make employee permission treat cashflow as allowed if finance/accounts allowed */
 if(typeof employeeHasAccess==='function'){
   const __oldEmployeeHasAccessCashFinal=employeeHasAccess;
@@ -6981,60 +6595,7 @@ function cleanInvoiceRecords(){
 function getInvoiceClient(inv){
   return (S.clients||[]).find(c=>c.id===inv.clientId || c.mobile===inv.phone || c.name===inv.cust) || {};
 }
-function invoice(){
-  cleanInvoiceRecords();
-  const month=window.invoiceMonth||window.billingMonth||billMonthNow();
-  const q=(window.invoiceSearch||'').toLowerCase();
-  let rows=(S.invoices||[]).filter(isRealInvoiceRecord);
-  rows=rows.filter(v=>(v.billMonth||String(v.date||'').slice(0,7)||month)===month);
-  if(q)rows=rows.filter(v=>{
-    const c=getInvoiceClient(v);
-    return [v.cust,v.phone,v.ccode,v.pppoe,v.work,v.status,c.name,c.mobile,c.ccode,c.pppoe].join(' ').toLowerCase().includes(q);
-  });
 
-  const total=rows.reduce((s,v)=>s+(+v.total||0),0);
-  const received=rows.reduce((s,v)=>s+(+v.received||0),0);
-  const due=rows.reduce((s,v)=>s+(+v.due||0),0);
-
-  content.innerHTML=`<div class="stable-hero">
-    <div class="stable-hero-row"><div><h1>🧾 Invoices</h1><p>Invoice/Bill records only. Customer collections are shown in Finance Income and Cash Flow.</p></div><div class="stable-pill">Clean Invoice Ledger</div></div>
-  </div>
-  <div class="stable-kpi-grid">
-    <div class="stable-kpi stable-blue"><div class="icon">🧾</div><span>Total Invoice</span><b>${money(total)}</b><small>${rows.length} invoice rows</small></div>
-    <div class="stable-kpi stable-green"><div class="icon">✅</div><span>Received</span><b>${money(received)}</b><small>invoice received amount</small></div>
-    <div class="stable-kpi stable-red"><div class="icon">❌</div><span>Due</span><b>${money(due)}</b><small>pending invoice amount</small></div>
-    <div class="stable-kpi stable-purple"><div class="icon">💰</div><span>Collections</span><b>Finance</b><small>payment entries moved there</small></div>
-  </div>
-  <div class="card">
-    <div class="head"><h2>Invoice List</h2></div>
-    <div class="row two">
-      <div class="fg"><label>Month</label><input type="month" value="${esc(month)}" onchange="window.invoiceMonth=this.value;invoice()"></div>
-      <div class="fg"><label>Search</label><input value="${esc(window.invoiceSearch||'')}" oninput="window.invoiceSearch=this.value;invoice()" placeholder="client / mobile / ccode / pppoe"></div>
-    </div>
-    ${simpleTable('Invoice Clean List',['Client','Mobile','C.Code','PPPoE','Work / Type','Month','Total','Received','Due','Status','Action'],rows.map(v=>{
-      const c=getInvoiceClient(v);
-      const status=(+v.due||0)<=0?'<span class="badge done">Paid</span>':(+v.received||0)>0?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
-      const clientName=v.cust||c.name||'-';
-      const phone=v.phone||c.mobile||'-';
-      const code=v.ccode||c.ccode||c.pin||'-';
-      const pppoe=v.pppoe||c.pppoe||'-';
-      const action=`<div class="actions">${v.clientId?`<button class="btn btn-i btn-sm" onclick="printMonthlyBillA4('${v.clientId}')">Print A4</button><button class="btn btn-s btn-sm" onclick="whatsappFeeSlip('${v.clientId}')">WA Slip</button>`:'-'}</div>`;
-      return `<tr>
-        <td><b>${esc(clientName)}</b></td>
-        <td>${esc(phone)}</td>
-        <td>${esc(code)}</td>
-        <td>${esc(pppoe)}</td>
-        <td>${esc(v.work||'Monthly Bill')}</td>
-        <td>${esc(v.billMonth||month)}</td>
-        <td>${money(v.total||0)}</td>
-        <td>${money(v.received||0)}</td>
-        <td>${money(v.due||0)}</td>
-        <td>${status}</td>
-        <td>${action}</td>
-      </tr>`;
-    }))}
-  </div>`;
-}
 function invoicePage(){ return invoice(); }
 
 /* Collection/payment receive must save only to finance income + update existing invoice summary */
@@ -7348,7 +6909,13 @@ function invoice(){
         <td>${money(v.received||0)}</td>
         <td>${money(v.due||0)}</td>
         <td>${status}</td>
-        <td><div class="actions"><button class="btn btn-i btn-sm" onclick="printManualInvoice('${v.id}')">Print</button><button class="btn btn-l btn-sm" onclick="openInvoiceModal('${v.id}')">Edit</button></div></td>
+        <td><div class="actions">
+          <button class="btn btn-i btn-sm" onclick="printManualInvoice('${v.id}')">Print</button>
+          <button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button>
+          ${(+v.due||0)>0?`<button class="btn btn-w btn-sm" onclick="receiveDue('${v.id}')">Receive</button><button class="btn btn-p btn-sm" onclick="markInvPaid('${v.id}')">Mark Paid</button>`:''}
+          <button class="btn btn-l btn-sm" onclick="openInvoiceModal('${v.id}')">Edit</button>
+          ${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delInv('${v.id}')">Delete</button>`:''}
+        </div></td>
       </tr>`;
     })):`<div class="card" style="box-shadow:none;border:1px dashed #cbd5e1"><h3>No invoices yet</h3><p>Use “New Connection / Invoice” to create manual invoice. Monthly bills remain in Billing tab.</p></div>`}
   </div>`;
@@ -8218,6 +7785,7 @@ function complaints(){
       const st=String(c.status||'open').toLowerCase();
       const badge=st==='resolved'?'<span class="badge done">Resolved</span>':st==='pending'?'<span class="badge pending">Pending</span>':'<span class="badge expense">Open</span>';
       const hist=c.clientId?complaintHistoryRows(c.clientId).length:0;
+      const isResolved=st==='resolved';
       return `<tr>
         <td>${esc(c.date||String(c.time||c.createdAt||'').slice(0,10)||'-')}</td>
         <td><b>${esc(c.name||c.cust||'-')}</b><br><small>${esc(c.area||'')}</small></td>
@@ -8229,12 +7797,52 @@ function complaints(){
         <td>${badge}</td>
         <td>${esc(c.assignedName||'-')}</td>
         <td>${hist} record(s)</td>
-        <td><div class="actions"><button class="btn btn-i btn-sm" onclick="openComplaintModal('${c.id}')">Edit</button>${c.clientId?`<button class="btn btn-l btn-sm" onclick="complaintClientHistory('${c.clientId}')">History</button>`:''}</div></td>
+        <td><div class="actions">
+          <button class="btn btn-i btn-sm" onclick="openComplaintModal('${c.id}')">Edit</button>
+          ${!isResolved?`<button class="btn btn-s btn-sm" onclick="resolveComplaintQuick('${c.id}')">Resolve</button>`:''}
+          ${c.assignedTo?`<button class="btn btn-w btn-sm" onclick="sendComplaintToEmployee('${c.id}')">Send WA to Employee</button>`:''}
+          ${c.clientId?`<button class="btn btn-l btn-sm" onclick="complaintClientHistory('${c.clientId}')">History</button>`:''}
+        </div></td>
       </tr>`;
     }))}
   </div>`;
 }
 function complaintsPage(){return complaints();}
+
+/* ===== QUICK COMPLAINT RESOLVE + SEND TO EMPLOYEE ===== */
+function resolveComplaintQuick(complaintId){
+  S.complaints=Array.isArray(S.complaints)?S.complaints:[];
+  const comp=S.complaints.find(x=>x.id===complaintId);
+  if(!comp)return toast('Complaint not found','error');
+  if(comp.status==='resolved')return toast('Already resolved','success');
+  comp.status='resolved';
+  comp.resolvedAt=now();
+  comp.updatedAt=now();
+  saveAndSync('complaints',comp);
+  toast('Complaint marked as Resolved','success');
+  complaints();
+}
+function sendComplaintToEmployee(complaintId){
+  S.complaints=Array.isArray(S.complaints)?S.complaints:[];
+  const comp=S.complaints.find(x=>x.id===complaintId);
+  if(!comp)return toast('Complaint not found','error');
+  const emp=(S.employees||[]).find(e=>e.id===comp.assignedTo);
+  if(!emp||!emp.mobile)return toast('Assigned employee has no mobile number','error');
+  const msg=encodeURIComponent(
+    `*Complaint Assigned To You*\n\n`+
+    `Client: ${comp.name||comp.cust||'-'}\n`+
+    `Mobile: ${comp.mobile||comp.phone||'-'}\n`+
+    `C.Code: ${comp.ccode||'-'}\n`+
+    `PPPoE: ${comp.pppoe||'-'}\n`+
+    `Area: ${comp.area||'-'}\n`+
+    `Type: ${comp.type||comp.issue||'-'}\n`+
+    `Priority: ${comp.priority||'Normal'}\n`+
+    `Details: ${comp.details||comp.desc||comp.complaint||'-'}\n\n`+
+    `Complaint ID: ${comp.id}\n`+
+    `Please resolve ASAP.`
+  );
+  window.open('https://wa.me/'+waNumber(emp.mobile)+'?text='+msg,'_blank');
+}
 
 </script>
 </body>
