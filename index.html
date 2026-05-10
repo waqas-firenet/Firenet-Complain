@@ -1562,12 +1562,10 @@ function pgPkgs(){
   h+='</div><div class="ia"><button class="btn btn-p" onclick="addPkg()">Add</button></div></div>';
   h+='<div class="card"><div class="ch"><h2>Packages ('+(S.packages||[]).length+')</h2></div>';
   h+=tbl(['Name','Speed','Price','Clients','Action'],(S.packages||[]).map(function(p){
-    (function(){
     var btns='';
-    var pid=p.id;
     if(U.role==='admin'){
-      btns+='<button class="btn btn-gh sm" data-pid="'+pid+'" onclick="openEditPkg(this.dataset.pid)">Edit</button>';
-      btns+='<button class="btn btn-r sm" data-pid="'+pid+'" onclick="delPkg(this.dataset.pid)">Del</button>';
+      btns+='<button class="btn btn-gh sm" data-pid="'+p.id+'" onclick="openEditPkg(this.dataset.pid)">Edit</button>';
+      btns+='<button class="btn btn-r sm" data-pid="'+p.id+'" onclick="delPkg(this.dataset.pid)">Del</button>';
     }
     return '<tr>'+
       '<td><b>'+esc(p.name)+'</b><br><small style="color:var(--tx2)">'+esc(p.desc||'')+'</small></td>'+
@@ -1575,7 +1573,6 @@ function pgPkgs(){
       '<td>'+Rs(p.price||0)+'</td>'+
       '<td>'+((S.clients||[]).filter(function(c2){return c2.package===p.name;}).length)+'</td>'+
       '<td><div class="ta">'+btns+'</div></td></tr>';
-  })()
   }),'No packages');
   h+='</div>';
   document.getElementById('content').innerHTML=h;
@@ -1594,12 +1591,10 @@ function pgItems(){
   h+='</div><div class="ia"><button class="btn btn-p" onclick="addItem()">Add</button></div></div>';
   h+='<div class="card"><div class="ch"><h2>Items ('+(S.items||[]).length+')</h2></div>';
   h+=tbl(['Name','Category','Cost','Price','Stock','Action'],(S.items||[]).map(function(it){
-    (function(){
     var btns2='';
-    var iid=it.id;
     if(U.role==='admin'){
-      btns2+='<button class="btn btn-gh sm" data-pid="'+iid+'" onclick="openEditItem(this.dataset.pid)">Edit</button>';
-      btns2+='<button class="btn btn-r sm" data-pid="'+iid+'" onclick="delItem(this.dataset.pid)">Del</button>';
+      btns2+='<button class="btn btn-gh sm" data-pid="'+it.id+'" onclick="openEditItem(this.dataset.pid)">Edit</button>';
+      btns2+='<button class="btn btn-r sm" data-pid="'+it.id+'" onclick="delItem(this.dataset.pid)">Del</button>';
     }
     return '<tr>'+
       '<td><b>'+esc(it.name)+'</b></td>'+
@@ -1608,7 +1603,6 @@ function pgItems(){
       '<td>'+Rs(it.price||0)+'</td>'+
       '<td><span class="badge '+((it.qty||0)>0?'bg':'br')+'">'+( it.qty||0)+'</span></td>'+
       '<td><div class="ta">'+btns2+'</div></td></tr>';
-  })()
   }),'No items');
   h+='</div>';
   document.getElementById('content').innerHTML=h;
