@@ -396,7 +396,13 @@ function syncFB(){
   cols.forEach(function(col){
     db.collection(col).get().then(function(snap){
       if(snap.docs.length) S[col]=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
-      n++; if(n===cols.length){saveL();toast('Firebase synced','success');if(U)render();}
+      n++; if(n===cols.length){
+        saveL();
+        toast('Firebase synced','success');
+        // restore U from session in case it was lost
+        if(!U&&S.session&&S.session.role){U=S.session;}
+        if(U&&U.role)render();
+      }
     }).catch(function(){n++;});
   });
   db.collection('settings').doc('main').get().then(function(d){
@@ -406,7 +412,13 @@ function syncFB(){
 function fbSet(col,obj){ if(!fbOk||!db||!obj||!obj.id)return; db.collection(col).doc(obj.id).set(JSON.parse(JSON.stringify(obj)),{merge:true}).catch(function(){}); }
 function fbDel(col,id){ if(!fbOk||!db||!id)return; db.collection(col).doc(id).delete().catch(function(){}); }
 function fbSaveSettings(){ if(!fbOk||!db)return; db.collection('settings').doc('main').set({admin:S.admin,settings:S.settings},{merge:true}).catch(function(){}); }
-function sv(col,obj){ saveL(); if(fbOk&&col&&obj)fbSet(col,obj); }
+function sv(col,obj){
+  saveL();
+  if(fbOk&&col&&obj){
+    if(!obj.id)obj.id=uid();
+    fbSet(col,obj);
+  }
+}
 function dl(col,id){ saveL(); if(fbOk&&col&&id)fbDel(col,id); }
 
 /* AUTH */
@@ -1563,7 +1575,7 @@ function pgPkgs(){
   h+='<div class="card"><div class="ch"><h2>Packages ('+(S.packages||[]).length+')</h2></div>';
   h+=tbl(['Name','Speed','Price','Clients','Action'],(S.packages||[]).map(function(p){
     var btns='';
-    if(U.role==='admin'){
+    if(U&&U.role==='admin'){
       btns+='<button class="btn btn-gh sm" data-pid="'+p.id+'" onclick="openEditPkg(this.dataset.pid)">Edit</button>';
       btns+='<button class="btn btn-r sm" data-pid="'+p.id+'" onclick="delPkg(this.dataset.pid)">Del</button>';
     }
@@ -1592,7 +1604,7 @@ function pgItems(){
   h+='<div class="card"><div class="ch"><h2>Items ('+(S.items||[]).length+')</h2></div>';
   h+=tbl(['Name','Category','Cost','Price','Stock','Action'],(S.items||[]).map(function(it){
     var btns2='';
-    if(U.role==='admin'){
+    if(U&&U.role==='admin'){
       btns2+='<button class="btn btn-gh sm" data-pid="'+it.id+'" onclick="openEditItem(this.dataset.pid)">Edit</button>';
       btns2+='<button class="btn btn-r sm" data-pid="'+it.id+'" onclick="delItem(this.dataset.pid)">Del</button>';
     }
@@ -1784,10 +1796,15 @@ function pgSettings(){
   document.getElementById('content').innerHTML=h;
 }
 function saveBranding(){
-  S.settings.brandName=(document.getElementById('brN').value||'').trim()||'NetPulse';
-  S.settings.brandIcon=(document.getElementById('brI').value||'').trim()||'📡';
-  S.settings.brandSub=(document.getElementById('brS').value||'').trim()||'ISP Management System';
-  S.settings.brandColor=document.getElementById('brC').value||'#58a6ff';
+  var brN=document.getElementById('brN');
+  var brI=document.getElementById('brI');
+  var brS=document.getElementById('brS');
+  var brC=document.getElementById('brC');
+  if(!brN)return toast('Settings not loaded','error');
+  S.settings.brandName=(brN.value||'').trim()||'NetPulse';
+  S.settings.brandIcon=(brI.value||'').trim()||'📡';
+  S.settings.brandSub=(brS.value||'').trim()||'ISP Management System';
+  S.settings.brandColor=brC.value||'#58a6ff';
   saveL();fbSaveSettings();applyBranding();toast('Branding applied!','success');
 }
 function saveSettings(){
@@ -1976,9 +1993,47 @@ window.onload=function(){
   applyBranding();
   setInterval(function(){var e=document.getElementById('clk');if(e)e.textContent=new Date().toLocaleTimeString();},1000);
   if(S.session&&S.session.role){U=S.session;openApp();}
-  var saved=localStorage.getItem('np3_fb')||FB_CFG;
-  try{document.getElementById('fbCfg').value=saved;document.getElementById('fbCfg2')&&(document.getElementById('fbCfg2').value=saved);}catch(e){}
+  var saved=localStorage.getItem('np3_fb');
+  // Only auto-fill textarea - don't auto-connect (user must click)
+  try{
+    if(saved){
+      document.getElementById('fbCfg').value=saved;
+      document.getElementById('fbCfg2')&&(document.getElementById('fbCfg2').value=saved);
+    }
+  }catch(e){}
+  // Auto-reconnect firebase if previously connected
+  if(saved&&saved!==FB_CFG){
+    setTimeout(function(){
+      try{
+        document.getElementById('fbCfg').value=saved;
+        autoReconnectFB(saved);
+      }catch(e){}
+    },500);
+  }
 };
+
+function autoReconnectFB(raw){
+  if(!raw)return;
+  try{
+    var cfg=JSON.parse(raw);
+    loadSc([
+      'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js',
+      'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js'
+    ],0,function(){
+      try{
+        if(!firebase.apps.length)firebase.initializeApp(cfg);
+        db=firebase.firestore();
+        db.collection('_ping').limit(1).get().then(function(){
+          fbOk=true;
+          localStorage.setItem('np3_fb',raw);
+          document.getElementById('dbPill').textContent='FIREBASE';
+          document.getElementById('dbPill').className='pill-fb';
+          syncFB();
+        }).catch(function(){});
+      }catch(e){}
+    });
+  }catch(e){}
+}
 </script>
 </body>
 </html>
