@@ -933,6 +933,85 @@
     color: var(--gray);
     margin-top: 2px;
   }
+
+
+  /* ===== ACTION DROPDOWN MENU ===== */
+  .action-dropdown { position: relative; }
+  .action-toggle { 
+    background: linear-gradient(135deg, var(--info), #2563eb); 
+    color: white; 
+    border: none;
+    box-shadow: 0 2px 8px -2px rgba(59,130,246,0.3);
+  }
+  .action-toggle:hover { 
+    box-shadow: 0 4px 12px -2px rgba(59,130,246,0.4); 
+    transform: translateY(-1px);
+  }
+  .action-menu {
+    background: var(--glass);
+    backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xl);
+    z-index: 50;
+    min-width: 180px;
+    padding: 0.5rem;
+    animation: menuIn 0.2s ease;
+  }
+  .action-menu .btn {
+    width: 100%;
+    margin-bottom: 4px;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  .action-menu .btn:last-child { margin-bottom: 0; }
+
+
+  /* ===== TABLE SORTING & SEARCH ===== */
+  .table-search {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: rgba(255,255,255,0.7);
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  .table-search:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(225,29,72,0.12);
+    background: white;
+  }
+  th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 1.5rem;
+  }
+  th.sortable:hover {
+    background: #e2e8f0;
+  }
+  th.sortable::after {
+    content: '⇅';
+    position: absolute;
+    right: 0.5rem;
+    opacity: 0.4;
+    font-size: 0.7rem;
+  }
+  th.sortable.asc::after {
+    content: '↑';
+    opacity: 1;
+    color: var(--primary);
+  }
+  th.sortable.desc::after {
+    content: '↓';
+    opacity: 1;
+    color: var(--primary);
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <base target="_blank">
@@ -1319,32 +1398,17 @@ function dash(){
     <div class="stable-kpi stable-green"><div class="icon">💰</div><span>Today Income</span><b>${money(f.inc)}</b><small>Expense ${money(f.exp)} / Net ${money(f.bal)}</small></div>
     <div class="stable-kpi stable-purple"><div class="icon">🎯</div><span>Target Progress</span><b>${tar.pct}%</b><small>${money(tar.ach)} of ${money(tar.given)}</small></div>
    </div>
-
-   <div class="stable-section"><h2>Quick Actions</h2><div class="line"></div></div>
-   <div class="stable-quick">
-    <div class="stable-quick-card" onclick="tab('complaints')"><div class="q">🛠️</div><b>Complaints</b><small>Add and assign tasks</small></div>
-    <div class="stable-quick-card" onclick="tab('invoice')"><div class="q">🧾</div><b>Create Invoice</b><small>New connection and due</small></div>
-    <div class="stable-quick-card" onclick="tab('billing')"><div class="q">💳</div><b>Billing</b><small>Paid / unpaid clients</small></div>
-    <div class="stable-quick-card" onclick="tab('finance')"><div class="q">💰</div><b>Finance</b><small>Recovery and expenses</small></div>
-    <div class="stable-quick-card" onclick="tab('targets')"><div class="q">🎯</div><b>Targets</b><small>Sales and collection</small></div>
-    <div class="stable-quick-card" onclick="openSettingsPage()"><div class="q">⚙️</div><b>Settings</b><small>WhatsApp and company settings</small></div>
-    <div class="stable-quick-card" onclick="openNewsPage()"><div class="q">📢</div><b>News</b><small>Ticker and notifications</small></div>
-   </div>
-
-   <div class="stable-section"><h2>Today Overview</h2><div class="line"></div></div>
-   <div class="summary">
-    <div class="sum">Total Sales<b>${money(inv.sales)}</b></div>
-    <div class="sum">Due Amount<b>${money(inv.due)}</b></div>
-    <div class="sum">Today Cash<b>${money(f.cash)}</b></div>
-    <div class="sum">Today Online<b>${money(f.online)}</b></div>
-    <div class="sum">Target Given<b>${money(tar.given)}</b></div>
-    <div class="sum">Target Achieved<b>${money(tar.ach)}</b></div>
-    <div class="sum">Reward Earned<b>${money(tar.reward)}</b></div>
-    <div class="sum">Remaining<b>${money(tar.rem)}</b></div>
-   </div>
-
-   <div class="stable-panel">
-    <div class="head"><h2>🎯 Target Progress</h2><span class="badge ${tar.pct>=100?'done':'pending'}">${tar.pct}%</span></div>
+    <div class="stable-quick-actions">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <button class="btn btn-p" onclick="tab('complaints')">🛠️ Complaints</button>
+      <button class="btn btn-s" onclick="tab('invoice')">🧾 Create Invoice</button>
+      <button class="btn btn-i" onclick="tab('billing')">💳 Billing</button>
+      <button class="btn btn-w" onclick="tab('finance')">💰 Finance</button>
+      <button class="btn btn-l" onclick="tab('targets')">🎯 Targets</button>
+      <button class="btn btn-p" onclick="openSettingsPage()">⚙️ Settings</button>
+      <button class="btn btn-s" onclick="openNewsPage()">📢 News</button>
+      <button class="btn btn-i" onclick="tab('template')">🎨 Edit Template</button>
+    </div>
     <div class="stable-progress"><div class="bar" style="width:${tar.pct}%"></div></div>
    </div>
 
@@ -2031,7 +2095,7 @@ function finTable(){
     <th>Account</th>
     <th>Amount</th>
     <th>Action</th>
-  </tr></thead><tbody>${arr.map(e=>`<tr class="${typeOf(e)==='expense'?'expense-row':'income-row'}">
+  </tr></thead><tbody>${arr.map(e=>`<tr style="background:${typeOf(e)==='expense'?'rgba(239,68,68,0.03)':'rgba(16,185,129,0.03)'}">
     <td>${esc(e.time||'')}</td>
     <td>${esc(e.date||'')}</td>
     <td>${esc(e.by==='admin'?'Admin':empName(e.by))}</td>
@@ -2042,7 +2106,7 @@ function finTable(){
     <td><div style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(e.notes||e.desc||e.detail||'-')}">${esc(e.notes||e.desc||e.detail||'-')}</div></td>
     <td>${esc(e.receiver)}</td>
     <td>${esc(e.online||'-')}</td>
-    <td class="${typeOf(e)==='expense'?'money-minus':'money-plus'}" style="font-weight:800;white-space:nowrap">${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td>
+    <td style="font-weight:800;white-space:nowrap;color:${typeOf(e)==='expense'?'#dc2626 !important':'#059669 !important'};background:${typeOf(e)==='expense'?'rgba(239,68,68,0.08)':'rgba(16,185,129,0.08)'};padding:4px 8px;border-radius:4px">${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td>
     <td><div class="actions" style="gap:4px"><button class="btn btn-s btn-sm" onclick="sendSlip('${e.id}')">Slip</button>${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delFin('${e.id}')">Delete</button>`:''}</div></td>
   </tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:1.5rem;text-align:center;color:#94a3b8">No entries</div>'}`;
 
@@ -2545,15 +2609,75 @@ window.addEventListener('click',function(ev){
 
 /* ===== ROBUST NEWS BUTTON FIX WITH CLIENT NEWS ===== */
 function openNewsPage(){
-  try{
-    TAB='news';
-    return renderNewsPageDirect();
-  }catch(e){
-    console.error('openNewsPage error',e);
-    const c=document.getElementById('content');
-    if(c)c.innerHTML='<div class="card"><div class="head"><h2>News Error</h2></div><p style="color:#dc2626;font-weight:900">'+(e.message||e)+'</p></div>';
-  }
+  const T=ensureTemplateSettings();
+  const news=S.news||[];
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>📢 News & Announcements</h2></div>
+    <div class="row">
+      <div class="fg" style="grid-column: 1 / -1">
+        <label>Add News Item</label>
+        <textarea id="newsInput" rows="3" placeholder="Enter announcement text..."></textarea>
+        <button class="btn btn-p" style="margin-top:8px" onclick="addNews()">➕ Add to Ticker</button>
+      </div>
+    </div>
+
+    <!-- QR UPLOAD FOR NEWS (Payment QR reference) -->
+    <div class="row" style="margin-top:1rem">
+      <div class="fg" style="grid-column: 1 / -1">
+        <label>📱 Payment QR Reference</label>
+        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+          <div style="flex:1;min-width:250px">
+            <input type="file" id="newsQrUpload" accept="image/*" onchange="previewNewsQr(event)" style="display:none">
+            <button class="btn btn-i" onclick="document.getElementById('newsQrUpload').click()">📁 Upload QR</button>
+            <small style="color:#64748b;display:block;margin-top:6px">Upload payment QR to show in news announcements</small>
+          </div>
+          <div id="newsQrPreview" style="min-width:120px;text-align:center">
+            ${T.paymentQrImage?`<img src="${esc(T.paymentQrImage)}" style="max-width:120px;max-height:120px;border:1px solid #e2e8f0;border-radius:8px;padding:4px;background:white">`:'<div style="padding:15px;color:#94a3b8;font-size:11px;border:2px dashed #e2e8f0;border-radius:8px">No QR</div>'}
+          </div>
+          ${T.paymentQrImage?`<button class="btn btn-e btn-sm" onclick="removeNewsQr()">🗑️ Remove</button>`:''}
+        </div>
+      </div>
+    </div>
+
+    <div class="head" style="margin-top:1.5rem"><h3>Current News Items</h3></div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>#</th><th>Text</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>
+          ${news.map((n,i)=>`<tr><td>${i+1}</td><td>${esc(n.text)}</td><td>${esc(n.date||'')}</td><td><button class="btn btn-e btn-sm" onclick="delNews('${n.id}')">Delete</button></td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    ${news.length?`<button class="btn btn-l" style="margin-top:10px" onclick="clearAllNews()">Clear All News</button>`:''}
+  </div>`;
 }
+
+/* ===== NEWS QR FUNCTIONS ===== */
+function previewNewsQr(ev){
+  const f=ev.target.files&&ev.target.files[0];
+  if(!f)return;
+  if(f.size>800000)return toast('QR image too large. Use under 800KB','error');
+  const r=new FileReader();
+  r.onload=()=>{
+    const img=r.result;
+    ensureTemplateSettings().paymentQrImage=img;
+    const box=document.getElementById('newsQrPreview');
+    if(box)box.innerHTML=`<img src="${img}" style="max-width:120px;max-height:120px;border:1px solid #e2e8f0;border-radius:8px;padding:4px;background:white">`;
+    toast('QR uploaded to news!','success');
+    // Refresh to show remove button
+    setTimeout(()=>openNewsPage(),300);
+  };
+  r.readAsDataURL(f);
+}
+
+function removeNewsQr(){
+  const T=ensureTemplateSettings();
+  T.paymentQrImage='';
+  saveLocal();
+  toast('QR removed from news','success');
+  openNewsPage();
+}
+
 function renderNewsPageDirect(){
   const c=document.getElementById('content');
   if(!c)return;
@@ -2820,6 +2944,25 @@ function openSettingsPage(){
     </div>
     <div class="fg"><label>Invoice Footer Text</label><textarea id="setInvoiceFooter">${esc(A.invoiceFooter||'Thank you for choosing Fire.net.pk')}</textarea></div>
     <div class="fg"><label>Client Support Message Text</label><textarea id="setClientSupportText">${esc(A.clientSupportText||'For support, contact Fire.net.pk WhatsApp support.')}</textarea></div>
+        <div class="row" style="margin-top:1rem">
+      <div class="fg" style="grid-column: 1 / -1">
+        <label>📱 Company Payment QR Code (for bills & fee slips)</label>
+        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+          <div style="flex:1;min-width:250px">
+            <input type="file" id="settingsQrUpload" accept="image/*" onchange="previewSettingsQr(event)" style="display:none">
+            <button class="btn btn-i" onclick="document.getElementById('settingsQrUpload').click()">📁 Upload QR Image</button>
+            <small style="color:#64748b;display:block;margin-top:6px">JPG/PNG under 800KB. This QR appears on all bills and fee slips.</small>
+          </div>
+          <div id="settingsQrPreview" style="min-width:120px;text-align:center">
+            ${(S.appSettings||{}).paymentQrImage?`<img src="${esc((S.appSettings||{}).paymentQrImage)}" style="max-width:150px;max-height:150px;border:1px solid #e2e8f0;border-radius:12px;padding:6px;background:white">`:'<div style="padding:20px;color:#94a3b8;font-size:12px;border:2px dashed #e2e8f0;border-radius:12px">No QR uploaded</div>'}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            ${(S.appSettings||{}).paymentQrImage?`<button class="btn btn-e btn-sm" onclick="removeSettingsQr()">🗑️ Remove</button>`:''}
+            <button class="btn btn-l btn-sm" onclick="testSettingsQr()">👁️ Test Preview</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="actions">
       <button class="btn btn-p" onclick="saveAdminSettingsFinal()">Save Settings</button>
       <button class="btn btn-l" onclick="tab('dashboard')">Back Dashboard</button>
@@ -2827,6 +2970,38 @@ function openSettingsPage(){
   </div>`;
   try{document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-settings');if(n)n.classList.add('active')}catch(e){}
 }
+
+function previewSettingsQr(ev){
+  const f=ev.target.files&&ev.target.files[0];
+  if(!f)return;
+  if(f.size>800000)return toast('QR image too large. Use under 800KB','error');
+  const r=new FileReader();
+  r.onload=()=>{
+    const img=r.result;
+    ensureTemplateSettings().paymentQrImage=img;
+    const box=document.getElementById('settingsQrPreview');
+    if(box)box.innerHTML=`<img src="${img}" style="max-width:150px;max-height:150px;border:1px solid #e2e8f0;border-radius:12px;padding:6px;background:white">`;
+    toast('QR uploaded! Save settings to apply.','success');
+  };
+  r.readAsDataURL(f);
+}
+
+function removeSettingsQr(){
+  const T=ensureTemplateSettings();
+  T.paymentQrImage='';
+  saveLocal();
+  toast('QR removed','success');
+  openSettingsPage();
+}
+
+function testSettingsQr(){
+  const T=ensureTemplateSettings();
+  if(!T.paymentQrImage){toast('No QR uploaded yet','warning');return;}
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>QR Test</title><style>body{display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#f8fafc;font-family:Arial}</style></head><body><div style="text-align:center"><h2>Payment QR Preview</h2><img src="${T.paymentQrImage}" style="max-width:300px;border:1px solid #e2e8f0;border-radius:12px;padding:8px;background:white"><p style="color:#64748b;margin-top:10px">This is how customers will see it on bills</p></div></body></html>`);
+  w.document.close();
+}
+
 function settings(){return openSettingsPage();}
 
 function saveAdminSettingsFinal(){
@@ -3157,19 +3332,20 @@ function billingPage(){
       <div class="sum">Paid Count<b>${sum.paid}</b></div>
       <div class="sum">Unpaid Count<b>${sum.unpaid}</b></div>
     </div>
+    <input type="text" class="table-search" placeholder="🔍 Search clients by name, mobile, C.Code..." oninput="filterTable('billingTable', this.value)">
     <div class="tbl">
-      <table>
+      <table id="billingTable">
         <thead>
           <tr>
-            <th><input type="checkbox" id="selectAllBilling" onchange="toggleSelectAllBilling(this)" title="Select All"></th>
-            <th>Client</th>
-            <th>Mobile/Login</th>
-            <th>PPPoE</th>
-            <th>Package</th>
-            <th>Monthly</th>
-            <th>Received</th>
-            <th>Due</th>
-            <th>Status</th>
+            <th class="sortable" onclick="sortTable('billingTable', 0, 'string')">Select</th><th> id="selectAllBilling" onchange="toggleSelectAllBilling(this)" title="Select All"></th>
+            <th class="sortable" onclick="sortTable('billingTable', 1, 'string')">Client</th>
+            <th class="sortable" onclick="sortTable('billingTable', 2, 'string')">Mobile/Login</th>
+            <th class="sortable" onclick="sortTable('billingTable', 3, 'string')">PPPoE</th>
+            <th class="sortable" onclick="sortTable('billingTable', 4, 'string')">Package</th>
+            <th class="sortable" onclick="sortTable('billingTable', 5, 'number')">Monthly</th>
+            <th class="sortable" onclick="sortTable('billingTable', 6, 'number')">Received</th>
+            <th class="sortable" onclick="sortTable('billingTable', 7, 'number')">Due</th>
+            <th class="sortable" onclick="sortTable('billingTable', 8, 'string')">Status</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -3187,14 +3363,19 @@ function billingPage(){
             <td>${money(r.received)}</td>
             <td>${money(r.due)}</td>
             <td>${statusBadge(r.status)}</td>
-            <td><div style="display:flex;gap:4px;flex-wrap:wrap">
-              ${r.status!=='Paid'?`<button class="btn btn-s btn-sm" onclick="receiveClientBill('${c.id}')">Receive</button>`:''}
-              ${r.status!=='Paid'?`<button class="btn btn-p btn-sm" onclick="markClientBillPaid('${c.id}')">Mark Paid</button>`:''}
-              <button class="btn btn-i btn-sm" onclick="whatsappFeeSlip('${c.id}')">Fee Slip WA</button>
-              <button class="btn btn-l btn-sm" onclick="printFeeSlip('${c.id}')">Print Slip</button>
-              <button class="btn btn-i btn-sm" onclick="printMonthlyBillA4('${c.id}')">Print A4 Bill</button>
-              <button class="btn btn-w btn-sm" onclick="openEditBillModal('${c.id}')">Edit Bill</button>
-            </div></td>
+            <td>
+              <div class="action-dropdown" style="position:relative">
+                <button class="btn btn-l btn-sm action-toggle" onclick="toggleActionMenu('${esc(c.id)}')">⚙️ Actions</button>
+                <div id="actionMenu-${esc(c.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:180px;padding:0.5rem;animation:menuIn 0.2s ease">
+                  ${r.status!=='Paid'?`<button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="receiveClientBill('${c.id}');hideActionMenu('${esc(c.id)}')">💰 Receive Payment</button>`:''}
+                  ${r.status!=='Paid'?`<button class="btn btn-p btn-sm" style="width:100%;margin-bottom:4px" onclick="markClientBillPaid('${c.id}');hideActionMenu('${esc(c.id)}')">✅ Mark Paid</button>`:''}
+                  <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="whatsappFeeSlip('${c.id}');hideActionMenu('${esc(c.id)}')">📱 WhatsApp Slip</button>
+                  <button class="btn btn-l btn-sm" style="width:100%;margin-bottom:4px" onclick="printFeeSlip('${c.id}');hideActionMenu('${esc(c.id)}')">🧾 Print Slip</button>
+                  <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="printMonthlyBillA4('${c.id}');hideActionMenu('${esc(c.id)}')">📄 Print A4 Bill</button>
+                  <button class="btn btn-w btn-sm" style="width:100%" onclick="openEditBillModal('${c.id}');hideActionMenu('${esc(c.id)}')">✏️ Edit Bill</button>
+                </div>
+              </div>
+            </td>
           </tr>`;
           }).join('')}
         </tbody>
@@ -3474,7 +3655,10 @@ function printFeeSlip(clientId){
     <div class="status">Status: ${esc(row.status)}</div>
     <div class="foot">${esc(S.appSettings?.invoiceFooter||'Thank you for your payment.')}</div>
   </div>
-  </body></html>`;
+  <div style="text-align:center;margin-top:15px;padding:10px;border-top:1px dashed #e2e8f0">
+      <p style="font-size:11px;color:#64748b;margin-bottom:6px">📱 Scan to Pay</p>
+      ${getPaymentQrImage()?`<img src="${getPaymentQrImage()}" style="width:120px;height:120px;border:1px solid #e2e8f0;border-radius:8px;padding:4px;background:white">`:'<p style="font-size:10px;color:#94a3b8">Payment QR not configured<br>Go to Settings > Template to upload</p>'}
+    </div></body></html>`;
   const w=window.open('','_blank');
   w.document.write(html);
   w.document.close();
@@ -5421,121 +5605,141 @@ function printMonthlyBillA4(clientId){
   const data=monthlyBillDisplayData(clientId, window.billingMonth||billMonthNow());
   if(!data)return toast('Client not found','error');
   const c=data.client, r=data.row, info=data.company;
+  const fields=getFieldVisibility();
+  const show=(f)=>fields[f]!==false;
+  const statusColor = r.status==='Paid' ? '#059669' : r.status==='Unpaid' ? '#dc2626' : '#d97706';
+  const statusBg = r.status==='Paid' ? '#d1fae5' : r.status==='Unpaid' ? '#fee2e2' : '#fef3c7';
   const html=`<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Monthly Bill - ${esc(c.name||'Client')}</title>
 <style>
-  @page { size: A4; margin: 12mm; }
+  @page { size: A4; margin: 4mm; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { 
     font-family: 'Segoe UI', Arial, sans-serif; 
     color: #1e293b; 
     background: #fff; 
-    line-height: 1.5;
+    line-height: 1.15;
+    font-size: 9px;
   }
   .page { 
     width: 100%; 
-    max-width: 190mm; 
+    max-width: 200mm; 
     margin: 0 auto; 
-    padding: 8mm;
+    padding: 1mm;
   }
+
+  /* HEADER WITH INLINE STATUS */
   .head { 
     display: flex; 
     justify-content: space-between; 
-    align-items: flex-start; 
-    border-bottom: 3px solid #e11d48; 
-    padding-bottom: 12px; 
-    margin-bottom: 16px; 
+    align-items: center; 
+    border-bottom: 2px solid #e11d48; 
+    padding-bottom: 4px; 
+    margin-bottom: 4px; 
   }
+  .brand { flex: 1; }
   .brand h1 { 
     margin: 0; 
     color: #be123c; 
-    font-size: 26px; 
+    font-size: 16px; 
     font-weight: 800; 
-    letter-spacing: -0.02em;
   }
   .brand p { 
-    margin: 4px 0; 
+    margin: 0; 
     color: #475569; 
-    font-size: 11px; 
-    line-height: 1.5; 
+    font-size: 7px; 
+    line-height: 1.2; 
   }
   .billbox { 
-    border: 2px solid #e2e8f0; 
-    border-radius: 12px; 
-    padding: 14px 16px; 
-    min-width: 200px; 
+    border: 1px solid #e2e8f0; 
+    border-radius: 4px; 
+    padding: 4px 6px; 
+    min-width: 120px; 
     background: #f8fafc;
+    text-align: right;
   }
   .billbox h2 { 
-    margin: 0 0 10px 0; 
-    font-size: 18px; 
+    margin: 0 0 2px 0; 
+    font-size: 10px; 
     color: #0f172a; 
     font-weight: 800;
   }
   .billbox div { 
-    font-size: 11px; 
-    margin: 4px 0; 
+    font-size: 7px; 
+    margin: 0; 
     color: #475569; 
   }
   .billbox div b { 
     color: #1e293b; 
     font-weight: 700;
   }
+
   .grid { 
     display: grid; 
-    grid-template-columns: 1.2fr 0.8fr; 
-    gap: 14px; 
-    margin-bottom: 16px; 
+    grid-template-columns: 1.4fr 0.6fr; 
+    gap: 4px; 
+    margin-bottom: 4px; 
   }
   .card { 
     border: 1px solid #e2e8f0; 
-    border-radius: 12px; 
-    padding: 14px; 
+    border-radius: 4px; 
+    padding: 4px; 
     background: #fff;
   }
   .card h3 { 
-    margin: 0 0 10px 0; 
-    font-size: 14px; 
+    margin: 0 0 2px 0; 
+    font-size: 8px; 
     color: #0f172a; 
     font-weight: 700; 
     text-transform: uppercase; 
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
   }
   .meta { 
     display: grid; 
     grid-template-columns: 1fr 1fr; 
-    gap: 10px; 
+    gap: 2px; 
   }
   .meta .item { 
     background: #f1f5f9; 
-    border-radius: 8px; 
-    padding: 10px; 
+    border-radius: 2px; 
+    padding: 2px 3px; 
   }
   .meta .item b { 
     display: block; 
     color: #64748b; 
-    font-size: 10px; 
-    margin-bottom: 4px; 
+    font-size: 6px; 
     text-transform: uppercase; 
-    letter-spacing: 0.05em;
   }
   .meta .item span { 
-    font-weight: 800; 
-    font-size: 12px; 
+    font-weight: 700; 
+    font-size: 8px; 
     color: #0f172a;
+  }
+
+  .details-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 4px;
+    margin-bottom: 4px;
+  }
+  .details-card h3 {
+    margin: 0 0 2px 0;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
   }
   table { 
     width: 100%; 
     border-collapse: collapse; 
-    margin: 10px 0;
+    margin: 2px 0;
   }
   th, td { 
-    padding: 10px; 
+    padding: 2px 3px; 
     border-bottom: 1px solid #e2e8f0; 
-    font-size: 12px; 
+    font-size: 8px; 
   }
   th { 
     text-align: left; 
@@ -5543,76 +5747,65 @@ function printMonthlyBillA4(clientId){
     font-weight: 700; 
     color: #475569; 
     text-transform: uppercase; 
-    font-size: 10px; 
-    letter-spacing: 0.05em;
+    font-size: 6px; 
   }
   .totals { 
-    margin-top: 12px; 
+    margin-top: 2px; 
     margin-left: auto; 
-    max-width: 300px; 
+    max-width: 160px; 
   }
   .totals .row { 
     display: flex; 
     justify-content: space-between; 
-    padding: 8px 0; 
+    padding: 1px 0; 
     border-bottom: 1px dashed #cbd5e1; 
-    font-size: 12px;
+    font-size: 8px;
   }
   .totals .grand { 
-    font-size: 18px; 
+    font-size: 10px; 
     font-weight: 900; 
     color: #be123c; 
     border-top: 2px solid #e11d48; 
-    margin-top: 4px; 
-    padding-top: 8px;
+    margin-top: 1px; 
+    padding-top: 2px;
   }
   .qrbox { 
     text-align: center; 
-    padding: 10px; 
+    padding: 1px; 
   }
   .qrbox img { 
-    width: 150px; 
-    height: 150px; 
-    border-radius: 8px;
-  }
-  .badge { 
-    display: inline-block; 
-    padding: 6px 12px; 
-    border-radius: 999px; 
-    font-weight: 900; 
-    background: #fef3c7; 
-    color: #92400e; 
-    font-size: 12px;
+    width: 50px; 
+    height: 50px; 
+    border-radius: 2px;
   }
   .note { 
-    margin-top: 14px; 
-    padding: 12px; 
+    margin-top: 2px; 
+    padding: 2px 4px; 
     border: 1px dashed #cbd5e1; 
-    border-radius: 10px; 
+    border-radius: 3px; 
     background: #fcfcfd; 
-    font-size: 11px; 
-    line-height: 1.6; 
+    font-size: 6px; 
+    line-height: 1.2; 
     color: #475569; 
   }
   .footer { 
-    margin-top: 14px; 
-    font-size: 10px; 
+    margin-top: 2px; 
+    font-size: 6px; 
     color: #94a3b8; 
     text-align: center; 
     border-top: 1px solid #e2e8f0; 
-    padding-top: 10px;
+    padding-top: 2px;
   }
-  .watermark {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-30deg);
-    font-size: 80px;
-    font-weight: 900;
-    color: rgba(225, 29, 72, 0.04);
-    pointer-events: none;
-    z-index: 0;
-    white-space: nowrap;
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+    padding: 2px 4px;
+    background: #f8fafc;
+    border-radius: 3px;
+    border: 1px solid #e2e8f0;
+    font-size: 7px;
   }
   @media print {
     body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -5621,19 +5814,18 @@ function printMonthlyBillA4(clientId){
 </style>
 </head>
 <body>
-  <div class="watermark">${esc(info.companyName || 'FIRENET')}</div>
   <div class="page">
     <div class="head">
       <div class="brand">
-        <h1>${esc(info.companyName)}</h1>
-        <p>${esc(info.address)}<br>Mobile: ${esc(info.mobile)}<br>Email: ${esc(info.email)}</p>
+        ${show('companyName')?`<h1>${esc(info.companyName)}</h1>`:''}
+        <p>${show('companyAddress')?esc(info.address)+' · ':''}${show('companyMobile')?esc(info.mobile)+' · ':''}${show('companyEmail')?esc(info.email):''}</p>
       </div>
       <div class="billbox">
-        <h2>MONTHLY BILL</h2>
-        <div><b>Bill No:</b> ${esc(data.billNo)}</div>
-        <div><b>Bill Month:</b> ${esc(data.month)}</div>
-        <div><b>Issue Date:</b> ${esc(data.issueDate)}</div>
-        <div><b>Due Date:</b> <span style="color:#be123c;font-weight:900">${esc(data.dueDate)}</span></div>
+        <div style="text-align:center;margin-bottom:3px"><span class="badge" style="display:inline-block;padding:2px 10px;border-radius:999px;font-weight:900;font-size:11px;text-transform:uppercase;background:${statusBg};color:${statusColor};border:1px solid ${statusColor}">${esc(r.status)}</span></div>
+        <h2>BILL</h2>
+        <div><b>${esc(data.billNo)}</b></div>
+        <div>${esc(data.month)}</div>
+        ${show('dueDate')?`<div>Due: <b style="color:#be123c">${esc(data.dueDate)}</b></div>`:''}
       </div>
     </div>
 
@@ -5641,66 +5833,58 @@ function printMonthlyBillA4(clientId){
       <div class="card">
         <h3>Bill To</h3>
         <div class="meta">
-          <div class="item"><b>Customer Name</b><span>${esc(c.name||'-')}</span></div>
-          <div class="item"><b>Mobile</b><span>${esc(c.mobile||'-')}</span></div>
-          <div class="item"><b>PPPoE / Login</b><span>${esc(c.pppoe||c.login||'-')}</span></div>
-          <div class="item"><b>C.Code</b><span>${esc(c.ccode||'-')}</span></div>
-          <div class="item"><b>Package</b><span>${esc(c.package||'-')}</span></div>
-          <div class="item"><b>Address</b><span>${esc(c.address||'-')}</span></div>
+          ${show('clientName')?`<div class="item"><b>Name</b><span>${esc(c.name||'-')}</span></div>`:''}
+          ${show('clientMobile')?`<div class="item"><b>Mobile</b><span>${esc(c.mobile||'-')}</span></div>`:''}
+          ${show('clientLogin')?`<div class="item"><b>Login</b><span>${esc(c.pppoe||c.login||'-')}</span></div>`:''}
+          ${show('clientCCode')?`<div class="item"><b>C.Code</b><span>${esc(c.ccode||'-')}</span></div>`:''}
+          ${show('clientPackage')?`<div class="item"><b>Package</b><span>${esc(c.package||'-')}</span></div>`:''}
+          ${show('clientAddress')?`<div class="item"><b>Address</b><span>${esc(c.address||'-')}</span></div>`:''}
         </div>
       </div>
       <div class="card">
-        <h3>Payment Info</h3>
+        <h3>Payment</h3>
         <div class="meta">
-          <div class="item"><b>Monthly Fee</b><span>${money(r.total||0)}</span></div>
-          <div class="item"><b>Received</b><span style="color:#059669">${money(r.received||0)}</span></div>
-          <div class="item"><b>Due Amount</b><span style="color:#be123c">${money(r.due||0)}</span></div>
-          <div class="item"><b>Status</b><span>${statusBadge(r.status)}</span></div>
+          ${show('monthlyFee')?`<div class="item"><b>Monthly</b><span>${money(r.total||0)}</span></div>`:''}
+          ${show('received')?`<div class="item"><b>Paid</b><span style="color:#059669">${money(r.received||0)}</span></div>`:''}
+          ${show('dueAmount')?`<div class="item"><b>Due</b><span style="color:#be123c">${money(r.due||0)}</span></div>`:''}
+          ${show('status')?`<div class="item"><b>Status</b><span>${esc(r.status)}</span></div>`:''}
         </div>
-        <div class="qrbox" style="margin-top:10px">
-          ${data.qrUrl ? `<img src="${esc(data.qrUrl)}" alt="Payment QR">` : '<div style="padding:20px;color:#94a3b8;font-size:11px">Scan to Pay</div>'}
-          <div style="font-size:10px;color:#64748b;margin-top:4px">Scan QR to pay online</div>
+        <div class="qrbox" style="margin-top:2px">
+          ${show('paymentQr')?(getPaymentQrImage()?`<img src="${getPaymentQrImage()}" alt="QR">`:'<div style="padding:2px;color:#94a3b8;font-size:7px">Scan to Pay</div>'):''}
         </div>
       </div>
     </div>
 
-    <div class="card">
+    <div class="details-card">
       <h3>Bill Details</h3>
       <table>
-        <thead>
-          <tr><th>Description</th><th>Amount</th></tr>
-        </thead>
+        <thead><tr><th>Description</th><th style="text-align:right">Amount</th></tr></thead>
         <tbody>
-          <tr><td>Monthly Internet Charges (${esc(data.month)})</td><td>${money(r.total||0)}</td></tr>
-          ${r.prevDue > 0 ? `<tr><td>Previous Balance</td><td>${money(r.prevDue)}</td></tr>` : ''}
-          ${r.adjustment ? `<tr><td>Adjustment</td><td>${money(r.adjustment)}</td></tr>` : ''}
-          <tr style="border-top:2px solid #e2e8f0"><td><b>Total Payable</b></td><td><b>${money(r.due||0)}</b></td></tr>
+          <tr><td>Monthly Internet (${esc(data.month)})</td><td style="text-align:right;font-weight:700">${money(r.total||0)}</td></tr>
+          ${r.prevDue > 0 ? `<tr><td>Previous Balance</td><td style="text-align:right">${money(r.prevDue)}</td></tr>` : ''}
+          ${r.adjustment ? `<tr><td>Adjustment</td><td style="text-align:right">${money(r.adjustment)}</td></tr>` : ''}
+          <tr style="border-top:2px solid #e2e8f0"><td><b>Total Payable</b></td><td style="text-align:right;font-weight:800">${money(r.due||0)}</td></tr>
         </tbody>
       </table>
       <div class="totals">
         <div class="row"><span>Subtotal</span><span>${money(r.total||0)}</span></div>
         ${r.prevDue > 0 ? `<div class="row"><span>Previous Due</span><span>${money(r.prevDue)}</span></div>` : ''}
-        ${r.received > 0 ? `<div class="row"><span>Paid This Month</span><span style="color:#059669">-${money(r.received)}</span></div>` : ''}
+        ${r.received > 0 ? `<div class="row"><span>Paid</span><span style="color:#059669">-${money(r.received)}</span></div>` : ''}
         <div class="row grand"><span>NET DUE</span><span>${money(r.due||0)}</span></div>
       </div>
     </div>
 
-    <div style="display:flex;gap:12px;align-items:center;margin-top:14px">
-      <div class="badge">Status: ${esc(r.status)}</div>
-      <div style="font-size:11px;color:#64748b">Please pay before due date to avoid service interruption</div>
+    <div class="status-bar">
+      <span>Pay before due date to avoid service interruption</span>
+      <span>For queries: ${esc(info.mobile)}</span>
     </div>
 
     <div class="note">
-      <b>Terms & Conditions:</b><br>
-      1. Payment is due by the due date mentioned above.<br>
-      2. Late payments may result in service suspension.<br>
-      3. For any queries, contact us at ${esc(info.mobile)}.<br>
-      4. This is a computer-generated bill and does not require signature.
+      <b>Terms:</b> Payment due by due date. Late payments may result in suspension. Computer-generated bill.
     </div>
 
     <div class="footer">
-      <b>${esc(info.companyName)}</b> — Powered by FireNet ISP Manager<br>
-      Thank you for your business!
+      <b>${esc(info.companyName)}</b> — Powered by FireNet ISP Manager
     </div>
   </div>
 </body>
@@ -5860,49 +6044,159 @@ function ensureTemplateSettings(){
   };
   return S.appSettings.templates;
 }
-function templatePage(){
-  if(U&&U.role!=='admin')return content.innerHTML='<div class="card"><div class="head"><h2>Access Denied</h2></div><p>Only admin can edit templates.</p></div>';
+
+function getPaymentQrImage(){
   const T=ensureTemplateSettings();
+  return T.paymentQrImage||'';
+}
+
+function templatePage(){
+  const T=ensureTemplateSettings();
+  // Default field visibility
+  T.showFields = T.showFields || {
+    companyName: true,
+    companyAddress: true,
+    companyMobile: true,
+    companyEmail: true,
+    billNo: true,
+    billMonth: true,
+    issueDate: true,
+    dueDate: true,
+    clientName: true,
+    clientMobile: true,
+    clientLogin: true,
+    clientCCode: true,
+    clientPackage: true,
+    clientAddress: true,
+    monthlyFee: true,
+    received: true,
+    dueAmount: true,
+    status: true,
+    billDetails: true,
+    previousDue: true,
+    adjustment: true,
+    totals: true,
+    paymentQr: true,
+    terms: true,
+    footer: true,
+    watermark: false
+  };
+
   content.innerHTML=`<div class="card">
-    <div class="head"><h2>🎨 Templates & Payment QR</h2></div>
-    <p style="font-weight:900;color:#64748b">Yahan se Monthly Bill, Invoice aur Fee Slip ka title, notes, colors aur payment QR adjust kar sakte hain.</p>
-    <div class="row">
-      <div class="fg"><label>Monthly Bill Title</label><input id="tplBillTitle" value="${esc(T.billTitle||'MONTHLY INTERNET BILL')}"></div>
-      <div class="fg"><label>Invoice Title</label><input id="tplInvoiceTitle" value="${esc(T.invoiceTitle||'INVOICE')}"></div>
-      <div class="fg"><label>Fee Slip Title</label><input id="tplFeeSlipTitle" value="${esc(T.feeSlipTitle||'Internet Fee Payment Slip')}"></div>
+    <div class="head"><h2>🎨 Bill Template Editor</h2>
+      <div class="actions">
+        <button class="btn btn-s" onclick="previewTemplateSample()">👁️ Preview Sample</button>
+        <button class="btn btn-p" onclick="saveTemplateSettings()">💾 Save Template</button>
+      </div>
     </div>
-    <div class="row">
-      <div class="fg"><label>Template Primary Color</label><input id="tplPrimaryColor" type="color" value="${esc(T.primaryColor||'#dc2626')}"></div>
-      <div class="fg"><label>Show Payment QR on Monthly Bill</label><select id="tplShowPaymentQr"><option value="1" ${T.showPaymentQr!==false?'selected':''}>Yes</option><option value="0" ${T.showPaymentQr===false?'selected':''}>No</option></select></div>
-      <div class="fg"><label>Show Verify QR on Fee Slip</label><select id="tplShowVerifyQr"><option value="1" ${T.showVerifyQr!==false?'selected':''}>Yes</option><option value="0" ${T.showVerifyQr===false?'selected':''}>No</option></select></div>
-    </div>
-    <div class="row two">
-      <div class="fg"><label>Payment QR Upload</label><input id="tplQrUpload" type="file" accept="image/*" onchange="previewTemplateQr(event)"></div>
-      <div class="fg"><label>Payment QR Text / Account Details</label><input id="tplPaymentQrText" value="${esc(T.paymentQrText||'')}" placeholder="Bank/JazzCash/EasyPaisa details or payment link"></div>
-    </div>
-    <div class="row two">
-      <div class="card" style="box-shadow:none;border:1px dashed #cbd5e1">
-        <h3>Current Payment QR Preview</h3>
-        <div id="tplQrPreview" style="text-align:center;padding:10px">
-          ${T.paymentQrImage?`<img src="${T.paymentQrImage}" style="max-width:180px;max-height:180px;border:1px solid #e5e7eb;border-radius:12px;padding:6px;background:#fff">`:'<p>No QR uploaded yet. Auto-generated QR will be used.</p>'}
+
+    <!-- QR UPLOAD -->
+    <div class="row" style="margin-bottom:1rem">
+      <div class="fg" style="grid-column: 1 / -1">
+        <label>📱 Payment QR Code</label>
+        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+          <div style="flex:1;min-width:250px">
+            <input type="file" id="tplQrUpload" accept="image/*" onchange="previewTemplateQr(event)" style="display:none">
+            <button class="btn btn-i" onclick="document.getElementById('tplQrUpload').click()">📁 Upload QR</button>
+            <small style="color:#64748b;display:block;margin-top:6px">JPG/PNG under 800KB</small>
+          </div>
+          <div id="tplQrPreview" style="min-width:100px;text-align:center">
+            ${T.paymentQrImage?`<img src="${esc(T.paymentQrImage)}" style="max-width:100px;max-height:100px;border:1px solid #e2e8f0;border-radius:8px;padding:4px">`:'<div style="padding:15px;color:#94a3b8;font-size:11px;border:2px dashed #e2e8f0;border-radius:8px">No QR</div>'}
+          </div>
+          ${T.paymentQrImage?`<button class="btn btn-e btn-sm" onclick="removeTemplateQr()">🗑️ Remove</button>`:''}
         </div>
-        <button class="btn btn-w btn-sm" onclick="removeTemplateQr()">Remove Uploaded QR</button>
-      </div>
-      <div class="card" style="box-shadow:none;border:1px dashed #cbd5e1">
-        <h3>QR Usage</h3>
-        <p>Uploaded QR monthly A4 bill par payment QR ki jagah show hoga.</p>
-        <p>Fee slip par verification QR separate rahega, unless disabled.</p>
       </div>
     </div>
-    <div class="fg"><label>Monthly Bill Note</label><textarea id="tplNote">${esc(T.note||'')}</textarea></div>
-    <div class="fg"><label>Invoice Terms</label><textarea id="tplInvoiceTerms">${esc(T.invoiceTerms||'')}</textarea></div>
-    <div class="fg"><label>Footer Text</label><textarea id="tplFooter">${esc(T.footer||'')}</textarea></div>
+
+    <!-- FIELD VISIBILITY TOGGLES -->
+    <div class="head" style="margin-top:1.5rem"><h3>📋 Show/Hide Fields in Bill</h3></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem">
+
+      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
+        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Company Info</div>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_companyName" ${T.showFields.companyName?'checked':''}> Company Name</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_companyAddress" ${T.showFields.companyAddress?'checked':''}> Address</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_companyMobile" ${T.showFields.companyMobile?'checked':''}> Mobile</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_companyEmail" ${T.showFields.companyEmail?'checked':''}> Email</label>
+      </div>
+
+      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
+        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Bill Info</div>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_billNo" ${T.showFields.billNo?'checked':''}> Bill Number</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_billMonth" ${T.showFields.billMonth?'checked':''}> Bill Month</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_issueDate" ${T.showFields.issueDate?'checked':''}> Issue Date</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_dueDate" ${T.showFields.dueDate?'checked':''}> Due Date</label>
+      </div>
+
+      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
+        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Client Info</div>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientName" ${T.showFields.clientName?'checked':''}> Name</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientMobile" ${T.showFields.clientMobile?'checked':''}> Mobile</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientLogin" ${T.showFields.clientLogin?'checked':''}> Login/PPPoE</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientCCode" ${T.showFields.clientCCode?'checked':''}> C.Code</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientPackage" ${T.showFields.clientPackage?'checked':''}> Package</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientAddress" ${T.showFields.clientAddress?'checked':''}> Address</label>
+      </div>
+
+      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
+        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Amounts</div>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_monthlyFee" ${T.showFields.monthlyFee?'checked':''}> Monthly Fee</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_received" ${T.showFields.received?'checked':''}> Received</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_dueAmount" ${T.showFields.dueAmount?'checked':''}> Due Amount</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_status" ${T.showFields.status?'checked':''}> Status Badge</label>
+      </div>
+
+      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
+        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Details</div>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_billDetails" ${T.showFields.billDetails?'checked':''}> Bill Details Table</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_previousDue" ${T.showFields.previousDue?'checked':''}> Previous Due</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_adjustment" ${T.showFields.adjustment?'checked':''}> Adjustment</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_totals" ${T.showFields.totals?'checked':''}> Totals Summary</label>
+      </div>
+
+      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
+        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Other</div>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_paymentQr" ${T.showFields.paymentQr?'checked':''}> Payment QR</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_terms" ${T.showFields.terms?'checked':''}> Terms & Conditions</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_footer" ${T.showFields.footer?'checked':''}> Footer</label>
+        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_watermark" ${T.showFields.watermark?'checked':''}> Watermark</label>
+      </div>
+    </div>
+
     <div class="actions">
-      <button class="btn btn-p" onclick="saveTemplateSettings()">Save Template Settings</button>
-      <button class="btn btn-i" onclick="previewTemplateSample()">Preview Sample Bill</button>
+      <button class="btn btn-s" onclick="previewTemplateSample()">👁️ Preview Sample Bill</button>
+      <button class="btn btn-p" onclick="saveTemplateSettings()">💾 Save Template Settings</button>
+      <button class="btn btn-l" onclick="resetTemplateFields()">↩️ Reset to Default</button>
     </div>
   </div>`;
 }
+
+/* ===== TEMPLATE FIELD HELPERS ===== */
+function getFieldVisibility() {
+  const T = ensureTemplateSettings();
+  return T.showFields || {};
+}
+
+function shouldShowField(fieldName) {
+  const fields = getFieldVisibility();
+  return fields[fieldName] !== false; // default true
+}
+
+function resetTemplateFields() {
+  const T = ensureTemplateSettings();
+  T.showFields = {
+    companyName: true, companyAddress: true, companyMobile: true, companyEmail: true,
+    billNo: true, billMonth: true, issueDate: true, dueDate: true,
+    clientName: true, clientMobile: true, clientLogin: true, clientCCode: true, clientPackage: true, clientAddress: true,
+    monthlyFee: true, received: true, dueAmount: true, status: true,
+    billDetails: true, previousDue: true, adjustment: true, totals: true,
+    paymentQr: true, terms: true, footer: true, watermark: false
+  };
+  saveLocal();
+  toast('Template fields reset to default', 'success');
+  templatePage();
+}
+
 function previewTemplateQr(ev){
   const f=ev.target.files&&ev.target.files[0];
   if(!f)return;
@@ -7738,13 +8032,18 @@ function invoice(){
         <td>${money(v.received||0)}</td>
         <td>${money(v.due||0)}</td>
         <td>${status}</td>
-        <td><div class="actions">
-          <button class="btn btn-i btn-sm" onclick="printManualInvoice('${v.id}')">Print</button>
-          <button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button>
-          ${(+v.due||0)>0?`<button class="btn btn-w btn-sm" onclick="receiveDue('${v.id}')">Receive</button><button class="btn btn-p btn-sm" onclick="markInvPaid('${v.id}')">Mark Paid</button>`:''}
-          <button class="btn btn-l btn-sm" onclick="openInvoiceModal('${v.id}')">Edit</button>
-          ${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delInv('${v.id}')">Delete</button>`:''}
-        </div></td>
+        <td>
+              <div class="action-dropdown" style="position:relative">
+                <button class="btn btn-l btn-sm action-toggle" onclick="toggleInvoiceActionMenu('${esc(v.id)}')">⚙️ Actions</button>
+                <div id="invoiceActionMenu-${esc(v.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:180px;padding:0.5rem;animation:menuIn 0.2s ease">
+                  <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="printManualInvoice('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">🖨️ Print</button>
+                  <button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="sendSavedInv('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">📱 WhatsApp</button>
+                  ${(+v.due||0)>0?`<button class="btn btn-w btn-sm" style="width:100%;margin-bottom:4px" onclick="receiveDue('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">💰 Receive</button><button class="btn btn-p btn-sm" style="width:100%;margin-bottom:4px" onclick="markInvPaid('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">✅ Mark Paid</button>`:''}
+                  <button class="btn btn-l btn-sm" style="width:100%;margin-bottom:4px" onclick="openInvoiceModal('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">✏️ Edit</button>
+                  ${U.role==='admin'?`<button class="btn btn-e btn-sm" style="width:100%" onclick="delInv('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">🗑️ Delete</button>`:''}
+                </div>
+              </div>
+            </td>
       </tr>`;
     })):`<div class="card" style="box-shadow:none;border:1px dashed #cbd5e1"><h3>No invoices yet</h3><p>Use “New Connection / Invoice” to create manual invoice. Monthly bills remain in Billing tab.</p></div>`}
   </div>`;
@@ -8760,6 +9059,109 @@ if (typeof printSelectedMonthlyBills === 'function') {
       _origMonthly();
     }
   };
+}
+
+
+/* ===== ACTION DROPDOWN HELPERS ===== */
+function toggleActionMenu(clientId) {
+  const menu = document.getElementById('actionMenu-' + clientId);
+  if (!menu) return;
+
+  // Close all other menus first
+  document.querySelectorAll('.action-menu').forEach(m => {
+    if (m.id !== 'actionMenu-' + clientId) m.style.display = 'none';
+  });
+
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function hideActionMenu(clientId) {
+  const menu = document.getElementById('actionMenu-' + clientId);
+  if (menu) menu.style.display = 'none';
+}
+
+// Close action menus when clicking outside
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.action-dropdown')) {
+    document.querySelectorAll('.action-menu').forEach(m => m.style.display = 'none');
+  }
+});
+
+
+/* ===== INVOICE ACTION DROPDOWN HELPERS ===== */
+function toggleInvoiceActionMenu(invId) {
+  const menu = document.getElementById('invoiceActionMenu-' + invId);
+  if (!menu) return;
+  document.querySelectorAll('.action-menu').forEach(m => {
+    if (m.id !== 'invoiceActionMenu-' + invId) m.style.display = 'none';
+  });
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function hideInvoiceActionMenu(invId) {
+  const menu = document.getElementById('invoiceActionMenu-' + invId);
+  if (menu) menu.style.display = 'none';
+}
+
+
+/* ===== TABLE SORTING & SEARCH ===== */
+window._tableSortState = {};
+
+function sortTable(tableId, colIndex, type) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+
+  // Toggle sort direction
+  const key = tableId + '-' + colIndex;
+  const currentDir = window._tableSortState[key] || 'asc';
+  const newDir = currentDir === 'asc' ? 'desc' : 'asc';
+  window._tableSortState[key] = newDir;
+
+  // Update header indicators
+  table.querySelectorAll('th.sortable').forEach(th => {
+    th.classList.remove('asc', 'desc');
+  });
+  const header = table.querySelectorAll('th')[colIndex];
+  if (header) header.classList.add(newDir);
+
+  rows.sort((a, b) => {
+    let aVal = a.cells[colIndex]?.textContent?.trim() || '';
+    let bVal = b.cells[colIndex]?.textContent?.trim() || '';
+
+    // Remove currency symbols and commas for number sorting
+    if (type === 'number') {
+      aVal = parseFloat(aVal.replace(/[^0-9.-]/g, '')) || 0;
+      bVal = parseFloat(bVal.replace(/[^0-9.-]/g, '')) || 0;
+      return newDir === 'asc' ? aVal - bVal : bVal - aVal;
+    }
+
+    if (type === 'date') {
+      aVal = new Date(aVal) || 0;
+      bVal = new Date(bVal) || 0;
+      return newDir === 'asc' ? aVal - bVal : bVal - aVal;
+    }
+
+    // String sort
+    return newDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+  });
+
+  rows.forEach(row => tbody.appendChild(row));
+}
+
+function filterTable(tableId, searchValue) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+
+  const rows = table.querySelectorAll('tbody tr');
+  const q = searchValue.toLowerCase().trim();
+
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
 }
 </script>
 </body>
