@@ -7,1057 +7,432 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-  /* ===== 2026 MODERN GLASSMORPHISM UI ===== */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap');
+:root{
+  --p:#e74c3c;--p2:#c0392b;--d:#243447;--s:#16a34a;--e:#dc2626;--b:#f4f7fb;--m:#64748b;--i:#2563eb;--w:#d97706;
+  --softG:#f0fdf4;--softR:#fff1f2;--softB:#eff6ff;--line:#e5e7eb;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+body{background:linear-gradient(135deg,#eef2ff,#fff1f2);min-height:100vh;color:#1f2937}
+button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}.hidden{display:none!important}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:15px}
+.login-card,.card{background:#fff;border-radius:18px;box-shadow:0 12px 30px rgba(15,23,42,.08);border:1px solid #eef2f7}
+.login-card{max-width:430px;width:100%;overflow:hidden}
+.login-head{background:linear-gradient(135deg,var(--d),#111827);color:#fff;text-align:center;padding:32px}
+.login-body{padding:24px}
+.app{display:none;padding:12px}.container{max-width:1220px;margin:auto}
+.header{background:#fff;border-radius:18px;padding:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;box-shadow:0 12px 30px rgba(15,23,42,.08)}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:14px;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-size:23px}.brand h1{font-size:20px;color:var(--d)}
+.dt{font-weight:800;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:9px}
+.sync{font-size:12px;font-weight:800;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:9px;color:#475569}
+.profile{position:relative}.profile-btn{display:flex;gap:8px;align-items:center;background:#f8fafc;border:1px solid var(--line);border-radius:999px;padding:6px 10px;color:#111827}.avatar{width:34px;height:34px;border-radius:50%;background:#7c3aed;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900}.menu{display:none;position:absolute;right:0;top:48px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.15);min-width:190px;overflow:hidden;z-index:10}.menu.active{display:block}.menu button{display:block;width:100%;background:#fff;text-align:left;padding:12px}.menu button:hover{background:#f8fafc;color:var(--p)}
+.nav{display:flex;gap:8px;background:#fff;padding:8px;border-radius:16px;margin-bottom:12px;overflow-x:auto;box-shadow:0 10px 25px rgba(15,23,42,.07)}.nav button{white-space:nowrap;background:#f8fafc;color:#475569;padding:10px 13px;border-radius:12px;font-weight:900}.nav button.active{background:var(--p);color:#fff}
+.card{padding:16px;margin-bottom:12px}.head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.head h2{font-size:18px;color:var(--d)}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.row.two{grid-template-columns:repeat(2,1fr)}.fg{margin-bottom:12px}.fg label{display:block;font-size:13px;font-weight:900;margin-bottom:6px;color:#374151}input,select,textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:12px;outline:none;background:#fff}textarea{min-height:75px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 13px;border-radius:12px;color:#fff;background:var(--d);font-weight:900;text-decoration:none}.btn-p{background:var(--p)}.btn-s{background:var(--s)}.btn-e{background:var(--e)}.btn-i{background:var(--i)}.btn-w{background:var(--w)}.btn-l{background:#e5e7eb;color:#111827}.btn-sm{font-size:12px;padding:7px 9px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;background:#fff;border-radius:16px;box-shadow:0 8px 18px rgba(15,23,42,.05);border:1px solid #eef2f7;border-left:5px solid var(--p)}.stat span{font-size:12px;color:var(--m);font-weight:900}.stat b{display:block;font-size:22px;margin-top:5px}.stat small{color:#64748b;font-weight:800}
+.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top}th{background:#f8fafc;color:#475569;text-transform:uppercase;font-size:12px}.badge{padding:5px 9px;border-radius:999px;font-size:12px;font-weight:900;display:inline-block;text-transform:uppercase}.cash{background:#dcfce7;color:#166534}.online{background:#dbeafe;color:#1e40af}.income{background:#dcfce7;color:#166534}.expense{background:#fee2e2;color:#991b1b}.pending{background:#fef3c7;color:#92400e}.done{background:#dcfce7;color:#166534}.empty{text-align:center;color:var(--m);font-weight:800;padding:25px}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}.sum{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px}.sum b{display:block;font-size:20px;margin-top:4px}.item-line{display:grid;grid-template-columns:2fr .7fr 1fr auto;gap:10px;align-items:end}
+.income-row{background:var(--softG)!important}.expense-row{background:var(--softR)!important}.money-plus{color:#15803d;font-weight:900}.money-minus{color:#dc2626;font-weight:900}
+.toast-wrap{position:fixed;right:14px;top:14px;z-index:99}.toast{background:#fff;border-left:5px solid var(--i);box-shadow:0 14px 35px rgba(15,23,42,.18);padding:12px 14px;border-radius:14px;margin-bottom:8px;font-weight:800}.toast.success{border-left-color:var(--s)}.toast.error{border-left-color:var(--e)}.toast.warning{border-left-color:var(--w)}
+.prog{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,var(--s),#84cc16)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;align-items:center;justify-content:center;padding:15px}.modal-bg.active{display:flex}.modal{background:#fff;border-radius:18px;max-width:620px;width:100%;padding:18px;max-height:90vh;overflow:auto}
+.print-only{display:none}
+@media print{body{background:#fff}.login,.header,.nav,.actions,.btn,.toast-wrap,.modal-bg{display:none!important}.app{display:block!important;padding:0}.card{box-shadow:none;border:0}.print-only{display:block}.no-print{display:none!important}table{min-width:0;font-size:11px}th,td{font-size:11px;padding:6px}}
+@media(max-width:850px){.grid,.summary{grid-template-columns:repeat(2,1fr)}.row,.row.two{grid-template-columns:1fr}}
+@media(max-width:560px){.app{padding:8px}.header>*{width:100%}.profile-btn{width:100%}.nav{display:grid;grid-template-columns:1fr 1fr}.grid,.summary{grid-template-columns:1fr}.item-line{grid-template-columns:1fr}.actions .btn{width:100%}table{min-width:720px}}
 
-  :root {
-    --primary: #e11d48;
-    --primary-dark: #be123c;
-    --primary-soft: rgba(225, 29, 72, 0.12);
-    --secondary: #0f3b5c;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --info: #3b82f6;
-    --dark: #0f172a;
-    --gray: #475569;
-    --light: #f8fafc;
-    --border: rgba(148, 163, 184, 0.25);
-    --glass: rgba(255, 255, 255, 0.72);
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
-    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.04);
-    --shadow-glow: 0 0 40px -10px rgba(225, 29, 72, 0.3);
-    --radius-xl: 1.25rem;
-    --radius-lg: 1rem;
-    --radius-md: 0.75rem;
-    --radius-sm: 0.5rem;
-    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 50%, #f1f5f9 100%);
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    color: var(--dark);
-    line-height: 1.6;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  button, input, select, textarea { font: inherit; }
-  button { cursor: pointer; border: none; transition: var(--transition); }
-
-  .hidden { display: none !important; }
-
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-  /* ===== LOGIN SCREEN ===== */
-  .login {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-    position: relative;
-    overflow: hidden;
-  }
-  .login::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle at 30% 70%, rgba(225,29,72,0.15) 0%, transparent 50%),
-                radial-gradient(circle at 70% 30%, rgba(59,130,246,0.1) 0%, transparent 50%);
-    animation: loginPulse 15s ease-in-out infinite;
-  }
-  @keyframes loginPulse {
-    0%, 100% { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(180deg) scale(1.1); }
-  }
-  .login-card {
-    background: var(--glass);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-xl), 0 0 0 1px rgba(255,255,255,0.1);
-    width: 100%;
-    max-width: 440px;
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
-  }
-  .login-head {
-    background: linear-gradient(135deg, rgba(15,59,92,0.9), rgba(15,23,42,0.95));
-    color: white;
-    text-align: center;
-    padding: 2.5rem 1.5rem;
-    position: relative;
-  }
-  .login-head::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  }
-  .login-head h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; }
-  .login-head p { opacity: 0.8; font-size: 0.95rem; margin-top: 0.25rem; }
-  .login-body { padding: 2rem; }
-  .login-body .fg { margin-bottom: 1.25rem; }
-  .login-body input {
-    width: 100%;
-    padding: 0.9rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: rgba(255,255,255,0.8);
-    font-size: 0.95rem;
-    transition: var(--transition);
-  }
-  .login-body input:focus {
-    border-color: var(--primary);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15), var(--shadow-md);
-    background: white;
-  }
-  .login-body .btn-p {
-    width: 100%;
-    padding: 0.9rem;
-    font-size: 1rem;
-    font-weight: 700;
-    border-radius: var(--radius-md);
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
-    box-shadow: 0 4px 14px -2px rgba(225,29,72,0.4);
-  }
-  .login-body .btn-p:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px -4px rgba(225,29,72,0.5);
-  }
-  .login-body .btn-l {
-    width: 100%;
-    margin-top: 10px;
-    padding: 0.75rem;
-    border-radius: var(--radius-md);
-    background: rgba(255,255,255,0.5);
-    border: 1px solid var(--border);
-    font-weight: 600;
-    color: var(--gray);
-  }
-
-  /* ===== APP LAYOUT ===== */
-  .app { display: none; padding: 1rem; }
-  .container { max-width: 1440px; margin: 0 auto; }
-
-  /* ===== GLASS HEADER ===== */
-  .header {
-    background: var(--glass);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border-radius: var(--radius-xl);
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--glass-border);
-    position: sticky;
-    top: 0.5rem;
-    z-index: 50;
-  }
-  .brand { display: flex; align-items: center; gap: 0.85rem; }
-  .logo {
-    width: 46px; height: 46px;
-    background: linear-gradient(145deg, var(--primary), var(--primary-dark));
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.6rem;
-    color: white;
-    box-shadow: 0 4px 12px -2px rgba(225,29,72,0.4);
-  }
-  .brand h1 {
-    font-size: 1.35rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--secondary), var(--primary-dark));
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    letter-spacing: -0.02em;
-  }
-  .dt, .sync {
-    background: rgba(241, 245, 249, 0.8);
-    backdrop-filter: blur(8px);
-    border-radius: 40px;
-    padding: 0.35rem 0.9rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    color: var(--gray);
-  }
-  .profile-btn {
-    background: rgba(241, 245, 249, 0.8);
-    backdrop-filter: blur(8px);
-    border-radius: 40px;
-    padding: 0.25rem 0.85rem 0.25rem 0.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-weight: 600;
-    border: 1px solid var(--border);
-    transition: var(--transition);
-  }
-  .profile-btn:hover { background: rgba(255,255,255,0.95); box-shadow: var(--shadow-md); }
-  .avatar {
-    width: 36px; height: 36px;
-    background: linear-gradient(145deg, var(--primary), #b91c1c);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: white;
-    font-size: 0.85rem;
-  }
-
-  /* ===== BENTO GRID LAYOUT ===== */
-  .main-layout {
-    display: grid;
-    grid-template-columns: 270px 1fr;
-    gap: 1.25rem;
-    align-items: start;
-  }
-
-  /* ===== GLASS SIDEBAR ===== */
-  .sidebar-card {
-    background: var(--glass);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-md);
-    padding: 1rem;
-    position: sticky;
-    top: 5.5rem;
-    border: 1px solid var(--glass-border);
-  }
-  .sidebar-title {
-    font-weight: 800;
-    padding: 0.75rem 1rem;
-    color: var(--secondary);
-    border-bottom: 2px solid var(--primary-soft);
-    margin-bottom: 0.75rem;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .nav.side {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    background: transparent;
-  }
-  .nav.side button {
-    text-align: left;
-    justify-content: flex-start;
-    background: transparent;
-    color: var(--gray);
-    border-radius: var(--radius-md);
-    padding: 0.75rem 1rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    border: 1px solid transparent;
-    transition: var(--transition);
-  }
-  .nav.side button:hover { 
-    background: var(--primary-soft); 
-    color: var(--primary-dark); 
-    border-color: rgba(225,29,72,0.15);
-    transform: translateX(3px);
-  }
-  .nav.side button.active { 
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
-    color: white; 
-    box-shadow: 0 4px 12px -2px rgba(225,29,72,0.35);
-    border-color: transparent;
-  }
-
-  /* ===== GLASS CARDS ===== */
-  .card {
-    background: var(--glass);
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
-    border-radius: var(--radius-xl);
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-md);
-    transition: var(--transition);
-  }
-  .card:hover {
-    box-shadow: var(--shadow-lg);
-    border-color: rgba(255,255,255,0.6);
-  }
-  .head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .head h2 { 
-    font-size: 1.25rem; 
-    font-weight: 700; 
-    color: var(--dark); 
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  /* ===== MODERN BUTTONS ===== */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.65rem 1.25rem;
-    border-radius: 40px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    background: rgba(255,255,255,0.7);
-    color: var(--dark);
-    border: 1px solid var(--border);
-    backdrop-filter: blur(8px);
-    transition: var(--transition);
-    white-space: nowrap;
-  }
-  .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-    background: rgba(255,255,255,0.9);
-  }
-  .btn:active { transform: translateY(0); }
-
-  .btn-p { 
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
-    color: white; 
-    border: none;
-    box-shadow: 0 4px 14px -2px rgba(225,29,72,0.35);
-  }
-  .btn-p:hover { 
-    box-shadow: 0 6px 20px -4px rgba(225,29,72,0.45); 
-    transform: translateY(-2px);
-  }
-  .btn-s { 
-    background: linear-gradient(135deg, var(--success), #059669); 
-    color: white; 
-    border: none;
-    box-shadow: 0 4px 14px -2px rgba(16,185,129,0.3);
-  }
-  .btn-s:hover { box-shadow: 0 6px 20px -4px rgba(16,185,129,0.4); transform: translateY(-2px); }
-  .btn-e { 
-    background: linear-gradient(135deg, var(--danger), #dc2626); 
-    color: white; 
-    border: none;
-    box-shadow: 0 4px 14px -2px rgba(239,68,68,0.3);
-  }
-  .btn-i { 
-    background: linear-gradient(135deg, var(--info), #2563eb); 
-    color: white; 
-    border: none;
-    box-shadow: 0 4px 14px -2px rgba(59,130,246,0.3);
-  }
-  .btn-i:hover { box-shadow: 0 6px 20px -4px rgba(59,130,246,0.4); transform: translateY(-2px); }
-  .btn-w { 
-    background: linear-gradient(135deg, var(--warning), #d97706); 
-    color: white; 
-    border: none;
-    box-shadow: 0 4px 14px -2px rgba(245,158,11,0.3);
-  }
-  .btn-w:hover { box-shadow: 0 6px 20px -4px rgba(245,158,11,0.4); transform: translateY(-2px); }
-  .btn-l { 
-    background: rgba(241, 245, 249, 0.8); 
-    border: 1px solid var(--border); 
-    color: var(--gray);
-  }
-  .btn-sm { padding: 0.45rem 0.9rem; font-size: 0.8rem; }
-  .btn-lg { padding: 0.85rem 1.5rem; font-size: 0.95rem; }
-
-  /* ===== BENTO KPI GRID ===== */
-  .stable-kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
-    margin-bottom: 1.5rem;
-  }
-  .stable-kpi {
-    background: var(--glass);
-    backdrop-filter: blur(12px) saturate(160%);
-    border-radius: var(--radius-lg);
-    padding: 1.4rem;
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-md);
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-  }
-  .stable-kpi::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(180deg, var(--primary), var(--primary-dark));
-    border-radius: 2px;
-  }
-  .stable-kpi:hover { 
-    transform: translateY(-3px); 
-    box-shadow: var(--shadow-lg), var(--shadow-glow);
-  }
-  .stable-kpi .icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
-  .stable-kpi span { 
-    font-size: 0.72rem; 
-    text-transform: uppercase; 
-    font-weight: 700; 
-    color: var(--gray); 
-    letter-spacing: 0.05em;
-  }
-  .stable-kpi b { 
-    font-size: 1.5rem; 
-    font-weight: 800; 
-    color: var(--dark); 
-    display: block; 
-    margin: 0.35rem 0; 
-    letter-spacing: -0.02em;
-  }
-
-  /* ===== SUMMARY BENTO ===== */
-  .summary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin: 1.25rem 0;
-  }
-  .sum {
-    background: rgba(241, 245, 249, 0.6);
-    backdrop-filter: blur(8px);
-    padding: 1.1rem;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    border: 1px solid var(--border);
-    transition: var(--transition);
-  }
-  .sum:hover { background: rgba(255,255,255,0.8); transform: translateY(-2px); }
-  .sum b { 
-    display: block; 
-    font-size: 1.4rem; 
-    font-weight: 800; 
-    margin-top: 0.3rem; 
-    color: var(--secondary); 
-    letter-spacing: -0.02em;
-  }
-
-  /* ===== MODERN TABLE ===== */
-  .tbl { 
-    overflow-x: auto; 
-    border-radius: var(--radius-md); 
-    border: 1px solid var(--border);
-  }
-  table { width: 100%; border-collapse: collapse; }
-  th {
-    background: rgba(241, 245, 249, 0.8);
-    backdrop-filter: blur(8px);
-    padding: 0.9rem 0.75rem;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    color: var(--gray);
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  td {
-    padding: 0.85rem 0.75rem;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.88rem;
-    vertical-align: middle;
-    transition: background 0.2s;
-  }
-  tr:hover td { background: rgba(241, 245, 249, 0.4); }
-
-  /* ===== BADGES ===== */
-  .badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 30px;
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    backdrop-filter: blur(8px);
-  }
-  .done { background: rgba(16, 185, 129, 0.15); color: #047857; border: 1px solid rgba(16,185,129,0.2); }
-  .pending { background: rgba(245, 158, 11, 0.15); color: #b45309; border: 1px solid rgba(245,158,11,0.2); }
-  .expense { background: rgba(239, 68, 68, 0.15); color: #b91c1c; border: 1px solid rgba(239,68,68,0.2); }
-
-  /* ===== HERO SECTION ===== */
-  .stable-hero {
-    background: linear-gradient(115deg, #0f172a, #1e293b, #4c0519);
-    border-radius: var(--radius-xl);
-    padding: 1.8rem 2.2rem;
-    color: white;
-    margin-bottom: 1.5rem;
-    position: relative;
-    overflow: hidden;
-    box-shadow: var(--shadow-xl);
-  }
-  .stable-hero::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -20%;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(225,29,72,0.2) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  .stable-hero-row {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    align-items: center;
-    position: relative;
-    z-index: 1;
-  }
-  .stable-pill {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 60px;
-    padding: 0.5rem 1.1rem;
-    font-weight: 600;
-    font-size: 0.85rem;
-  }
-
-  /* ===== NEWS TICKER ===== */
-  .stable-news-bar {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    border-radius: 60px;
-    margin-bottom: 1.25rem;
-    overflow: hidden;
-    box-shadow: var(--shadow-md);
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-  .stable-news-track {
-    display: flex;
-    width: max-content;
-    white-space: nowrap;
-    animation: tickerScroll 32s linear infinite;
-    padding: 0.75rem 0;
-    font-weight: 600;
-    color: #e2e8f0;
-    font-size: 0.85rem;
-  }
-  @keyframes tickerScroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
-
-  /* ===== PROGRESS BAR ===== */
-  .stable-progress {
-    height: 10px;
-    background: rgba(226, 232, 240, 0.6);
-    border-radius: 20px;
-    overflow: hidden;
-    backdrop-filter: blur(4px);
-  }
-  .bar {
-    background: linear-gradient(90deg, var(--success), #34d399);
-    height: 100%;
-    border-radius: 20px;
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* ===== MODAL ===== */
-  .modal-bg {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(8px);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  .modal-bg.active { display: flex; }
-  .modal {
-    background: var(--glass);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-radius: var(--radius-xl);
-    max-width: 800px;
-    width: 100%;
-    padding: 1.75rem;
-    max-height: 85vh;
-    overflow-y: auto;
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-xl);
-    animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.95) translateY(10px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  /* ===== NOTIFICATIONS ===== */
-  .notify-wrap { position: relative; }
-  .notify-btn {
-    background: rgba(241, 245, 249, 0.8);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--border);
-    border-radius: 40px;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--gray);
-    transition: var(--transition);
-  }
-  .notify-btn:hover { background: rgba(255,255,255,0.95); box-shadow: var(--shadow-md); }
-  .notify-count {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 700;
-    margin-left: 0.3rem;
-  }
-  .notify-panel {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    right: 0;
-    background: var(--glass);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-xl);
-    width: 360px;
-    max-height: 450px;
-    overflow: auto;
-    z-index: 200;
-    display: none;
-    animation: notifyIn 0.25s ease;
-  }
-  .notify-panel.active { display: block; }
-  @keyframes notifyIn {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .notify-item {
-    padding: 0.9rem 1.1rem;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
-    transition: background 0.2s;
-    cursor: pointer;
-  }
-  .notify-item:hover { background: rgba(241,245,249,0.5); }
-  .notify-item.unread { background: rgba(238, 242, 255, 0.6); border-left: 3px solid var(--info); }
-
-  /* ===== TABLE CONTROLS ===== */
-  .table-controls {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    padding: 1rem;
-    background: rgba(241, 245, 249, 0.5);
-    backdrop-filter: blur(8px);
-    border-radius: var(--radius-md);
-    margin-bottom: 1.25rem;
-    border: 1px solid var(--border);
-  }
-  .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-
-  /* ===== FORM ROWS ===== */
-  .row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1rem; }
-  .row.two { grid-template-columns: repeat(2,1fr); }
-  .fg { margin-bottom: 0.9rem; }
-  .fg label { 
-    font-weight: 700; 
-    display: block; 
-    margin-bottom: 0.35rem; 
-    color: var(--dark); 
-    font-size: 0.82rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-  input, select, textarea {
-    width: 100%;
-    padding: 0.75rem 0.9rem;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border);
-    background: rgba(255,255,255,0.7);
-    font-size: 0.9rem;
-    transition: var(--transition);
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--primary);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(225,29,72,0.12), var(--shadow-sm);
-    background: white;
-  }
-
-  /* ===== TOAST ===== */
-  .toast-wrap {
-    position: fixed;
-    top: 1.25rem;
-    right: 1.25rem;
-    z-index: 1100;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .toast {
-    background: var(--glass);
-    backdrop-filter: blur(16px) saturate(180%);
-    border-left: 4px solid var(--primary);
-    border-radius: var(--radius-md);
-    padding: 1rem 1.25rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--glass-border);
-    border-left-width: 4px;
-    animation: toastIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    max-width: 380px;
-  }
-  .toast.success { border-left-color: var(--success); }
-  .toast.error { border-left-color: var(--danger); }
-  .toast.warning { border-left-color: var(--warning); }
-  .toast.info { border-left-color: var(--info); }
-  @keyframes toastIn {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  /* ===== MENU ===== */
-  .menu {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    right: 0;
-    background: var(--glass);
-    backdrop-filter: blur(20px) saturate(180%);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-xl);
-    overflow: hidden;
-    display: none;
-    min-width: 180px;
-    z-index: 100;
-    animation: menuIn 0.2s ease;
-  }
-  .menu.active { display: block; }
-  @keyframes menuIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .menu button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 0.75rem 1.1rem;
-    background: transparent;
-    border: none;
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--dark);
-    transition: background 0.2s;
-  }
-  .menu button:hover { background: var(--primary-soft); color: var(--primary-dark); }
-
-  /* ===== PROFILE ===== */
-  .profile { position: relative; }
-
-  /* ===== SIDE TOGGLE ===== */
-  .side-toggle {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: white;
-    border-radius: 40px;
-    padding: 0.65rem 1.1rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    display: none;
-    box-shadow: 0 4px 14px -2px rgba(225,29,72,0.35);
-    border: none;
-  }
-  .side-toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 20px -4px rgba(225,29,72,0.45); }
-
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 1024px) {
-    .stable-kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 900px) {
-    .main-layout { grid-template-columns: 1fr; }
-    .sidebar-card {
-      position: fixed;
-      top: 80px;
-      left: 1rem;
-      right: 1rem;
-      z-index: 100;
-      transform: translateY(-120%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: none;
-      max-height: calc(100vh - 100px);
-      overflow-y: auto;
-    }
-    .sidebar-card.open { display: block; transform: translateY(0); }
-    .side-toggle { display: inline-flex; }
-    .header { position: relative; top: 0; }
-  }
-  @media (max-width: 640px) {
-    .stable-kpi-grid { grid-template-columns: 1fr; }
-    .summary { grid-template-columns: 1fr; }
-    .row { grid-template-columns: 1fr; }
-    .row.two { grid-template-columns: 1fr; }
-    .app { padding: 0.5rem; }
-    .header { padding: 0.6rem; }
-  }
-
-  /* ===== PRINT ===== */
-  @media print {
-    .header, .nav, .actions, .login, .side-toggle, .toast-wrap, .modal-bg { display: none !important; }
-    body { background: white; }
-    .app { display: block !important; }
-    .card { box-shadow: none; border: 1px solid #e2e8f0; background: white; }
-  }
-
-  /* ===== BULK PRINT BADGE ===== */
-  .bulk-badge {
-    background: linear-gradient(135deg, var(--info), #2563eb);
-    color: white;
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 800;
-    margin-left: 0.4rem;
-  }
-
-  /* ===== CHECKBOX STYLING ===== */
-  input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--primary);
-    cursor: pointer;
-  }
-
-  /* ===== LOADING SHIMMER ===== */
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-  .shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
+/* Side menu layout */
+.main-layout{display:grid;grid-template-columns:245px 1fr;gap:12px;align-items:start}
+.side-toggle{display:none;background:var(--p);color:#fff;border-radius:12px;padding:10px 13px;font-weight:900}
+.sidebar-card{background:#fff;border-radius:18px;box-shadow:0 10px 25px rgba(15,23,42,.07);padding:10px;position:sticky;top:12px}
+.sidebar-title{font-weight:900;color:var(--d);padding:10px 12px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.nav.side{display:flex;flex-direction:column;gap:6px;background:transparent;padding:0;margin:0;box-shadow:none;border-radius:0;overflow:visible}
+.nav.side button{width:100%;text-align:left;justify-content:flex-start;border-radius:12px}
+.content-area{min-width:0}
+@media(max-width:850px){
+ .side-toggle{display:inline-flex;margin-bottom:10px}
+ .main-layout{display:block}
+ .sidebar-card{display:none;position:fixed;left:10px;right:10px;top:10px;z-index:40;max-height:90vh;overflow:auto}
+ .sidebar-card.open{display:block}
+ .nav.side{display:flex!important;grid-template-columns:none}
+ .nav.side button{font-size:14px;padding:12px}
+ .content-area{width:100%}
+}
 
 
-  /* ===== CLIENT SEARCH DROPDOWN ===== */
-  .client-dropdown {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    max-height: 280px;
-    overflow-y: auto;
-    z-index: 100;
-    animation: dropdownIn 0.2s ease;
-  }
-  @keyframes dropdownIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .client-option {
-    padding: 0.7rem 0.9rem;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .client-option:hover {
-    background: var(--primary-soft);
-  }
-  .client-option:last-child {
-    border-bottom: none;
-  }
-  .client-name {
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: var(--dark);
-  }
-  .client-meta {
-    font-size: 0.75rem;
-    color: var(--gray);
-    margin-top: 2px;
-  }
+.news-ticker{background:linear-gradient(135deg,#111827,#243447);color:#fff;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 10px 25px rgba(15,23,42,.12)}
+.news-ticker .ticker-inner{white-space:nowrap;display:flex;width:max-content;padding:12px 0;font-weight:900;animation:tickerMove 22s linear infinite}
+.news-ticker span{display:inline-block;padding-right:80px}
+@keyframes tickerMove{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.target-banner{background:linear-gradient(135deg,#fff7ed,#ecfdf5);border:1px solid #fed7aa;border-left:6px solid var(--s);border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 10px 25px rgba(15,23,42,.06)}
+.target-banner h2{font-size:18px;color:var(--d);margin-bottom:8px}
+.target-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px}
+.target-mini div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+.target-mini small{display:block;color:#64748b;font-weight:900}
+.target-mini b{font-size:18px}
+.news-admin-preview{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:14px;padding:12px;font-weight:800;color:#475569}
+@media(max-width:850px){.target-mini{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.target-mini{grid-template-columns:1fr}.news-ticker .ticker-inner{animation-duration:14s}}
 
 
-  /* ===== ACTION DROPDOWN MENU ===== */
-  .action-dropdown { position: relative; }
-  .action-toggle { 
-    background: linear-gradient(135deg, var(--info), #2563eb); 
-    color: white; 
-    border: none;
-    box-shadow: 0 2px 8px -2px rgba(59,130,246,0.3);
-  }
-  .action-toggle:hover { 
-    box-shadow: 0 4px 12px -2px rgba(59,130,246,0.4); 
-    transform: translateY(-1px);
-  }
-  .action-menu {
-    position: relative;
-    display: inline-block;
-    background: var(--glass);
-    backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-xl);
-    z-index: 50;
-    min-width: 180px;
-    padding: 0.5rem;
-    animation: menuIn 0.2s ease;
-  }
-  .action-menu .btn {
-    width: 100%;
-    margin-bottom: 4px;
-    justify-content: flex-start;
-    text-align: left;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-  }
-  .action-menu .btn:last-child { margin-bottom: 0; }
-
-  /* ===== ACTION MENU LIST (for compact dropdowns) ===== */
-  .action-menu-list {
-    position: absolute;
-    top: calc(100% + 4px);
-    right: 0;
-    background: var(--glass);
-    backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-xl);
-    z-index: 50;
-    min-width: 160px;
-    padding: 0.5rem;
-    display: none;
-    animation: menuIn 0.2s ease;
-  }
-  .action-menu-list.open { display: block; }
-  .action-menu-list button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 0.5rem 0.75rem;
-    background: transparent;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    font-size: 0.8rem;
-    color: var(--dark);
-    cursor: pointer;
-    transition: background 0.15s;
-    margin-bottom: 2px;
-  }
-  .action-menu-list button:hover {
-    background: var(--primary-soft);
-    color: var(--primary-dark);
-  }
-  .action-menu-list button:last-child { margin-bottom: 0; }
+.table-controls{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 12px;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:10px}
+.table-controls .left,.table-controls .right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.table-controls input{max-width:260px;padding:9px 11px}
+.table-controls select{max-width:120px;padding:9px 11px}
+.table-info{font-size:12px;color:#64748b;font-weight:900}
+@media(max-width:560px){.table-controls,.table-controls .left,.table-controls .right{align-items:stretch;width:100%}.table-controls input,.table-controls select{max-width:none;width:100%}}
 
 
-  /* ===== TABLE SORTING & SEARCH ===== */
-  .table-search {
-    width: 100%;
-    max-width: 300px;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: rgba(255,255,255,0.7);
-    font-size: 0.85rem;
-    margin-bottom: 0.75rem;
+.notify-wrap{position:relative}
+.notify-btn{position:relative;background:#f8fafc;border:1px solid var(--line);border-radius:999px;padding:9px 12px;font-weight:900;color:#111827}
+.notify-count{position:absolute;top:-6px;right:-6px;background:#dc2626;color:#fff;border-radius:999px;font-size:11px;min-width:19px;height:19px;display:flex;align-items:center;justify-content:center;font-weight:900;border:2px solid #fff}
+.notify-panel{display:none;position:absolute;right:0;top:46px;width:340px;max-height:430px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 50px rgba(15,23,42,.20);z-index:60}
+.notify-panel.open{display:block}
+.notify-head{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--line);font-weight:900}
+.notify-item{padding:12px;border-bottom:1px solid #eef2f7}
+.notify-item.unread{background:#eff6ff}
+.notify-item b{display:block;color:#1f2937;margin-bottom:4px}
+.notify-item small{color:#64748b;font-weight:800}
+.notify-empty{padding:22px;text-align:center;color:#64748b;font-weight:900}
+@media(max-width:560px){.notify-panel{left:0;right:auto;width:100%;max-width:calc(100vw - 20px)}}
+
+
+/* Premium Decorative Dashboard */
+.dash-hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#111827 0%,#243447 45%,#e74c3c 100%);
+  color:#fff;border-radius:24px;padding:22px;margin-bottom:14px;
+  box-shadow:0 18px 45px rgba(15,23,42,.22);
+}
+.dash-hero:before{
+  content:"";position:absolute;right:-80px;top:-80px;width:230px;height:230px;
+  background:rgba(255,255,255,.12);border-radius:50%;
+}
+.dash-hero:after{
+  content:"";position:absolute;left:35%;bottom:-90px;width:260px;height:260px;
+  background:rgba(255,255,255,.07);border-radius:50%;
+}
+.dash-hero-content{position:relative;z-index:1;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}
+.dash-title h1{font-size:26px;margin-bottom:6px}
+.dash-title p{color:#e5e7eb;font-weight:800;line-height:1.5}
+.dash-chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:9px 13px;font-weight:900;backdrop-filter:blur(8px)}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.kpi-card{
+  position:relative;overflow:hidden;background:#fff;border-radius:22px;padding:16px;
+  border:1px solid rgba(255,255,255,.85);box-shadow:0 14px 35px rgba(15,23,42,.08);
+  transition:.2s;min-height:118px;
+}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 18px 45px rgba(15,23,42,.12)}
+.kpi-card:after{content:"";position:absolute;right:-35px;top:-35px;width:95px;height:95px;border-radius:50%;background:var(--kpi-soft,#fee2e2)}
+.kpi-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;position:relative;z-index:1}
+.kpi-icon{width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;background:var(--kpi,#e74c3c);box-shadow:0 10px 20px rgba(0,0,0,.13)}
+.kpi-card span{font-size:12px;color:#64748b;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+.kpi-card b{display:block;font-size:23px;margin-top:8px;color:#111827}
+.kpi-card small{display:block;color:#64748b;font-weight:800;margin-top:4px}
+.kpi-red{--kpi:#e74c3c;--kpi-soft:#fee2e2}
+.kpi-blue{--kpi:#2563eb;--kpi-soft:#dbeafe}
+.kpi-green{--kpi:#16a34a;--kpi-soft:#dcfce7}
+.kpi-amber{--kpi:#d97706;--kpi-soft:#fef3c7}
+.kpi-purple{--kpi:#7c3aed;--kpi-soft:#ede9fe}
+.kpi-slate{--kpi:#243447;--kpi-soft:#e2e8f0}
+.dash-section-title{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 10px;
+}
+.dash-section-title h2{font-size:18px;color:#243447}
+.dash-section-title .line{height:2px;background:linear-gradient(90deg,#e74c3c,transparent);flex:1}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.quick-card{
+  background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.9);border-radius:20px;
+  padding:15px;box-shadow:0 12px 28px rgba(15,23,42,.07);cursor:pointer;transition:.2s;
+}
+.quick-card:hover{transform:translateY(-2px);background:#fff}
+.quick-card .q-icon{font-size:28px;margin-bottom:8px}
+.quick-card b{display:block;color:#111827}
+.quick-card small{color:#64748b;font-weight:800}
+.dashboard-panel{
+  background:#fff;border-radius:22px;border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 14px 35px rgba(15,23,42,.07);padding:16px;margin-bottom:14px;
+}
+.dashboard-panel .head{margin-bottom:10px}
+.decor-progress{
+  height:18px;background:#e5e7eb;border-radius:999px;overflow:hidden;border:3px solid #fff;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
+}
+.decor-progress .bar{background:linear-gradient(90deg,#16a34a,#84cc16,#22c55e)}
+.mini-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.mini-status{padding:12px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:16px}
+.mini-status small{display:block;color:#64748b;font-weight:900}
+.mini-status b{font-size:18px}
+@media(max-width:980px){.kpi-grid,.quick-grid{grid-template-columns:repeat(2,1fr)}.mini-status-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.dash-hero{padding:18px}.dash-title h1{font-size:22px}.kpi-grid,.quick-grid{grid-template-columns:1fr}.kpi-card{min-height:auto}.dash-hero-content{align-items:flex-start}.dash-chip{width:100%;text-align:center}}
+
+
+/* FORCE Premium Dashboard v2 */
+.force-news-bar{
+  margin:0 0 14px 0;
+  border-radius:18px;
+  overflow:hidden;
+  background:linear-gradient(90deg,#0f172a,#1e293b,#e74c3c);
+  color:#fff;
+  box-shadow:0 12px 28px rgba(15,23,42,.18);
+}
+.force-news-track{
+  display:flex;
+  width:max-content;
+  white-space:nowrap;
+  animation:forceTicker 26s linear infinite;
+  font-weight:900;
+  padding:13px 0;
+}
+.force-news-track span{padding-right:90px}
+@keyframes forceTicker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+.force-dashboard-hero{
+  position:relative;
+  overflow:hidden;
+  border-radius:28px;
+  padding:26px;
+  margin-bottom:16px;
+  color:#fff;
+  background:
+    radial-gradient(circle at 85% 10%,rgba(255,255,255,.22),transparent 25%),
+    linear-gradient(135deg,#0f172a 0%,#1e293b 45%,#e74c3c 100%);
+  box-shadow:0 22px 55px rgba(15,23,42,.25);
+}
+.force-dashboard-hero h1{font-size:30px;margin:0 0 8px}
+.force-dashboard-hero p{font-weight:800;color:#e5e7eb;line-height:1.5}
+.force-hero-row{position:relative;z-index:1;display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap}
+.force-hero-pill{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:10px 14px;font-weight:900}
+
+.force-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.force-kpi{
+  border-radius:24px;
+  padding:18px;
+  min-height:130px;
+  background:#fff;
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 16px 38px rgba(15,23,42,.10);
+  position:relative;
+  overflow:hidden;
+}
+.force-kpi::after{content:"";position:absolute;right:-45px;top:-45px;width:120px;height:120px;border-radius:50%;background:var(--soft,#fee2e2)}
+.force-kpi .icon{
+  width:52px;height:52px;border-radius:18px;background:var(--clr,#e74c3c);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-size:25px;
+  box-shadow:0 10px 22px rgba(0,0,0,.16);
+  position:relative;z-index:1;
+}
+.force-kpi .label{position:relative;z-index:1;margin-top:12px;color:#64748b;font-weight:900;font-size:12px;text-transform:uppercase}
+.force-kpi .value{position:relative;z-index:1;font-size:25px;font-weight:900;color:#0f172a;margin-top:5px}
+.force-kpi .sub{position:relative;z-index:1;color:#64748b;font-weight:800;font-size:12px;margin-top:4px}
+.force-red{--clr:#e74c3c;--soft:#fee2e2}
+.force-blue{--clr:#2563eb;--soft:#dbeafe}
+.force-green{--clr:#16a34a;--soft:#dcfce7}
+.force-purple{--clr:#7c3aed;--soft:#ede9fe}
+.force-orange{--clr:#d97706;--soft:#fef3c7}
+.force-slate{--clr:#243447;--soft:#e2e8f0}
+
+.force-section-title{display:flex;align-items:center;gap:12px;margin:18px 0 12px}
+.force-section-title h2{font-size:20px;color:#243447;margin:0}
+.force-section-title .line{height:3px;border-radius:999px;background:linear-gradient(90deg,#e74c3c,transparent);flex:1}
+
+.force-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.force-quick-card{
+  background:linear-gradient(180deg,#fff,#f8fafc);
+  border:1px solid #e5e7eb;
+  border-radius:24px;
+  padding:18px;
+  box-shadow:0 14px 30px rgba(15,23,42,.08);
+  cursor:pointer;
+  transition:.18s;
+}
+.force-quick-card:hover{transform:translateY(-3px);box-shadow:0 20px 42px rgba(15,23,42,.13)}
+.force-quick-card .q{font-size:30px;margin-bottom:10px}
+.force-quick-card b{display:block;color:#111827;font-size:16px}
+.force-quick-card small{display:block;color:#64748b;font-weight:800;margin-top:4px}
+
+.force-panel{
+  background:#fff;border-radius:24px;padding:18px;margin-bottom:16px;
+  border:1px solid #eef2f7;box-shadow:0 16px 38px rgba(15,23,42,.08)
+}
+.force-progress{height:20px;background:#e5e7eb;border-radius:999px;overflow:hidden;border:3px solid #fff;box-shadow:inset 0 1px 3px rgba(0,0,0,.12)}
+.force-progress .bar{height:100%;background:linear-gradient(90deg,#16a34a,#84cc16,#22c55e)}
+@media(max-width:980px){.force-kpis,.force-quick{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.force-kpis,.force-quick{grid-template-columns:1fr}.force-dashboard-hero h1{font-size:23px}.force-dashboard-hero{padding:20px}.force-hero-pill{width:100%;text-align:center}}
+
+
+/* Stable Dashboard + News Ticker */
+.stable-news-bar{
+  margin:0 0 14px 0;border-radius:18px;overflow:hidden;
+  background:linear-gradient(90deg,#0f172a,#1e293b,#e74c3c);color:#fff;
+  box-shadow:0 12px 28px rgba(15,23,42,.18)
+}
+.stable-news-track{display:flex;width:max-content;white-space:nowrap;animation:stableTicker 24s linear infinite;font-weight:900;padding:12px 0}
+.stable-news-track span{padding-right:90px}
+@keyframes stableTicker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.stable-hero{border-radius:24px;padding:22px;margin-bottom:14px;color:#fff;background:linear-gradient(135deg,#0f172a,#243447 55%,#e74c3c);box-shadow:0 18px 45px rgba(15,23,42,.22)}
+.stable-hero-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.stable-hero h1{font-size:28px;margin:0 0 6px}
+.stable-hero p{font-weight:800;color:#e5e7eb;line-height:1.5}
+.stable-pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:10px 14px;font-weight:900}
+.stable-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stable-kpi{background:#fff;border-radius:20px;padding:16px;box-shadow:0 14px 32px rgba(15,23,42,.09);border-left:6px solid var(--k,#e74c3c)}
+.stable-kpi .icon{font-size:26px;margin-bottom:8px}
+.stable-kpi span{font-size:12px;color:#64748b;font-weight:900;text-transform:uppercase}
+.stable-kpi b{display:block;font-size:23px;color:#111827;margin-top:5px}
+.stable-kpi small{color:#64748b;font-weight:800}
+.stable-red{--k:#e74c3c}.stable-blue{--k:#2563eb}.stable-green{--k:#16a34a}.stable-purple{--k:#7c3aed}
+.stable-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stable-quick-card{background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:15px;box-shadow:0 12px 26px rgba(15,23,42,.07);cursor:pointer}
+.stable-quick-card:hover{transform:translateY(-2px)}
+.stable-quick-card .q{font-size:28px;margin-bottom:8px}.stable-quick-card b{display:block}.stable-quick-card small{color:#64748b;font-weight:800}
+.stable-section{display:flex;align-items:center;gap:10px;margin:16px 0 10px}.stable-section h2{font-size:19px;color:#243447}.stable-section .line{height:3px;background:linear-gradient(90deg,#e74c3c,transparent);flex:1}
+.stable-panel{background:#fff;border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 14px 32px rgba(15,23,42,.07)}
+.stable-progress{height:18px;background:#e5e7eb;border-radius:999px;overflow:hidden}.stable-progress .bar{height:100%;background:linear-gradient(90deg,#16a34a,#84cc16)}
+@media(max-width:900px){.stable-kpi-grid,.stable-quick{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.stable-kpi-grid,.stable-quick{grid-template-columns:1fr}.stable-hero h1{font-size:23px}.stable-pill{width:100%;text-align:center}}
+
+
+/* Stable Dashboard Final */
+.stable-news-bar{margin:0 0 14px 0;border-radius:18px;overflow:hidden;background:linear-gradient(90deg,#0f172a,#1e293b,#e74c3c);color:#fff;box-shadow:0 12px 28px rgba(15,23,42,.18)}
+.stable-news-track{display:flex;width:max-content;white-space:nowrap;animation:stableTicker 24s linear infinite;font-weight:900;padding:12px 0}
+.stable-news-track span{padding-right:90px}
+@keyframes stableTicker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.stable-hero{border-radius:24px;padding:22px;margin-bottom:14px;color:#fff;background:linear-gradient(135deg,#0f172a,#243447 55%,#e74c3c);box-shadow:0 18px 45px rgba(15,23,42,.22)}
+.stable-hero-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.stable-hero h1{font-size:28px;margin:0 0 6px}.stable-hero p{font-weight:800;color:#e5e7eb;line-height:1.5}
+.stable-pill{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:10px 14px;font-weight:900}
+.stable-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stable-kpi{background:#fff;border-radius:20px;padding:16px;box-shadow:0 14px 32px rgba(15,23,42,.09);border-left:6px solid var(--k,#e74c3c)}
+.stable-kpi .icon{font-size:26px;margin-bottom:8px}.stable-kpi span{font-size:12px;color:#64748b;font-weight:900;text-transform:uppercase}
+.stable-kpi b{display:block;font-size:23px;color:#111827;margin-top:5px}.stable-kpi small{color:#64748b;font-weight:800}
+.stable-red{--k:#e74c3c}.stable-blue{--k:#2563eb}.stable-green{--k:#16a34a}.stable-purple{--k:#7c3aed}
+.stable-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stable-quick-card{background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:15px;box-shadow:0 12px 26px rgba(15,23,42,.07);cursor:pointer}
+.stable-quick-card:hover{transform:translateY(-2px)}.stable-quick-card .q{font-size:28px;margin-bottom:8px}.stable-quick-card b{display:block}.stable-quick-card small{color:#64748b;font-weight:800}
+.stable-section{display:flex;align-items:center;gap:10px;margin:16px 0 10px}.stable-section h2{font-size:19px;color:#243447}.stable-section .line{height:3px;background:linear-gradient(90deg,#e74c3c,transparent);flex:1}
+.stable-panel{background:#fff;border-radius:20px;padding:16px;margin-bottom:14px;box-shadow:0 14px 32px rgba(15,23,42,.07)}
+.stable-progress{height:18px;background:#e5e7eb;border-radius:999px;overflow:hidden}.stable-progress .bar{height:100%;background:linear-gradient(90deg,#16a34a,#84cc16)}
+@media(max-width:900px){.stable-kpi-grid,.stable-quick{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.stable-kpi-grid,.stable-quick{grid-template-columns:1fr}.stable-hero h1{font-size:23px}.stable-pill{width:100%;text-align:center}}
+
+
+/* Employee Target Banner Safe */
+.target-banner{background:linear-gradient(135deg,#fff7ed,#ecfdf5);border:1px solid #fed7aa;border-left:6px solid #16a34a;border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 10px 25px rgba(15,23,42,.06)}
+.target-banner h2{font-size:18px;color:#243447;margin-bottom:8px}
+.target-mini{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:10px}
+.target-mini div{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:10px}
+.target-mini small{display:block;color:#64748b;font-weight:900}
+.target-mini b{font-size:18px}
+@media(max-width:850px){.target-mini{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.target-mini{grid-template-columns:1fr}}
+
+
+.billing-check{width:18px;height:18px;accent-color:#e74c3c}
+
+
+.stable-kpi{transition:.16s}
+.stable-kpi:hover{transform:translateY(-2px)}
+.billing-check{width:18px;height:18px;accent-color:#e74c3c}
+
+
+#billingModal .modal{max-width:820px}
+#billingModal input[disabled]{background:#f8fafc;color:#64748b}
+
+
+#clientEditModal .modal{max-width:900px}
+#clientEditModal input[readonly]{background:#f8fafc;color:#64748b;font-weight:900}
+
+
+.perm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0}
+.perm-box{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:10px;font-weight:900;color:#374151;display:flex;align-items:center;gap:8px}
+.perm-box input{width:18px;height:18px;accent-color:#2563eb}
+.action-menu{position:relative;display:inline-block}
+.action-menu-list{display:none;position:absolute;right:0;top:36px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 40px rgba(15,23,42,.18);z-index:100;min-width:150px;overflow:hidden}
+.action-menu-list.open{display:block}
+.action-menu-list button{display:block;width:100%;text-align:left;background:#fff;color:#111827;padding:10px 12px;border-bottom:1px solid #eef2f7;font-weight:800}
+.action-menu-list button:hover{background:#f8fafc}
+@media(max-width:700px){.perm-grid{grid-template-columns:repeat(2,1fr)}}
+
+
+.tbl th[onclick], .tbl thead th{user-select:none}
+.table-pages .btn{min-width:34px}
+
+
+.billing-list-controls{align-items:flex-end}
+.billing-list-controls input{min-width:240px}
+@media(max-width:700px){.billing-list-controls{display:block}.billing-list-controls .right{margin-top:10px}}
+
+
+/* ===== FIX SIDEBAR SCROLL BEHAVIOR ===== */
+.layout{align-items:start}
+.sidebar{
+  position:sticky !important;
+  top:12px !important;
+  align-self:start !important;
+  max-height:calc(100vh - 24px) !important;
+  overflow-y:auto !important;
+  overscroll-behavior:contain;
+}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
+body.menu-open{overflow:hidden}
+@media(max-width:900px){
+  .sidebar{
+    position:fixed !important;
+    left:10px !important;
+    right:10px !important;
+    top:10px !important;
+    bottom:auto !important;
+    z-index:9999 !important;
+    max-height:calc(100vh - 20px) !important;
+    overflow-y:auto !important;
+    transform:translateY(-120%);
+    transition:.22s ease;
   }
-  .table-search:focus {
-    border-color: var(--primary);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(225,29,72,0.12);
-    background: white;
+  .sidebar.open{
+    display:block !important;
+    transform:translateY(0);
   }
-  th.sortable {
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-    padding-right: 1.5rem;
+  .sidebar::before{
+    content:'Menu';
+    display:block;
+    font-weight:900;
+    font-size:20px;
+    color:#243447;
+    margin:4px 4px 10px;
   }
-  th.sortable:hover {
-    background: #e2e8f0;
+}
+
+
+#employeeModal .modal{max-width:900px}
+.perm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0}
+.perm-box{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:10px;font-weight:900;color:#374151;display:flex;align-items:center;gap:8px}
+.perm-box input{width:18px;height:18px;accent-color:#2563eb}
+@media(max-width:700px){.perm-grid{grid-template-columns:repeat(2,1fr)}}
+
+
+/* Mobile menu close/open stability */
+body.menu-open{overflow:hidden}
+@media(max-width:900px){
+  .sidebar.open,.side.open,#sidePanel.open,#side.open{
+    display:block!important;
+    transform:translateY(0)!important;
+    z-index:9999!important;
   }
-  th.sortable::after {
-    content: '⇅';
-    position: absolute;
-    right: 0.5rem;
-    opacity: 0.4;
-    font-size: 0.7rem;
+}
+
+
+/* reports/cashflow sidebar mobile visibility */
+@media(max-width:900px){
+  .sidebar.open,.side.open,#sidePanel.open,#side.open{
+    display:block!important;
+    transform:translateY(0)!important;
+    z-index:9999!important;
   }
-  th.sortable.asc::after {
-    content: '↑';
-    opacity: 1;
-    color: var(--primary);
-  }
-  th.sortable.desc::after {
-    content: '↓';
-    opacity: 1;
-    color: var(--primary);
-  }
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<base target="_blank">
-<base target="_blank">
-<base target="_blank">
-<base target="_blank">
 </head>
 <body>
 <div id="loginScreen" class="login">
@@ -1148,7 +523,7 @@ function safeReceiptId(){
 const KEY='firenet_clean_fixed_v1';
 const firebaseConfig={apiKey:'AIzaSyDEOfh1JufNuoEIMEZ_tgt1Lg4PSLLUE7E',authDomain:'complaint-b1f3c.firebaseapp.com',projectId:'complaint-b1f3c',storageBucket:'complaint-b1f3c.firebasestorage.app',messagingSenderId:'400630080362',appId:'1:400630080362:web:bbe16973f247dd67407b13',measurementId:'G-ENJVNBEVXT'};
 let S,U,TAB='dashboard',draft=[],db=null,fbReady=false,fbLoading=false,unsubs=[];
-let financeDate=today(), financeAll=true, financeEmp='all', financeType='all', financeMode='all', financeCat='all', complaintDate=today(), complaintAll=false;
+let financeDate=today(), financeAll=true, financeEmp='all', complaintDate=today(), complaintAll=false;
 
 function def(){return{admin:{u:'admin',p:'admin123',recovery:'1122'},employees:[{id:'e1',name:'Ali',phone:'ali',mobile:'03001234561',pin:'1234',role:'Collection',active:true,per:{complaints:1,attendance:1,invoice:1,finance:1,clients:1,billing:1,targets:1,advance:1}},{id:'e2',name:'Usman',phone:'usman',mobile:'03001234562',pin:'1234',role:'Technician',active:true,per:{complaints:1,attendance:1,invoice:1,finance:0,clients:1,billing:1,targets:1,advance:1}}],complaints:[],finance:[],invoices:[],targets:[],attendance:[],clients:[],advances:[],news:{text:'Welcome to Fire.net.pk employee portal. Complete your tasks on time.',active:true},clientNews:{text:'Welcome to Fire.net.pk client portal. Pay your bill on time to avoid interruption.',active:true},notificationSettings:{sound:true,toast:true,bell:true},notifications:[],appSettings:{companyName:'Fire.net.pk',supportWhatsApp:'03001234561',billingWhatsApp:'03001234561',adminWhatsApp:'03001234561',currency:'Rs.',invoiceFooter:'Thank you for choosing Fire.net.pk',clientSupportText:'For support, contact Fire.net.pk WhatsApp support.',defaultDueDay:'10',officeAddress:'',portalNote:'Pay your bill on time to avoid service interruption.'},
 items:[
@@ -1330,13 +705,6 @@ function toggleSideMenu(){document.getElementById('sidePanel')?.classList.toggle
 function myFin(){let r=U.role==='admin'?S.finance:S.finance.filter(e=>e.by===U.id);if(U.role==='admin'&&financeEmp!=='all')r=r.filter(e=>e.by===financeEmp);return r}
 function myInv(){return U.role==='admin'?S.invoices:S.invoices.filter(e=>e.by===U.id||e.refEmp===U.id)}
 function myComp(){return U.role==='admin'?S.complaints:S.complaints.filter(c=>c.assigned===U.id||c.by===U.id)}
-function statusBadge(status){
-  const s = (status || '').toLowerCase();
-  if(s === 'paid') return '<span class="badge done">Paid</span>';
-  if(s === 'unpaid') return '<span class="badge pending">Unpaid</span>';
-  if(s === 'partial') return '<span class="badge expense">Partial</span>';
-  return '<span class="badge">' + esc(status || '-') + '</span>';
-}
 function typeOf(e){return (e.type||'income').toLowerCase()==='expense'?'expense':'income'}function modeOf(e){return (e.mode||'cash').toLowerCase()==='online'?'online':'cash'}function paidBy(e){return e.customer||e.paidBy||e.payer||e.clientName||e.customerName||e.name||'-'}
 function calc(arr=myFin()){let cash=0,online=0,exp=0,inc=0,cashExp=0,onlineExp=0;arr.forEach(e=>{let a=+e.amount||0;if(typeOf(e)==='expense'){exp+=a;if(modeOf(e)==='online')onlineExp+=a;else cashExp+=a}else{inc+=a;if(modeOf(e)==='online')online+=a;else cash+=a}});return{cash,online,exp,inc,cashExp,onlineExp,bal:inc-exp}}
 function invoiceSummary(){let rows=myInv(),sales=0,received=0,due=0;rows.forEach(v=>{sales+=+v.total||0;received+=+v.received||0;due+=+v.due||0});return{sales,received,due,count:rows.filter(v=>(+v.due||0)>0).length}}
@@ -1441,17 +809,32 @@ function dash(){
     <div class="stable-kpi stable-green"><div class="icon">💰</div><span>Today Income</span><b>${money(f.inc)}</b><small>Expense ${money(f.exp)} / Net ${money(f.bal)}</small></div>
     <div class="stable-kpi stable-purple"><div class="icon">🎯</div><span>Target Progress</span><b>${tar.pct}%</b><small>${money(tar.ach)} of ${money(tar.given)}</small></div>
    </div>
-    <div class="stable-quick-actions">
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-      <button class="btn btn-p" onclick="tab('complaints')">🛠️ Complaints</button>
-      <button class="btn btn-s" onclick="tab('invoice')">🧾 Create Invoice</button>
-      <button class="btn btn-i" onclick="tab('billing')">💳 Billing</button>
-      <button class="btn btn-w" onclick="tab('finance')">💰 Finance</button>
-      <button class="btn btn-l" onclick="tab('targets')">🎯 Targets</button>
-      <button class="btn btn-p" onclick="openSettingsPage()">⚙️ Settings</button>
-      <button class="btn btn-s" onclick="openNewsPage()">📢 News</button>
-      <button class="btn btn-i" onclick="tab('template')">🎨 Edit Template</button>
-    </div>
+
+   <div class="stable-section"><h2>Quick Actions</h2><div class="line"></div></div>
+   <div class="stable-quick">
+    <div class="stable-quick-card" onclick="tab('complaints')"><div class="q">🛠️</div><b>Complaints</b><small>Add and assign tasks</small></div>
+    <div class="stable-quick-card" onclick="tab('invoice')"><div class="q">🧾</div><b>Create Invoice</b><small>New connection and due</small></div>
+    <div class="stable-quick-card" onclick="tab('billing')"><div class="q">💳</div><b>Billing</b><small>Paid / unpaid clients</small></div>
+    <div class="stable-quick-card" onclick="tab('finance')"><div class="q">💰</div><b>Finance</b><small>Recovery and expenses</small></div>
+    <div class="stable-quick-card" onclick="tab('targets')"><div class="q">🎯</div><b>Targets</b><small>Sales and collection</small></div>
+    <div class="stable-quick-card" onclick="openSettingsPage()"><div class="q">⚙️</div><b>Settings</b><small>WhatsApp and company settings</small></div>
+    <div class="stable-quick-card" onclick="openNewsPage()"><div class="q">📢</div><b>News</b><small>Ticker and notifications</small></div>
+   </div>
+
+   <div class="stable-section"><h2>Today Overview</h2><div class="line"></div></div>
+   <div class="summary">
+    <div class="sum">Total Sales<b>${money(inv.sales)}</b></div>
+    <div class="sum">Due Amount<b>${money(inv.due)}</b></div>
+    <div class="sum">Today Cash<b>${money(f.cash)}</b></div>
+    <div class="sum">Today Online<b>${money(f.online)}</b></div>
+    <div class="sum">Target Given<b>${money(tar.given)}</b></div>
+    <div class="sum">Target Achieved<b>${money(tar.ach)}</b></div>
+    <div class="sum">Reward Earned<b>${money(tar.reward)}</b></div>
+    <div class="sum">Remaining<b>${money(tar.rem)}</b></div>
+   </div>
+
+   <div class="stable-panel">
+    <div class="head"><h2>🎯 Target Progress</h2><span class="badge ${tar.pct>=100?'done':'pending'}">${tar.pct}%</span></div>
     <div class="stable-progress"><div class="bar" style="width:${tar.pct}%"></div></div>
    </div>
 
@@ -1809,352 +1192,17 @@ function markInvPaid(i){
   invoice();
 }
 
-function finance(){
-  let f=calc(filteredFinance());
-
-  // Build client search data
-  const clientSearchData = (S.clients || []).filter(c => c.active !== false).map(c => ({
-    id: c.id,
-    name: c.name || '',
-    mobile: c.mobile || '',
-    ccode: c.ccode || c.login || '',
-    package: c.package || '',
-    display: (c.name || '') + ' — ' + (c.mobile || '-') + ' — ' + (c.ccode || c.login || '-') + ' — ' + (c.package || '-')
-  }));
-
-  // Build category options from existing entries + defaults
-  const allCats = ['Monthly Fee','New Connection','Wire Change','Device Change','Package Change','Office Expense','Other'];
-  const usedCats = [...new Set((S.finance || []).map(e => e.cat).filter(Boolean))];
-  const catOptions = [...new Set([...allCats, ...usedCats])];
-
-  content.innerHTML=`<div class="summary">
-    <div class="sum">Total Income<b>${money(f.inc)}</b></div>
-    <div class="sum">Total Expense<b>${money(f.exp)}</b></div>
-    <div class="sum">Cash Income<b>${money(f.cash)}</b></div>
-    <div class="sum">Online Income<b>${money(f.online)}</b></div>
-    <div class="sum">Cash Expense<b>${money(f.cashExp)}</b></div>
-    <div class="sum">Online Expense<b>${money(f.onlineExp)}</b></div>
-    <div class="sum">Net Balance<b>${money(f.bal)}</b></div>
-    <div class="sum">Entries<b>${filteredFinance().length}</b></div>
-  </div>
-  <div class="card">
-    <div class="head"><h2>Finance Filters</h2>
-      <div class="actions">
-        <button class="btn btn-e btn-sm" onclick="resetFinanceFilters()">Reset All</button>
-        <button class="btn btn-l btn-sm" onclick="printFinanceReport()">Print Report</button>
-        <button class="btn btn-s btn-sm" onclick="dailyReport()">WhatsApp Report</button>
-      </div>
-    </div>
-    <div class="row">
-      <div class="fg"><label>Date</label>
-        <div style="display:flex;gap:6px">
-          <input type="date" value="${financeDate}" onchange="financeDate=this.value;financeAll=false;finance()" style="flex:1">
-          <button class="btn btn-l btn-sm" onclick="financeDate=today();financeAll=false;finance()">Today</button>
-          <button class="btn btn-i btn-sm" onclick="financeAll=true;finance()">All Dates</button>
-        </div>
-      </div>
-      ${U.role==='admin'?`<div class="fg"><label>Employee</label><select onchange="financeEmp=this.value;finance()"><option value="all">All</option><option value="admin" ${financeEmp==='admin'?'selected':''}>Admin</option>${S.employees.map(e=>`<option value="${e.id}" ${financeEmp===e.id?'selected':''}>${esc(e.name)}</option>`).join('')}</select></div>`:'<div class="fg"><label>Employee</label><input value="'+(U.name||'You')+'" disabled style="background:#f1f5f9"></div>'}
-      <div class="fg"><label>Type</label><select onchange="financeType=this.value;finance()"><option value="all">All</option><option value="income" ${financeType==='income'?'selected':''}>Income</option><option value="expense" ${financeType==='expense'?'selected':''}>Expense</option></select></div>
-    </div>
-    <div class="row">
-      <div class="fg"><label>Payment Mode</label><select onchange="financeMode=this.value;finance()"><option value="all">All</option><option value="cash" ${financeMode==='cash'?'selected':''}>Cash</option><option value="online" ${financeMode==='online'?'selected':''}>Online</option></select></div>
-      <div class="fg"><label>Category</label><select onchange="financeCat=this.value;finance()"><option value="all">All Categories</option>${catOptions.map(c=>`<option value="${esc(c)}" ${financeCat===c?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
-      <div class="fg"><label>&nbsp;</label><button class="btn btn-s" style="width:100%" onclick="loadFirebase()">🔄 Fetch Firebase</button></div>
-    </div>
-    ${employeeWiseSummary()}
-  </div>
-  <div class="card">
-    <div class="head"><h2>Add Entry</h2></div>
-    <div class="row">
-      <div class="fg"><label>Type</label><select id="ft" onchange="onFinTypeChange()"><option value="income">Income</option><option value="expense">Expense</option></select></div>
-      <div class="fg"><label>Mode</label><select id="fm" onchange="onBox()"><option value="cash">Cash</option><option value="online">Online</option></select></div>
-      <div class="fg"><label>Category</label><select id="fc"><option>Monthly Fee</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Office Expense</option><option>Other</option></select></div>
-    </div>
-
-    <!-- SEARCHABLE CLIENT BOX FOR INCOME -->
-    <div id="clientSearchBox" class="row" style="display:none">
-      <div class="fg" style="grid-column: 1 / -1; position:relative">
-        <label>🔗 Search & Select Client (Optional — for bill payment tracking)</label>
-        <div style="position:relative">
-          <input type="text" id="fclientSearch" placeholder="Type name, mobile, or C.Code to search..." 
-            autocomplete="off" 
-            oninput="filterClientList(this.value)" 
-            onfocus="showClientDropdown()"
-            style="padding-right:40px">
-          <input type="hidden" id="fclientId" value="">
-          <button class="btn btn-l btn-sm" onclick="clearClientSearch()" title="Clear" style="position:absolute;right:4px;top:4px;padding:0.3rem 0.6rem">✕</button>
-        </div>
-        <div id="clientDropdown" class="client-dropdown" style="display:none">
-          ${clientSearchData.map(c => `<div class="client-option" data-cid="${esc(c.id)}" onclick="selectClientForIncome('${esc(c.id)}')">
-            <div class="client-name">${esc(c.name)}</div>
-            <div class="client-meta">${esc(c.mobile)} · ${esc(c.ccode)} · ${esc(c.package)}</div>
-          </div>`).join('')}
-        </div>
-        <small style="color:#64748b;display:block;margin-top:4px">Type to filter, then click a client to auto-fill their details</small>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="fg"><label id="paidByLabel">Customer Name / Paid By</label><input id="fcu" placeholder="Customer who paid / paid to"></div>
-      <div class="fg"><label>Amount</label><input id="fa" type="number" value="0"></div>
-      <div class="fg"><label>Receiver Name</label><input id="fr" placeholder="Receiver"></div>
-    </div>
-    <div class="row">
-      <div class="fg" id="ob"><label>Online Account</label><input id="fo" placeholder="JazzCash / Bank"></div>
-      <div class="fg"><label>Client WhatsApp</label><input id="fp" placeholder="03001234561"></div>
-      <div class="fg"><label>Notes / Description</label><input id="fn" placeholder="Details about this entry..."></div>
-    </div>
-    <button class="btn btn-p" onclick="addFin()">Save Entry</button>
-  </div>
-  <div class="card">
-    <div class="head"><h2>Finance Report ${financeAll?'(All Dates)':financeDate?'('+financeDate+')':''} ${financeEmp&&financeEmp!=='all'?'· '+esc(empName(financeEmp)):'· All Employees'} ${financeType&&financeType!=='all'?'· '+financeType:''} ${financeMode&&financeMode!=='all'?'· '+financeMode:''} ${financeCat&&financeCat!=='all'?'· '+esc(financeCat):''}</h2>
-      <div class="actions">
-        <button class="btn btn-l btn-sm" onclick="printFinanceReport()">Print Report</button>
-        <button class="btn btn-s btn-sm" onclick="dailyReport()">WhatsApp Report</button>
-      </div>
-    </div>
-    ${finTable()}
-  </div>`;
-  onBox();
-  onFinTypeChange();
-}
-
-/* ===== FINANCE FILTER RESET ===== */
-function resetFinanceFilters(){
-  financeDate=today();
-  financeAll=false;
-  financeEmp='all';
-  financeType='all';
-  financeMode='all';
-  financeCat='all';
-  finance();
-  toast('All filters reset','success');
-}
-
-function filterClientList(query) {
-  const dropdown = document.getElementById('clientDropdown');
-  const options = dropdown.querySelectorAll('.client-option');
-  const q = query.toLowerCase().trim();
-
-  let visibleCount = 0;
-  options.forEach(opt => {
-    const text = (opt.textContent || '').toLowerCase();
-    if (!q || text.includes(q)) {
-      opt.style.display = 'block';
-      visibleCount++;
-    } else {
-      opt.style.display = 'none';
-    }
-  });
-
-  dropdown.style.display = visibleCount > 0 ? 'block' : 'none';
-}
-
-function showClientDropdown() {
-  const dropdown = document.getElementById('clientDropdown');
-  const search = document.getElementById('fclientSearch');
-  if (dropdown && search) {
-    filterClientList(search.value);
-  }
-}
-
-function hideClientDropdown() {
-  const dropdown = document.getElementById('clientDropdown');
-  if (dropdown) dropdown.style.display = 'none';
-}
-
-function selectClientForIncome(clientId) {
-  if (!clientId) return;
-  const client = (S.clients || []).find(c => c.id === clientId);
-  if (!client) return;
-
-  const fclientSearch = document.getElementById('fclientSearch');
-  const fclientId = document.getElementById('fclientId');
-  const fcu = document.getElementById('fcu');
-  const fp = document.getElementById('fp');
-  const fc = document.getElementById('fc');
-
-  if (fclientSearch) fclientSearch.value = (client.name || '') + ' — ' + (client.mobile || '');
-  if (fclientId) fclientId.value = clientId;
-  if (fcu) fcu.value = client.name || '';
-  if (fp) fp.value = client.mobile || '';
-  if (fc && !fc.value) fc.value = 'Monthly Fee';
-
-  hideClientDropdown();
-  toast('Client selected: ' + (client.name || ''), 'success');
-}
-
-function clearClientSearch() {
-  const fclientSearch = document.getElementById('fclientSearch');
-  const fclientId = document.getElementById('fclientId');
-  if (fclientSearch) fclientSearch.value = '';
-  if (fclientId) fclientId.value = '';
-  hideClientDropdown();
-}
-
-function onFinTypeChange() {
-  const type = document.getElementById('ft');
-  const clientBox = document.getElementById('clientSearchBox');
-  const paidByLabel = document.getElementById('paidByLabel');
-
-  if (!type) return;
-
-  if (type.value === 'income') {
-    if (clientBox) clientBox.style.display = 'grid';
-    if (paidByLabel) paidByLabel.textContent = 'Customer Name / Paid By';
-  } else {
-    if (clientBox) clientBox.style.display = 'none';
-    if (paidByLabel) paidByLabel.textContent = 'Paid To / Vendor';
-    clearClientSearch();
-  }
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(e) {
-  const box = document.getElementById('clientSearchBox');
-  if (box && !box.contains(e.target)) {
-    hideClientDropdown();
-  }
-});
-
-function onFinTypeChange() {
-  const type = document.getElementById('ft').value;
-  const clientBox = document.getElementById('clientSearchBox');
-  const paidByLabel = document.getElementById('paidByLabel');
-
-  if (type === 'income') {
-    clientBox.style.display = 'grid';
-    if (paidByLabel) paidByLabel.textContent = 'Customer Name / Paid By';
-  } else {
-    clientBox.style.display = 'none';
-    if (paidByLabel) paidByLabel.textContent = 'Paid To / Vendor';
-  }
-}
-
-function onClientSelectForIncome(clientId) {
-  if (!clientId) return;
-  const client = (S.clients || []).find(c => c.id === clientId);
-  if (!client) return;
-
-  const fcu = document.getElementById('fcu');
-  const fp = document.getElementById('fp');
-  const fc = document.getElementById('fc');
-
-  if (fcu) fcu.value = client.name || '';
-  if (fp) fp.value = client.mobile || '';
-  if (fc) {
-    // Try to match client's package in category
-    const pkg = client.package || '';
-    if (pkg && ['Monthly Fee','New Connection','Package Change'].some(opt => fc.value.includes(opt))) {
-      // Keep current or set to Monthly Fee
-      if (!fc.value) fc.value = 'Monthly Fee';
-    }
-  }
-
-  toast('Client linked: ' + (client.name || ''), 'success');
-}
-
-function clearClientLink() {
-  const fclientId = document.getElementById('fclientId');
-  if (fclientId) fclientId.value = '';
-}
-
-function filteredFinance(){
-  let r=myFin().slice();
-  if(!financeAll)r=r.filter(e=>e.date===financeDate);
-  if(financeEmp && financeEmp!=='all')r=r.filter(e=>(e.by||'admin')===financeEmp);
-  if(financeType && financeType!=='all')r=r.filter(e=>typeOf(e)===financeType);
-  if(financeMode && financeMode!=='all')r=r.filter(e=>modeOf(e)===financeMode);
-  if(financeCat && financeCat!=='all')r=r.filter(e=>(e.cat||'')===financeCat);
-  return r;
-}
+function finance(){let f=calc(filteredFinance());content.innerHTML=`<div class="summary"><div class="sum">Total Income<b>${money(f.inc)}</b></div><div class="sum">Total Expense<b>${money(f.exp)}</b></div><div class="sum">Cash Income<b>${money(f.cash)}</b></div><div class="sum">Online Income<b>${money(f.online)}</b></div><div class="sum">Cash Expense<b>${money(f.cashExp)}</b></div><div class="sum">Online Expense<b>${money(f.onlineExp)}</b></div><div class="sum">Net Balance<b>${money(f.bal)}</b></div><div class="sum">Entries<b>${filteredFinance().length}</b></div></div><div class="card"><div class="head"><h2>Finance Filters</h2><div class="actions"><input type="date" style="max-width:170px" value="${financeDate}" onchange="financeDate=this.value;financeAll=false;finance()"><button class="btn btn-l btn-sm" onclick="financeDate=today();financeAll=false;finance()">Today</button><button class="btn btn-i btn-sm" onclick="financeAll=true;finance()">Show All</button><button class="btn btn-s btn-sm" onclick="loadFirebase()">Fetch Firebase</button></div></div>${U.role==='admin'?`<div class="fg"><label>Employee Filter</label><select onchange="financeEmp=this.value;finance()"><option value="all">All Employees/Admin</option><option value="admin" ${financeEmp==='admin'?'selected':''}>Admin</option>${S.employees.map(e=>`<option value="${e.id}" ${financeEmp===e.id?'selected':''}>${esc(e.name)}</option>`).join('')}</select></div>`:''}${employeeWiseSummary()}</div><div class="card"><div class="head"><h2>Add Account Entry</h2></div><div class="row"><div class="fg"><label>Type</label><select id="ft"><option value="income">Income</option><option value="expense">Expense</option></select></div><div class="fg"><label>Mode</label><select id="fm" onchange="onBox()"><option value="cash">Cash</option><option value="online">Online</option></select></div><div class="fg"><label>Category</label><select id="fc"><option>Monthly Fee</option><option>New Connection</option><option>Wire Change</option><option>Device Change</option><option>Package Change</option><option>Office Expense</option><option>Other</option></select></div></div><div class="row"><div class="fg"><label>Customer Name / Paid By</label><input id="fcu" placeholder="Customer who paid / paid to"></div><div class="fg"><label>Amount</label><input id="fa" type="number" value="0"></div><div class="fg"><label>Receiver Name</label><input id="fr" placeholder="Receiver"></div></div><div class="row"><div class="fg" id="ob"><label>Online Account</label><input id="fo" placeholder="JazzCash / Bank"></div><div class="fg"><label>Client WhatsApp</label><input id="fp" placeholder="03001234561"></div><div class="fg"><label>Notes</label><input id="fn"></div></div><button class="btn btn-p" onclick="addFin()">Save Entry</button></div><div class="card"><div class="head"><h2>Finance Report ${financeAll?'(All)':'('+financeDate+')'}</h2><div class="actions"><button class="btn btn-l btn-sm" onclick="printFinanceReport()">Print Report</button><button class="btn btn-s btn-sm" onclick="dailyReport()">WhatsApp Report</button></div></div>${finTable()}</div>`;onBox()}
+function filteredFinance(){let r=myFin().slice();if(!financeAll)r=r.filter(e=>e.date===financeDate);return r}
 function onBox(){let b=document.getElementById('ob');if(b)b.style.display=fm.value==='online'?'block':'none'}
-function addFin(){
-  let amount=+fa.value||0;
-  if(amount<=0)return toast('Amount required','error');
-  let phone=pkMobile(fp.value);
-  if(phone&&!validPk(phone))return toast('Mobile number format use karein: 03001234561','error');
-  let paidCustomer=fcu.value.trim();
-
-  // Get linked client ID from hidden input (set by search box)
-  let clientId = '';
-  let clientName = '';
-  const fclientIdEl = document.getElementById('fclientId');
-  if (fclientIdEl && ft.value === 'income') {
-    clientId = fclientIdEl.value || '';
-    if (clientId) {
-      const client = (S.clients || []).find(c => c.id === clientId);
-      if (client) {
-        clientName = client.name || '';
-        if (!phone && client.mobile) phone = pkMobile(client.mobile);
-      }
-    }
-  }
-
-  let e={
-    id:id('fin'),
-    type:ft.value,
-    mode:fm.value,
-    cat:fc.value,
-    amount,
-    customer:paidCustomer,
-    paidBy:paidCustomer,
-    payer:paidCustomer,
-    receiver:fr.value.trim()||U.name,
-    online:fm.value==='online'?fo.value.trim():'',
-    phone,
-    notes:fn.value.trim(),
-    desc:fn.value.trim(),
-    detail:fn.value.trim(),
-    clientId:clientId,
-    clientName:clientName,
-    date:today(),
-    time:now(),
-    by:key(),
-    byName:U.name
-  };
-
-  S.finance.push(e);
-  if(e.type==='income')applyTarget(e.by,e.amount);
-  saveAndSync('finance',e);
-  toast('Entry saved'+(clientId?' & linked to client':'')+(e.type==='expense'?' — expense details recorded':''),'success');
-  finance();
-}
+function addFin(){let amount=+fa.value||0;if(amount<=0)return toast('Amount required','error');let phone=pkMobile(fp.value);if(phone&&!validPk(phone))return toast('Mobile number format use karein: 03001234561','error');let paidCustomer=fcu.value.trim();
+let e={id:id('fin'),type:ft.value,mode:fm.value,cat:fc.value,amount,
+customer:paidCustomer,paidBy:paidCustomer,payer:paidCustomer,
+receiver:fr.value.trim()||U.name,online:fm.value==='online'?fo.value.trim():'',
+phone,notes:fn.value.trim(),date:today(),time:now(),by:key(),byName:U.name};
+S.finance.push(e);if(e.type==='income')applyTarget(e.by,e.amount);saveAndSync('finance',e);toast('Entry saved','success');finance()}
 function employeeWiseSummary(){let data={};filteredFinance().forEach(e=>{let k=e.by||'admin',n=k==='admin'?'Admin':empName(k);data[k]=data[k]||{name:n,inc:0,exp:0,cash:0,online:0};let a=+e.amount||0;if(typeOf(e)==='expense')data[k].exp+=a;else data[k].inc+=a;if(modeOf(e)==='online')data[k].online+=a;else data[k].cash+=a});let rows=Object.values(data);return rows.length?`<div class="tbl"><table><thead><tr><th>Employee</th><th>Income</th><th>Expense</th><th>Cash</th><th>Online</th><th>Balance / Amount With</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${money(r.inc)}</td><td>${money(r.exp)}</td><td>${money(r.cash)}</td><td>${money(r.online)}</td><td><b>${money(r.inc-r.exp)}</b></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No employee-wise data</div>'}
-function finTable(){
-  let r=filteredFinance().slice().reverse();
-  if(!r.length)return'<div class="empty" style="padding:2rem;text-align:center;color:#64748b">No finance entries found</div>';
-
-  let sec=(title,arr)=>`<h3 style="margin:18px 0 12px;font-size:1.1rem;font-weight:700;color:var(--dark)">${title} <span style="font-weight:500;color:#64748b">(${arr.length})</span></h3>${arr.length?`<div class="tbl"><table><thead><tr>
-    <th>Time</th>
-    <th>Date</th>
-    <th>Employee</th>
-    <th>Type</th>
-    <th>Payment</th>
-    <th>Paid By / To</th>
-    <th>Category</th>
-    <th>Details</th>
-    <th>Receiver</th>
-    <th>Account</th>
-    <th>Amount</th>
-    <th>Action</th>
-  </tr></thead><tbody>${arr.map(e=>`<tr style="background:${typeOf(e)==='expense'?'rgba(239,68,68,0.03)':'rgba(16,185,129,0.03)'}">
-    <td>${esc(e.time||'')}</td>
-    <td>${esc(e.date||'')}</td>
-    <td>${esc(e.by==='admin'?'Admin':empName(e.by))}</td>
-    <td>${typeTag(e)}</td>
-    <td>${modeTag(e)}</td>
-    <td><b>${esc(paidBy(e))}</b>${e.phone?`<br><small style="color:#64748b">${esc(e.phone)}</small>`:''}</td>
-    <td>${esc(e.cat)}</td>
-    <td><div style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(e.notes||e.desc||e.detail||'-')}">${esc(e.notes||e.desc||e.detail||'-')}</div></td>
-    <td>${esc(e.receiver)}</td>
-    <td>${esc(e.online||'-')}</td>
-    <td style="font-weight:800;white-space:nowrap;color:${typeOf(e)==='expense'?'#dc2626 !important':'#059669 !important'};background:${typeOf(e)==='expense'?'rgba(239,68,68,0.08)':'rgba(16,185,129,0.08)'};padding:4px 8px;border-radius:4px">${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td>
-    <td><div class="actions" style="gap:4px"><button class="btn btn-i btn-sm" onclick="editFin('${e.id}')">Edit</button><button class="btn btn-s btn-sm" onclick="sendSlip('${e.id}')">Slip</button>${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delFin('${e.id}')">Delete</button>`:''}</div></td>
-  </tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:1.5rem;text-align:center;color:#94a3b8">No entries</div>'}`;
-
-  return sec('Income Entries',r.filter(e=>typeOf(e)==='income'))+sec('Expense Entries',r.filter(e=>typeOf(e)==='expense'));
-}
+function finTable(){let r=filteredFinance().slice().reverse();if(!r.length)return'<div class="empty">No finance entries</div>';let sec=(title,arr)=>`<h3 style="margin:14px 0">${title}</h3>${arr.length?`<div class="tbl"><table><thead><tr><th>Time</th><th>Date</th><th>Employee</th><th>Type</th><th>Payment</th><th>Paid By / Customer</th><th>Category</th><th>Receiver</th><th>Account</th><th>Amount</th><th>Action</th></tr></thead><tbody>${arr.map(e=>`<tr class="${typeOf(e)==='expense'?'expense-row':'income-row'}"><td>${esc(e.time||'')}</td><td>${esc(e.date||'')}</td><td>${esc(e.by==='admin'?'Admin':empName(e.by))}</td><td>${typeTag(e)}</td><td>${modeTag(e)}</td><td><b>${esc(paidBy(e))}</b></td><td>${esc(e.cat)}</td><td>${esc(e.receiver)}</td><td>${esc(e.online||'-')}</td><td class="${typeOf(e)==='expense'?'money-minus':'money-plus'}">${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td><td><div class="actions"><button class="btn btn-s btn-sm" onclick="sendSlip('${e.id}')">Slip</button>${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delFin('${e.id}')">Delete</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">None</div>'}`;return sec('Income Entries',r.filter(e=>typeOf(e)==='income'))+sec('Expense Entries',r.filter(e=>typeOf(e)==='expense'))}
 function slipMsg(e){
  return `💳 *FIRE.NET.PK - PAYMENT SLIP*
 ━━━━━━━━━━━━━━━━━━━━
@@ -2178,40 +1226,6 @@ Recorded By: ${e.byName}
 *Fire.net.pk Accounts*`;
 }
 function sendSlip(i){let e=S.finance.find(x=>x.id===i);if(!e?.phone)return toast('Client WhatsApp not saved','error');window.open('https://wa.me/'+waNumber(e.phone)+'?text='+encodeURIComponent(slipMsg(e)),'_blank')}
-function editFin(i){
-  let e=S.finance.find(x=>x.id===i);
-  if(!e)return toast('Entry not found','error');
-  const newType=prompt('Type (income/expense):',e.type||'income');
-  if(!newType)return;
-  const newMode=prompt('Mode (cash/online):',e.mode||'cash');
-  if(!newMode)return;
-  const newCat=prompt('Category:',e.cat||'');
-  if(newCat===null)return;
-  const newAmount=+prompt('Amount:',e.amount||0);
-  if(isNaN(newAmount)||newAmount<0)return toast('Invalid amount','error');
-  const newPaidBy=prompt('Paid By / To:',paidBy(e));
-  if(newPaidBy===null)return;
-  const newReceiver=prompt('Receiver:',e.receiver||U?.name||'');
-  if(newReceiver===null)return;
-  const newNotes=prompt('Notes:',e.notes||e.desc||e.detail||'');
-  if(newNotes===null)return;
-
-  e.type=newType.toLowerCase()==='expense'?'expense':'income';
-  e.mode=newMode.toLowerCase()==='online'?'online':'cash';
-  e.cat=newCat;
-  e.amount=newAmount;
-  e.customer=newPaidBy;
-  e.paidBy=newPaidBy;
-  e.payer=newPaidBy;
-  e.receiver=newReceiver;
-  e.notes=newNotes;
-  e.desc=newNotes;
-  e.detail=newNotes;
-
-  saveAndSync('finance',e);
-  toast('Finance entry updated','success');
-  finance();
-}
 function delFin(i){if(!confirm('Delete finance entry?'))return;S.finance=S.finance.filter(x=>x.id!==i);delAndSync('finance',i);finance()}
 function financeReportText(){
  let r=filteredFinance(),f=calc(r);
@@ -2434,32 +1448,7 @@ function addItemMaster(){
 }
 function itemsTable(){
  let r=S.items||[];if(!r.length)return'<div class="empty">No items</div>';
- return `<input type="text" class="table-search" placeholder="🔍 Search items by name, category..." oninput="filterTable('itemsTable', this.value)"><div class="tbl"><table id="itemsTable"><thead><tr>
- <th class="sortable" onclick="sortTable('itemsTable',0,'string')">Name</th>
- <th class="sortable" onclick="sortTable('itemsTable',1,'string')">Category</th>
- <th class="sortable" onclick="sortTable('itemsTable',2,'number')">Purchase</th>
- <th class="sortable" onclick="sortTable('itemsTable',3,'number')">Sale</th>
- <th class="sortable" onclick="sortTable('itemsTable',4,'number')">Stock</th>
- <th class="sortable" onclick="sortTable('itemsTable',5,'number')">Profit</th>
- <th>Action</th>
- </tr></thead><tbody>${r.map(x=>`<tr>
- <td><b>${esc(x.name)}</b><br><small>${esc(x.notes||'')}</small></td>
- <td>${esc(x.category)}</td>
- <td>${money(x.purchase)}</td>
- <td>${money(x.sale)}</td>
- <td>${x.stock}</td>
- <td><b>${money((+x.sale||0)-(+x.purchase||0))}</b></td>
- <td>
-   <div class="action-dropdown" style="position:relative">
-     <button class="btn btn-l btn-sm action-toggle" onclick="toggleItemActionMenu('${esc(x.id)}')">⚙️ Actions</button>
-     <div id="itemActionMenu-${esc(x.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
-       <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="editItemMaster('${x.id}');hideItemActionMenu('${esc(x.id)}')">✏️ Edit</button>
-       <button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="sendItemSlip('${x.id}');hideItemActionMenu('${esc(x.id)}')">📱 WhatsApp</button>
-       <button class="btn btn-e btn-sm" style="width:100%" onclick="deleteItemMaster('${x.id}');hideItemActionMenu('${esc(x.id)}')">🗑️ Delete</button>
-     </div>
-   </div>
- </td>
- </tr>`).join('')}</tbody></table></div>`;
+ return `<div class="tbl"><table><thead><tr><th>Name</th><th>Category</th><th>Purchase</th><th>Sale</th><th>Stock</th><th>Profit/Unit</th><th>Action</th></tr></thead><tbody>${r.map(x=>`<tr><td><b>${esc(x.name)}</b><br><small>${esc(x.notes||'')}</small></td><td>${esc(x.category)}</td><td>${money(x.purchase)}</td><td>${money(x.sale)}</td><td>${x.stock}</td><td><b>${money((+x.sale||0)-(+x.purchase||0))}</b></td><td><div class="actions"><button class="btn btn-i btn-sm" onclick="editItemMaster('${x.id}')">Edit</button><button class="btn btn-s btn-sm" onclick="sendItemSlip('${x.id}')">WhatsApp Slip</button><button class="btn btn-e btn-sm" onclick="deleteItemMaster('${x.id}')">Delete</button></div></td></tr>`).join('')}</tbody></table></div>`;
 }
 function editItemMaster(i){
  let x=(S.items||[]).find(a=>a.id===i);if(!x)return;
@@ -2514,28 +1503,7 @@ function addPackageMaster(){
 }
 function packagesTable(){
  let r=S.packages||[];if(!r.length)return'<div class="empty">No packages</div>';
- return `<input type="text" class="table-search" placeholder="🔍 Search packages by name, details..." oninput="filterTable('packagesTable', this.value)"><div class="tbl"><table id="packagesTable"><thead><tr>
- <th class="sortable" onclick="sortTable('packagesTable',0,'string')">Package</th>
- <th class="sortable" onclick="sortTable('packagesTable',1,'number')">Monthly Fee</th>
- <th class="sortable" onclick="sortTable('packagesTable',2,'number')">Installation</th>
- <th class="sortable" onclick="sortTable('packagesTable',3,'string')">Details</th>
- <th>Action</th>
- </tr></thead><tbody>${r.map(x=>`<tr>
- <td><b>${esc(x.name)}</b></td>
- <td>${money(x.monthly)}</td>
- <td>${money(x.installation)}</td>
- <td>${esc(x.details||'-')}</td>
- <td>
-   <div class="action-dropdown" style="position:relative">
-     <button class="btn btn-l btn-sm action-toggle" onclick="togglePackageActionMenu('${esc(x.id)}')">⚙️ Actions</button>
-     <div id="pkgActionMenu-${esc(x.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
-       <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="editPackageMaster('${x.id}');hidePackageActionMenu('${esc(x.id)}')">✏️ Edit</button>
-       <button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="sendPackageSlip('${x.id}');hidePackageActionMenu('${esc(x.id)}')">📱 WhatsApp</button>
-       <button class="btn btn-e btn-sm" style="width:100%" onclick="deletePackageMaster('${x.id}');hidePackageActionMenu('${esc(x.id)}')">🗑️ Delete</button>
-     </div>
-   </div>
- </td>
- </tr>`).join('')}</tbody></table></div>`;
+ return `<div class="tbl"><table><thead><tr><th>Package</th><th>Monthly Fee</th><th>Installation</th><th>Details</th><th>Action</th></tr></thead><tbody>${r.map(x=>`<tr><td><b>${esc(x.name)}</b></td><td>${money(x.monthly)}</td><td>${money(x.installation)}</td><td>${esc(x.details||'-')}</td><td><div class="actions"><button class="btn btn-i btn-sm" onclick="editPackageMaster('${x.id}')">Edit</button><button class="btn btn-s btn-sm" onclick="sendPackageSlip('${x.id}')">WhatsApp Slip</button><button class="btn btn-e btn-sm" onclick="deletePackageMaster('${x.id}')">Delete</button></div></td></tr>`).join('')}</tbody></table></div>`;
 }
 function editPackageMaster(i){
  let x=(S.packages||[]).find(a=>a.id===i);if(!x)return;
@@ -2732,75 +1700,15 @@ window.addEventListener('click',function(ev){
 
 /* ===== ROBUST NEWS BUTTON FIX WITH CLIENT NEWS ===== */
 function openNewsPage(){
-  const T=ensureTemplateSettings();
-  const news=S.news||[];
-  content.innerHTML=`<div class="card">
-    <div class="head"><h2>📢 News & Announcements</h2></div>
-    <div class="row">
-      <div class="fg" style="grid-column: 1 / -1">
-        <label>Add News Item</label>
-        <textarea id="newsInput" rows="3" placeholder="Enter announcement text..."></textarea>
-        <button class="btn btn-p" style="margin-top:8px" onclick="addNews()">➕ Add to Ticker</button>
-      </div>
-    </div>
-
-    <!-- QR UPLOAD FOR NEWS (Payment QR reference) -->
-    <div class="row" style="margin-top:1rem">
-      <div class="fg" style="grid-column: 1 / -1">
-        <label>📱 Payment QR Reference</label>
-        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
-          <div style="flex:1;min-width:250px">
-            <input type="file" id="newsQrUpload" accept="image/*" onchange="previewNewsQr(event)" style="display:none">
-            <button class="btn btn-i" onclick="document.getElementById('newsQrUpload').click()">📁 Upload QR</button>
-            <small style="color:#64748b;display:block;margin-top:6px">Upload payment QR to show in news announcements</small>
-          </div>
-          <div id="newsQrPreview" style="min-width:120px;text-align:center">
-            ${T.paymentQrImage?`<img src="${esc(T.paymentQrImage)}" style="max-width:120px;max-height:120px;border:1px solid #e2e8f0;border-radius:8px;padding:4px;background:white">`:'<div style="padding:15px;color:#94a3b8;font-size:11px;border:2px dashed #e2e8f0;border-radius:8px">No QR</div>'}
-          </div>
-          ${T.paymentQrImage?`<button class="btn btn-e btn-sm" onclick="removeNewsQr()">🗑️ Remove</button>`:''}
-        </div>
-      </div>
-    </div>
-
-    <div class="head" style="margin-top:1.5rem"><h3>Current News Items</h3></div>
-    <div class="tbl">
-      <table>
-        <thead><tr><th>#</th><th>Text</th><th>Date</th><th>Action</th></tr></thead>
-        <tbody>
-          ${news.map((n,i)=>`<tr><td>${i+1}</td><td>${esc(n.text)}</td><td>${esc(n.date||'')}</td><td><button class="btn btn-e btn-sm" onclick="delNews('${n.id}')">Delete</button></td></tr>`).join('')}
-        </tbody>
-      </table>
-    </div>
-    ${news.length?`<button class="btn btn-l" style="margin-top:10px" onclick="clearAllNews()">Clear All News</button>`:''}
-  </div>`;
+  try{
+    TAB='news';
+    return renderNewsPageDirect();
+  }catch(e){
+    console.error('openNewsPage error',e);
+    const c=document.getElementById('content');
+    if(c)c.innerHTML='<div class="card"><div class="head"><h2>News Error</h2></div><p style="color:#dc2626;font-weight:900">'+(e.message||e)+'</p></div>';
+  }
 }
-
-/* ===== NEWS QR FUNCTIONS ===== */
-function previewNewsQr(ev){
-  const f=ev.target.files&&ev.target.files[0];
-  if(!f)return;
-  if(f.size>800000)return toast('QR image too large. Use under 800KB','error');
-  const r=new FileReader();
-  r.onload=()=>{
-    const img=r.result;
-    ensureTemplateSettings().paymentQrImage=img;
-    const box=document.getElementById('newsQrPreview');
-    if(box)box.innerHTML=`<img src="${img}" style="max-width:120px;max-height:120px;border:1px solid #e2e8f0;border-radius:8px;padding:4px;background:white">`;
-    toast('QR uploaded to news!','success');
-    // Refresh to show remove button
-    setTimeout(()=>openNewsPage(),300);
-  };
-  r.readAsDataURL(f);
-}
-
-function removeNewsQr(){
-  const T=ensureTemplateSettings();
-  T.paymentQrImage='';
-  saveLocal();
-  toast('QR removed from news','success');
-  openNewsPage();
-}
-
 function renderNewsPageDirect(){
   const c=document.getElementById('content');
   if(!c)return;
@@ -3067,25 +1975,6 @@ function openSettingsPage(){
     </div>
     <div class="fg"><label>Invoice Footer Text</label><textarea id="setInvoiceFooter">${esc(A.invoiceFooter||'Thank you for choosing Fire.net.pk')}</textarea></div>
     <div class="fg"><label>Client Support Message Text</label><textarea id="setClientSupportText">${esc(A.clientSupportText||'For support, contact Fire.net.pk WhatsApp support.')}</textarea></div>
-        <div class="row" style="margin-top:1rem">
-      <div class="fg" style="grid-column: 1 / -1">
-        <label>📱 Company Payment QR Code (for bills & fee slips)</label>
-        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
-          <div style="flex:1;min-width:250px">
-            <input type="file" id="settingsQrUpload" accept="image/*" onchange="previewSettingsQr(event)" style="display:none">
-            <button class="btn btn-i" onclick="document.getElementById('settingsQrUpload').click()">📁 Upload QR Image</button>
-            <small style="color:#64748b;display:block;margin-top:6px">JPG/PNG under 800KB. This QR appears on all bills and fee slips.</small>
-          </div>
-          <div id="settingsQrPreview" style="min-width:120px;text-align:center">
-            ${(S.appSettings||{}).paymentQrImage?`<img src="${esc((S.appSettings||{}).paymentQrImage)}" style="max-width:150px;max-height:150px;border:1px solid #e2e8f0;border-radius:12px;padding:6px;background:white">`:'<div style="padding:20px;color:#94a3b8;font-size:12px;border:2px dashed #e2e8f0;border-radius:12px">No QR uploaded</div>'}
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px">
-            ${(S.appSettings||{}).paymentQrImage?`<button class="btn btn-e btn-sm" onclick="removeSettingsQr()">🗑️ Remove</button>`:''}
-            <button class="btn btn-l btn-sm" onclick="testSettingsQr()">👁️ Test Preview</button>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="actions">
       <button class="btn btn-p" onclick="saveAdminSettingsFinal()">Save Settings</button>
       <button class="btn btn-l" onclick="tab('dashboard')">Back Dashboard</button>
@@ -3093,38 +1982,6 @@ function openSettingsPage(){
   </div>`;
   try{document.querySelectorAll('#nav button').forEach(b=>b.classList.remove('active'));let n=document.getElementById('n-settings');if(n)n.classList.add('active')}catch(e){}
 }
-
-function previewSettingsQr(ev){
-  const f=ev.target.files&&ev.target.files[0];
-  if(!f)return;
-  if(f.size>800000)return toast('QR image too large. Use under 800KB','error');
-  const r=new FileReader();
-  r.onload=()=>{
-    const img=r.result;
-    ensureTemplateSettings().paymentQrImage=img;
-    const box=document.getElementById('settingsQrPreview');
-    if(box)box.innerHTML=`<img src="${img}" style="max-width:150px;max-height:150px;border:1px solid #e2e8f0;border-radius:12px;padding:6px;background:white">`;
-    toast('QR uploaded! Save settings to apply.','success');
-  };
-  r.readAsDataURL(f);
-}
-
-function removeSettingsQr(){
-  const T=ensureTemplateSettings();
-  T.paymentQrImage='';
-  saveLocal();
-  toast('QR removed','success');
-  openSettingsPage();
-}
-
-function testSettingsQr(){
-  const T=ensureTemplateSettings();
-  if(!T.paymentQrImage){toast('No QR uploaded yet','warning');return;}
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>QR Test</title><style>body{display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#f8fafc;font-family:Arial}</style></head><body><div style="text-align:center"><h2>Payment QR Preview</h2><img src="${T.paymentQrImage}" style="max-width:300px;border:1px solid #e2e8f0;border-radius:12px;padding:8px;background:white"><p style="color:#64748b;margin-top:10px">This is how customers will see it on bills</p></div></body></html>`);
-  w.document.close();
-}
-
 function settings(){return openSettingsPage();}
 
 function saveAdminSettingsFinal(){
@@ -3417,75 +2274,6 @@ function billingSummary(month=billMonthNow()){
     due:rows.reduce((s,r)=>s+r.due,0)
   };
 }
-
-/* ===== TABLE SORTING & FILTERING ===== */
-function sortTable(tableId, columnIndex, type) {
-  const table = document.getElementById(tableId);
-  if (!table) return;
-  const tbody = table.querySelector('tbody');
-  if (!tbody) return;
-  const rows = Array.from(tbody.querySelectorAll('tr'));
-  const th = table.querySelectorAll('th')[columnIndex];
-
-  // Get current sort direction
-  const currentDir = th.dataset.sortDir || 'asc';
-  const newDir = currentDir === 'asc' ? 'desc' : 'asc';
-
-  // Update all headers
-  table.querySelectorAll('th').forEach(h => {
-    h.dataset.sortDir = '';
-    h.classList.remove('asc', 'desc');
-  });
-  th.dataset.sortDir = newDir;
-  th.classList.add(newDir);
-
-  rows.sort((a, b) => {
-    let aVal = a.cells[columnIndex] ? a.cells[columnIndex].textContent.trim() : '';
-    let bVal = b.cells[columnIndex] ? b.cells[columnIndex].textContent.trim() : '';
-
-    // Remove HTML tags for comparison
-    aVal = aVal.replace(/<[^>]*>/g, '');
-    bVal = bVal.replace(/<[^>]*>/g, '');
-
-    if (type === 'number') {
-      const aNum = parseFloat(aVal.replace(/[^\d.-]/g, '')) || 0;
-      const bNum = parseFloat(bVal.replace(/[^\d.-]/g, '')) || 0;
-      return newDir === 'asc' ? aNum - bNum : bNum - aNum;
-    }
-
-    // Date sorting
-    if (type === 'date') {
-      const aDate = new Date(aVal);
-      const bDate = new Date(bVal);
-      if (!isNaN(aDate) && !isNaN(bDate)) {
-        return newDir === 'asc' ? aDate - bDate : bDate - aDate;
-      }
-    }
-
-    // String sorting
-    return newDir === 'asc' 
-      ? aVal.localeCompare(bVal) 
-      : bVal.localeCompare(aVal);
-  });
-
-  // Re-append rows in sorted order
-  rows.forEach(row => tbody.appendChild(row));
-}
-
-function filterTable(tableId, query) {
-  const table = document.getElementById(tableId);
-  if (!table) return;
-  const tbody = table.querySelector('tbody');
-  if (!tbody) return;
-  const rows = tbody.querySelectorAll('tr');
-  const lowerQuery = query.toLowerCase().trim();
-
-  rows.forEach(row => {
-    const text = row.textContent.toLowerCase();
-    row.style.display = lowerQuery === '' || text.includes(lowerQuery) ? '' : 'none';
-  });
-}
-
 function billingPage(){
   ensureBillingState();
   const month=window.billingMonth||billMonthNow();
@@ -3495,10 +2283,6 @@ function billingPage(){
   if(filter==='unpaid')rows=rows.filter(r=>r.status==='Unpaid');
   if(filter==='partial')rows=rows.filter(r=>r.status==='Partial');
   const sum=billingSummary(month);
-
-  // Initialize bulk selection tracking
-  window._bulkSelected = window._bulkSelected || new Set();
-
   content.innerHTML=`<div class="card">
     <div class="head"><h2>💳 Client Billing</h2></div>
     <div class="row">
@@ -3507,169 +2291,51 @@ function billingPage(){
       <div class="fg"><label>&nbsp;</label><button class="btn btn-p" onclick="generateMonthlyBills()">Generate Bills for Current Clients</button></div>
     </div>
     <div class="actions">
-      <button class="btn btn-p" onclick="generateSelectedBills()">📝 Generate Selected Bills</button>
-      <button class="btn btn-s" onclick="whatsappSelectedFeeSlips()">📱 Selected Fee Slip WA</button>
-      <button class="btn btn-i" onclick="printSelectedFeeSlips()">🧾 Print Selected Slips</button>
-      <button class="btn btn-l" onclick="printSelectedMonthlyBills()">📄 Print Selected Monthly Bills</button>
-      <button class="btn btn-i btn-lg" onclick="printBulkA4Bills()" title="Print A4 Bills in Bulk with Sequential Delay">🖨️ Bulk A4 Print <span id="bulkA4Badge" class="bulk-badge hidden">0</span></button>
-      <button class="btn btn-w" onclick="receiveSelectedFirst()">💰 Receive Selected</button>
-      <button class="btn btn-s" onclick="sendAllUnpaidBills()">📤 WhatsApp All Unpaid</button>
-      <button class="btn btn-i" onclick="printBillingReport()">📊 Print Billing Report</button>
+      <button class="btn btn-p" onclick="generateSelectedBills()">Generate Selected Bills</button>
+      <button class="btn btn-s" onclick="whatsappSelectedFeeSlips()">Selected Fee Slip WA</button>
+      <button class="btn btn-i" onclick="printSelectedFeeSlips()">Print Selected Slips</button>
+      <button class="btn btn-l" onclick="printSelectedMonthlyBills()">Print Selected Monthly Bills</button>
+      <button class="btn btn-w" onclick="receiveSelectedFirst()">Receive Selected</button>
+      <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
+      <button class="btn btn-i" onclick="printBillingReport()">Print Billing Report</button>
+      <button class="btn btn-w" onclick="recalcBillingFromFinance()">Recalculate From Income</button>
+      <button class="btn btn-l" onclick="openSlipFieldsModal()">Slip Fields</button>
+      <button class="btn btn-l" onclick="tab('clients')">Clients</button>
+      <span id="billingSelectedCount" class="badge pending">0 selected</span>
     </div>
-    <div class="summary">
-      <div class="sum">Total Clients<b>${rows.length}</b></div>
-      <div class="sum">Total Bill<b>${money(sum.total)}</b></div>
-      <div class="sum">Received<b>${money(sum.received)}</b></div>
-      <div class="sum">Due<b>${money(sum.due)}</b></div>
-      <div class="sum">Paid Count<b>${sum.paid}</b></div>
-      <div class="sum">Unpaid Count<b>${sum.unpaid}</b></div>
-    </div>
-    <input type="text" class="table-search" placeholder="🔍 Search clients by name, mobile, C.Code..." oninput="filterTable('billingTable', this.value)">
-    <div class="tbl">
-      <table id="billingTable">
-        <thead>
-          <tr>
-            <th><input type="checkbox" id="selectAllBilling" onchange="toggleSelectAllBilling(this)" title="Select All"> Select All</th>
-            <th class="sortable" onclick="sortTable('billingTable', 1, 'string')">Client</th>
-            <th class="sortable" onclick="sortTable('billingTable', 2, 'string')">Mobile/Login</th>
-            <th class="sortable" onclick="sortTable('billingTable', 3, 'string')">PPPoE</th>
-            <th class="sortable" onclick="sortTable('billingTable', 4, 'string')">Package</th>
-            <th class="sortable" onclick="sortTable('billingTable', 5, 'number')">Monthly</th>
-            <th class="sortable" onclick="sortTable('billingTable', 6, 'number')">Received</th>
-            <th class="sortable" onclick="sortTable('billingTable', 7, 'number')">Due</th>
-            <th class="sortable" onclick="sortTable('billingTable', 8, 'string')">Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map((r,i)=>{
-            const c=r.client;
-            const isChecked = window._bulkSelected && window._bulkSelected.has(c.id) ? 'checked' : '';
-            return `<tr>
-            <td><input type="checkbox" class="bill-checkbox" data-cid="${esc(c.id)}" ${isChecked} onchange="updateBulkSelection('${esc(c.id)}', this.checked)"></td>
-            <td><b>${esc(c.name)}</b><br><small style="color:#64748b">${esc(c.ccode||c.login||'-')}</small></td>
-            <td>${esc(c.mobile||'-')}<br><small>${esc(c.pppoe||c.login||'-')}</small></td>
-            <td>${esc(c.pppoe||c.login||'-')}</td>
-            <td>${esc(c.package||'-')}</td>
-            <td>${money(r.total)}</td>
-            <td>${money(r.received)}</td>
-            <td>${money(r.due)}</td>
-            <td>${statusBadge(r.status)}</td>
-            <td>
-              <div class="action-dropdown" style="position:relative">
-                <button class="btn btn-l btn-sm action-toggle" onclick="toggleActionMenu('${esc(c.id)}')">⚙️ Actions</button>
-                <div id="actionMenu-${esc(c.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:180px;padding:0.5rem;animation:menuIn 0.2s ease">
-                  ${r.status!=='Paid'?`<button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="receiveClientBill('${c.id}');hideActionMenu('${esc(c.id)}')">💰 Receive Payment</button>`:''}
-                  ${r.status!=='Paid'?`<button class="btn btn-p btn-sm" style="width:100%;margin-bottom:4px" onclick="markClientBillPaid('${c.id}');hideActionMenu('${esc(c.id)}')">✅ Mark Paid</button>`:''}
-                  <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="whatsappFeeSlip('${c.id}');hideActionMenu('${esc(c.id)}')">📱 WhatsApp Slip</button>
-                  <button class="btn btn-l btn-sm" style="width:100%;margin-bottom:4px" onclick="printFeeSlip('${c.id}');hideActionMenu('${esc(c.id)}')">🧾 Print Slip</button>
-                  <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="printMonthlyBillA4('${c.id}');hideActionMenu('${esc(c.id)}')">📄 Print A4 Bill</button>
-                  <button class="btn btn-w btn-sm" style="width:100%" onclick="openEditBillModal('${c.id}');hideActionMenu('${esc(c.id)}')">✏️ Edit Bill</button>
-                </div>
-              </div>
-            </td>
-          </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
-    </div>
-  </div>`;
-
-  // Update bulk badge count
-  updateBulkBadge();
+  </div>
+  ${billingStatusCards(month)}
+  <div class="summary">
+    <div class="sum">Current Month<b>${esc(month)}</b></div>
+    <div class="sum">Current Filter<b>${esc(filter.toUpperCase())}</b></div>
+    <div class="sum">Shown Rows<b>${rows.length}</b></div>
+    <div class="sum">Due Date<b>${esc(billDueDateForMonth(month))}</b></div>
+  </div>
+  ${simpleTable('Client Bills',['<input type="checkbox" onchange="toggleAllBillingChecks(this)">','Client','Mobile','C.Code','Package','Bill','Discount','Received','Due','Status','Action'],rows.map(r=>{
+    const c=r.client;
+    const status=r.status==='Paid'?'<span class="badge done">Paid</span>':r.status==='Partial'?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
+    return `<tr>
+      <td><input type="checkbox" class="billing-check" value="${c.id}" onchange="updateBillingSelectedCount()"></td>
+      <td><b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small></td>
+      <td>${esc(c.mobile||'-')}</td>
+      <td>${esc(c.ccode||c.pin||'-')}</td>
+      <td>${esc(c.package||'-')}</td>
+      <td>${money(r.total)}</td>
+      <td>${money(r.discount||0)}</td>
+      <td>${money(r.received)}</td>
+      <td>${money(r.due)}</td>
+      <td>${status}</td>
+      <td><div class="actions">
+        ${r.status!=='Paid'?`<button class="btn btn-s btn-sm" onclick="receiveClientBill('${c.id}')">Receive</button>`:''}
+        ${r.status!=='Paid'?`<button class="btn btn-p btn-sm" onclick="markClientBillPaid('${c.id}')">Mark Paid</button>`:''}
+        <button class="btn btn-i btn-sm" onclick="whatsappFeeSlip('${c.id}')">Fee Slip WA</button>
+        <button class="btn btn-l btn-sm" onclick="printFeeSlip('${c.id}')">Print Slip</button>
+        <button class="btn btn-w btn-sm" onclick="openEditBillModal('${c.id}')">Edit Bill</button>
+      </div></td>
+    </tr>`;
+  }))}
+  `;
 }
-
-/* ===== BULK SELECTION HELPERS ===== */
-function updateBulkSelection(clientId, checked) {
-  window._bulkSelected = window._bulkSelected || new Set();
-  if (checked) {
-    window._bulkSelected.add(clientId);
-  } else {
-    window._bulkSelected.delete(clientId);
-  }
-  updateBulkBadge();
-}
-
-function toggleSelectAllBilling(checkbox) {
-  const checkboxes = document.querySelectorAll('.bill-checkbox');
-  window._bulkSelected = window._bulkSelected || new Set();
-  checkboxes.forEach(cb => {
-    cb.checked = checkbox.checked;
-    const cid = cb.getAttribute('data-cid');
-    if (checkbox.checked) {
-      window._bulkSelected.add(cid);
-    } else {
-      window._bulkSelected.delete(cid);
-    }
-  });
-  updateBulkBadge();
-}
-
-function updateBulkBadge() {
-  const badge = document.getElementById('bulkA4Badge');
-  if (badge && window._bulkSelected) {
-    const count = window._bulkSelected.size;
-    badge.textContent = count;
-    badge.classList.toggle('hidden', count === 0);
-  }
-}
-
-function getSelectedBillingIds() {
-  // Return array of selected client IDs
-  if (window._bulkSelected && window._bulkSelected.size > 0) {
-    return Array.from(window._bulkSelected);
-  }
-  // Fallback: get from checkboxes
-  const checked = document.querySelectorAll('.bill-checkbox:checked');
-  return Array.from(checked).map(cb => cb.getAttribute('data-cid'));
-}
-
-/* ===== BULK A4 PRINT FUNCTION ===== */
-function printBulkA4Bills() {
-  const ids = getSelectedBillingIds();
-  if (!ids || ids.length === 0) {
-    toast('Please select at least one client using checkboxes', 'warning');
-    return;
-  }
-
-  if (!confirm('Print ' + ids.length + ' A4 bills sequentially? Each bill will open in a new tab with a 3-second delay between prints.')) {
-    return;
-  }
-
-  toast('Starting bulk A4 print for ' + ids.length + ' bills...', 'info');
-
-  let idx = 0;
-  const month = window.billingMonth || billMonthNow();
-
-  function printNext() {
-    if (idx >= ids.length) {
-      toast('All ' + ids.length + ' A4 bills printed successfully!', 'success');
-      // Clear selection after printing
-      window._bulkSelected.clear();
-      updateBulkBadge();
-      // Refresh page to clear checkboxes
-      setTimeout(() => billingPage(), 500);
-      return;
-    }
-
-    const cid = ids[idx];
-    const client = (S.clients || []).find(c => c.id === cid);
-    const clientName = client ? client.name : cid;
-
-    toast('Printing bill ' + (idx + 1) + ' of ' + ids.length + ': ' + clientName, 'info');
-
-    // Print the A4 bill
-    printMonthlyBillA4(cid);
-
-    idx++;
-    // Wait 3 seconds before next print (gives time for print dialog to appear)
-    setTimeout(printNext, 3000);
-  }
-
-  // Start printing
-  setTimeout(printNext, 500);
-}
-
 function generateMonthlyBills(){
   ensureBillingState();
   const month=window.billingMonth||billMonthNow();
@@ -3847,10 +2513,7 @@ function printFeeSlip(clientId){
     <div class="status">Status: ${esc(row.status)}</div>
     <div class="foot">${esc(S.appSettings?.invoiceFooter||'Thank you for your payment.')}</div>
   </div>
-  <div style="text-align:center;margin-top:15px;padding:10px;border-top:1px dashed #e2e8f0">
-      <p style="font-size:11px;color:#64748b;margin-bottom:6px">📱 Scan to Pay</p>
-      ${getPaymentQrImage()?`<img src="${getPaymentQrImage()}" style="width:120px;height:120px;border:1px solid #e2e8f0;border-radius:8px;padding:4px;background:white">`:'<p style="font-size:10px;color:#94a3b8">Payment QR not configured<br>Go to Settings > Template to upload</p>'}
-    </div></body></html>`;
+  </body></html>`;
   const w=window.open('','_blank');
   w.document.write(html);
   w.document.close();
@@ -4101,7 +2764,85 @@ function scheduleRenderFast(){
 /* Override realtime to debounce rendering instead of full re-render on every document update */
 
 
+/* Fast billing page with limited visible rows */
+function billingPage(){
+  ensureBillingState();
+  const month=window.billingMonth||billMonthNow();
+  const filter=window.billingFilter||'all';
+  const limit=window.billingLimit||35;
+  let rows=clientBillRows(month);
+  if(filter==='paid')rows=rows.filter(r=>r.status==='Paid');
+  if(filter==='unpaid')rows=rows.filter(r=>r.status==='Unpaid');
+  if(filter==='partial')rows=rows.filter(r=>r.status==='Partial');
+  const allRowsCount=rows.length;
+  const q=(window.billingSearch||'').toLowerCase();
+  if(q)rows=rows.filter(r=>{
+    const c=r.client;
+    return [c.name,c.mobile,c.ccode,c.pin,c.pppoe,c.package,c.area,c.address].join(' ').toLowerCase().includes(q);
+  });
+  const shownRows=limit==='all'?rows:rows.slice(0,+limit);
+  const sum=billingSummary(month);
 
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>💳 Client Billing</h2></div>
+    <div class="row">
+      <div class="fg"><label>Billing Month</label><input type="month" value="${esc(month)}" onchange="window.billingMonth=this.value;billingPage()"></div>
+      <div class="fg"><label>Status Filter</label><select onchange="window.billingFilter=this.value;billingPage()"><option value="all" ${filter==='all'?'selected':''}>All</option><option value="paid" ${filter==='paid'?'selected':''}>Paid</option><option value="unpaid" ${filter==='unpaid'?'selected':''}>Unpaid</option><option value="partial" ${filter==='partial'?'selected':''}>Partial</option></select></div>
+      <div class="fg"><label>Search Client</label><input value="${esc(window.billingSearch||'')}" placeholder="name/mobile/pppoe/code" oninput="window.billingSearch=this.value;billingPage()"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="generateSelectedBills()">Generate Selected Bills</button>
+      <button class="btn btn-s" onclick="whatsappSelectedFeeSlips()">Selected Fee Slip WA</button>
+      <button class="btn btn-i" onclick="printSelectedFeeSlips()">Print Selected Slips</button>
+      <button class="btn btn-w" onclick="receiveSelectedFirst()">Receive Selected</button>
+      <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
+      <button class="btn btn-i" onclick="printBillingReport()">Print Report</button>
+      <button class="btn btn-w" onclick="recalcBillingFromFinance()">Recalculate</button>
+      <button class="btn btn-l" onclick="openSlipFieldsModal()">Slip Fields</button>
+      <span id="billingSelectedCount" class="badge pending">0 selected</span>
+    </div>
+  </div>
+  ${billingStatusCards(month)}
+  <div class="summary">
+    <div class="sum">Current Month<b>${esc(month)}</b></div>
+    <div class="sum">Filter<b>${esc(filter.toUpperCase())}</b></div>
+    <div class="sum">Showing<b>${shownRows.length} / ${rows.length}</b></div>
+    <div class="sum">Due Date<b>${esc(billDueDateForMonth(month))}</b></div>
+  </div>
+  <div class="card">
+    <div class="table-controls">
+      <div class="left"><b>Billing List</b><span class="table-info">${allRowsCount} users in filter</span></div>
+      <div class="right"><label style="font-weight:900">Show</label><select onchange="window.billingLimit=this.value;billingPage()"><option ${limit==10?'selected':''}>10</option><option ${limit==35?'selected':''}>35</option><option ${limit==50?'selected':''}>50</option><option ${limit==100?'selected':''}>100</option><option value="all" ${limit==='all'?'selected':''}>all</option></select></div>
+    </div>
+    <div class="tbl"><table><thead><tr>
+      <th><input type="checkbox" onchange="toggleAllBillingChecks(this)"></th><th>Client</th><th>Mobile</th><th>C.Code</th><th>Package</th><th>Bill</th><th>Discount</th><th>Received</th><th>Due</th><th>Status</th><th>Action</th>
+    </tr></thead><tbody>${shownRows.map(r=>{
+      const c=r.client;
+      const status=r.status==='Paid'?'<span class="badge done">Paid</span>':r.status==='Partial'?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
+      return `<tr>
+        <td><input type="checkbox" class="billing-check" value="${c.id}" onchange="updateBillingSelectedCount()"></td>
+        <td><b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small></td>
+        <td>${esc(c.mobile||'-')}</td>
+        <td>${esc(c.ccode||c.pin||'-')}</td>
+        <td>${esc(c.package||'-')}</td>
+        <td>${money(r.total)}</td>
+        <td>${money(r.discount||0)}</td>
+        <td>${money(r.received)}</td>
+        <td>${money(r.due)}</td>
+        <td>${status}</td>
+        <td>${compactBillingActionMenu(c.id)}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div>
+  </div>`;
+}
+
+/* Faster table enhancer: do not re-enhance billing table */
+
+
+
+
+
+/* ===== BILLING RECEIVE / EDIT MODAL + DISCOUNT ===== */
 function closeBillingModal(){
   const m=document.getElementById('billingModal');
   if(m)m.classList.remove('active');
@@ -4722,7 +3463,133 @@ function sortArrow(idx){
   return window.billingSortIndex===idx?(window.billingSortDir==='asc'?' ▲':' ▼'):' ⇅';
 }
 
+/* Override fast billing page with page numbers + sortable headers */
+function billingPage(){
+  ensureBillingState();
+  const month=window.billingMonth||billMonthNow();
+  const filter=window.billingFilter||'all';
+  const limit=window.billingLimit||35;
+  window.billingPageNo=window.billingPageNo||1;
+  let rows=clientBillRows(month);
+  if(filter==='paid')rows=rows.filter(r=>r.status==='Paid');
+  if(filter==='unpaid')rows=rows.filter(r=>r.status==='Unpaid');
+  if(filter==='partial')rows=rows.filter(r=>r.status==='Partial');
 
+  const q=(window.billingSearch||'').toLowerCase();
+  if(q)rows=rows.filter(r=>{
+    const c=r.client;
+    return [c.name,c.mobile,c.ccode,c.pin,c.pppoe,c.package,c.area,c.address,r.status,r.total,r.received,r.due].join(' ').toLowerCase().includes(q);
+  });
+
+  const sortIndex=window.billingSortIndex;
+  const sortDir=window.billingSortDir||'asc';
+  const rowArrays=rows.map(r=>{
+    const c=r.client;
+    return {
+      raw:r,
+      cells:[
+        '',
+        `<b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small>`,
+        esc(c.mobile||'-'),
+        esc(c.ccode||c.pin||'-'),
+        esc(c.package||'-'),
+        money(r.total),
+        money(r.discount||0),
+        money(r.received),
+        money(r.due),
+        r.status
+      ]
+    };
+  });
+  if(sortIndex!==undefined && sortIndex!==null && sortIndex>0 && sortIndex<10){
+    const sorted=sortRowsByIndex(rowArrays.map(x=>x.cells),sortIndex,sortDir);
+    // map sorted cells back by stable joined key
+    rowArrays.sort((a,b)=>{
+      const av=sortValue(a.cells[sortIndex]), bv=sortValue(b.cells[sortIndex]);
+      if(typeof av==='number'&&typeof bv==='number')return sortDir==='asc'?av-bv:bv-av;
+      return sortDir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+    });
+  }
+  rows=rowArrays.map(x=>x.raw);
+
+  const totalRows=rows.length;
+  const pages=limit==='all'?1:Math.max(1,Math.ceil(totalRows/(+limit||10)));
+  if(window.billingPageNo>pages)window.billingPageNo=pages;
+  const page=window.billingPageNo;
+  const start=limit==='all'?0:(page-1)*(+limit||10);
+  const shownRows=limit==='all'?rows:rows.slice(start,start+(+limit||10));
+  const sum=billingSummary(month);
+
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>💳 Client Billing</h2></div>
+    <div class="row">
+      <div class="fg"><label>Billing Month</label><input type="month" value="${esc(month)}" onchange="window.billingMonth=this.value;window.billingPageNo=1;billingPage()"></div>
+      <div class="fg"><label>Status Filter</label><select onchange="window.billingFilter=this.value;window.billingPageNo=1;billingPage()"><option value="all" ${filter==='all'?'selected':''}>All</option><option value="paid" ${filter==='paid'?'selected':''}>Paid</option><option value="unpaid" ${filter==='unpaid'?'selected':''}>Unpaid</option><option value="partial" ${filter==='partial'?'selected':''}>Partial</option></select></div>
+      <div class="fg"><label>Search Client</label><input id="billingSearchBox" value="${esc(window.billingSearch||'')}" placeholder="name/mobile/pppoe/code" oninput="billingSearchInput(this)"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="generateSelectedBills()">Generate Selected Bills</button>
+      <button class="btn btn-s" onclick="whatsappSelectedFeeSlips()">Selected Fee Slip WA</button>
+      <button class="btn btn-i" onclick="printSelectedFeeSlips()">Print Selected Slips</button>
+      <button class="btn btn-w" onclick="receiveSelectedFirst()">Receive Selected</button>
+      <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
+      <button class="btn btn-i" onclick="printBillingReport()">Print Report</button>
+      <button class="btn btn-w" onclick="recalcBillingFromFinance()">Recalculate</button>
+      <span id="billingSelectedCount" class="badge pending">0 selected</span>
+    </div>
+  </div>
+  ${billingStatusCards(month)}
+  <div class="summary">
+    <div class="sum">Current Month<b>${esc(month)}</b></div>
+    <div class="sum">Filter<b>${esc(filter.toUpperCase())}</b></div>
+    <div class="sum">Showing<b>${shownRows.length} / ${totalRows}</b></div>
+    <div class="sum">Page<b>${page} / ${pages}</b></div>
+  </div>
+  <div class="card">
+    <div class="table-controls">
+      <div class="left"><b>Billing List</b><span class="table-info">${totalRows} users in filter</span></div>
+      <div class="right"><label style="font-weight:900">Show</label><select onchange="window.billingLimit=this.value;window.billingPageNo=1;billingPage()"><option ${limit==10?'selected':''}>10</option><option ${limit==35?'selected':''}>35</option><option ${limit==50?'selected':''}>50</option><option ${limit==100?'selected':''}>100</option><option value="all" ${limit==='all'?'selected':''}>all</option></select></div>
+    </div>
+    <div class="tbl"><table><thead><tr>
+      <th><input type="checkbox" onchange="toggleAllBillingChecks(this)"></th>
+      <th onclick="setBillingSort(1)">Client${sortArrow(1)}</th>
+      <th onclick="setBillingSort(2)">Mobile${sortArrow(2)}</th>
+      <th onclick="setBillingSort(3)">C.Code${sortArrow(3)}</th>
+      <th onclick="setBillingSort(4)">Package${sortArrow(4)}</th>
+      <th onclick="setBillingSort(5)">Bill${sortArrow(5)}</th>
+      <th onclick="setBillingSort(6)">Discount${sortArrow(6)}</th>
+      <th onclick="setBillingSort(7)">Received${sortArrow(7)}</th>
+      <th onclick="setBillingSort(8)">Due${sortArrow(8)}</th>
+      <th onclick="setBillingSort(9)">Status${sortArrow(9)}</th>
+      <th>Action</th>
+    </tr></thead><tbody>${shownRows.map(r=>{
+      const c=r.client;
+      const status=r.status==='Paid'?'<span class="badge done">Paid</span>':r.status==='Partial'?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
+      return `<tr>
+        <td><input type="checkbox" class="billing-check" value="${c.id}" onchange="updateBillingSelectedCount()"></td>
+        <td><b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small></td>
+        <td>${esc(c.mobile||'-')}</td>
+        <td>${esc(c.ccode||c.pin||'-')}</td>
+        <td>${esc(c.package||'-')}</td>
+        <td>${money(r.total)}</td>
+        <td>${money(r.discount||0)}</td>
+        <td>${money(r.received)}</td>
+        <td>${money(r.due)}</td>
+        <td>${status}</td>
+        <td>${compactBillingActionMenu(c.id)}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div>
+    ${paginationButtons(totalRows,page,limit,'billingGotoPage')}
+  </div>`;
+}
+
+/* Generic table sorting + pagination */
+
+
+
+
+
+/* ===== FEE SLIP RECEIVED BY + FINANCE EMPLOYEE TAG + EDITABLE SLIP FIELDS ===== */
 function ensureSlipSettings(){
   S.appSettings=S.appSettings||{};
   S.appSettings.feeSlipFields=S.appSettings.feeSlipFields||{
@@ -4938,7 +3805,127 @@ function financeEntryEmployee(e){
 
 
 
+/* ===== BILLING SEARCH BOX ABOVE LIST ===== */
+function billingPage(){
+  ensureBillingState();
+  const month=window.billingMonth||billMonthNow();
+  const filter=window.billingFilter||'all';
+  const limit=window.billingLimit||35;
+  window.billingPageNo=window.billingPageNo||1;
 
+  let rows=clientBillRows(month);
+  if(filter==='paid')rows=rows.filter(r=>r.status==='Paid');
+  if(filter==='unpaid')rows=rows.filter(r=>r.status==='Unpaid');
+  if(filter==='partial')rows=rows.filter(r=>r.status==='Partial');
+
+  const q=(window.billingSearch||'').toLowerCase();
+  if(q)rows=rows.filter(r=>{
+    const c=r.client;
+    return [c.name,c.mobile,c.ccode,c.pin,c.pppoe,c.package,c.area,c.address,r.status,r.total,r.received,r.due].join(' ').toLowerCase().includes(q);
+  });
+
+  const sortIndex=window.billingSortIndex;
+  const sortDir=window.billingSortDir||'asc';
+  if(sortIndex!==undefined && sortIndex!==null && sortIndex>0 && sortIndex<10){
+    rows.sort((a,b)=>{
+      const ac=a.client,bc=b.client;
+      const arrA=['',ac.name,ac.mobile,ac.ccode||ac.pin,ac.package,a.total,a.discount||0,a.received,a.due,a.status];
+      const arrB=['',bc.name,bc.mobile,bc.ccode||bc.pin,bc.package,b.total,b.discount||0,b.received,b.due,b.status];
+      const av=sortValue(arrA[sortIndex]),bv=sortValue(arrB[sortIndex]);
+      if(typeof av==='number'&&typeof bv==='number')return sortDir==='asc'?av-bv:bv-av;
+      return sortDir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+    });
+  }
+
+  const totalRows=rows.length;
+  const pages=limit==='all'?1:Math.max(1,Math.ceil(totalRows/(+limit||10)));
+  if(window.billingPageNo>pages)window.billingPageNo=pages;
+  const page=window.billingPageNo;
+  const start=limit==='all'?0:(page-1)*(+limit||10);
+  const shownRows=limit==='all'?rows:rows.slice(start,start+(+limit||10));
+
+  content.innerHTML=`<div class="card">
+    <div class="head"><h2>💳 Client Billing</h2></div>
+    <div class="row two">
+      <div class="fg"><label>Billing Month</label><input type="month" value="${esc(month)}" onchange="window.billingMonth=this.value;window.billingPageNo=1;billingPage()"></div>
+      <div class="fg"><label>Status Filter</label><select onchange="window.billingFilter=this.value;window.billingPageNo=1;billingPage()"><option value="all" ${filter==='all'?'selected':''}>All</option><option value="paid" ${filter==='paid'?'selected':''}>Paid</option><option value="unpaid" ${filter==='unpaid'?'selected':''}>Unpaid</option><option value="partial" ${filter==='partial'?'selected':''}>Partial</option></select></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-p" onclick="generateSelectedBills()">Generate Selected Bills</button>
+      <button class="btn btn-s" onclick="whatsappSelectedFeeSlips()">Selected Fee Slip WA</button>
+      <button class="btn btn-i" onclick="printSelectedFeeSlips()">Print Selected Slips</button>
+      <button class="btn btn-w" onclick="receiveSelectedFirst()">Receive Selected</button>
+      <button class="btn btn-s" onclick="sendAllUnpaidBills()">WhatsApp All Unpaid</button>
+      <button class="btn btn-i" onclick="printBillingReport()">Print Report</button>
+      <button class="btn btn-w" onclick="recalcBillingFromFinance()">Recalculate</button>
+      <button class="btn btn-l" onclick="openSlipFieldsModal()">Slip Fields</button>
+      <span id="billingSelectedCount" class="badge pending">0 selected</span>
+    </div>
+  </div>
+
+  ${billingStatusCards(month)}
+
+  <div class="summary">
+    <div class="sum">Current Month<b>${esc(month)}</b></div>
+    <div class="sum">Filter<b>${esc(filter.toUpperCase())}</b></div>
+    <div class="sum">Showing<b>${shownRows.length} / ${totalRows}</b></div>
+    <div class="sum">Page<b>${page} / ${pages}</b></div>
+  </div>
+
+  <div class="card">
+    <div class="head"><h2>Client Billing List</h2></div>
+    <div class="table-controls billing-list-controls">
+      <div class="left" style="flex:1;min-width:220px">
+        <label style="font-weight:900;color:#374151">Search Client</label>
+        <input id="billingSearchBox" value="${esc(window.billingSearch||'')}" placeholder="Search name, mobile, PPPoE, C.Code, package..." oninput="billingSearchInput(this)">
+      </div>
+      <div class="right">
+        <label style="font-weight:900">Show</label>
+        <select onchange="window.billingLimit=this.value;window.billingPageNo=1;billingPage()">
+          <option ${limit==10?'selected':''}>10</option>
+          <option ${limit==35?'selected':''}>35</option>
+          <option ${limit==50?'selected':''}>50</option>
+          <option ${limit==100?'selected':''}>100</option>
+          <option value="all" ${limit==='all'?'selected':''}>all</option>
+        </select>
+      </div>
+    </div>
+    <div class="tbl"><table><thead><tr>
+      <th><input type="checkbox" onchange="toggleAllBillingChecks(this)"></th>
+      <th onclick="setBillingSort(1)">Client${sortArrow(1)}</th>
+      <th onclick="setBillingSort(2)">Mobile${sortArrow(2)}</th>
+      <th onclick="setBillingSort(3)">C.Code${sortArrow(3)}</th>
+      <th onclick="setBillingSort(4)">Package${sortArrow(4)}</th>
+      <th onclick="setBillingSort(5)">Bill${sortArrow(5)}</th>
+      <th onclick="setBillingSort(6)">Discount${sortArrow(6)}</th>
+      <th onclick="setBillingSort(7)">Received${sortArrow(7)}</th>
+      <th onclick="setBillingSort(8)">Due${sortArrow(8)}</th>
+      <th onclick="setBillingSort(9)">Status${sortArrow(9)}</th>
+      <th>Action</th>
+    </tr></thead><tbody>${shownRows.map(r=>{
+      const c=r.client;
+      const status=r.status==='Paid'?'<span class="badge done">Paid</span>':r.status==='Partial'?'<span class="badge pending">Partial</span>':'<span class="badge expense">Unpaid</span>';
+      return `<tr>
+        <td><input type="checkbox" class="billing-check" value="${c.id}" onchange="updateBillingSelectedCount()"></td>
+        <td><b>${esc(c.name||'-')}</b><br><small>${esc(c.area||c.address||'')}</small></td>
+        <td>${esc(c.mobile||'-')}</td>
+        <td>${esc(c.ccode||c.pin||'-')}</td>
+        <td>${esc(c.package||'-')}</td>
+        <td>${money(r.total)}</td>
+        <td>${money(r.discount||0)}</td>
+        <td>${money(r.received)}</td>
+        <td>${money(r.due)}</td>
+        <td>${status}</td>
+        <td>${compactBillingActionMenu(c.id)}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div>
+    ${paginationButtons(totalRows,page,limit,'billingGotoPage')}
+  </div>`;
+}
+
+
+
+/* ===== SIDEBAR FIXED SCROLL PATCH ===== */
 function toggleSideMenu(){
   const s=document.getElementById('sidePanel');
   if(!s)return;
@@ -5014,27 +4001,14 @@ function closeEmployeeModal(){
   document.getElementById('employeeModal')?.classList.remove('active');
 }
 function employeeActionsMenu(empId){
-  return `<div class="action-dropdown" style="position:relative">
-    <button class="btn btn-l btn-sm action-toggle" onclick="toggleEmpActionMenu('${esc(empId)}')">⚙️ Actions</button>
-    <div id="empActionMenu-${esc(empId)}" class="action-menu-list" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
-      <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="openEmployeeEditModal('${esc(empId)}');hideEmpActionMenu('${esc(empId)}')">✏️ Edit / Permissions</button>
-      <button class="btn btn-w btn-sm" style="width:100%;margin-bottom:4px" onclick="toggleEmployeeStatusFinal('${esc(empId)}');hideEmpActionMenu('${esc(empId)}')">🔄 Active / Inactive</button>
-      <button class="btn btn-e btn-sm" style="width:100%" onclick="deleteEmployeeFinal('${esc(empId)}');hideEmpActionMenu('${esc(empId)}')">🗑️ Delete</button>
-    </div>
-  </div>`;
-}
-
-function toggleEmpActionMenu(empId){
-  var el=document.getElementById('empActionMenu-'+empId);
-  if(!el)return;
-  var isOpen=el.classList.contains('open');
-  // Close all other menus first
-  document.querySelectorAll('.action-menu-list').forEach(function(m){m.classList.remove('open');m.style.display='none';});
-  if(!isOpen){el.classList.add('open');el.style.display='block';}
-}
-function hideEmpActionMenu(empId){
-  var el=document.getElementById('empActionMenu-'+empId);
-  if(el){el.classList.remove('open');el.style.display='none';}
+  if(typeof actionMenu==='function'){
+    return actionMenu([
+      {label:'Edit / Permissions',fn:`openEmployeeEditModal('${empId}')`},
+      {label:'Active / Inactive',fn:`toggleEmployeeStatusFinal('${empId}')`},
+      {label:'Delete',fn:`deleteEmployeeFinal('${empId}')`}
+    ]);
+  }
+  return `<button class="btn btn-i btn-sm" onclick="openEmployeeEditModal('${empId}')">Edit</button>`;
 }
 function employees(){
   if(U && U.role!=='admin')return dash();
@@ -5094,17 +4068,8 @@ function employeesTableFinal(){
     </tr>`;
   }).join('');
   return `<div class="card"><div class="head"><h2>Employees</h2></div>
-    <input type="text" class="table-search" placeholder="🔍 Search employees by name, login, mobile..." oninput="filterTable('employeesTable', this.value)">
-    <div class="tbl"><table id="employeesTable">
-      <thead><tr>
-        <th class="sortable" onclick="sortTable('employeesTable',0,'string')">Name</th>
-        <th class="sortable" onclick="sortTable('employeesTable',1,'string')">Login</th>
-        <th class="sortable" onclick="sortTable('employeesTable',2,'string')">Mobile</th>
-        <th class="sortable" onclick="sortTable('employeesTable',3,'string')">Role</th>
-        <th class="sortable" onclick="sortTable('employeesTable',4,'string')">Status</th>
-        <th class="sortable" onclick="sortTable('employeesTable',5,'string')">Permissions</th>
-        <th>Action</th>
-      </tr></thead>
+    <div class="tbl"><table>
+      <thead><tr><th>Name</th><th>Login</th><th>Mobile</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
   </div>`;
@@ -5250,7 +4215,6 @@ function renderCurrent(){
       advance:advancePage,
       targets:targets,
       news:openNewsPage,
-      template:templatePage,
       settings:openSettingsPage,
       backup:backup
     };
@@ -5400,26 +4364,8 @@ function canUseModuleFinal(tabName){
   return tabName==='dashboard'||per[tabName]===1||per[tabName]===true;
 }
 function compactAction(items){
-  var idv='ca'+Math.random().toString(36).slice(2,8);
-  var buttons=items.map(function(it){return `<button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px;text-align:left" onclick="${it.fn};hideClientActionMenu('${idv}')">${it.label}</button>`}).join('');
-  return `<div class="action-dropdown" style="position:relative">
-    <button class="btn btn-l btn-sm action-toggle" onclick="toggleClientActionMenu('${idv}',event)">⚙️ Actions</button>
-    <div id="${idv}" class="action-menu-list" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
-      ${buttons}
-    </div>
-  </div>`;
-}
-function toggleClientActionMenu(idv,ev){
-  if(ev)ev.stopPropagation();
-  var el=document.getElementById(idv);
-  if(!el)return;
-  var isOpen=el.classList.contains('open');
-  document.querySelectorAll('.action-menu-list').forEach(function(m){m.classList.remove('open');m.style.display='none';});
-  if(!isOpen){el.classList.add('open');el.style.display='block';}
-}
-function hideClientActionMenu(idv){
-  var el=document.getElementById(idv);
-  if(el){el.classList.remove('open');el.style.display='none';}
+  if(typeof actionMenu==='function')return actionMenu(items);
+  return `<button class="btn btn-i btn-sm" onclick="${items[0]?.fn||''}">Action</button>`;
 }
 
 /* Clients same interface */
@@ -5499,33 +4445,10 @@ function itemsPage(){
   </div>
   <div class="card">
     <div class="head"><h2>Items List</h2></div>
-    <input type="text" class="table-search" placeholder="🔍 Search items by name, category..." oninput="filterTable('itemsTable', this.value)">
-    <div class="tbl"><table id="itemsTable"><thead><tr>
-      <th class="sortable" onclick="sortTable('itemsTable',0,'string')">Item</th>
-      <th class="sortable" onclick="sortTable('itemsTable',1,'number')">Purchase</th>
-      <th class="sortable" onclick="sortTable('itemsTable',2,'number')">Sale</th>
-      <th class="sortable" onclick="sortTable('itemsTable',3,'number')">Stock</th>
-      <th class="sortable" onclick="sortTable('itemsTable',4,'number')">Profit/Unit</th>
-      <th>Action</th>
-    </tr></thead><tbody>
+    <div class="tbl"><table><thead><tr><th>Item</th><th>Purchase</th><th>Sale</th><th>Stock</th><th>Unit</th><th>Profit/Unit</th><th>Action</th></tr></thead><tbody>
       ${S.items.map(i=>{
-        return `<tr>
-          <td><b>${esc(i.name||'-')}</b><br><small>${esc(i.category||i.unit||'')}</small></td>
-          <td>${money(i.purchase)}</td>
-          <td>${money(i.sale)}</td>
-          <td>${esc(i.stock||0)}</td>
-          <td><b>${money((+i.sale||0)-(+i.purchase||0))}</b></td>
-          <td>
-            <div class="action-dropdown" style="position:relative">
-              <button class="btn btn-l btn-sm action-toggle" onclick="toggleItemActionMenu('${esc(i.id)}')">⚙️ Actions</button>
-              <div id="itemActionMenu-${esc(i.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
-                <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="editUiItem('${i.id}');hideItemActionMenu('${esc(i.id)}')">✏️ Edit</button>
-                <button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="sendItemSlip('${i.id}');hideItemActionMenu('${esc(i.id)}')">📱 WhatsApp</button>
-                <button class="btn btn-e btn-sm" style="width:100%" onclick="deleteUiItem('${i.id}');hideItemActionMenu('${esc(i.id)}')">🗑️ Delete</button>
-              </div>
-            </div>
-          </td>
-        </tr>`;
+        const actions=compactAction([{label:'Edit',fn:`editUiItem('${i.id}')`},{label:'Delete',fn:`deleteUiItem('${i.id}')`}]);
+        return `<tr><td><b>${esc(i.name||'-')}</b><br><small>${esc(i.notes||'')}</small></td><td>${money(i.purchase)}</td><td>${money(i.sale)}</td><td>${esc(i.stock||0)}</td><td>${esc(i.unit||'-')}</td><td>${money((+i.sale||0)-(+i.purchase||0))}</td><td>${actions}</td></tr>`;
       }).join('')}
     </tbody></table></div>
   </div>`;
@@ -5578,32 +4501,11 @@ function packagesPage(){
   </div>
   <div class="card">
     <div class="head"><h2>Package List</h2></div>
-    <input type="text" class="table-search" placeholder="🔍 Search packages by name, details..." oninput="filterTable('packagesTable', this.value)">
-    <div class="tbl"><table id="packagesTable"><thead><tr>
-      <th class="sortable" onclick="sortTable('packagesTable',0,'string')">Package</th>
-      <th class="sortable" onclick="sortTable('packagesTable',1,'number')">Monthly Fee</th>
-      <th class="sortable" onclick="sortTable('packagesTable',2,'string')">Details</th>
-      <th class="sortable" onclick="sortTable('packagesTable',3,'number')">Clients</th>
-      <th>Action</th>
-    </tr></thead><tbody>
+    <div class="tbl"><table><thead><tr><th>Package</th><th>Monthly Fee</th><th>Details</th><th>Clients</th><th>Action</th></tr></thead><tbody>
       ${S.packages.map(p=>{
         const count=(S.clients||[]).filter(c=>String(c.package||'')===String(p.name||'')).length;
-        return `<tr>
-          <td><b>${esc(p.name||'-')}</b></td>
-          <td>${money(p.fee||p.price||0)}</td>
-          <td>${esc(p.details||p.speed||'-')}</td>
-          <td>${count}</td>
-          <td>
-            <div class="action-dropdown" style="position:relative">
-              <button class="btn btn-l btn-sm action-toggle" onclick="togglePackageActionMenu('${esc(p.id)}')">⚙️ Actions</button>
-              <div id="pkgActionMenu-${esc(p.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
-                <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="editUiPackage('${p.id}');hidePackageActionMenu('${esc(p.id)}')">✏️ Edit</button>
-                <button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="sendPackageSlip('${p.id}');hidePackageActionMenu('${esc(p.id)}')">📱 WhatsApp</button>
-                <button class="btn btn-e btn-sm" style="width:100%" onclick="deleteUiPackage('${p.id}');hidePackageActionMenu('${esc(p.id)}')">🗑️ Delete</button>
-              </div>
-            </div>
-          </td>
-        </tr>`;
+        const actions=compactAction([{label:'Edit',fn:`editUiPackage('${p.id}')`},{label:'Delete',fn:`deleteUiPackage('${p.id}')`}]);
+        return `<tr><td><b>${esc(p.name||'-')}</b></td><td>${money(p.fee||p.price||0)}</td><td>${esc(p.details||p.speed||'-')}</td><td>${count}</td><td>${actions}</td></tr>`;
       }).join('')}
     </tbody></table></div>
   </div>`;
@@ -5882,290 +4784,98 @@ function printMonthlyBillA4(clientId){
   const data=monthlyBillDisplayData(clientId, window.billingMonth||billMonthNow());
   if(!data)return toast('Client not found','error');
   const c=data.client, r=data.row, info=data.company;
-  const fields=getFieldVisibility();
-  const show=(f)=>fields[f]!==false;
-  const statusColor = r.status==='Paid' ? '#059669' : r.status==='Unpaid' ? '#dc2626' : '#d97706';
-  const statusBg = r.status==='Paid' ? '#d1fae5' : r.status==='Unpaid' ? '#fee2e2' : '#fef3c7';
-  const html=`<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Monthly Bill - ${esc(c.name||'Client')}</title>
-<style>
-  @page { size: A4; margin: 4mm; }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { 
-    font-family: 'Segoe UI', Arial, sans-serif; 
-    color: #1e293b; 
-    background: #fff; 
-    line-height: 1.15;
-    font-size: 9px;
-  }
-  .page { 
-    width: 100%; 
-    max-width: 200mm; 
-    margin: 0 auto; 
-    padding: 1mm;
-  }
-
-  /* HEADER WITH INLINE STATUS */
-  .head { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    border-bottom: 2px solid #e11d48; 
-    padding-bottom: 4px; 
-    margin-bottom: 4px; 
-  }
-  .brand { flex: 1; }
-  .brand h1 { 
-    margin: 0; 
-    color: #be123c; 
-    font-size: 16px; 
-    font-weight: 800; 
-  }
-  .brand p { 
-    margin: 0; 
-    color: #475569; 
-    font-size: 7px; 
-    line-height: 1.2; 
-  }
-  .billbox { 
-    border: 1px solid #e2e8f0; 
-    border-radius: 4px; 
-    padding: 4px 6px; 
-    min-width: 120px; 
-    background: #f8fafc;
-    text-align: right;
-  }
-  .billbox h2 { 
-    margin: 0 0 2px 0; 
-    font-size: 10px; 
-    color: #0f172a; 
-    font-weight: 800;
-  }
-  .billbox div { 
-    font-size: 7px; 
-    margin: 0; 
-    color: #475569; 
-  }
-  .billbox div b { 
-    color: #1e293b; 
-    font-weight: 700;
-  }
-
-  .grid { 
-    display: grid; 
-    grid-template-columns: 1.4fr 0.6fr; 
-    gap: 4px; 
-    margin-bottom: 4px; 
-  }
-  .card { 
-    border: 1px solid #e2e8f0; 
-    border-radius: 4px; 
-    padding: 4px; 
-    background: #fff;
-  }
-  .card h3 { 
-    margin: 0 0 2px 0; 
-    font-size: 8px; 
-    color: #0f172a; 
-    font-weight: 700; 
-    text-transform: uppercase; 
-    letter-spacing: 0.02em;
-  }
-  .meta { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 2px; 
-  }
-  .meta .item { 
-    background: #f1f5f9; 
-    border-radius: 2px; 
-    padding: 2px 3px; 
-  }
-  .meta .item b { 
-    display: block; 
-    color: #64748b; 
-    font-size: 6px; 
-    text-transform: uppercase; 
-  }
-  .meta .item span { 
-    font-weight: 700; 
-    font-size: 8px; 
-    color: #0f172a;
-  }
-
-  .details-card {
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    padding: 4px;
-    margin-bottom: 4px;
-  }
-  .details-card h3 {
-    margin: 0 0 2px 0;
-    font-size: 8px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-  table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    margin: 2px 0;
-  }
-  th, td { 
-    padding: 2px 3px; 
-    border-bottom: 1px solid #e2e8f0; 
-    font-size: 8px; 
-  }
-  th { 
-    text-align: left; 
-    background: #f1f5f9; 
-    font-weight: 700; 
-    color: #475569; 
-    text-transform: uppercase; 
-    font-size: 6px; 
-  }
-  .totals { 
-    margin-top: 2px; 
-    margin-left: auto; 
-    max-width: 160px; 
-  }
-  .totals .row { 
-    display: flex; 
-    justify-content: space-between; 
-    padding: 1px 0; 
-    border-bottom: 1px dashed #cbd5e1; 
-    font-size: 8px;
-  }
-  .totals .grand { 
-    font-size: 10px; 
-    font-weight: 900; 
-    color: #be123c; 
-    border-top: 2px solid #e11d48; 
-    margin-top: 1px; 
-    padding-top: 2px;
-  }
-  .qrbox { 
-    text-align: center; 
-    padding: 1px; 
-  }
-  .qrbox img { 
-    width: 50px; 
-    height: 50px; 
-    border-radius: 2px;
-  }
-  .note { 
-    margin-top: 2px; 
-    padding: 2px 4px; 
-    border: 1px dashed #cbd5e1; 
-    border-radius: 3px; 
-    background: #fcfcfd; 
-    font-size: 6px; 
-    line-height: 1.2; 
-    color: #475569; 
-  }
-  .footer { 
-    margin-top: 2px; 
-    font-size: 6px; 
-    color: #94a3b8; 
-    text-align: center; 
-    border-top: 1px solid #e2e8f0; 
-    padding-top: 2px;
-  }
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 2px;
-    padding: 2px 4px;
-    background: #f8fafc;
-    border-radius: 3px;
-    border: 1px solid #e2e8f0;
-    font-size: 7px;
-  }
-  @media print {
-    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .page { padding: 0; }
-  }
-</style>
-</head>
-<body>
-  <div class="page">
-    <div class="head">
-      <div class="brand">
-        ${show('companyName')?`<h1>${esc(info.companyName)}</h1>`:''}
-        <p>${show('companyAddress')?esc(info.address)+' · ':''}${show('companyMobile')?esc(info.mobile)+' · ':''}${show('companyEmail')?esc(info.email):''}</p>
+  const html=`<html><head><title>Monthly Bill</title>
+  <style>
+    @page{size:A4;margin:14mm}
+    body{font-family:Arial,sans-serif;color:#111827;background:#fff}
+    .page{width:100%;max-width:190mm;margin:0 auto}
+    .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #ef4444;padding-bottom:10px;margin-bottom:14px}
+    .brand h1{margin:0;color:#dc2626;font-size:28px}
+    .brand p{margin:4px 0;color:#475569;font-size:12px;line-height:1.5}
+    .billbox{border:1px solid #e5e7eb;border-radius:14px;padding:12px 14px;min-width:210px}
+    .billbox h2{margin:0 0 8px 0;font-size:20px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-bottom:14px}
+    .card{border:1px solid #e5e7eb;border-radius:14px;padding:14px}
+    .card h3{margin:0 0 10px 0;font-size:16px;color:#111827}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .meta .item{background:#f8fafc;border-radius:10px;padding:10px}
+    .meta .item b{display:block;color:#475569;font-size:12px;margin-bottom:4px}
+    .meta .item span{font-weight:800}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid #e5e7eb;font-size:13px}
+    th{text-align:left;background:#f8fafc}
+    .totals{margin-top:12px;margin-left:auto;max-width:320px}
+    .totals .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #cbd5e1}
+    .totals .grand{font-size:20px;font-weight:900;color:#dc2626}
+    .qrbox{text-align:center}
+    .qrbox img{width:170px;height:170px}
+    .badge{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;background:#fef3c7;color:#92400e}
+    .note{margin-top:14px;padding:12px;border:1px dashed #cbd5e1;border-radius:12px;background:#fcfcfd;font-size:12px;line-height:1.6;color:#475569}
+    .footer{margin-top:14px;font-size:11px;color:#64748b;text-align:center}
+  </style></head><body>
+    <div class="page">
+      <div class="head">
+        <div class="brand">
+          <h1>${esc(info.companyName)}</h1>
+          <p>${esc(info.address)}<br>Mobile: ${esc(info.mobile)}<br>Email: ${esc(info.email)}</p>
+        </div>
+        <div class="billbox">
+          <h2>MONTHLY BILL</h2>
+          <div><b>Bill No:</b> ${esc(data.billNo)}</div>
+          <div><b>Bill Month:</b> ${esc(data.month)}</div>
+          <div><b>Issue Date:</b> ${esc(data.issueDate)}</div>
+          <div><b>Due Date:</b> <span style="color:#dc2626;font-weight:900">${esc(data.dueDate)}</span></div>
+        </div>
       </div>
-      <div class="billbox">
-        <div style="text-align:center;margin-bottom:3px"><span class="badge" style="display:inline-block;padding:2px 10px;border-radius:999px;font-weight:900;font-size:11px;text-transform:uppercase;background:${statusBg};color:${statusColor};border:1px solid ${statusColor}">${esc(r.status)}</span></div>
-        <h2>BILL</h2>
-        <div><b>${esc(data.billNo)}</b></div>
-        <div>${esc(data.month)}</div>
-        ${show('dueDate')?`<div>Due: <b style="color:#be123c">${esc(data.dueDate)}</b></div>`:''}
-      </div>
-    </div>
 
-    <div class="grid">
+      <div class="grid">
+        <div class="card">
+          <h3>Bill To</h3>
+          <div class="meta">
+            <div class="item"><b>Customer Name</b><span>${esc(c.name||'-')}</span></div>
+            <div class="item"><b>Mobile</b><span>${esc(c.mobile||'-')}</span></div>
+            <div class="item"><b>Client Code</b><span>${esc(c.ccode||c.pin||'-')}</span></div>
+            <div class="item"><b>User ID / PPPoE</b><span>${esc(c.pppoe||'-')}</span></div>
+            <div class="item"><b>Package</b><span>${esc(c.package||'-')}</span></div>
+            <div class="item"><b>Area</b><span>${esc(c.area||c.zone||c.address||'-')}</span></div>
+          </div>
+        </div>
+        <div class="card qrbox">
+          <h3>Payment QR</h3>
+          <img src="${data.paymentQrUrl}" onerror="this.onerror=null;this.src='${data.paymentQrBackup}'" alt="Payment QR">
+          <div style="font-size:12px;font-weight:800;margin-top:8px">Scan to pay / save payment details</div>
+          <div style="font-size:10px;color:#64748b;margin-top:5px;word-break:break-word">${esc(data.paymentQrText)}</div>
+        </div>
+      </div>
+
       <div class="card">
-        <h3>Bill To</h3>
-        <div class="meta">
-          ${show('clientName')?`<div class="item"><b>Name</b><span>${esc(c.name||'-')}</span></div>`:''}
-          ${show('clientMobile')?`<div class="item"><b>Mobile</b><span>${esc(c.mobile||'-')}</span></div>`:''}
-          ${show('clientLogin')?`<div class="item"><b>Login</b><span>${esc(c.pppoe||c.login||'-')}</span></div>`:''}
-          ${show('clientCCode')?`<div class="item"><b>C.Code</b><span>${esc(c.ccode||'-')}</span></div>`:''}
-          ${show('clientPackage')?`<div class="item"><b>Package</b><span>${esc(c.package||'-')}</span></div>`:''}
-          ${show('clientAddress')?`<div class="item"><b>Address</b><span>${esc(c.address||'-')}</span></div>`:''}
+        <h3>Monthly Bill Summary</h3>
+        <table>
+          <thead><tr><th>Description</th><th>Details</th></tr></thead>
+          <tbody>
+            ${data.summary.map(x=>`<tr><td>${esc(x.label)}</td><td>${esc(x.value)}</td></tr>`).join('')}
+          </tbody>
+        </table>
+        <div class="totals">
+          <div class="row"><span>Total Bill</span><strong>${money(r.total||0)}</strong></div>
+          <div class="row"><span>Discount</span><strong>${money(r.discount||0)}</strong></div>
+          <div class="row"><span>Received</span><strong>${money(r.received||0)}</strong></div>
+          <div class="row grand"><span>Amount Due</span><strong>${money(r.due||0)}</strong></div>
         </div>
       </div>
-      <div class="card">
-        <h3>Payment</h3>
-        <div class="meta">
-          ${show('monthlyFee')?`<div class="item"><b>Monthly</b><span>${money(r.total||0)}</span></div>`:''}
-          ${show('received')?`<div class="item"><b>Paid</b><span style="color:#059669">${money(r.received||0)}</span></div>`:''}
-          ${show('dueAmount')?`<div class="item"><b>Due</b><span style="color:#be123c">${money(r.due||0)}</span></div>`:''}
-          ${show('status')?`<div class="item"><b>Status</b><span>${esc(r.status)}</span></div>`:''}
-        </div>
-        <div class="qrbox" style="margin-top:2px">
-          ${show('paymentQr')?(getPaymentQrImage()?`<img src="${getPaymentQrImage()}" alt="QR">`:'<div style="padding:2px;color:#94a3b8;font-size:7px">Scan to Pay</div>'):''}
-        </div>
+
+      <div class="note">
+        <b>Important Note:</b><br>
+        Please pay your monthly internet bill on or before the due date to avoid service interruption or late penalties.
+        If you have already paid, please ignore this bill and contact support if the record is not updated.
+        Current status: <span class="badge">${esc(r.status||'Unpaid')}</span>
+      </div>
+
+      <div class="footer">
+        This is a computer-generated monthly bill. Please keep this bill for your record.
       </div>
     </div>
-
-    <div class="details-card">
-      <h3>Bill Details</h3>
-      <table>
-        <thead><tr><th>Description</th><th style="text-align:right">Amount</th></tr></thead>
-        <tbody>
-          <tr><td>Monthly Internet (${esc(data.month)})</td><td style="text-align:right;font-weight:700">${money(r.total||0)}</td></tr>
-          ${r.prevDue > 0 ? `<tr><td>Previous Balance</td><td style="text-align:right">${money(r.prevDue)}</td></tr>` : ''}
-          ${r.adjustment ? `<tr><td>Adjustment</td><td style="text-align:right">${money(r.adjustment)}</td></tr>` : ''}
-          <tr style="border-top:2px solid #e2e8f0"><td><b>Total Payable</b></td><td style="text-align:right;font-weight:800">${money(r.due||0)}</td></tr>
-        </tbody>
-      </table>
-      <div class="totals">
-        <div class="row"><span>Subtotal</span><span>${money(r.total||0)}</span></div>
-        ${r.prevDue > 0 ? `<div class="row"><span>Previous Due</span><span>${money(r.prevDue)}</span></div>` : ''}
-        ${r.received > 0 ? `<div class="row"><span>Paid</span><span style="color:#059669">-${money(r.received)}</span></div>` : ''}
-        <div class="row grand"><span>NET DUE</span><span>${money(r.due||0)}</span></div>
-      </div>
-    </div>
-
-    <div class="status-bar">
-      <span>Pay before due date to avoid service interruption</span>
-      <span>For queries: ${esc(info.mobile)}</span>
-    </div>
-
-    <div class="note">
-      <b>Terms:</b> Payment due by due date. Late payments may result in suspension. Computer-generated bill.
-    </div>
-
-    <div class="footer">
-      <b>${esc(info.companyName)}</b> — Powered by FireNet ISP Manager
-    </div>
-  </div>
-</body>
-</html>`;
+  </body></html>`;
   const w=window.open('','_blank');
   w.document.write(html);
   w.document.close();
@@ -6214,11 +4924,6 @@ function getVerifyUrl(receiptId){
 function getQRImageUrl(txt){
   return 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data='+encodeURIComponent(txt||'');
 }
-/* Alias for backward compatibility */
-function getPaymentQrImageUrl(text){
-  return getQRImageUrl(text);
-}
-
 function getQRBackupImageUrl(txt){
   return 'https://quickchart.io/qr?size=180&text='+encodeURIComponent(txt||'');
 }
@@ -6326,171 +5031,49 @@ function ensureTemplateSettings(){
   };
   return S.appSettings.templates;
 }
-
-function getPaymentQrImage(){
-  const T=ensureTemplateSettings();
-  return T.paymentQrImage||'';
-}
-
 function templatePage(){
+  if(U&&U.role!=='admin')return content.innerHTML='<div class="card"><div class="head"><h2>Access Denied</h2></div><p>Only admin can edit templates.</p></div>';
   const T=ensureTemplateSettings();
-  // Default field visibility
-  T.showFields = T.showFields || {
-    companyName: true,
-    companyAddress: true,
-    companyMobile: true,
-    companyEmail: true,
-    billNo: true,
-    billMonth: true,
-    issueDate: true,
-    dueDate: true,
-    clientName: true,
-    clientMobile: true,
-    clientLogin: true,
-    clientCCode: true,
-    clientPackage: true,
-    clientAddress: true,
-    monthlyFee: true,
-    received: true,
-    dueAmount: true,
-    status: true,
-    billDetails: true,
-    previousDue: true,
-    adjustment: true,
-    totals: true,
-    paymentQr: true,
-    terms: true,
-    footer: true,
-    watermark: false
-  };
-
   content.innerHTML=`<div class="card">
-    <div class="head"><h2>🎨 Bill Template Editor</h2>
-      <div class="actions">
-        <button class="btn btn-s" onclick="previewTemplateSample()">👁️ Preview Sample</button>
-        <button class="btn btn-p" onclick="saveTemplateSettings()">💾 Save Template</button>
-      </div>
-    </div>
-
-    <!-- QR UPLOAD -->
-    <div class="row" style="margin-bottom:1rem">
-      <div class="fg" style="grid-column: 1 / -1">
-        <label>📱 Payment QR Code</label>
-        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
-          <div style="flex:1;min-width:250px">
-            <input type="file" id="tplQrUpload" accept="image/*" onchange="previewTemplateQr(event)" style="display:none">
-            <button class="btn btn-i" onclick="document.getElementById('tplQrUpload').click()">📁 Upload QR</button>
-            <small style="color:#64748b;display:block;margin-top:6px">JPG/PNG under 800KB</small>
-          </div>
-          <div id="tplQrPreview" style="min-width:100px;text-align:center">
-            ${T.paymentQrImage?`<img src="${esc(T.paymentQrImage)}" style="max-width:100px;max-height:100px;border:1px solid #e2e8f0;border-radius:8px;padding:4px">`:'<div style="padding:15px;color:#94a3b8;font-size:11px;border:2px dashed #e2e8f0;border-radius:8px">No QR</div>'}
-          </div>
-          ${T.paymentQrImage?`<button class="btn btn-e btn-sm" onclick="removeTemplateQr()">🗑️ Remove</button>`:''}
-        </div>
-      </div>
-    </div>
-
-    <!-- FIELD VISIBILITY TOGGLES -->
-        <!-- TEXT INPUTS FOR TEMPLATE SETTINGS -->
-    <div class="row" style="margin-top:1rem">
-      <div class="fg"><label>Bill Title</label><input id="tplBillTitle" value="${esc(T.billTitle||'MONTHLY INTERNET BILL')}"></div>
+    <div class="head"><h2>🎨 Templates & Payment QR</h2></div>
+    <p style="font-weight:900;color:#64748b">Yahan se Monthly Bill, Invoice aur Fee Slip ka title, notes, colors aur payment QR adjust kar sakte hain.</p>
+    <div class="row">
+      <div class="fg"><label>Monthly Bill Title</label><input id="tplBillTitle" value="${esc(T.billTitle||'MONTHLY INTERNET BILL')}"></div>
       <div class="fg"><label>Invoice Title</label><input id="tplInvoiceTitle" value="${esc(T.invoiceTitle||'INVOICE')}"></div>
       <div class="fg"><label>Fee Slip Title</label><input id="tplFeeSlipTitle" value="${esc(T.feeSlipTitle||'Internet Fee Payment Slip')}"></div>
     </div>
     <div class="row">
-      <div class="fg"><label>Primary Color</label><input id="tplPrimaryColor" type="color" value="${esc(T.primaryColor||'#dc2626')}" style="height:42px;padding:4px"></div>
-      <div class="fg" style="grid-column: span 2"><label>Note / Terms Text</label><textarea id="tplNote" rows="2">${esc(T.note||'Please pay your monthly internet bill on or before the due date to avoid service interruption.')}</textarea></div>
+      <div class="fg"><label>Template Primary Color</label><input id="tplPrimaryColor" type="color" value="${esc(T.primaryColor||'#dc2626')}"></div>
+      <div class="fg"><label>Show Payment QR on Monthly Bill</label><select id="tplShowPaymentQr"><option value="1" ${T.showPaymentQr!==false?'selected':''}>Yes</option><option value="0" ${T.showPaymentQr===false?'selected':''}>No</option></select></div>
+      <div class="fg"><label>Show Verify QR on Fee Slip</label><select id="tplShowVerifyQr"><option value="1" ${T.showVerifyQr!==false?'selected':''}>Yes</option><option value="0" ${T.showVerifyQr===false?'selected':''}>No</option></select></div>
     </div>
-    <div class="fg"><label>Footer Text</label><textarea id="tplFooter" rows="2">${esc(T.footer||'This is a computer-generated document. Please keep it for your record.')}</textarea></div>
-
-<div class="head" style="margin-top:1.5rem"><h3>📋 Show/Hide Fields in Bill</h3></div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem">
-
-      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
-        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Company Info</div>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_companyName" ${T.showFields.companyName?'checked':''}> Company Name</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_companyAddress" ${T.showFields.companyAddress?'checked':''}> Address</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_companyMobile" ${T.showFields.companyMobile?'checked':''}> Mobile</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_companyEmail" ${T.showFields.companyEmail?'checked':''}> Email</label>
+    <div class="row two">
+      <div class="fg"><label>Payment QR Upload</label><input id="tplQrUpload" type="file" accept="image/*" onchange="previewTemplateQr(event)"></div>
+      <div class="fg"><label>Payment QR Text / Account Details</label><input id="tplPaymentQrText" value="${esc(T.paymentQrText||'')}" placeholder="Bank/JazzCash/EasyPaisa details or payment link"></div>
+    </div>
+    <div class="row two">
+      <div class="card" style="box-shadow:none;border:1px dashed #cbd5e1">
+        <h3>Current Payment QR Preview</h3>
+        <div id="tplQrPreview" style="text-align:center;padding:10px">
+          ${T.paymentQrImage?`<img src="${T.paymentQrImage}" style="max-width:180px;max-height:180px;border:1px solid #e5e7eb;border-radius:12px;padding:6px;background:#fff">`:'<p>No QR uploaded yet. Auto-generated QR will be used.</p>'}
+        </div>
+        <button class="btn btn-w btn-sm" onclick="removeTemplateQr()">Remove Uploaded QR</button>
       </div>
-
-      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
-        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Bill Info</div>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_billNo" ${T.showFields.billNo?'checked':''}> Bill Number</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_billMonth" ${T.showFields.billMonth?'checked':''}> Bill Month</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_issueDate" ${T.showFields.issueDate?'checked':''}> Issue Date</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_dueDate" ${T.showFields.dueDate?'checked':''}> Due Date</label>
-      </div>
-
-      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
-        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Client Info</div>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientName" ${T.showFields.clientName?'checked':''}> Name</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientMobile" ${T.showFields.clientMobile?'checked':''}> Mobile</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientLogin" ${T.showFields.clientLogin?'checked':''}> Login/PPPoE</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientCCode" ${T.showFields.clientCCode?'checked':''}> C.Code</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientPackage" ${T.showFields.clientPackage?'checked':''}> Package</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_clientAddress" ${T.showFields.clientAddress?'checked':''}> Address</label>
-      </div>
-
-      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
-        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Amounts</div>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_monthlyFee" ${T.showFields.monthlyFee?'checked':''}> Monthly Fee</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_received" ${T.showFields.received?'checked':''}> Received</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_dueAmount" ${T.showFields.dueAmount?'checked':''}> Due Amount</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_status" ${T.showFields.status?'checked':''}> Status Badge</label>
-      </div>
-
-      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
-        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Details</div>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_billDetails" ${T.showFields.billDetails?'checked':''}> Bill Details Table</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_previousDue" ${T.showFields.previousDue?'checked':''}> Previous Due</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_adjustment" ${T.showFields.adjustment?'checked':''}> Adjustment</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_totals" ${T.showFields.totals?'checked':''}> Totals Summary</label>
-      </div>
-
-      <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
-        <div style="font-weight:700;font-size:0.85rem;color:var(--dark);margin-bottom:0.5rem;border-bottom:1px solid var(--border);padding-bottom:0.25rem">Other</div>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_paymentQr" ${T.showFields.paymentQr?'checked':''}> Payment QR</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_terms" ${T.showFields.terms?'checked':''}> Terms & Conditions</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_footer" ${T.showFields.footer?'checked':''}> Footer</label>
-        <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;font-weight:500;cursor:pointer"><input type="checkbox" id="show_watermark" ${T.showFields.watermark?'checked':''}> Watermark</label>
+      <div class="card" style="box-shadow:none;border:1px dashed #cbd5e1">
+        <h3>QR Usage</h3>
+        <p>Uploaded QR monthly A4 bill par payment QR ki jagah show hoga.</p>
+        <p>Fee slip par verification QR separate rahega, unless disabled.</p>
       </div>
     </div>
-
+    <div class="fg"><label>Monthly Bill Note</label><textarea id="tplNote">${esc(T.note||'')}</textarea></div>
+    <div class="fg"><label>Invoice Terms</label><textarea id="tplInvoiceTerms">${esc(T.invoiceTerms||'')}</textarea></div>
+    <div class="fg"><label>Footer Text</label><textarea id="tplFooter">${esc(T.footer||'')}</textarea></div>
     <div class="actions">
-      <button class="btn btn-s" onclick="previewTemplateSample()">👁️ Preview Sample Bill</button>
-      <button class="btn btn-p" onclick="saveTemplateSettings()">💾 Save Template Settings</button>
-      <button class="btn btn-l" onclick="resetTemplateFields()">↩️ Reset to Default</button>
+      <button class="btn btn-p" onclick="saveTemplateSettings()">Save Template Settings</button>
+      <button class="btn btn-i" onclick="previewTemplateSample()">Preview Sample Bill</button>
     </div>
   </div>`;
 }
-
-/* ===== TEMPLATE FIELD HELPERS ===== */
-function getFieldVisibility() {
-  const T = ensureTemplateSettings();
-  return T.showFields || {};
-}
-
-function shouldShowField(fieldName) {
-  const fields = getFieldVisibility();
-  return fields[fieldName] !== false; // default true
-}
-
-function resetTemplateFields() {
-  const T = ensureTemplateSettings();
-  T.showFields = {
-    companyName: true, companyAddress: true, companyMobile: true, companyEmail: true,
-    billNo: true, billMonth: true, issueDate: true, dueDate: true,
-    clientName: true, clientMobile: true, clientLogin: true, clientCCode: true, clientPackage: true, clientAddress: true,
-    monthlyFee: true, received: true, dueAmount: true, status: true,
-    billDetails: true, previousDue: true, adjustment: true, totals: true,
-    paymentQr: true, terms: true, footer: true, watermark: false
-  };
-  saveLocal();
-  toast('Template fields reset to default', 'success');
-  templatePage();
-}
-
 function previewTemplateQr(ev){
   const f=ev.target.files&&ev.target.files[0];
   if(!f)return;
@@ -6510,53 +5093,23 @@ function removeTemplateQr(){
   if(box)box.innerHTML='<p>No QR uploaded yet. Auto-generated QR will be used.</p>';
 }
 function saveTemplateSettings(){
-  try{
   const T=ensureTemplateSettings();
-
-  // Save text inputs if they exist
-  const billTitleEl = document.getElementById('tplBillTitle');
-  if(billTitleEl) T.billTitle = billTitleEl.value || 'MONTHLY INTERNET BILL';
-
-  const invoiceTitleEl = document.getElementById('tplInvoiceTitle');
-  if(invoiceTitleEl) T.invoiceTitle = invoiceTitleEl.value || 'INVOICE';
-
-  const feeSlipTitleEl = document.getElementById('tplFeeSlipTitle');
-  if(feeSlipTitleEl) T.feeSlipTitle = feeSlipTitleEl.value || 'Internet Fee Payment Slip';
-
-  const primaryColorEl = document.getElementById('tplPrimaryColor');
-  if(primaryColorEl) T.primaryColor = primaryColorEl.value || '#dc2626';
-
-  const noteEl = document.getElementById('tplNote');
-  if(noteEl) T.note = noteEl.value || '';
-
-  const footerEl = document.getElementById('tplFooter');
-  if(footerEl) T.footer = footerEl.value || '';
-
-  // Save field visibility checkboxes
-  T.showFields = T.showFields || {};
-  const fieldIds = [
-    'companyName','companyAddress','companyMobile','companyEmail',
-    'billNo','billMonth','issueDate','dueDate',
-    'clientName','clientMobile','clientLogin','clientCCode','clientPackage','clientAddress',
-    'monthlyFee','received','dueAmount','status',
-    'billDetails','previousDue','adjustment','totals',
-    'paymentQr','terms','footer','watermark'
-  ];
-
-  fieldIds.forEach(field => {
-    const el = document.getElementById('show_' + field);
-    if(el) {
-      T.showFields[field] = el.checked;
-    }
-  });
-
-  S.appSettings.templates = T;
-  }catch(err){ console.warn("Template save error:",err); toast("Template save error: "+(err.message||err),"error"); return; }
-  saveLocal();
+  T.billTitle=document.getElementById('tplBillTitle')?.value||'MONTHLY INTERNET BILL';
+  T.invoiceTitle=document.getElementById('tplInvoiceTitle')?.value||'INVOICE';
+  T.feeSlipTitle=document.getElementById('tplFeeSlipTitle')?.value||'Internet Fee Payment Slip';
+  T.primaryColor=document.getElementById('tplPrimaryColor')?.value||'#dc2626';
+  T.showPaymentQr=document.getElementById('tplShowPaymentQr')?.value!=='0';
+  T.showVerifyQr=document.getElementById('tplShowVerifyQr')?.value!=='0';
+  T.paymentQrText=document.getElementById('tplPaymentQrText')?.value||'';
+  T.note=document.getElementById('tplNote')?.value||'';
+  T.invoiceTerms=document.getElementById('tplInvoiceTerms')?.value||'';
+  T.footer=document.getElementById('tplFooter')?.value||'';
+  S.appSettings.templates=T;
+  try{saveLocal()}catch(e){}
   try{if(typeof db!=='undefined'&&db)db.collection('settings').doc('main').set({appSettings:S.appSettings},{merge:true})}catch(e){}
-  toast('Template settings saved successfully','success');
+  toast('Template settings saved','success');
+  templatePage();
 }
-
 function getTemplatePaymentQrUrl(text){
   const T=ensureTemplateSettings();
   if(T.paymentQrImage)return T.paymentQrImage;
@@ -8356,18 +6909,13 @@ function invoice(){
         <td>${money(v.received||0)}</td>
         <td>${money(v.due||0)}</td>
         <td>${status}</td>
-        <td>
-              <div class="action-dropdown" style="position:relative">
-                <button class="btn btn-l btn-sm action-toggle" onclick="toggleInvoiceActionMenu('${esc(v.id)}')">⚙️ Actions</button>
-                <div id="invoiceActionMenu-${esc(v.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:180px;padding:0.5rem;animation:menuIn 0.2s ease">
-                  <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="printManualInvoice('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">🖨️ Print</button>
-                  <button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="sendSavedInv('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">📱 WhatsApp</button>
-                  ${(+v.due||0)>0?`<button class="btn btn-w btn-sm" style="width:100%;margin-bottom:4px" onclick="receiveDue('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">💰 Receive</button><button class="btn btn-p btn-sm" style="width:100%;margin-bottom:4px" onclick="markInvPaid('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">✅ Mark Paid</button>`:''}
-                  <button class="btn btn-l btn-sm" style="width:100%;margin-bottom:4px" onclick="openInvoiceModal('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">✏️ Edit</button>
-                  ${U.role==='admin'?`<button class="btn btn-e btn-sm" style="width:100%" onclick="delInv('${v.id}');hideInvoiceActionMenu('${esc(v.id)}')">🗑️ Delete</button>`:''}
-                </div>
-              </div>
-            </td>
+        <td><div class="actions">
+          <button class="btn btn-i btn-sm" onclick="printManualInvoice('${v.id}')">Print</button>
+          <button class="btn btn-s btn-sm" onclick="sendSavedInv('${v.id}')">WhatsApp</button>
+          ${(+v.due||0)>0?`<button class="btn btn-w btn-sm" onclick="receiveDue('${v.id}')">Receive</button><button class="btn btn-p btn-sm" onclick="markInvPaid('${v.id}')">Mark Paid</button>`:''}
+          <button class="btn btn-l btn-sm" onclick="openInvoiceModal('${v.id}')">Edit</button>
+          ${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delInv('${v.id}')">Delete</button>`:''}
+        </div></td>
       </tr>`;
     })):`<div class="card" style="box-shadow:none;border:1px dashed #cbd5e1"><h3>No invoices yet</h3><p>Use “New Connection / Invoice” to create manual invoice. Monthly bills remain in Billing tab.</p></div>`}
   </div>`;
@@ -9296,224 +7844,6 @@ function sendComplaintToEmployee(complaintId){
   window.open('https://wa.me/'+waNumber(emp.mobile)+'?text='+msg,'_blank');
 }
 
-
-
-/* ===== BATCH PRINT OVERRIDES (from new-complain.html) ===== */
-window.printSelectedFeeSlipsBatch = function(ids) {
-  if (!ids || !ids.length) { toast('No clients selected', 'warning'); return; }
-  toast('Printing ' + ids.length + ' fee slips one by one...', 'info');
-  let idx = 0;
-  function next() {
-    if (idx >= ids.length) { toast('All fee slips printed', 'success'); return; }
-    const cid = ids[idx++];
-    setTimeout(function() { printFeeSlip(cid); setTimeout(next, 3000); }, 500);
-  }
-  next();
-};
-window.printSelectedMonthlyBillsBatch = function(ids) {
-  if (!ids || !ids.length) { toast('No clients selected', 'warning'); return; }
-  toast('Printing ' + ids.length + ' monthly bills one by one...', 'info');
-  let idx = 0;
-  function next() {
-    if (idx >= ids.length) { toast('All monthly bills printed', 'success'); return; }
-    const cid = ids[idx++];
-    setTimeout(function() { printMonthlyBillA4(cid); setTimeout(next, 3000); }, 500);
-  }
-  next();
-};
-// Override existing selection-based prints to use batch
-if (typeof printSelectedFeeSlips === 'function') {
-  window.printSelectedFeeSlips = function() {
-    const ids = selectedBillingClientIds ? selectedBillingClientIds() : [];
-    printSelectedFeeSlipsBatch(ids);
-  };
-}
-if (typeof printSelectedMonthlyBills === 'function') {
-  window.printSelectedMonthlyBills = function() {
-    const ids = selectedBillingClientIds ? selectedBillingClientIds() : [];
-    printSelectedMonthlyBillsBatch(ids);
-  };
-}
-
-
-/* ===== ENHANCED BULK A4 PRINT FUNCTIONS ===== */
-window.printSelectedFeeSlipsBatch = function(ids) {
-  if (!ids || !ids.length) { toast('No clients selected', 'warning'); return; }
-  toast('Printing ' + ids.length + ' fee slips one by one...', 'info');
-  let idx = 0;
-  function next() {
-    if (idx >= ids.length) { toast('All fee slips printed', 'success'); return; }
-    const cid = ids[idx++];
-    setTimeout(function() { printFeeSlip(cid); setTimeout(next, 3000); }, 500);
-  }
-  next();
-};
-
-window.printSelectedMonthlyBillsBatch = function(ids) {
-  if (!ids || !ids.length) { toast('No clients selected', 'warning'); return; }
-  toast('Printing ' + ids.length + ' monthly bills one by one...', 'info');
-  let idx = 0;
-  function next() {
-    if (idx >= ids.length) { toast('All monthly bills printed', 'success'); return; }
-    const cid = ids[idx++];
-    setTimeout(function() { printMonthlyBillA4(cid); setTimeout(next, 3000); }, 500);
-  }
-  next();
-};
-
-// Override existing selection-based prints to use batch
-if (typeof printSelectedFeeSlips === 'function') {
-  const _origFee = printSelectedFeeSlips;
-  window.printSelectedFeeSlips = function() {
-    const ids = getSelectedBillingIds ? getSelectedBillingIds() : (selectedBillingClientIds ? selectedBillingClientIds() : []);
-    if (ids && ids.length > 0) {
-      printSelectedFeeSlipsBatch(ids);
-    } else {
-      _origFee();
-    }
-  };
-}
-if (typeof printSelectedMonthlyBills === 'function') {
-  const _origMonthly = printSelectedMonthlyBills;
-  window.printSelectedMonthlyBills = function() {
-    const ids = getSelectedBillingIds ? getSelectedBillingIds() : (selectedBillingClientIds ? selectedBillingClientIds() : []);
-    if (ids && ids.length > 0) {
-      printSelectedMonthlyBillsBatch(ids);
-    } else {
-      _origMonthly();
-    }
-  };
-}
-
-
-/* ===== ACTION DROPDOWN HELPERS ===== */
-function toggleActionMenu(clientId) {
-  const menu = document.getElementById('actionMenu-' + clientId);
-  if (!menu) return;
-
-  // Close all other menus first
-  document.querySelectorAll('.action-menu').forEach(m => {
-    if (m.id !== 'actionMenu-' + clientId) m.style.display = 'none';
-  });
-
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-
-function hideActionMenu(clientId) {
-  const menu = document.getElementById('actionMenu-' + clientId);
-  if (menu) menu.style.display = 'none';
-}
-
-// Close action menus when clicking outside
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.action-dropdown')) {
-    document.querySelectorAll('.action-menu').forEach(m => m.style.display = 'none');
-  }
-});
-
-
-/* ===== INVOICE ACTION DROPDOWN HELPERS ===== */
-function toggleInvoiceActionMenu(invId) {
-  const menu = document.getElementById('invoiceActionMenu-' + invId);
-  if (!menu) return;
-  document.querySelectorAll('.action-menu').forEach(m => {
-    if (m.id !== 'invoiceActionMenu-' + invId) m.style.display = 'none';
-  });
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-
-function hideInvoiceActionMenu(invId) {
-  const menu = document.getElementById('invoiceActionMenu-' + invId);
-  if (menu) menu.style.display = 'none';
-}
-
-
-/* ===== TABLE SORTING & SEARCH ===== */
-window._tableSortState = {};
-
-function sortTable(tableId, colIndex, type) {
-  const table = document.getElementById(tableId);
-  if (!table) return;
-
-  const tbody = table.querySelector('tbody');
-  const rows = Array.from(tbody.querySelectorAll('tr'));
-
-  // Toggle sort direction
-  const key = tableId + '-' + colIndex;
-  const currentDir = window._tableSortState[key] || 'asc';
-  const newDir = currentDir === 'asc' ? 'desc' : 'asc';
-  window._tableSortState[key] = newDir;
-
-  // Update header indicators
-  table.querySelectorAll('th.sortable').forEach(th => {
-    th.classList.remove('asc', 'desc');
-  });
-  const header = table.querySelectorAll('th')[colIndex];
-  if (header) header.classList.add(newDir);
-
-  rows.sort((a, b) => {
-    let aVal = a.cells[colIndex]?.textContent?.trim() || '';
-    let bVal = b.cells[colIndex]?.textContent?.trim() || '';
-
-    // Remove currency symbols and commas for number sorting
-    if (type === 'number') {
-      aVal = parseFloat(aVal.replace(/[^0-9.-]/g, '')) || 0;
-      bVal = parseFloat(bVal.replace(/[^0-9.-]/g, '')) || 0;
-      return newDir === 'asc' ? aVal - bVal : bVal - aVal;
-    }
-
-    if (type === 'date') {
-      aVal = new Date(aVal) || 0;
-      bVal = new Date(bVal) || 0;
-      return newDir === 'asc' ? aVal - bVal : bVal - aVal;
-    }
-
-    // String sort
-    return newDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-  });
-
-  rows.forEach(row => tbody.appendChild(row));
-}
-
-function filterTable(tableId, searchValue) {
-  const table = document.getElementById(tableId);
-  if (!table) return;
-
-  const rows = table.querySelectorAll('tbody tr');
-  const q = searchValue.toLowerCase().trim();
-
-  rows.forEach(row => {
-    const text = row.textContent.toLowerCase();
-    row.style.display = text.includes(q) ? '' : 'none';
-  });
-}
-
-
-/* ===== ITEM/PACKAGE ACTION DROPDOWN HELPERS ===== */
-function toggleItemActionMenu(itemId) {
-  const menu = document.getElementById('itemActionMenu-' + itemId);
-  if (!menu) return;
-  document.querySelectorAll('.action-menu').forEach(m => {
-    if (m.id !== 'itemActionMenu-' + itemId) m.style.display = 'none';
-  });
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-function hideItemActionMenu(itemId) {
-  const menu = document.getElementById('itemActionMenu-' + itemId);
-  if (menu) menu.style.display = 'none';
-}
-function togglePackageActionMenu(pkgId) {
-  const menu = document.getElementById('pkgActionMenu-' + pkgId);
-  if (!menu) return;
-  document.querySelectorAll('.action-menu').forEach(m => {
-    if (m.id !== 'pkgActionMenu-' + pkgId) m.style.display = 'none';
-  });
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-}
-function hidePackageActionMenu(pkgId) {
-  const menu = document.getElementById('pkgActionMenu-' + pkgId);
-  if (menu) menu.style.display = 'none';
-}
 </script>
 </body>
 </html>
