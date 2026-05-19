@@ -948,6 +948,8 @@
     transform: translateY(-1px);
   }
   .action-menu {
+    position: relative;
+    display: inline-block;
     background: var(--glass);
     backdrop-filter: blur(16px) saturate(180%);
     border: 1px solid var(--glass-border);
@@ -967,6 +969,44 @@
     font-size: 0.8rem;
   }
   .action-menu .btn:last-child { margin-bottom: 0; }
+
+  /* ===== ACTION MENU LIST (for compact dropdowns) ===== */
+  .action-menu-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: var(--glass);
+    backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xl);
+    z-index: 50;
+    min-width: 160px;
+    padding: 0.5rem;
+    display: none;
+    animation: menuIn 0.2s ease;
+  }
+  .action-menu-list.open { display: block; }
+  .action-menu-list button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--dark);
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 2px;
+  }
+  .action-menu-list button:hover {
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+  }
+  .action-menu-list button:last-child { margin-bottom: 0; }
 
 
   /* ===== TABLE SORTING & SEARCH ===== */
@@ -1014,6 +1054,9 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<base target="_blank">
+<base target="_blank">
+<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -2107,7 +2150,7 @@ function finTable(){
     <td>${esc(e.receiver)}</td>
     <td>${esc(e.online||'-')}</td>
     <td style="font-weight:800;white-space:nowrap;color:${typeOf(e)==='expense'?'#dc2626 !important':'#059669 !important'};background:${typeOf(e)==='expense'?'rgba(239,68,68,0.08)':'rgba(16,185,129,0.08)'};padding:4px 8px;border-radius:4px">${typeOf(e)==='expense'?'- ':'+ '}${money(e.amount)}</td>
-    <td><div class="actions" style="gap:4px"><button class="btn btn-s btn-sm" onclick="sendSlip('${e.id}')">Slip</button>${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delFin('${e.id}')">Delete</button>`:''}</div></td>
+    <td><div class="actions" style="gap:4px"><button class="btn btn-i btn-sm" onclick="editFin('${e.id}')">Edit</button><button class="btn btn-s btn-sm" onclick="sendSlip('${e.id}')">Slip</button>${U.role==='admin'?`<button class="btn btn-e btn-sm" onclick="delFin('${e.id}')">Delete</button>`:''}</div></td>
   </tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:1.5rem;text-align:center;color:#94a3b8">No entries</div>'}`;
 
   return sec('Income Entries',r.filter(e=>typeOf(e)==='income'))+sec('Expense Entries',r.filter(e=>typeOf(e)==='expense'));
@@ -2135,6 +2178,40 @@ Recorded By: ${e.byName}
 *Fire.net.pk Accounts*`;
 }
 function sendSlip(i){let e=S.finance.find(x=>x.id===i);if(!e?.phone)return toast('Client WhatsApp not saved','error');window.open('https://wa.me/'+waNumber(e.phone)+'?text='+encodeURIComponent(slipMsg(e)),'_blank')}
+function editFin(i){
+  let e=S.finance.find(x=>x.id===i);
+  if(!e)return toast('Entry not found','error');
+  const newType=prompt('Type (income/expense):',e.type||'income');
+  if(!newType)return;
+  const newMode=prompt('Mode (cash/online):',e.mode||'cash');
+  if(!newMode)return;
+  const newCat=prompt('Category:',e.cat||'');
+  if(newCat===null)return;
+  const newAmount=+prompt('Amount:',e.amount||0);
+  if(isNaN(newAmount)||newAmount<0)return toast('Invalid amount','error');
+  const newPaidBy=prompt('Paid By / To:',paidBy(e));
+  if(newPaidBy===null)return;
+  const newReceiver=prompt('Receiver:',e.receiver||U?.name||'');
+  if(newReceiver===null)return;
+  const newNotes=prompt('Notes:',e.notes||e.desc||e.detail||'');
+  if(newNotes===null)return;
+
+  e.type=newType.toLowerCase()==='expense'?'expense':'income';
+  e.mode=newMode.toLowerCase()==='online'?'online':'cash';
+  e.cat=newCat;
+  e.amount=newAmount;
+  e.customer=newPaidBy;
+  e.paidBy=newPaidBy;
+  e.payer=newPaidBy;
+  e.receiver=newReceiver;
+  e.notes=newNotes;
+  e.desc=newNotes;
+  e.detail=newNotes;
+
+  saveAndSync('finance',e);
+  toast('Finance entry updated','success');
+  finance();
+}
 function delFin(i){if(!confirm('Delete finance entry?'))return;S.finance=S.finance.filter(x=>x.id!==i);delAndSync('finance',i);finance()}
 function financeReportText(){
  let r=filteredFinance(),f=calc(r);
@@ -2357,7 +2434,32 @@ function addItemMaster(){
 }
 function itemsTable(){
  let r=S.items||[];if(!r.length)return'<div class="empty">No items</div>';
- return `<div class="tbl"><table><thead><tr><th>Name</th><th>Category</th><th>Purchase</th><th>Sale</th><th>Stock</th><th>Profit/Unit</th><th>Action</th></tr></thead><tbody>${r.map(x=>`<tr><td><b>${esc(x.name)}</b><br><small>${esc(x.notes||'')}</small></td><td>${esc(x.category)}</td><td>${money(x.purchase)}</td><td>${money(x.sale)}</td><td>${x.stock}</td><td><b>${money((+x.sale||0)-(+x.purchase||0))}</b></td><td><div class="actions"><button class="btn btn-i btn-sm" onclick="editItemMaster('${x.id}')">Edit</button><button class="btn btn-s btn-sm" onclick="sendItemSlip('${x.id}')">WhatsApp Slip</button><button class="btn btn-e btn-sm" onclick="deleteItemMaster('${x.id}')">Delete</button></div></td></tr>`).join('')}</tbody></table></div>`;
+ return `<input type="text" class="table-search" placeholder="🔍 Search items by name, category..." oninput="filterTable('itemsTable', this.value)"><div class="tbl"><table id="itemsTable"><thead><tr>
+ <th class="sortable" onclick="sortTable('itemsTable',0,'string')">Name</th>
+ <th class="sortable" onclick="sortTable('itemsTable',1,'string')">Category</th>
+ <th class="sortable" onclick="sortTable('itemsTable',2,'number')">Purchase</th>
+ <th class="sortable" onclick="sortTable('itemsTable',3,'number')">Sale</th>
+ <th class="sortable" onclick="sortTable('itemsTable',4,'number')">Stock</th>
+ <th class="sortable" onclick="sortTable('itemsTable',5,'number')">Profit</th>
+ <th>Action</th>
+ </tr></thead><tbody>${r.map(x=>`<tr>
+ <td><b>${esc(x.name)}</b><br><small>${esc(x.notes||'')}</small></td>
+ <td>${esc(x.category)}</td>
+ <td>${money(x.purchase)}</td>
+ <td>${money(x.sale)}</td>
+ <td>${x.stock}</td>
+ <td><b>${money((+x.sale||0)-(+x.purchase||0))}</b></td>
+ <td>
+   <div class="action-dropdown" style="position:relative">
+     <button class="btn btn-l btn-sm action-toggle" onclick="toggleItemActionMenu('${esc(x.id)}')">⚙️ Actions</button>
+     <div id="itemActionMenu-${esc(x.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
+       <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="editItemMaster('${x.id}');hideItemActionMenu('${esc(x.id)}')">✏️ Edit</button>
+       <button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="sendItemSlip('${x.id}');hideItemActionMenu('${esc(x.id)}')">📱 WhatsApp</button>
+       <button class="btn btn-e btn-sm" style="width:100%" onclick="deleteItemMaster('${x.id}');hideItemActionMenu('${esc(x.id)}')">🗑️ Delete</button>
+     </div>
+   </div>
+ </td>
+ </tr>`).join('')}</tbody></table></div>`;
 }
 function editItemMaster(i){
  let x=(S.items||[]).find(a=>a.id===i);if(!x)return;
@@ -2412,7 +2514,28 @@ function addPackageMaster(){
 }
 function packagesTable(){
  let r=S.packages||[];if(!r.length)return'<div class="empty">No packages</div>';
- return `<div class="tbl"><table><thead><tr><th>Package</th><th>Monthly Fee</th><th>Installation</th><th>Details</th><th>Action</th></tr></thead><tbody>${r.map(x=>`<tr><td><b>${esc(x.name)}</b></td><td>${money(x.monthly)}</td><td>${money(x.installation)}</td><td>${esc(x.details||'-')}</td><td><div class="actions"><button class="btn btn-i btn-sm" onclick="editPackageMaster('${x.id}')">Edit</button><button class="btn btn-s btn-sm" onclick="sendPackageSlip('${x.id}')">WhatsApp Slip</button><button class="btn btn-e btn-sm" onclick="deletePackageMaster('${x.id}')">Delete</button></div></td></tr>`).join('')}</tbody></table></div>`;
+ return `<input type="text" class="table-search" placeholder="🔍 Search packages by name, details..." oninput="filterTable('packagesTable', this.value)"><div class="tbl"><table id="packagesTable"><thead><tr>
+ <th class="sortable" onclick="sortTable('packagesTable',0,'string')">Package</th>
+ <th class="sortable" onclick="sortTable('packagesTable',1,'number')">Monthly Fee</th>
+ <th class="sortable" onclick="sortTable('packagesTable',2,'number')">Installation</th>
+ <th class="sortable" onclick="sortTable('packagesTable',3,'string')">Details</th>
+ <th>Action</th>
+ </tr></thead><tbody>${r.map(x=>`<tr>
+ <td><b>${esc(x.name)}</b></td>
+ <td>${money(x.monthly)}</td>
+ <td>${money(x.installation)}</td>
+ <td>${esc(x.details||'-')}</td>
+ <td>
+   <div class="action-dropdown" style="position:relative">
+     <button class="btn btn-l btn-sm action-toggle" onclick="togglePackageActionMenu('${esc(x.id)}')">⚙️ Actions</button>
+     <div id="pkgActionMenu-${esc(x.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
+       <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="editPackageMaster('${x.id}');hidePackageActionMenu('${esc(x.id)}')">✏️ Edit</button>
+       <button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="sendPackageSlip('${x.id}');hidePackageActionMenu('${esc(x.id)}')">📱 WhatsApp</button>
+       <button class="btn btn-e btn-sm" style="width:100%" onclick="deletePackageMaster('${x.id}');hidePackageActionMenu('${esc(x.id)}')">🗑️ Delete</button>
+     </div>
+   </div>
+ </td>
+ </tr>`).join('')}</tbody></table></div>`;
 }
 function editPackageMaster(i){
  let x=(S.packages||[]).find(a=>a.id===i);if(!x)return;
@@ -3294,6 +3417,75 @@ function billingSummary(month=billMonthNow()){
     due:rows.reduce((s,r)=>s+r.due,0)
   };
 }
+
+/* ===== TABLE SORTING & FILTERING ===== */
+function sortTable(tableId, columnIndex, type) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  if (!tbody) return;
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const th = table.querySelectorAll('th')[columnIndex];
+
+  // Get current sort direction
+  const currentDir = th.dataset.sortDir || 'asc';
+  const newDir = currentDir === 'asc' ? 'desc' : 'asc';
+
+  // Update all headers
+  table.querySelectorAll('th').forEach(h => {
+    h.dataset.sortDir = '';
+    h.classList.remove('asc', 'desc');
+  });
+  th.dataset.sortDir = newDir;
+  th.classList.add(newDir);
+
+  rows.sort((a, b) => {
+    let aVal = a.cells[columnIndex] ? a.cells[columnIndex].textContent.trim() : '';
+    let bVal = b.cells[columnIndex] ? b.cells[columnIndex].textContent.trim() : '';
+
+    // Remove HTML tags for comparison
+    aVal = aVal.replace(/<[^>]*>/g, '');
+    bVal = bVal.replace(/<[^>]*>/g, '');
+
+    if (type === 'number') {
+      const aNum = parseFloat(aVal.replace(/[^\d.-]/g, '')) || 0;
+      const bNum = parseFloat(bVal.replace(/[^\d.-]/g, '')) || 0;
+      return newDir === 'asc' ? aNum - bNum : bNum - aNum;
+    }
+
+    // Date sorting
+    if (type === 'date') {
+      const aDate = new Date(aVal);
+      const bDate = new Date(bVal);
+      if (!isNaN(aDate) && !isNaN(bDate)) {
+        return newDir === 'asc' ? aDate - bDate : bDate - aDate;
+      }
+    }
+
+    // String sorting
+    return newDir === 'asc' 
+      ? aVal.localeCompare(bVal) 
+      : bVal.localeCompare(aVal);
+  });
+
+  // Re-append rows in sorted order
+  rows.forEach(row => tbody.appendChild(row));
+}
+
+function filterTable(tableId, query) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  if (!tbody) return;
+  const rows = tbody.querySelectorAll('tr');
+  const lowerQuery = query.toLowerCase().trim();
+
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = lowerQuery === '' || text.includes(lowerQuery) ? '' : 'none';
+  });
+}
+
 function billingPage(){
   ensureBillingState();
   const month=window.billingMonth||billMonthNow();
@@ -3337,7 +3529,7 @@ function billingPage(){
       <table id="billingTable">
         <thead>
           <tr>
-            <th class="sortable" onclick="sortTable('billingTable', 0, 'string')">Select</th><th> id="selectAllBilling" onchange="toggleSelectAllBilling(this)" title="Select All"></th>
+            <th><input type="checkbox" id="selectAllBilling" onchange="toggleSelectAllBilling(this)" title="Select All"> Select All</th>
             <th class="sortable" onclick="sortTable('billingTable', 1, 'string')">Client</th>
             <th class="sortable" onclick="sortTable('billingTable', 2, 'string')">Mobile/Login</th>
             <th class="sortable" onclick="sortTable('billingTable', 3, 'string')">PPPoE</th>
@@ -4822,14 +5014,27 @@ function closeEmployeeModal(){
   document.getElementById('employeeModal')?.classList.remove('active');
 }
 function employeeActionsMenu(empId){
-  if(typeof actionMenu==='function'){
-    return actionMenu([
-      {label:'Edit / Permissions',fn:`openEmployeeEditModal('${empId}')`},
-      {label:'Active / Inactive',fn:`toggleEmployeeStatusFinal('${empId}')`},
-      {label:'Delete',fn:`deleteEmployeeFinal('${empId}')`}
-    ]);
-  }
-  return `<button class="btn btn-i btn-sm" onclick="openEmployeeEditModal('${empId}')">Edit</button>`;
+  return `<div class="action-dropdown" style="position:relative">
+    <button class="btn btn-l btn-sm action-toggle" onclick="toggleEmpActionMenu('${esc(empId)}')">⚙️ Actions</button>
+    <div id="empActionMenu-${esc(empId)}" class="action-menu-list" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
+      <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="openEmployeeEditModal('${esc(empId)}');hideEmpActionMenu('${esc(empId)}')">✏️ Edit / Permissions</button>
+      <button class="btn btn-w btn-sm" style="width:100%;margin-bottom:4px" onclick="toggleEmployeeStatusFinal('${esc(empId)}');hideEmpActionMenu('${esc(empId)}')">🔄 Active / Inactive</button>
+      <button class="btn btn-e btn-sm" style="width:100%" onclick="deleteEmployeeFinal('${esc(empId)}');hideEmpActionMenu('${esc(empId)}')">🗑️ Delete</button>
+    </div>
+  </div>`;
+}
+
+function toggleEmpActionMenu(empId){
+  var el=document.getElementById('empActionMenu-'+empId);
+  if(!el)return;
+  var isOpen=el.classList.contains('open');
+  // Close all other menus first
+  document.querySelectorAll('.action-menu-list').forEach(function(m){m.classList.remove('open');m.style.display='none';});
+  if(!isOpen){el.classList.add('open');el.style.display='block';}
+}
+function hideEmpActionMenu(empId){
+  var el=document.getElementById('empActionMenu-'+empId);
+  if(el){el.classList.remove('open');el.style.display='none';}
 }
 function employees(){
   if(U && U.role!=='admin')return dash();
@@ -4889,8 +5094,17 @@ function employeesTableFinal(){
     </tr>`;
   }).join('');
   return `<div class="card"><div class="head"><h2>Employees</h2></div>
-    <div class="tbl"><table>
-      <thead><tr><th>Name</th><th>Login</th><th>Mobile</th><th>Role</th><th>Status</th><th>Permissions</th><th>Action</th></tr></thead>
+    <input type="text" class="table-search" placeholder="🔍 Search employees by name, login, mobile..." oninput="filterTable('employeesTable', this.value)">
+    <div class="tbl"><table id="employeesTable">
+      <thead><tr>
+        <th class="sortable" onclick="sortTable('employeesTable',0,'string')">Name</th>
+        <th class="sortable" onclick="sortTable('employeesTable',1,'string')">Login</th>
+        <th class="sortable" onclick="sortTable('employeesTable',2,'string')">Mobile</th>
+        <th class="sortable" onclick="sortTable('employeesTable',3,'string')">Role</th>
+        <th class="sortable" onclick="sortTable('employeesTable',4,'string')">Status</th>
+        <th class="sortable" onclick="sortTable('employeesTable',5,'string')">Permissions</th>
+        <th>Action</th>
+      </tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
   </div>`;
@@ -5036,6 +5250,7 @@ function renderCurrent(){
       advance:advancePage,
       targets:targets,
       news:openNewsPage,
+      template:templatePage,
       settings:openSettingsPage,
       backup:backup
     };
@@ -5185,8 +5400,26 @@ function canUseModuleFinal(tabName){
   return tabName==='dashboard'||per[tabName]===1||per[tabName]===true;
 }
 function compactAction(items){
-  if(typeof actionMenu==='function')return actionMenu(items);
-  return `<button class="btn btn-i btn-sm" onclick="${items[0]?.fn||''}">Action</button>`;
+  var idv='ca'+Math.random().toString(36).slice(2,8);
+  var buttons=items.map(function(it){return `<button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px;text-align:left" onclick="${it.fn};hideClientActionMenu('${idv}')">${it.label}</button>`}).join('');
+  return `<div class="action-dropdown" style="position:relative">
+    <button class="btn btn-l btn-sm action-toggle" onclick="toggleClientActionMenu('${idv}',event)">⚙️ Actions</button>
+    <div id="${idv}" class="action-menu-list" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
+      ${buttons}
+    </div>
+  </div>`;
+}
+function toggleClientActionMenu(idv,ev){
+  if(ev)ev.stopPropagation();
+  var el=document.getElementById(idv);
+  if(!el)return;
+  var isOpen=el.classList.contains('open');
+  document.querySelectorAll('.action-menu-list').forEach(function(m){m.classList.remove('open');m.style.display='none';});
+  if(!isOpen){el.classList.add('open');el.style.display='block';}
+}
+function hideClientActionMenu(idv){
+  var el=document.getElementById(idv);
+  if(el){el.classList.remove('open');el.style.display='none';}
 }
 
 /* Clients same interface */
@@ -5266,10 +5499,33 @@ function itemsPage(){
   </div>
   <div class="card">
     <div class="head"><h2>Items List</h2></div>
-    <div class="tbl"><table><thead><tr><th>Item</th><th>Purchase</th><th>Sale</th><th>Stock</th><th>Unit</th><th>Profit/Unit</th><th>Action</th></tr></thead><tbody>
+    <input type="text" class="table-search" placeholder="🔍 Search items by name, category..." oninput="filterTable('itemsTable', this.value)">
+    <div class="tbl"><table id="itemsTable"><thead><tr>
+      <th class="sortable" onclick="sortTable('itemsTable',0,'string')">Item</th>
+      <th class="sortable" onclick="sortTable('itemsTable',1,'number')">Purchase</th>
+      <th class="sortable" onclick="sortTable('itemsTable',2,'number')">Sale</th>
+      <th class="sortable" onclick="sortTable('itemsTable',3,'number')">Stock</th>
+      <th class="sortable" onclick="sortTable('itemsTable',4,'number')">Profit/Unit</th>
+      <th>Action</th>
+    </tr></thead><tbody>
       ${S.items.map(i=>{
-        const actions=compactAction([{label:'Edit',fn:`editUiItem('${i.id}')`},{label:'Delete',fn:`deleteUiItem('${i.id}')`}]);
-        return `<tr><td><b>${esc(i.name||'-')}</b><br><small>${esc(i.notes||'')}</small></td><td>${money(i.purchase)}</td><td>${money(i.sale)}</td><td>${esc(i.stock||0)}</td><td>${esc(i.unit||'-')}</td><td>${money((+i.sale||0)-(+i.purchase||0))}</td><td>${actions}</td></tr>`;
+        return `<tr>
+          <td><b>${esc(i.name||'-')}</b><br><small>${esc(i.category||i.unit||'')}</small></td>
+          <td>${money(i.purchase)}</td>
+          <td>${money(i.sale)}</td>
+          <td>${esc(i.stock||0)}</td>
+          <td><b>${money((+i.sale||0)-(+i.purchase||0))}</b></td>
+          <td>
+            <div class="action-dropdown" style="position:relative">
+              <button class="btn btn-l btn-sm action-toggle" onclick="toggleItemActionMenu('${esc(i.id)}')">⚙️ Actions</button>
+              <div id="itemActionMenu-${esc(i.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
+                <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="editUiItem('${i.id}');hideItemActionMenu('${esc(i.id)}')">✏️ Edit</button>
+                <button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="sendItemSlip('${i.id}');hideItemActionMenu('${esc(i.id)}')">📱 WhatsApp</button>
+                <button class="btn btn-e btn-sm" style="width:100%" onclick="deleteUiItem('${i.id}');hideItemActionMenu('${esc(i.id)}')">🗑️ Delete</button>
+              </div>
+            </div>
+          </td>
+        </tr>`;
       }).join('')}
     </tbody></table></div>
   </div>`;
@@ -5322,11 +5578,32 @@ function packagesPage(){
   </div>
   <div class="card">
     <div class="head"><h2>Package List</h2></div>
-    <div class="tbl"><table><thead><tr><th>Package</th><th>Monthly Fee</th><th>Details</th><th>Clients</th><th>Action</th></tr></thead><tbody>
+    <input type="text" class="table-search" placeholder="🔍 Search packages by name, details..." oninput="filterTable('packagesTable', this.value)">
+    <div class="tbl"><table id="packagesTable"><thead><tr>
+      <th class="sortable" onclick="sortTable('packagesTable',0,'string')">Package</th>
+      <th class="sortable" onclick="sortTable('packagesTable',1,'number')">Monthly Fee</th>
+      <th class="sortable" onclick="sortTable('packagesTable',2,'string')">Details</th>
+      <th class="sortable" onclick="sortTable('packagesTable',3,'number')">Clients</th>
+      <th>Action</th>
+    </tr></thead><tbody>
       ${S.packages.map(p=>{
         const count=(S.clients||[]).filter(c=>String(c.package||'')===String(p.name||'')).length;
-        const actions=compactAction([{label:'Edit',fn:`editUiPackage('${p.id}')`},{label:'Delete',fn:`deleteUiPackage('${p.id}')`}]);
-        return `<tr><td><b>${esc(p.name||'-')}</b></td><td>${money(p.fee||p.price||0)}</td><td>${esc(p.details||p.speed||'-')}</td><td>${count}</td><td>${actions}</td></tr>`;
+        return `<tr>
+          <td><b>${esc(p.name||'-')}</b></td>
+          <td>${money(p.fee||p.price||0)}</td>
+          <td>${esc(p.details||p.speed||'-')}</td>
+          <td>${count}</td>
+          <td>
+            <div class="action-dropdown" style="position:relative">
+              <button class="btn btn-l btn-sm action-toggle" onclick="togglePackageActionMenu('${esc(p.id)}')">⚙️ Actions</button>
+              <div id="pkgActionMenu-${esc(p.id)}" class="action-menu" style="display:none;position:absolute;right:0;top:100%;background:white;border:1px solid var(--border);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);z-index:50;min-width:160px;padding:0.5rem;animation:menuIn 0.2s ease">
+                <button class="btn btn-i btn-sm" style="width:100%;margin-bottom:4px" onclick="editUiPackage('${p.id}');hidePackageActionMenu('${esc(p.id)}')">✏️ Edit</button>
+                <button class="btn btn-s btn-sm" style="width:100%;margin-bottom:4px" onclick="sendPackageSlip('${p.id}');hidePackageActionMenu('${esc(p.id)}')">📱 WhatsApp</button>
+                <button class="btn btn-e btn-sm" style="width:100%" onclick="deleteUiPackage('${p.id}');hidePackageActionMenu('${esc(p.id)}')">🗑️ Delete</button>
+              </div>
+            </div>
+          </td>
+        </tr>`;
       }).join('')}
     </tbody></table></div>
   </div>`;
@@ -5937,6 +6214,11 @@ function getVerifyUrl(receiptId){
 function getQRImageUrl(txt){
   return 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data='+encodeURIComponent(txt||'');
 }
+/* Alias for backward compatibility */
+function getPaymentQrImageUrl(text){
+  return getQRImageUrl(text);
+}
+
 function getQRBackupImageUrl(txt){
   return 'https://quickchart.io/qr?size=180&text='+encodeURIComponent(txt||'');
 }
@@ -6109,7 +6391,19 @@ function templatePage(){
     </div>
 
     <!-- FIELD VISIBILITY TOGGLES -->
-    <div class="head" style="margin-top:1.5rem"><h3>📋 Show/Hide Fields in Bill</h3></div>
+        <!-- TEXT INPUTS FOR TEMPLATE SETTINGS -->
+    <div class="row" style="margin-top:1rem">
+      <div class="fg"><label>Bill Title</label><input id="tplBillTitle" value="${esc(T.billTitle||'MONTHLY INTERNET BILL')}"></div>
+      <div class="fg"><label>Invoice Title</label><input id="tplInvoiceTitle" value="${esc(T.invoiceTitle||'INVOICE')}"></div>
+      <div class="fg"><label>Fee Slip Title</label><input id="tplFeeSlipTitle" value="${esc(T.feeSlipTitle||'Internet Fee Payment Slip')}"></div>
+    </div>
+    <div class="row">
+      <div class="fg"><label>Primary Color</label><input id="tplPrimaryColor" type="color" value="${esc(T.primaryColor||'#dc2626')}" style="height:42px;padding:4px"></div>
+      <div class="fg" style="grid-column: span 2"><label>Note / Terms Text</label><textarea id="tplNote" rows="2">${esc(T.note||'Please pay your monthly internet bill on or before the due date to avoid service interruption.')}</textarea></div>
+    </div>
+    <div class="fg"><label>Footer Text</label><textarea id="tplFooter" rows="2">${esc(T.footer||'This is a computer-generated document. Please keep it for your record.')}</textarea></div>
+
+<div class="head" style="margin-top:1.5rem"><h3>📋 Show/Hide Fields in Bill</h3></div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem">
 
       <div class="field-toggle-card" style="background:rgba(241,245,249,0.6);border:1px solid var(--border);border-radius:var(--radius-md);padding:0.75rem">
@@ -6216,23 +6510,53 @@ function removeTemplateQr(){
   if(box)box.innerHTML='<p>No QR uploaded yet. Auto-generated QR will be used.</p>';
 }
 function saveTemplateSettings(){
+  try{
   const T=ensureTemplateSettings();
-  T.billTitle=document.getElementById('tplBillTitle')?.value||'MONTHLY INTERNET BILL';
-  T.invoiceTitle=document.getElementById('tplInvoiceTitle')?.value||'INVOICE';
-  T.feeSlipTitle=document.getElementById('tplFeeSlipTitle')?.value||'Internet Fee Payment Slip';
-  T.primaryColor=document.getElementById('tplPrimaryColor')?.value||'#dc2626';
-  T.showPaymentQr=document.getElementById('tplShowPaymentQr')?.value!=='0';
-  T.showVerifyQr=document.getElementById('tplShowVerifyQr')?.value!=='0';
-  T.paymentQrText=document.getElementById('tplPaymentQrText')?.value||'';
-  T.note=document.getElementById('tplNote')?.value||'';
-  T.invoiceTerms=document.getElementById('tplInvoiceTerms')?.value||'';
-  T.footer=document.getElementById('tplFooter')?.value||'';
-  S.appSettings.templates=T;
-  try{saveLocal()}catch(e){}
+
+  // Save text inputs if they exist
+  const billTitleEl = document.getElementById('tplBillTitle');
+  if(billTitleEl) T.billTitle = billTitleEl.value || 'MONTHLY INTERNET BILL';
+
+  const invoiceTitleEl = document.getElementById('tplInvoiceTitle');
+  if(invoiceTitleEl) T.invoiceTitle = invoiceTitleEl.value || 'INVOICE';
+
+  const feeSlipTitleEl = document.getElementById('tplFeeSlipTitle');
+  if(feeSlipTitleEl) T.feeSlipTitle = feeSlipTitleEl.value || 'Internet Fee Payment Slip';
+
+  const primaryColorEl = document.getElementById('tplPrimaryColor');
+  if(primaryColorEl) T.primaryColor = primaryColorEl.value || '#dc2626';
+
+  const noteEl = document.getElementById('tplNote');
+  if(noteEl) T.note = noteEl.value || '';
+
+  const footerEl = document.getElementById('tplFooter');
+  if(footerEl) T.footer = footerEl.value || '';
+
+  // Save field visibility checkboxes
+  T.showFields = T.showFields || {};
+  const fieldIds = [
+    'companyName','companyAddress','companyMobile','companyEmail',
+    'billNo','billMonth','issueDate','dueDate',
+    'clientName','clientMobile','clientLogin','clientCCode','clientPackage','clientAddress',
+    'monthlyFee','received','dueAmount','status',
+    'billDetails','previousDue','adjustment','totals',
+    'paymentQr','terms','footer','watermark'
+  ];
+
+  fieldIds.forEach(field => {
+    const el = document.getElementById('show_' + field);
+    if(el) {
+      T.showFields[field] = el.checked;
+    }
+  });
+
+  S.appSettings.templates = T;
+  }catch(err){ console.warn("Template save error:",err); toast("Template save error: "+(err.message||err),"error"); return; }
+  saveLocal();
   try{if(typeof db!=='undefined'&&db)db.collection('settings').doc('main').set({appSettings:S.appSettings},{merge:true})}catch(e){}
-  toast('Template settings saved','success');
-  templatePage();
+  toast('Template settings saved successfully','success');
 }
+
 function getTemplatePaymentQrUrl(text){
   const T=ensureTemplateSettings();
   if(T.paymentQrImage)return T.paymentQrImage;
@@ -9162,6 +9486,33 @@ function filterTable(tableId, searchValue) {
     const text = row.textContent.toLowerCase();
     row.style.display = text.includes(q) ? '' : 'none';
   });
+}
+
+
+/* ===== ITEM/PACKAGE ACTION DROPDOWN HELPERS ===== */
+function toggleItemActionMenu(itemId) {
+  const menu = document.getElementById('itemActionMenu-' + itemId);
+  if (!menu) return;
+  document.querySelectorAll('.action-menu').forEach(m => {
+    if (m.id !== 'itemActionMenu-' + itemId) m.style.display = 'none';
+  });
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+function hideItemActionMenu(itemId) {
+  const menu = document.getElementById('itemActionMenu-' + itemId);
+  if (menu) menu.style.display = 'none';
+}
+function togglePackageActionMenu(pkgId) {
+  const menu = document.getElementById('pkgActionMenu-' + pkgId);
+  if (!menu) return;
+  document.querySelectorAll('.action-menu').forEach(m => {
+    if (m.id !== 'pkgActionMenu-' + pkgId) m.style.display = 'none';
+  });
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+function hidePackageActionMenu(pkgId) {
+  const menu = document.getElementById('pkgActionMenu-' + pkgId);
+  if (menu) menu.style.display = 'none';
 }
 </script>
 </body>
