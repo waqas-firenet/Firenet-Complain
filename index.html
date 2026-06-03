@@ -8150,66 +8150,7 @@ saveReceiveBillModal = function(clientId, sendWA = false, printSlip = false) {
       .find(i => i.clientId === clientId && i.billMonth === month);
     
     if (latestInvoice && !latestInvoice.receiptId) {
-      latestInvoice.receiptId = receiptId;
-      latestInvoice.verifyUrl = verifyUrl;
-      saveAndSync('invoices', latestInvoice);
-    }
-    
-    saveLocal();
-  }, 200);
-};
-
-// 9. Initialize verification on page load
-window.addEventListener('load', function() {
-  // Check URL for verify parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const verifyReceipt = urlParams.get('verify') || urlParams.get('receipt') || urlParams.get('rid');
-  
-  if (verifyReceipt) {
-    // Load data first
-    if (typeof load === 'function') {
-      load();
-    }
-    if (typeof sanitizeState === 'function') {
-      sanitizeState();
-    }
-    if (typeof ensureCashFlowState === 'function') {
-      ensureCashFlowState();
-    }
-    
-    // Render verification page
-    setTimeout(() => {
-      renderPublicReceiptVerification(verifyReceipt);
-    }, 100);
-  }
-  
-  // Also ensure all existing payments have receipt IDs
-  setTimeout(() => {
-    if (typeof ensureReceiptForAllPayments === 'function') {
-      ensureReceiptForAllPayments();
-    }
-  }, 1000);
-});
-
-// 10. Fix QR code generation in print slips
-const __originalPrintFeeSlip = printFeeSlip;
-printFeeSlip = function(clientId) {
-  const receiptId = generateReceiptId();
-  const verifyUrl = getFullVerifyUrl(receiptId);
-  
-  // Ensure client has receipt ID
-  const month = window.billingMonth || billMonthNow();
-  const inv = (S.invoices || []).find(i => i.clientId === clientId && i.billMonth === month);
-  if (inv && !inv.receiptId) {
-    inv.receiptId = receiptId;
-    inv.verifyUrl = verifyUrl;
-    saveAndSync('invoices', inv);
-  }
-  
-  __originalPrintFeeSlip(clientId);
-};
-
-console.log('✅ Payment Verification fully fixed! QR codes now work with ?verify=RECEIPT_ID');/* ===== COMPLETE PAYMENT VERIFICATION FIX ===== */
+ fully/* ===== COMPLETE PAYMENT VERIFICATION FIX ===== */
 
 // Make sure receipt functions are globally available
 window.generateReceiptId = window.generateReceiptId || function() {
