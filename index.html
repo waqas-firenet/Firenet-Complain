@@ -8209,7 +8209,383 @@ printFeeSlip = function(clientId) {
   __originalPrintFeeSlip(clientId);
 };
 
-console.log('✅ Payment Verification fully fixed! QR codes now work with ?verify=RECEIPT_ID');}
+console.log('✅ Payment Verification fully fixed! QR codes now work with ?verify=RECEIPT_ID');/* ===== COMPLETE PAYMENT VERIFICATION FIX ===== */
+
+// Make sure receipt functions are globally available
+window.generateReceiptId = window.generateReceiptId || function() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const da = String(d.getDate()).padStart(2, '0');
+  const h = String(d.getHours()).padStart(2, '0');
+  const mi = String(d.getMinutes()).padStart(2, '0');
+  const ss = String(d.getSeconds()).padStart(2, '0');
+  const rand = Math.floor(Math.random() * 9000) + 1000;
+  return `FRN-${y}${m}${da}-${h}${mi}${ss}-${rand}`;
+};
+
+// Get current page URL for verification
+function getCurrentPageUrl() {
+  let url = window.location.href;
+  // Remove any existing query parameters
+  url = url.split('?')[0];
+  // Remove hash
+  url = url.split('#')[0];
+  return url;
+}
+
+// Create verification URL
+function getVerificationUrl(receiptId) {
+  const baseUrl = getCurrentPageUrl();
+  return baseUrl + '?verify=' + encodeURIComponent(receiptId);
+}
+
+// Store receipt ID when payment is made
+function attachReceiptToPayment(clientId, amount, mode) {
+  const receiptId = generateReceiptId();
+  const verifyUrl = getVerificationUrl(receiptId);
+  const month = window.billingMonth || (new Date().toISOString().slice(0, 7));
+  
+  // Find the most recent finance entry for this client
+  const financeEntries = (S.finance || []).filter(f => 
+    f.clientId === clientId && 
+    (f.type || 'income') !== 'expense'
+  );
+  
+  if (financeEntries.length > 0) {
+    const lastFinance = financeEntries[financeEntries.length - 1];
+    lastFinance.receiptId = receiptId;
+    lastFinance.verifyUrl = verifyUrl;
+    saveAndSync('finance', lastFinance);
+  }
+  
+  // Also update invoice
+  const invoice = (S.invoices || []).find(i => 
+    i.clientId === clientId && i.billMonth === month
+  );
+  if (invoice) {
+    invoice.receiptId = receiptId;
+    invoice.verifyUrl = verifyUrl;
+    saveAndSync('invoices', invoice);
+  }
+  
+  saveLocal();
+  return receiptId;
+}
+
+// Find receipt data (search both finance and invoices)
+function findReceiptData(receiptId) {
+  if (!receiptId) return null;
+  
+  // Search in finance entries
+  const financeEntry = (S.finance || []).find(f => 
+    f.receiptId === receiptId || 
+    f.receiptId === receiptId.replace(/^FRN-/, '')
+  );
+  
+  if (financeEntry) {
+    let client = null;
+    if (financeEntry.clientId) {
+      client = (S.clients || []).find(c => c.id === financeEntry.clientId);
+    }
+    if (!client && financeEntry.phone) {
+      client = (S.clients || []).find(c => c.mobile === financeEntry.phone);
+    }
+    if (!client && financeEntry.customer) {
+      client = (S.clients || []).find(c => c.name === financeEntry.customer);
+    }
+    
+    let invoice = null;
+    if (financeEntry.billMonth && financeEntry.clientId) {
+      invoice = (S.invoices || []).find(i => 
+        i.clientId === financeEntry.clientId && 
+        i.billMonth === financeEntry.billMonth
+      );
+    }
+    
+    return {
+      type: 'finance',
+      data: financeEntry,
+      client: client,
+      invoice: invoice,
+      receiptId: receiptId
+    };
+  }
+  
+  // Search in invoices
+  const invoiceEntry = (S.invoices || []).find(i => 
+    i.receiptId === receiptId ||
+    i.receiptId === receiptId.replace(/^FRN-/, '')
+  );
+  
+  if (invoiceEntry) {
+    let client = null;
+    if (invoiceEntry.clientId) {
+      client = (S.clients || []).find(c => c.id === invoiceEntry.clientId);
+    }
+    if (!client && invoiceEntry.phone) {
+      client = (S.clients || []).find(c => c.mobile === invoiceEntry.phone);
+    }
+    
+    return {
+      type: 'invoice',
+      data: invoiceEntry,
+      client: client,
+      invoice: invoiceEntry,
+      receiptId: receiptId
+    };
+  }
+  
+  return null;
+}
+
+// Render verification page (replaces the whole page)
+function showVerificationPage(receiptId) {
+  // Clear everything
+  document.body.innerHTML = '';
+  document.body.style.margin = '0';
+  document.body.style.padding = '0';
+  document.body.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+  document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+  document.body.style.minHeight = '100vh';
+  document.body.style.display = 'flex';
+  document.body.style.alignItems = 'center';
+  document.body.style.justifyContent = 'center';
+  document.body.style.padding = '20px';
+  
+  // Find the receipt data
+  const receiptData = findReceiptData(receiptId);
+  
+  if (!receiptData) {
+    // Show not found page
+    document.body.innerHTML = `
+      <div style="background: white; border-radius: 24px; max-width: 500px; width: 100%; padding: 40px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+        <div style="font-size: 64px; margin-bottom: 20px;">🔍</div>
+        <h1 style="color: #dc2626; margin: 0 0 10px 0;">Receipt Not Found</h1>
+        <p style="color: #64748b; margin-bottom: 20px;">We couldn't find a payment with ID: <strong>${escapeHtml(receiptId)}</strong></p>
+        <div style="background: #f8fafc; border-radius: 12px; padding: 15px; margin: 20px 0; text-align: left;">
+          <p style="margin: 0 0 10px 0; font-weight: 600;">Possible reasons:</p>
+          <ul style="margin: 0; padding-left: 20px;">
+            <li>The receipt ID is incorrect</li>
+            <li>The payment hasn't been synced yet</li>
+            <li>The receipt ID was entered manually with a typo</li>
+          </ul>
+        </div>
+        <button onclick="window.location.href='${getCurrentPageUrl()}'" style="background: #e74c3c; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+          ← Back to Portal
+        </button>
+      </div>
+    `;
+    return;
+  }
+  
+  const data = receiptData.data;
+  const client = receiptData.client;
+  const amount = data.amount || data.total || 0;
+  const date = data.time || data.date || data.paidAt || '-';
+  const mode = data.mode || (data.cash_flow_stage === 'employee_holding' ? 'Cash' : 'Online') || 'Cash';
+  const status = data.status || (amount > 0 ? 'Paid' : 'Unpaid');
+  const statusColor = status === 'Paid' ? '#16a34a' : (status === 'Partial' ? '#d97706' : '#dc2626');
+  const statusIcon = status === 'Paid' ? '✅' : (status === 'Partial' ? '🟡' : '🔴');
+  const receivedBy = data.receivedBy || data.receiver || data.employeeName || data.byName || 'System';
+  
+  // Show verification page
+  document.body.innerHTML = `
+    <div style="background: white; border-radius: 32px; max-width: 520px; width: 100%; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+      <!-- Header -->
+      <div style="text-align: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; margin-bottom: 20px;">
+        <div style="font-size: 48px; margin-bottom: 10px;">${statusIcon}</div>
+        <h1 style="color: #1f2937; margin: 0; font-size: 24px;">${escapeHtml(S?.appSettings?.companyName || 'Fire.net.pk')}</h1>
+        <p style="color: #64748b; margin: 5px 0 0 0;">Payment Verification Slip</p>
+      </div>
+      
+      <!-- Receipt ID -->
+      <div style="background: #f8fafc; border-radius: 16px; padding: 15px; text-align: center; margin-bottom: 20px;">
+        <div style="color: #64748b; font-size: 12px; letter-spacing: 1px;">RECEIPT NUMBER</div>
+        <div style="font-family: monospace; font-size: 18px; font-weight: bold; color: #1f2937;">${escapeHtml(receiptId)}</div>
+      </div>
+      
+      <!-- Payment Details -->
+      <div style="margin-bottom: 20px;">
+        <h3 style="color: #374151; margin: 0 0 15px 0; font-size: 16px;">💳 Payment Details</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div><span style="color: #64748b; font-size: 12px;">DATE & TIME</span><br><strong>${escapeHtml(date)}</strong></div>
+          <div><span style="color: #64748b; font-size: 12px;">AMOUNT</span><br><strong style="color: #16a34a; font-size: 20px;">${money(amount)}</strong></div>
+          <div><span style="color: #64748b; font-size: 12px;">PAYMENT MODE</span><br><strong>${escapeHtml(mode)}</strong></div>
+          <div><span style="color: #64748b; font-size: 12px;">RECEIVED BY</span><br><strong>${escapeHtml(receivedBy)}</strong></div>
+          <div style="grid-column: span 2;"><span style="color: #64748b; font-size: 12px;">STATUS</span><br><strong style="color: ${statusColor};">${statusIcon} ${escapeHtml(status)}</strong></div>
+        </div>
+      </div>
+      
+      ${client ? `
+      <!-- Customer Details -->
+      <div style="background: #f0fdf4; border-radius: 16px; padding: 15px; margin-bottom: 20px;">
+        <h3 style="color: #166534; margin: 0 0 12px 0; font-size: 14px;">👤 Customer Information</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+          <div><span style="color: #64748b;">Name:</span><br><strong>${escapeHtml(client.name || '-')}</strong></div>
+          <div><span style="color: #64748b;">Mobile:</span><br><strong>${escapeHtml(client.mobile || '-')}</strong></div>
+          <div><span style="color: #64748b;">C.Code:</span><br><strong>${escapeHtml(client.ccode || client.pin || '-')}</strong></div>
+          <div><span style="color: #64748b;">PPPoE:</span><br><strong>${escapeHtml(client.pppoe || '-')}</strong></div>
+          <div style="grid-column: span 2;"><span style="color: #64748b;">Package:</span><br><strong>${escapeHtml(client.package || '-')}</strong></div>
+        </div>
+      </div>
+      ` : ''}
+      
+      ${data.billMonth ? `
+      <div style="background: #eff6ff; border-radius: 12px; padding: 12px; margin-bottom: 20px; font-size: 13px; text-align: center;">
+        📅 Billing Month: <strong>${escapeHtml(data.billMonth)}</strong>
+        ${data.dueDate ? ` | Due Date: <strong>${escapeHtml(data.dueDate)}</strong>` : ''}
+      </div>
+      ` : ''}
+      
+      <!-- Footer -->
+      <div style="border-top: 2px solid #e5e7eb; padding-top: 20px; margin-top: 10px;">
+        <div style="text-align: center; font-size: 11px; color: #94a3b8; margin-bottom: 15px;">
+          This is an electronically generated payment verification slip.<br>
+          Valid for record and audit purposes.
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button onclick="window.print()" style="background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer;">
+            🖨️ Print Slip
+          </button>
+          <button onclick="window.location.href='${getCurrentPageUrl()}'" style="background: #64748b; color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer;">
+            ← Back
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Check URL on page load for verification parameter
+function checkForVerificationOnLoad() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const verifyParam = urlParams.get('verify') || urlParams.get('receipt') || urlParams.get('rid');
+  
+  if (verifyParam && verifyParam.length > 5) {
+    // Make sure data is loaded
+    if (typeof load === 'function') load();
+    if (typeof sanitizeState === 'function') sanitizeState();
+    if (typeof ensureCashFlowState === 'function') ensureCashFlowState();
+    
+    // Wait a moment for data to load then show verification
+    setTimeout(() => {
+      showVerificationPage(verifyParam);
+    }, 100);
+    
+    return true;
+  }
+  return false;
+}
+
+// Override the receive payment function to attach receipt ID
+const originalReceiveBill = receiveClientBill || function() {};
+receiveClientBill = function(clientId) {
+  // Call original function first
+  if (typeof originalReceiveBill === 'function') {
+    originalReceiveBill(clientId);
+  } else if (typeof openReceiveBillModal === 'function') {
+    openReceiveBillModal(clientId);
+  }
+  
+  // After payment, attach receipt ID
+  setTimeout(() => {
+    const month = window.billingMonth || (new Date().toISOString().slice(0, 7));
+    const receiptId = generateReceiptId();
+    const verifyUrl = getVerificationUrl(receiptId);
+    
+    // Find the most recent finance entry for this client
+    const financeEntry = (S.finance || []).filter(f => 
+      f.clientId === clientId && 
+      (f.type || 'income') !== 'expense'
+    ).pop();
+    
+    if (financeEntry && !financeEntry.receiptId) {
+      financeEntry.receiptId = receiptId;
+      financeEntry.verifyUrl = verifyUrl;
+      saveAndSync('finance', financeEntry);
+    }
+    
+    // Also update invoice
+    const invoice = (S.invoices || []).find(i => 
+      i.clientId === clientId && i.billMonth === month
+    );
+    if (invoice && !invoice.receiptId) {
+      invoice.receiptId = receiptId;
+      invoice.verifyUrl = verifyUrl;
+      saveAndSync('invoices', invoice);
+    }
+    
+    saveLocal();
+    
+    // Show receipt ID to user
+    toast(`Receipt ID: ${receiptId}`, 'success');
+  }, 500);
+};
+
+// Override fee slip to include QR with proper URL
+const originalPrintFeeSlip = printFeeSlip || function() {};
+printFeeSlip = function(clientId) {
+  const receiptId = generateReceiptId();
+  const verifyUrl = getVerificationUrl(receiptId);
+  const month = window.billingMonth || (new Date().toISOString().slice(0, 7));
+  
+  // Attach receipt ID to invoice
+  const invoice = (S.invoices || []).find(i => i.clientId === clientId && i.billMonth === month);
+  if (invoice) {
+    invoice.receiptId = receiptId;
+    invoice.verifyUrl = verifyUrl;
+    saveAndSync('invoices', invoice);
+  }
+  
+  // Call original print function
+  if (typeof originalPrintFeeSlip === 'function') {
+    originalPrintFeeSlip(clientId);
+  } else {
+    // Fallback print
+    const client = (S.clients || []).find(c => c.id === clientId);
+    if (client) {
+      alert(`Receipt ID: ${receiptId}\nVerification URL: ${verifyUrl}\n\nShare this URL or QR code with customer for payment verification.`);
+    }
+  }
+  
+  toast(`Receipt ID: ${receiptId}`, 'success');
+};
+
+// Initialize verification on page load
+window.addEventListener('DOMContentLoaded', function() {
+  checkForVerificationOnLoad();
+});
+
+// Also run after everything loads
+window.addEventListener('load', function() {
+  if (!checkForVerificationOnLoad()) {
+    // Backfill receipt IDs for existing payments
+    setTimeout(() => {
+      let updated = 0;
+      (S.finance || []).forEach(f => {
+        if ((f.type || 'income') !== 'expense' && !f.receiptId) {
+          f.receiptId = generateReceiptId();
+          f.verifyUrl = getVerificationUrl(f.receiptId);
+          updated++;
+        }
+      });
+      (S.invoices || []).forEach(i => {
+        if (i.billMonth && !i.receiptId) {
+          i.receiptId = generateReceiptId();
+          i.verifyUrl = getVerificationUrl(i.receiptId);
+          updated++;
+        }
+      });
+      if (updated > 0) {
+        saveLocal();
+        console.log(`✅ Added receipt IDs to ${updated} entries`);
+      }
+    }, 1000);
+  }
+});
+
+console.log('✅ Payment Verification System Fixed!');}
 
 </script>
 </body>
