@@ -7843,7 +7843,310 @@ function sendComplaintToEmployee(complaintId){
   );
   window.open('https://wa.me/'+waNumber(emp.mobile)+'?text='+msg,'_blank');
 }
+/* ===== COMPLETE WORKING VERIFICATION SYSTEM ===== */
 
+// Store receipts in a dedicated array for easy lookup
+if (!S.receipts) S.receipts = [];
+
+// Generate receipt ID
+function generateReceiptId() {
+    const d = new Date();
+    return 'FRN-' + d.getFullYear() + 
+           String(d.getMonth()+1).padStart(2,'0') + 
+           String(d.getDate()).padStart(2,'0') + '-' +
+           String(d.getHours()).padStart(2,'0') + 
+           String(d.getMinutes()).padStart(2,'0') + 
+           String(d.getSeconds()).padStart(2,'0') + '-' +
+           String(Math.floor(Math.random()*9000)+1000);
+}
+
+// Save receipt when payment is made
+function saveReceipt(receiptId, paymentData) {
+    if (!S.receipts) S.receipts = [];
+    
+    // Don't duplicate
+    const existing = S.receipts.find(r => r.receiptId === receiptId);
+    if (!existing) {
+        S.receipts.push({
+            receiptId: receiptId,
+            data: paymentData,
+            createdAt: new Date().toISOString(),
+            verifyUrl: window.location.href.split('?')[0] + '?verify=' + receiptId
+        });
+        if (typeof saveLocal === 'function') saveLocal();
+        console.log('💾 Receipt saved:', receiptId);
+    }
+}
+
+// Find receipt
+function findReceipt(receiptId) {
+    // Check dedicated receipts array first
+    if (S.receipts) {
+        const found = S.receipts.find(r => r.receiptId === receiptId);
+        if (found) return found.data;
+    }
+    
+    // Search in finance
+    if (S.finance) {
+        const found = S.finance.find(f => f.receiptId === receiptId);
+        if (found) return found;
+    }
+    
+    // Search in invoices
+    if (S.invoices) {
+        const found = S.invoices.find(i => i.receiptId === receiptId);
+        if (found) return found;
+    }
+    
+    return null;
+}
+
+// Override saveReceiveBillModal to save receipt
+if (typeof saveReceiveBillModal === 'function') {
+    const originalSave = saveReceiveBillModal;
+    saveReceiveBillModal = function(clientId, sendWA, printSlip) {
+        const receiptId = generateReceiptId();
+        const verifyUrl = window.location.href.split('?')[0] + '?verify=' + receiptId;
+        
+        // Store receipt ID globally for this payment
+        window._currentReceiptId = receiptId;
+        
+        // Call original
+        originalSave(clientId, sendWA, printSlip);
+        
+        // After save, save receipt
+        setTimeout(() => {
+            const client = S.clients.find(c => c.id === clientId);
+            const month = window.billingMonth || new Date().toISOString().slice(0,7);
+            
+            // Get the payment amount from the form or last finance entry
+            const amount = document.getElementById('rxAmount')?.value || 
+                          document.getElementById('amount')?.value || 
+                          (S.finance ? S.finance.filter(f => f.clientId === clientId).pop()?.amount : 0);
+            
+            const paymentData = {
+                receiptId: receiptId,
+                clientId: clientId,
+                clientName: client?.name || '',
+                clientMobile: client?.mobile || '',
+                clientCode: client?.ccode || client?.pin || '',
+                clientPppoe: client?.pppoe || '',
+                amount: parseFloat(amount) || 0,
+                mode: document.getElementById('rxMode')?.value || 'cash',
+                date: new Date().toLocaleString(),
+                month: month,
+                status: 'Paid'
+            };
+            
+            saveReceipt(receiptId, paymentData);
+            
+            // Also update finance/invoice entries
+            if (S.finance) {
+                const lastFin = S.finance.filter(f => f.clientId === clientId).pop();
+                if (lastFin) {
+                    lastFin.receiptId = receiptId;
+                    lastFin.verifyUrl = verifyUrl;
+                    if (typeof saveAndSync === 'function') saveAndSync('finance', lastFin);
+                }
+            }
+            
+            if (S.invoices) {
+                const inv = S.invoices.find(i => i.clientId === clientId && i.billMonth === month);
+                if (inv) {
+                    inv.receiptId = receiptId;
+                    inv.verifyUrl = verifyUrl;
+                    if (typeof saveAndSync === 'function') saveAndSync('invoices', inv);
+                }
+            }
+            
+            if (typeof saveLocal === 'function') saveLocal();
+            
+            toast('🧾 Receipt: ' + receiptId, 'success');
+            console.log('✅ Receipt saved:', receiptId);
+            console.log('🔗 Verify at:', verifyUrl);
+            
+        }, 500);
+    };
+}
+
+// VERIFICATION HANDLER - Replace the page completely
+(function handleVerification() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let receiptId = urlParams.get('verify') || urlParams.get('receipt') || urlParams.get('rid');
+    
+    if (receiptId && receiptId.length > 10) {
+        console.log('🔍 VERIFYING RECEIPT:', receiptId);
+        
+        // Function to display verification
+        function displayVerification() {
+            // Load data if needed
+            if (typeof load === 'function') load();
+            if (typeof sanitizeState === 'function') sanitizeState();
+            
+            // Find receipt
+            let receiptData = findReceipt(receiptId);
+            let clientData = null;
+            
+            if (receiptData && receiptData.clientId && S.clients) {
+                clientData = S.clients.find(c => c.id === receiptData.clientId);
+            }
+            
+            const companyName = S?.appSettings?.companyName || 'Fire.net.pk';
+            
+            // Clear page completely
+            document.documentElement.innerHTML = '';
+            
+            // Create new page
+            const newDoc = document.createElement('html');
+            newDoc.innerHTML = `
+            <head>
+                <title>Payment Verification - ${companyName}</title>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        min-height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 20px;
+                    }
+                    .card {
+                        background: white;
+                        border-radius: 28px;
+                        max-width: 520px;
+                        width: 100%;
+                        padding: 32px;
+                        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+                    }
+                    .header { text-align: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; margin-bottom: 20px; }
+                    .icon { font-size: 56px; margin-bottom: 10px; }
+                    h1 { margin: 10px 0 5px 0; font-size: 24px; color: #1f2937; }
+                    .sub { color: #64748b; margin: 0; }
+                    .receipt-box { background: #f8fafc; border-radius: 16px; padding: 16px; text-align: center; margin-bottom: 24px; }
+                    .receipt-label { color: #64748b; font-size: 11px; letter-spacing: 1px; }
+                    .receipt-id { font-family: monospace; font-size: 15px; font-weight: bold; word-break: break-all; background: white; padding: 8px 12px; border-radius: 10px; margin-top: 8px; }
+                    .section-title { margin: 0 0 16px 0; font-size: 16px; color: #374151; }
+                    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+                    .grid-item { background: #f8fafc; padding: 12px; border-radius: 12px; }
+                    .grid-label { color: #64748b; font-size: 11px; }
+                    .grid-value { font-weight: bold; margin-top: 5px; }
+                    .customer-box { background: #f0fdf4; border-radius: 16px; padding: 16px; margin-bottom: 24px; }
+                    .customer-title { margin: 0 0 12px 0; font-size: 14px; color: #166534; }
+                    .customer-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; }
+                    .customer-label { color: #64748b; }
+                    .buttons { display: flex; gap: 12px; justify-content: center; padding-top: 24px; border-top: 2px solid #e5e7eb; }
+                    button { padding: 12px 28px; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+                    .btn-print { background: #e74c3c; color: white; }
+                    .btn-back { background: #64748b; color: white; }
+                    .footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 20px; }
+                    .error-box { text-align: center; }
+                    .error-icon { font-size: 64px; margin-bottom: 20px; }
+                    .error-title { color: #dc2626; margin: 0 0 10px 0; }
+                    .tips { background: #fef3c7; border-radius: 12px; padding: 12px; text-align: left; margin: 20px 0; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    ${receiptData ? `
+                        <div class="header">
+                            <div class="icon">✅</div>
+                            <h1>${escapeHtml(companyName)}</h1>
+                            <div class="sub">Payment Verification Slip</div>
+                        </div>
+                        
+                        <div class="receipt-box">
+                            <div class="receipt-label">RECEIPT NUMBER</div>
+                            <div class="receipt-id">${escapeHtml(receiptId)}</div>
+                        </div>
+                        
+                        <div class="section-title">💰 Payment Details</div>
+                        <div class="grid">
+                            <div class="grid-item">
+                                <div class="grid-label">DATE & TIME</div>
+                                <div class="grid-value">${escapeHtml(receiptData.date || receiptData.time || receiptData.createdAt || new Date().toLocaleString())}</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-label">AMOUNT</div>
+                                <div class="grid-value" style="color: #16a34a; font-size: 20px;">${money(receiptData.amount || 0)}</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-label">PAYMENT MODE</div>
+                                <div class="grid-value">${escapeHtml(receiptData.mode || 'Cash')}</div>
+                            </div>
+                            <div class="grid-item">
+                                <div class="grid-label">STATUS</div>
+                                <div class="grid-value" style="color: #16a34a;">Paid</div>
+                            </div>
+                        </div>
+                        
+                        ${clientData ? `
+                        <div class="customer-box">
+                            <div class="customer-title">👤 Customer Information</div>
+                            <div class="customer-row">
+                                <div><span class="customer-label">Name:</span><br><strong>${escapeHtml(clientData.name || '-')}</strong></div>
+                                <div><span class="customer-label">Mobile:</span><br><strong>${escapeHtml(clientData.mobile || '-')}</strong></div>
+                                <div><span class="customer-label">C.Code:</span><br><strong>${escapeHtml(clientData.ccode || clientData.pin || '-')}</strong></div>
+                                <div><span class="customer-label">PPPoE:</span><br><strong>${escapeHtml(clientData.pppoe || '-')}</strong></div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="buttons">
+                            <button class="btn-print" onclick="window.print()">🖨️ Print Slip</button>
+                            <button class="btn-back" onclick="window.location.href='${window.location.href.split('?')[0]}'">← Back to Portal</button>
+                        </div>
+                        <div class="footer">This is an electronically generated payment verification slip.</div>
+                    ` : `
+                        <div class="error-box">
+                            <div class="error-icon">🔍</div>
+                            <h2 class="error-title">Receipt Not Found</h2>
+                            <p style="color: #64748b;">Receipt ID: <strong>${escapeHtml(receiptId)}</strong></p>
+                            <div class="tips">
+                                <p style="margin: 0 0 5px 0; font-weight: bold;">📌 Possible reasons:</p>
+                                <ul style="margin: 0; padding-left: 20px;">
+                                    <li>Payment was just made (wait 5 seconds and refresh)</li>
+                                    <li>The receipt ID was typed incorrectly</li>
+                                    <li>The receipt hasn't been saved to the database yet</li>
+                                </ul>
+                            </div>
+                            <button class="btn-back" onclick="window.location.href='${window.location.href.split('?')[0]}'" style="background: #e74c3c;">Go to Portal</button>
+                        </div>
+                    `}
+                </div>
+            </body>
+            `;
+            
+            document.documentElement.replaceWith(newDoc);
+        }
+        
+        // Wait a moment for data to load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => setTimeout(displayVerification, 200));
+        } else {
+            setTimeout(displayVerification, 200);
+        }
+        
+        // Stop the main app from loading
+        throw new Error('Verification page loaded');
+    }
+})();
+
+// Helper function
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+console.log('✅ Verification system ready!');
 </script>
 </body>
 </html>
