@@ -1,0 +1,18 @@
+const txs=[
+ {date:'Today',desc:'ISP collections',cat:'ISP payment',method:'Bank',amount:450000,type:'Income'},
+ {date:'Today',desc:'Bandwidth',cat:'Bandwidth',method:'Bank',amount:240000,type:'Expense'},
+ {date:'Today',desc:'Salary',cat:'Salary',method:'Bank',amount:90000,type:'Expense'},
+ {date:'Today',desc:'Solar/electrical work',cat:'Solar/electrical',method:'Cash/Bank',amount:100000,type:'Income'}
+];
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+function money(n){return 'Rs '+Number(n).toLocaleString('en-PK')}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function renderTx(){const body=$('#txTable');body.innerHTML=txs.map(x=>`<tr><td>${x.date}</td><td>${x.desc}</td><td>${x.cat}</td><td>${x.method}</td><td class="${x.type==='Income'?'green-text':'red-text'}">${x.type==='Income'?'+':'-'} ${money(x.amount)}</td></tr>`).join('')}
+$$('.nav').forEach(btn=>btn.addEventListener('click',()=>{ $$('.nav').forEach(x=>x.classList.remove('active'));btn.classList.add('active');$$('.page').forEach(x=>x.classList.remove('active'));$('#'+btn.dataset.page).classList.add('active');const titles={dashboard:['Financial overview','Management dashboard · September 2026'],transactions:['Transactions','Income, expenses and owner movements'],receivables:['Receivables','Customer collection control'],debt:['Debt','Loan and repayment planning'],reports:['Reports','CFO management snapshot']};$('#pageTitle').textContent=titles[btn.dataset.page][0];$('#pageSub').textContent=titles[btn.dataset.page][1]}));
+$('#addBtn').onclick=()=>{const b=$('.nav[data-page="transactions"]');b.click();setTimeout(()=>$('#txAmount').focus(),50)};
+$('#refreshBtn').onclick=()=>toast('Dashboard refreshed');
+$('#txForm').addEventListener('submit',e=>{e.preventDefault();const type=$('#txType').value,amount=Number($('#txAmount').value),cat=$('#txCategory').value,method=$('#txMethod').value,desc=$('#txDescription').value;if(!amount||!desc)return;txs.unshift({date:'Today',desc,cat,method,amount,type:type==='Income'?'Income':'Expense'});renderTx();toast('Transaction recorded in this demo session');e.target.reset();$$('.nav')[0].click()});
+renderTx();
+new Chart($('#cashChart'),{type:'bar',data:{labels:['Revenue','Expenses','Surplus','Cash'],datasets:[{label:'PKR',data:[610000,543000,67000,50000],borderRadius:7}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>money(c.raw)}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v>=1000?(v/1000)+'k':v}}}}});
+new Chart($('#mixChart'),{type:'doughnut',data:{labels:['ISP','Solar/Electrical','Installation'],datasets:[{data:[500000,100000,10000],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:c=>`${c.label}: ${money(c.raw)}`}}}}});
+new Chart($('#trendChart'),{type:'line',data:{labels:['Apr','May','Jun','Jul','Aug','Sep'],datasets:[{label:'Revenue',data:[560000,575000,590000,600000,605000,610000],tension:.35,borderWidth:3,pointRadius:3},{label:'Expenses',data:[525000,530000,535000,540000,542000,543000],tension:.35,borderWidth:3,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10}}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${money(c.raw)}`}}},scales:{y:{ticks:{callback:v=>v>=1000?(v/1000)+'k':v}}}}});
