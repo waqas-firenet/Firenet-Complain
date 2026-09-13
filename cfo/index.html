@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>Fire.net CFO Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">F</span><div><b>Fire.net</b><small>CFO Control Center</small></div></div>
+    <nav>
+      <button class="nav active" data-page="dashboard">⌂ <span>Dashboard</span></button>
+      <button class="nav" data-page="transactions">↕ <span>Transactions</span></button>
+      <button class="nav" data-page="receivables">◉ <span>Receivables</span></button>
+      <button class="nav" data-page="debt">▣ <span>Debt</span></button>
+      <button class="nav" data-page="reports">▤ <span>Reports</span></button>
+    </nav>
+    <div class="side-note"><b>Phase 2</b><br>WhatsApp CFO bot<br><span>Same Firebase database</span></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><div class="eyebrow">FIRE.NET.PK</div><h1 id="pageTitle">Financial overview</h1><p id="pageSub">Management dashboard · September 2026</p></div>
+      <div class="top-actions"><button class="ghost" id="refreshBtn">↻ Refresh</button><button class="primary" id="addBtn">＋ Add transaction</button></div>
+    </header>
+
+    <section id="dashboard" class="page active">
+      <div class="cards">
+        <article class="metric"><div class="metric-head"><span>Monthly revenue</span><i class="icon blue">↗</i></div><strong>Rs 610k</strong><small>ISP 500k · Solar 100k · Install 10k</small></article>
+        <article class="metric"><div class="metric-head"><span>Business expenses</span><i class="icon red">↘</i></div><strong>Rs 543k</strong><small>Including Rs 30k network upgrades</small></article>
+        <article class="metric"><div class="metric-head"><span>Operating surplus</span><i class="icon amber">≈</i></div><strong>Rs 67k</strong><small>Before loan & personal withdrawals</small></article>
+        <article class="metric"><div class="metric-head"><span>Available cash</span><i class="icon green">₨</i></div><strong>Rs 50k</strong><small>Cash + bank + wallets</small></article>
+      </div>
+
+      <div class="grid two">
+        <article class="panel chart-panel"><div class="panel-head"><div><h2>Revenue vs expenses</h2><p>Monthly management view</p></div><span class="badge">PKR</span></div><canvas id="cashChart"></canvas></article>
+        <article class="panel chart-panel"><div class="panel-head"><div><h2>Revenue mix</h2><p>Current monthly run-rate</p></div></div><canvas id="mixChart"></canvas></article>
+      </div>
+
+      <div class="grid two lower">
+        <article class="panel chart-panel"><div class="panel-head"><div><h2>6-month trend</h2><p>Illustrative planning trend until real history is entered</p></div></div><canvas id="trendChart"></canvas></article>
+        <article class="panel"><div class="panel-head"><div><h2>CFO alerts</h2><p>Items needing attention</p></div></div>
+          <div class="alert danger"><b>Cash reserve is low</b><span>Rs 50k available vs target Rs 250k+</span></div>
+          <div class="alert warning"><b>Rs 100k receivable</b><span>About Rs 50k is consistently overdue</span></div>
+          <div class="alert warning"><b>Loan: Rs 300k</b><span>Monthly installment is Rs 80k</span></div>
+          <div class="alert success"><b>No supplier payable</b><span>Current supplier balance reported as zero</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="transactions" class="page">
+      <div class="panel"><div class="panel-head"><div><h2>Record transaction</h2><p>Write normal business transactions; Firebase will store them after configuration.</p></div></div>
+        <form id="txForm" class="form-grid">
+          <label>Type<select id="txType"><option>Income</option><option>Expense</option><option>Owner withdrawal</option><option>Loan payment</option></select></label>
+          <label>Amount<input id="txAmount" type="number" min="0" required placeholder="1500"></label>
+          <label>Category<select id="txCategory"><option>ISP payment</option><option>Solar/electrical</option><option>Installation</option><option>Bandwidth</option><option>Electricity</option><option>Salary</option><option>Maintenance</option><option>Fuel</option><option>Network upgrade</option><option>Marketing</option><option>Communication</option><option>Office/admin</option><option>Wallet charges</option><option>Other</option></select></label>
+          <label>Method<select id="txMethod"><option>Cash</option><option>Bank</option><option>Easypaisa/JazzCash</option></select></label>
+          <label class="wide">Description<input id="txDescription" required placeholder="Customer Ahmed paid ISP bill"></label>
+          <button class="primary wide" type="submit">Save transaction</button>
+        </form>
+      </div>
+      <article class="panel table-panel"><div class="panel-head"><div><h2>Recent transactions</h2><p>Demo entries shown until Firebase is connected</p></div></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th>Amount</th></tr></thead><tbody id="txTable"></tbody></table></div></article>
+    </section>
+
+    <section id="receivables" class="page">
+      <div class="cards"><article class="metric"><span>Total receivable</span><strong>Rs 100k</strong><small>All reported ISP receivables</small></article><article class="metric"><span>Overdue</span><strong class="red-text">Rs 50k</strong><small>Consistently overdue</small></article><article class="metric"><span>Collection target</span><strong class="green-text">95%</strong><small>Target monthly collection rate</small></article></div>
+      <article class="panel table-panel"><div class="panel-head"><div><h2>Collection priorities</h2><p>Customer-level data will populate here from Firebase.</p></div></div><table><thead><tr><th>Priority</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead><tbody><tr><td>Overdue pool</td><td>Rs 50,000</td><td><span class="pill danger-pill">High</span></td><td>Collection follow-up</td></tr><tr><td>Remaining receivables</td><td>Rs 50,000</td><td><span class="pill warning-pill">Watch</span></td><td>Due-date reminders</td></tr></tbody></table></article>
+    </section>
+
+    <section id="debt" class="page">
+      <div class="cards"><article class="metric"><span>Outstanding loan</span><strong>Rs 300k</strong><small>Reported total balance</small></article><article class="metric"><span>Monthly payment</span><strong>Rs 80k</strong><small>Reported installment</small></article><article class="metric"><span>Approx. installments</span><strong>4</strong><small>If no interest/fees change the balance</small></article></div>
+      <article class="panel"><div class="panel-head"><div><h2>Debt strategy</h2><p>Protect operating liquidity before accelerated repayment.</p></div></div><div class="strategy"><div><b>1</b><span>Build a cash buffer toward Rs 250k.</span></div><div><b>2</b><span>Keep ISP collection near the Rs 500k billed amount.</span></div><div><b>3</b><span>Use genuine surplus to clear the Rs 300k balance.</span></div></div></article>
+    </section>
+
+    <section id="reports" class="page">
+      <article class="panel"><div class="panel-head"><div><h2>Current CFO snapshot</h2><p>Based on figures provided during the financial intake.</p></div></div><div class="report-grid">
+        <div><span>ISP billed</span><b>Rs 500,000</b></div><div><span>Solar/electrical</span><b>Rs 100,000</b></div><div><span>Installation average</span><b>Rs 10,000</b></div><div><span>Business expenses</span><b>Rs 543,000</b></div><div><span>Cash + bank + wallets</span><b>Rs 50,000</b></div><div><span>Customer receivables</span><b>Rs 100,000</b></div><div><span>Equipment/assets</span><b>Rs 250,000</b></div><div><span>Outstanding loan</span><b>Rs 300,000</b></div>
+      </div></article>
+    </section>
+  </main>
+</div>
+<div id="toast" class="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
